@@ -54,57 +54,56 @@ Note: you'll need to `create an iNaturalist app <https://www.inaturalist.org/oau
 Create a new observation:
 -------------------------
 
-    .. code-block:: python
+.. code-block:: python
 
-        from pyinaturalist.rest_api import create_observations
+    from pyinaturalist.rest_api import create_observations
 
-        params = {'observation':
-                    {'taxon_id': 54327,  # Vespa Crabro
-                     'observed_on_string': datetime.datetime.now().isoformat(),
-                     'time_zone': 'Brussels',
-                     'description': 'This is a free text comment for the observation',
-                     'tag_list': 'wasp, Belgium',
-                     'latitude': 50.647143,
-                     'longitude': 4.360216,
-                     'positional_accuracy': 50, # meters,
+    params = {'observation':
+                {'taxon_id': 54327,  # Vespa Crabro
+                 'observed_on_string': datetime.datetime.now().isoformat(),
+                 'time_zone': 'Brussels',
+                 'description': 'This is a free text comment for the observation',
+                 'tag_list': 'wasp, Belgium',
+                 'latitude': 50.647143,
+                 'longitude': 4.360216,
+                 'positional_accuracy': 50, # meters,
 
-                     # sets vespawatch_id (an observation field whose ID is 9613) to the value '100'.
-                     'observation_field_values_attributes':
-                        [{'observation_field_id': 9613,'value': 100}],
-                    },
-        }
+                 # sets vespawatch_id (an observation field whose ID is 9613) to the value '100'.
+                 'observation_field_values_attributes':
+                    [{'observation_field_id': 9613,'value': 100}],
+                 },
+    }
 
-        r = create_observations(params=params, access_token=token)
+    r = create_observations(params=params, access_token=token)
 
-        new_observation_id = r[0]['id']
+    new_observation_id = r[0]['id']
 
 Upload a picture for this observation:
 --------------------------------------
-    .. code-block:: python
+.. code-block:: python
 
-        from pyinaturalist.rest_api import add_photo_to_observation
+    from pyinaturalist.rest_api import add_photo_to_observation
 
-        r = add_photo_to_observation(observation_id=new_observation_id,
+    r = add_photo_to_observation(observation_id=new_observation_id,
                                  file_object=open('/Users/nicolasnoe/vespa.jpg', 'rb'),
                                  access_token=token)
 
 Get a list of all (globally available) observation fields:
 ----------------------------------------------------------
-    .. code-block:: python
+.. code-block:: python
 
-        from pyinaturalist.rest_api import get_all_observation_fields
+    from pyinaturalist.rest_api import get_all_observation_fields
 
-        r = get_all_observation_fields(search_query="DNA")
+    r = get_all_observation_fields(search_query="DNA")
 
 Sets an observation field value to an existing observation:
 -----------------------------------------------------------
+.. code-block:: python
 
-    .. code-block:: python
+    from pyinaturalist.rest_api import put_observation_field_values
 
-        from pyinaturalist.rest_api import put_observation_field_values
-
-        put_observation_field_values(observation_id=7345179,
-                                     observation_field_id=9613,
-                                     value=250,
-                                     access_token=token)
+    put_observation_field_values(observation_id=7345179,
+                                 observation_field_id=9613,
+                                 value=250,
+                                 access_token=token)
 
