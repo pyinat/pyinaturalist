@@ -8,7 +8,7 @@ pyinaturalist
 .. image:: https://travis-ci.org/niconoe/pyinaturalist.png?branch=master
     :target: https://travis-ci.org/niconoe/pyinaturalist
 
-Python client for the [iNaturalist APIs](https://www.inaturalist.org/pages/api+reference)
+Python client for the `iNaturalist APIs <https://www.inaturalist.org/pages/api+reference>`_
 
 Status: work in progress. Currently implemented:
 ------------------------------------------------
@@ -30,7 +30,7 @@ Examples
 
     obs = get_all_observations(params={'user_id': 'niconoe'})
 
-see [available parameters](https://api.inaturalist.org/v1/docs/#!/Observations/get_observations).
+see `available parameters <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations/>`_.
 
 2. To do authenticated API calls, you first need to obtain a token for the user::
 
@@ -41,7 +41,8 @@ see [available parameters](https://api.inaturalist.org/v1/docs/#!/Observations/g
                              app_secret=<your_inaturalist_app_secret>)
 
 
- Note: you'll need to [create an iNaturalist app](https://www.inaturalist.org/oauth/applications/new) first.
+
+Note: you'll need to `create an iNaturalist app <https://www.inaturalist.org/oauth/applications/new>`_.
 
 3. Create a new observation::
 
