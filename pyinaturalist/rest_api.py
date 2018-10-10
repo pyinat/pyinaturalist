@@ -113,6 +113,7 @@ def add_photo_to_observation(observation_id, file_object, access_token):
 
     return response.json()
 
+
 def create_observations(params, access_token):
     """Create a single or several (if passed an array) observations).
 
