@@ -101,10 +101,10 @@ Sets an observation field value to an existing observation:
 
     .. code-block:: python
 
-    from pyinaturalist.rest_api import put_observation_field_values
+        from pyinaturalist.rest_api import put_observation_field_values
 
-    put_observation_field_values(observation_id=7345179,
-                                 observation_field_id=9613,
-                                 value=250,
-                                 access_token=token)
+        put_observation_field_values(observation_id=7345179,
+                                     observation_field_id=9613,
+                                     value=250,
+                                     access_token=token)
 
