@@ -2,7 +2,6 @@
 Tests for `pyinaturalist` module.
 """
 import pytest
-from pyinaturalist import pyinaturalist
 
 
 class TestPyinaturalist(object):
