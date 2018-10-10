@@ -4,7 +4,7 @@ from time import sleep
 
 import requests
 
-from inaturalist.constants import THROTTLING_DELAY, INAT_BASE_URL
+from pyinaturalist.constants import THROTTLING_DELAY, INAT_BASE_URL
 
 
 class AuthenticationError(Exception):
