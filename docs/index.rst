@@ -3,6 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. _index-page:
+
 .. include:: ../README.rst
 
 Contents:
@@ -12,7 +14,6 @@ Contents:
    :maxdepth: 2
 
    installation
-   usage
    contributing
    authors
    history
@@ -24,4 +25,4 @@ If you have any suggestions or questions about **pyinaturalist** feel free to em
 at nicolas@niconoe.eu.
 
 If you encounter any errors or problems with **pyinaturalist**, please let me know!
-Open an Issue at the GitHub http://github.com/niconoe/pyinaturalist main repository.
+Open an Issue at the GitHub http://github.com/inbo/pyinaturalist main repository.

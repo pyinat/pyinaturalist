@@ -13,7 +13,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/niconoe/pyinaturalist/issues.
+Report bugs at https://github.com/inbo/pyinaturalist/issues.
 
 If you are reporting a bug, please include:
 
@@ -43,7 +43,7 @@ articles, and such.
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/niconoe/pyinaturalist/issues.
+The best way to send feedback is to file an issue at https://github.com/inbo/pyinaturalist/issues.
 
 If you are proposing a feature:
 
@@ -84,7 +84,7 @@ To get tox, just pip install it.
 
 6. Submit a pull request through the GitHub website.
 
-.. _Fork: https://github.com/Nekroze/pyinaturalist/fork
+.. _Fork: https://github.com/inbo/pyinaturalist/fork
 
 Pull Request Guidelines
 -----------------------
@@ -95,7 +95,7 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
-3. The pull request should work for Python 2.6, 2.7, and 3.3, and for PyPy.
+3. The pull request should work for Python 2.7 and 3.3+.
    Check https://travis-ci.org/niconoe/pyinaturalist 
    under pull requests for active pull requests or run the ``tox`` command and
    make sure that the tests pass for all supported Python versions.

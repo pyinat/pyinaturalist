@@ -44,7 +44,7 @@ def get_all_observation_fields(search_query=""):
 
 
 def put_observation_field_values(observation_id, observation_field_id, value, access_token):
-    # TODO: Also implement a put_or_update_observation_field_values() that deletes the property first, if it already exists?
+    # TODO: Also implement a put_or_update_observation_field_values() that deletes then recreates the field_value?
     """Sets an observation field value.
 
     Will fail if this observation_field is already set for this observation.
@@ -58,7 +58,8 @@ def put_observation_field_values(observation_id, observation_field_id, value, ac
         }
     }
 
-    response = requests.put("{base_url}/observation_field_values/{id}".format(base_url=INAT_BASE_URL, id=observation_field_id),
+    response = requests.put("{base_url}/observation_field_values/{id}".format(base_url=INAT_BASE_URL,
+                                                                              id=observation_field_id),
                             headers=_build_auth_header(access_token),
                             json=payload)
     # TODO: Return some meaningful exception if it fails because the field is already set.
@@ -99,8 +100,8 @@ def _build_auth_header(access_token):
 def add_photo_to_observation(observation_id, file_object, access_token):
     """Upload a picture and assign it to an existing observation.
 
-    :param observation_id: the ID of the observation
-    :param file_object: a file like object of the picture. Example: file_object = open('/Users/nicolasnoe/vespa.jpg', 'rb')
+    :param observation_id: the ID of the observation`
+    :param file_object: a file -ike object for the picture. Example: open('/Users/nicolasnoe/vespa.jpg', 'rb')
     :param access_token: the access token, as returned by `get_access_token()`
     """
     data = {'observation_photo[observation_id]': observation_id}

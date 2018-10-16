@@ -43,8 +43,8 @@ def get_all_observations(params):
     """
 
     # According to the doc: "The large size of the observations index prevents us from supporting the page parameter
-    # when retrieving records from large result sets. If you need to retrieve large numbers of records, use the per_page
-    # and id_above or id_below parameters instead.
+    # when retrieving records from large result sets. If you need to retrieve large numbers of records, use the
+    # per_page and id_above or id_below parameters instead.
 
     results = []
     id_above = 0
