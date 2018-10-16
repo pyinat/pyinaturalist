@@ -8,6 +8,10 @@ pyinaturalist
 .. image:: https://travis-ci.org/niconoe/pyinaturalist.png?branch=master
     :target: https://travis-ci.org/niconoe/pyinaturalist
 
+.. image:: https://readthedocs.org/projects/pyinaturalist/badge/?version=latest
+    :target: https://pyinaturalist.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 Python client for the `iNaturalist APIs <https://www.inaturalist.org/pages/api+reference>`_
 
 Status: work in progress. Currently implemented:
