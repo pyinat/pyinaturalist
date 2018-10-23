@@ -11,7 +11,6 @@ class AuthenticationError(Exception):
     pass
 
 
-# TODO: test this (should be easy because get_all_observation_fields is already tested)
 def get_observation_fields(search_query="", page=1):
     """
     Search the (globally available) observation
