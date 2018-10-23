@@ -1,7 +1,8 @@
 # Config file for automatic testing at travis-ci.org
 
-sudo: false
+sudo: required
 language: python
+dist: xenial
 
 python:
   - "3.3"
