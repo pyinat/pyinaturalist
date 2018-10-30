@@ -23,6 +23,7 @@ Status: work in progress. Currently implemented:
 - Upload a picture and assign to an observation
 - Search (globally available) observation fields (with pagination)
 - Set an observation field values for an observation
+- Update an observation
 
 
 Examples
