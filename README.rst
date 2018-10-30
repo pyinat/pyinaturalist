@@ -92,6 +92,16 @@ Upload a picture for this observation:
                                  file_object=open('/Users/nicolasnoe/vespa.jpg', 'rb'),
                                  access_token=token)
 
+Update an existing observation of yours:
+----------------------------------------
+.. code-block:: python
+        from pyinaturalist.rest_api import update_observation
+
+        p = {'ignore_photos': 1,  # Otherwise existing pictures will be deleted
+             'observation': {'description': 'updated description !'}}
+        r = update_observation(observation_id=17932425, params=p, access_token=token)
+
+
 Get a list of all (globally available) observation fields:
 ----------------------------------------------------------
 .. code-block:: python

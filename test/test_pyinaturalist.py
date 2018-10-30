@@ -8,7 +8,7 @@ import pytest
 import requests_mock
 
 from pyinaturalist.rest_api import get_access_token, AuthenticationError, get_all_observation_fields, \
-    get_observation_fields
+    get_observation_fields, update_observation
 
 
 def _sample_data_path(filename):
@@ -93,6 +93,22 @@ class TestPyinaturalist(object):
         token = get_access_token('valid_username', 'valid_password', 'valid_app_id', 'valid_app_secret')
 
         assert token == '604e5df329b98eecd22bb0a84f88b68a075a023ac437f2317b02f3a9ba414a08'
+
+    @requests_mock.Mocker(kw='mock')
+    def test_update_observation(self, **kwargs):
+        mock = kwargs['mock']
+        mock.put('https://www.inaturalist.org/observations/17932425.json',
+                 json=_load_sample_json('update_observation_result.json'),
+                 status_code=200)
+
+        p = {'ignore_photos': 1,
+             'observation': {'description': 'updated description v2 !'}}
+        r = update_observation(observation_id=17932425, params=p, access_token='valid token')
+
+        # If all goes well we got a single element representing the updated observation, enclosed in a list.
+        assert len(r) == 1
+        assert r[0]['id'] == 17932425
+        assert r[0]['description'] == 'updated description v2 !'
 
     @classmethod
     def teardown_class(cls):

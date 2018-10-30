@@ -1,6 +1,7 @@
 # Code used to access the (read/write, but slow) Rails based API of iNaturalist
 # See: https://www.inaturalist.org/pages/api+reference
 from time import sleep
+from typing import Dict, Any, List
 
 import requests
 
@@ -27,9 +28,13 @@ def get_observation_fields(search_query="", page=1):
     return response.json()
 
 
-def get_all_observation_fields(search_query=""):
-    """ Like get_observation_fields(), but handles pagination for you. """
-    results = []
+def get_all_observation_fields(search_query: str = "") -> List[Dict[str, Any]]:
+    """
+    Like get_observation_fields(), but handles pagination for you.
+
+    :param search_query: a string to search
+    """
+    results = []  # type: List[Dict[str, Any]]
     page = 1
 
     while True:
@@ -93,14 +98,14 @@ def get_access_token(username, password, app_id, app_secret):
         raise AuthenticationError("Authentication error, please check credentials.")
 
 
-def _build_auth_header(access_token):
+def _build_auth_header(access_token: str) -> Dict[str, str]:
     return {"Authorization": "Bearer %s" % access_token}
 
 
 def add_photo_to_observation(observation_id, file_object, access_token):
     """Upload a picture and assign it to an existing observation.
 
-    :param observation_id: the ID of the observation`
+    :param observation_id: the ID of the observation
     :param file_object: a file -ike object for the picture. Example: open('/Users/nicolasnoe/vespa.jpg', 'rb')
     :param access_token: the access token, as returned by `get_access_token()`
     """
@@ -132,4 +137,20 @@ def create_observations(params, access_token):
     response = requests.post(url="{base_url}/observations.json".format(base_url=INAT_BASE_URL),
                              json=params,
                              headers=_build_auth_header(access_token))
+    return response.json()
+
+
+def update_observation(observation_id: int, params: Dict[str, Any], access_token: str):
+    """
+    Update a single observation. See https://www.inaturalist.org/pages/api+reference#put-observations-id
+
+    :param observation_id: the ID of the observation to update
+    :param params: to be passed to iNaturalist API
+    :param access_token: the access token, as returned by `get_access_token()`
+    :return: iNaturalist's JSON response, as a Python object
+    """
+
+    response = requests.put(url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
+                            json=params,
+                            headers=_build_auth_header(access_token))
     return response.json()

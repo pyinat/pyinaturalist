@@ -3,7 +3,7 @@
 from time import sleep
 
 import requests
-from requests.compat import urljoin
+from urllib.parse import urljoin
 
 from pyinaturalist.constants import THROTTLING_DELAY, INAT_NODE_API_BASE_URL
 from pyinaturalist.helpers import merge_two_dicts
