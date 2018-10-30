@@ -1,7 +1,7 @@
 # Code used to access the (read/write, but slow) Rails based API of iNaturalist
 # See: https://www.inaturalist.org/pages/api+reference
 from time import sleep
-from typing import Dict, Any, List
+from typing import Dict, Any, List, BinaryIO
 
 import requests
 
@@ -12,7 +12,7 @@ class AuthenticationError(Exception):
     pass
 
 
-def get_observation_fields(search_query="", page=1):
+def get_observation_fields(search_query: str="", page: int=1):
     """
     Search the (globally available) observation
     :param search_query:
@@ -28,7 +28,7 @@ def get_observation_fields(search_query="", page=1):
     return response.json()
 
 
-def get_all_observation_fields(search_query: str = "") -> List[Dict[str, Any]]:
+def get_all_observation_fields(search_query: str="") -> List[Dict[str, Any]]:
     """
     Like get_observation_fields(), but handles pagination for you.
 
@@ -48,7 +48,7 @@ def get_all_observation_fields(search_query: str = "") -> List[Dict[str, Any]]:
         sleep(THROTTLING_DELAY)
 
 
-def put_observation_field_values(observation_id, observation_field_id, value, access_token):
+def put_observation_field_values(observation_id: int, observation_field_id: int, value: Any, access_token: str):
     # TODO: Also implement a put_or_update_observation_field_values() that deletes then recreates the field_value?
     """Sets an observation field value.
 
@@ -71,7 +71,7 @@ def put_observation_field_values(observation_id, observation_field_id, value, ac
     return response
 
 
-def get_access_token(username, password, app_id, app_secret):
+def get_access_token(username: str, password: str, app_id: str, app_secret: str) -> str:
     """
     Get an access token using the user's iNaturalist username and password.
 
@@ -102,11 +102,11 @@ def _build_auth_header(access_token: str) -> Dict[str, str]:
     return {"Authorization": "Bearer %s" % access_token}
 
 
-def add_photo_to_observation(observation_id, file_object, access_token):
+def add_photo_to_observation(observation_id: int, file_object: BinaryIO, access_token: str):
     """Upload a picture and assign it to an existing observation.
 
     :param observation_id: the ID of the observation
-    :param file_object: a file -ike object for the picture. Example: open('/Users/nicolasnoe/vespa.jpg', 'rb')
+    :param file_object: a file-like object for the picture. Example: open('/Users/nicolasnoe/vespa.jpg', 'rb')
     :param access_token: the access token, as returned by `get_access_token()`
     """
     data = {'observation_photo[observation_id]': observation_id}
@@ -120,7 +120,7 @@ def add_photo_to_observation(observation_id, file_object, access_token):
     return response.json()
 
 
-def create_observations(params, access_token):
+def create_observations(params: Dict[str, Dict[str, Any]], access_token: str) -> List[Dict[str, Any]]:
     """Create a single or several (if passed an array) observations).
 
     allowed params: see https://www.inaturalist.org/pages/api+reference#post-observations
@@ -140,7 +140,7 @@ def create_observations(params, access_token):
     return response.json()
 
 
-def update_observation(observation_id: int, params: Dict[str, Any], access_token: str):
+def update_observation(observation_id: int, params: Dict[str, Any], access_token: str) -> List[Dict[str, Any]]:
     """
     Update a single observation. See https://www.inaturalist.org/pages/api+reference#put-observations-id
 
