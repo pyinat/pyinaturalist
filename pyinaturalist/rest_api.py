@@ -1,7 +1,7 @@
 # Code used to access the (read/write, but slow) Rails based API of iNaturalist
 # See: https://www.inaturalist.org/pages/api+reference
 from time import sleep
-from typing import Dict, Any, List, BinaryIO
+from typing import Dict, Any, List, BinaryIO, Union
 
 import requests
 
@@ -22,7 +22,7 @@ def get_observation_fields(search_query: str="", page: int=1):
     payload = {
         'q': search_query,
         'page': page
-    }
+    }  # type: Dict[str, Union[int, str]]
 
     response = requests.get("{base_url}/observation_fields.json".format(base_url=INAT_BASE_URL), params=payload)
     return response.json()
