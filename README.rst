@@ -94,6 +94,7 @@ Upload a picture for this observation:
 Update an existing observation of yours:
 ----------------------------------------
 .. code-block:: python
+
         from pyinaturalist.rest_api import update_observation
 
         p = {'ignore_photos': 1,  # Otherwise existing pictures will be deleted

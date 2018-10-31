@@ -42,8 +42,8 @@ Releasing at PyPI
 Release checklist:
 
 - Make sure the code is tested, annotated and documented.
-- Update HISTORY.rst and setup.py
-- Push a vX.Y.Z tag to GitHub
-- Use twine to upload the package to PyPI
-
+- Update version in HISTORY.rst, setup.py and pyinaturalist/__init__.py
+- Create the distributions: ``python setup.py sdist bdist_wheel``
+- Use twine to upload the package to PyPI: ``twine upload dist/*``
+- Push a vX.Y.Z tag to GitHub: ``git tag vX.Y.Z && git push origin --tags``
 

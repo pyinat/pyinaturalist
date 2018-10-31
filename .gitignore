@@ -43,3 +43,6 @@ docs/_build
 
 # Mac OS X
 .DS_Store
+
+.idea
+.mypy_cache
