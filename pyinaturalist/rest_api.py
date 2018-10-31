@@ -1,15 +1,12 @@
 # Code used to access the (read/write, but slow) Rails based API of iNaturalist
 # See: https://www.inaturalist.org/pages/api+reference
 from time import sleep
-from typing import Dict, Any, List, BinaryIO, Union
+from typing import Dict, Any, List, BinaryIO, Union  # noqa: F401
 
 import requests
 
 from pyinaturalist.constants import THROTTLING_DELAY, INAT_BASE_URL
-
-
-class AuthenticationError(Exception):
-    pass
+from pyinaturalist.exceptions import AuthenticationError
 
 
 def get_observation_fields(search_query: str="", page: int=1):

@@ -12,20 +12,17 @@ pyinaturalist
     :target: https://pyinaturalist.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-Python client for the `iNaturalist APIs <https://www.inaturalist.org/pages/api+reference>`_
+Python client for the `iNaturalist APIs <https://www.inaturalist.org/pages/api+reference>`_.
 
-Status: work in progress. Currently implemented:
-------------------------------------------------
+Status
+------
 
-- Search occurrences (with pagination)
-- (Username / password) authentication
-- Creating observations
-- Upload a picture and assign to an observation
-- Search (globally available) observation fields (with pagination)
-- Set an observation field values for an observation
-- Update an observation
+Work in progress: features are implemented one by one, as time allows and as the authors needs them.
 
+That being said, many things are already possible (searching observations, creating a new observation, ...) and
+contributions are welcome!
 
+Python 3 only.
 
 Examples
 --------

@@ -7,8 +7,9 @@ import os
 import pytest
 import requests_mock
 
-from pyinaturalist.rest_api import get_access_token, AuthenticationError, get_all_observation_fields, \
+from pyinaturalist.rest_api import get_access_token, get_all_observation_fields, \
     get_observation_fields, update_observation
+from pyinaturalist.exceptions import AuthenticationError
 
 
 def _sample_data_path(filename):

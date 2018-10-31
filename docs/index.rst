@@ -16,6 +16,7 @@ Contents:
    installation
    reference
    contributing
+   infrastructure
    authors
    history
 
