@@ -28,14 +28,16 @@ style and type annotations checks::
 
     $ tox
 
+Travis-CI is run when code is pushed to GitHub.
+
 Type annotations
 ----------------
 
 All functions / methods should have parameters and return value type annotations. Those type annotations are checked by
 MyPy (``tox -e mypy``) and will appear in the documentation.
 
-PyPI
-----
+Releasing at PyPI
+-----------------
 
 Release checklist:
 

@@ -3,8 +3,8 @@
 History
 -------
 
-Current
-+++++++
+0.2.0 (2018-10-31)
+++++++++++++++++++
 
 * Better infrastructure (type annotations, documentation, ...)
 * Dropped support for Python 2.

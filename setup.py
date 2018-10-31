@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='pyinaturalist',
-    version='0.1.0',
+    version='0.2.0',
     description='Python client for the iNaturalist APIs',
     long_description=readme + '\n\n' + history,
     author='Nicolas Noé',
