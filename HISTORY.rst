@@ -3,6 +3,11 @@
 History
 -------
 
+0.3.0 (2018-11-05)
+++++++++++++++++++
+
+* update_observation() now raises exceptions in case of errors.
+
 0.2.0 (2018-10-31)
 ++++++++++++++++++
 

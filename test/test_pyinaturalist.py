@@ -6,6 +6,7 @@ import os
 
 import pytest
 import requests_mock
+from requests import HTTPError
 
 from pyinaturalist.rest_api import get_access_token, get_all_observation_fields, \
     get_observation_fields, update_observation
@@ -110,6 +111,38 @@ class TestPyinaturalist(object):
         assert len(r) == 1
         assert r[0]['id'] == 17932425
         assert r[0]['description'] == 'updated description v2 !'
+
+    @requests_mock.Mocker(kw='mock')
+    def test_update_nonexistent_observation(self, **kwargs):
+        """When we try to update a non-existent observation, iNat returns an error 410 with "obs does not longer exists". """
+        mock = kwargs['mock']
+        mock.put('https://www.inaturalist.org/observations/999999999.json',
+                 json={"error":"Cette observation n’existe plus."},
+                 status_code=410)
+
+        p = {'ignore_photos': 1,
+             'observation': {'description': 'updated description v2 !'}}
+
+        with pytest.raises(HTTPError) as excinfo:
+            update_observation(observation_id=999999999, params=p, access_token='valid token')
+        assert excinfo.value.response.status_code == 410
+        assert excinfo.value.response.json() == {"error":"Cette observation n’existe plus."}
+
+    @requests_mock.Mocker(kw='mock')
+    def test_update_observation_not_mine(self, **kwargs):
+        """When we try to update the obs of another user, iNat returns an error 410 with "obs does not longer exists"."""
+        mock = kwargs['mock']
+        mock.put('https://www.inaturalist.org/observations/16227955.json',
+                 json={"error": "Cette observation n’existe plus."},
+                 status_code=410)
+
+        p = {'ignore_photos': 1,
+             'observation': {'description': 'updated description v2 !'}}
+
+        with pytest.raises(HTTPError) as excinfo:
+            update_observation(observation_id=16227955, params=p, access_token='valid token for another user')
+        assert excinfo.value.response.status_code == 410
+        assert excinfo.value.response.json() == {"error": "Cette observation n’existe plus."}
 
     @classmethod
     def teardown_class(cls):

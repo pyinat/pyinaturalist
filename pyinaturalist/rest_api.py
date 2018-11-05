@@ -143,11 +143,15 @@ def update_observation(observation_id: int, params: Dict[str, Any], access_token
 
     :param observation_id: the ID of the observation to update
     :param params: to be passed to iNaturalist API
-    :param access_token: the access token, as returned by `get_access_token()`
+    :param access_token: the access token, as returned by :func:`get_access_token()`
     :return: iNaturalist's JSON response, as a Python object
+    :raise: requests.HTTPError, if the call is not successful. iNaturalist returns an error 410 if the observation
+    doesn't exists or belongs to another user (as of November 2018).
     """
 
     response = requests.put(url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
                             json=params,
                             headers=_build_auth_header(access_token))
+
+    response.raise_for_status()
     return response.json()
