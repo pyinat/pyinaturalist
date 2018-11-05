@@ -18,7 +18,8 @@ def _sample_data_path(filename):
     return os.path.join(os.path.dirname(__file__), 'sample_data', filename)
 
 def _load_sample_json(filename):
-    return json.loads(open(_sample_data_path(filename)).read())
+    with open(_sample_data_path(filename), encoding='utf-8') as fh:
+        return json.load(fh)
 
 PAGE_1_JSON_RESPONSE = _load_sample_json('get_observation_fields_page1.json')
 PAGE_2_JSON_RESPONSE = _load_sample_json('get_observation_fields_page2.json')

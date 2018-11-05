@@ -3,8 +3,8 @@
 History
 -------
 
-Current
--------
+0.4.0 (2018-11-05)
+++++++++++++++++++
 
 * create_observation() now raises exceptions in case of errors.
 
