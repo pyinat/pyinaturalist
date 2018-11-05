@@ -1,11 +1,13 @@
 # Code to access the (read-only, but fast) Node based public iNaturalist API
 # See: http://api.inaturalist.org/v1/docs/
 from time import sleep
+from typing import Dict, Any
 
 import requests
 from urllib.parse import urljoin
 
 from pyinaturalist.constants import THROTTLING_DELAY, INAT_NODE_API_BASE_URL
+from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.helpers import merge_two_dicts
 
 PER_PAGE_RESULTS = 30  # Paginated queries: how many records do we ask per page?
@@ -21,7 +23,23 @@ def make_inaturalist_api_get_call(endpoint, params, **kwargs):
     """
     headers = {'Accept': 'application/json'}
 
-    return requests.get(urljoin(INAT_NODE_API_BASE_URL, endpoint), params, headers=headers, **kwargs)
+    response = requests.get(urljoin(INAT_NODE_API_BASE_URL, endpoint), params, headers=headers, **kwargs)
+    return response
+
+
+def get_observation(observation_id: int) -> Dict[str, Any]:
+    """Get details about an observation.
+
+    :param observation_id:
+    :returns: a dict with details on the observation
+    :raises: ObservationNotFound
+    """
+
+    r = get_observations(params={'id': observation_id})
+    if r['results']:
+        return r['results'][0]
+
+    raise ObservationNotFound()
 
 
 def get_observations(params):

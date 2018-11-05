@@ -9,9 +9,10 @@ import pytest
 import requests_mock
 from requests import HTTPError
 
+from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import get_access_token, get_all_observation_fields, \
     get_observation_fields, update_observation, create_observations
-from pyinaturalist.exceptions import AuthenticationError
+from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 
 
 def _sample_data_path(filename):
@@ -24,12 +25,28 @@ def _load_sample_json(filename):
 PAGE_1_JSON_RESPONSE = _load_sample_json('get_observation_fields_page1.json')
 PAGE_2_JSON_RESPONSE = _load_sample_json('get_observation_fields_page2.json')
 
-class TestPyinaturalist(object):
+class TestNodeApi(object):
+    @requests_mock.Mocker(kw='mock')
+    def test_get_observation(self, **kwargs):
+        mock = kwargs['mock']
+        mock.get('https://api.inaturalist.org/v1/observations?id=16227955',
+                 json=_load_sample_json('get_observation.json'), status_code=200)
 
-    @classmethod
-    def setup_class(cls):
-        pass
+        obs_data = get_observation(observation_id=16227955)
+        assert obs_data['quality_grade'] == 'research'
+        assert obs_data['id'] == 16227955
+        assert obs_data['user']['login'] == 'niconoe'
+        assert len(obs_data['photos']) == 2
 
+    @requests_mock.Mocker(kw='mock')
+    def test_get_non_existent_observation(self, **kwargs):
+        mock = kwargs['mock']
+        mock.get('https://api.inaturalist.org/v1/observations?id=99999999',
+                 json=_load_sample_json('get_nonexistent_observation.json'), status_code=200)
+        with pytest.raises(ObservationNotFound):
+            get_observation(observation_id=99999999)
+
+class TestRestApi(object):
     @requests_mock.Mocker(kw='mock')
     def test_get_observation_fields(self, **kwargs):
         """ get_observation_fields() work as expected (basic use)"""
@@ -183,6 +200,3 @@ class TestPyinaturalist(object):
         assert excinfo.value.response.status_code == 422
         assert 'errors' in excinfo.value.response.json()  # iNat also give details about the errors
 
-    @classmethod
-    def teardown_class(cls):
-        pass
