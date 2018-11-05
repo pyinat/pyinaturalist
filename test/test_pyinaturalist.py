@@ -3,13 +3,14 @@ Tests for `pyinaturalist` module.
 """
 import json
 import os
+from datetime import datetime, timedelta
 
 import pytest
 import requests_mock
 from requests import HTTPError
 
 from pyinaturalist.rest_api import get_access_token, get_all_observation_fields, \
-    get_observation_fields, update_observation
+    get_observation_fields, update_observation, create_observations
 from pyinaturalist.exceptions import AuthenticationError
 
 
@@ -143,6 +144,43 @@ class TestPyinaturalist(object):
             update_observation(observation_id=16227955, params=p, access_token='valid token for another user')
         assert excinfo.value.response.status_code == 410
         assert excinfo.value.response.json() == {"error": "Cette observation n’existe plus."}
+
+    @requests_mock.Mocker(kw='mock')
+    def test_create_observation(self, **kwargs):
+        mock = kwargs['mock']
+
+        mock.post('https://www.inaturalist.org/observations.json',
+                  json=_load_sample_json('create_observation_result.json'), status_code=200)
+
+
+        params = {'observation':
+                      {'species_guess': 'Pieris rapae'},
+                  }
+
+        r = create_observations(params=params, access_token='valid token')
+        assert len(r) == 1  # We added a single one
+        assert r[0]['latitude'] is None  # We have the field, but it's none since we didn't submitted anything
+        assert r[0]['taxon_id'] == 55626 # Pieris Rapae @ iNaturalist
+
+
+    @requests_mock.Mocker(kw='mock')
+    def test_create_observation_fail(self, **kwargs):
+        mock = kwargs['mock']
+        params = {'observation':
+                      {'species_guess': 'Pieris rapae',
+                       # Some invalid data so the observation is rejected...
+                       'observed_on_string': (datetime.now() + timedelta(days=1)).isoformat(),
+                       'latitude': 200,
+                       }
+                  }
+
+        mock.post('https://www.inaturalist.org/observations.json',
+                  json=_load_sample_json('create_observation_fail.json'), status_code=422)
+
+        with pytest.raises(HTTPError) as excinfo:
+            create_observations(params=params, access_token='valid token')
+        assert excinfo.value.response.status_code == 422
+        assert 'errors' in excinfo.value.response.json()  # iNat also give details about the errors
 
     @classmethod
     def teardown_class(cls):

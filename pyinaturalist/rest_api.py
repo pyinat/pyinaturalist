@@ -120,6 +120,13 @@ def add_photo_to_observation(observation_id: int, file_object: BinaryIO, access_
 def create_observations(params: Dict[str, Dict[str, Any]], access_token: str) -> List[Dict[str, Any]]:
     """Create a single or several (if passed an array) observations).
 
+    :param params:
+    :param access_token:
+    :return: iNaturalist's JSON response, as a Python object
+    :raise: requests.HTTPError, if the call is not successful. iNaturalist returns an error 422 (unprocessable entity)
+            if it rejects the observation data (for example an observation date in the future or a latitude > 90. In
+            that case the exception's `response` attribute give details about the errors.
+
     allowed params: see https://www.inaturalist.org/pages/api+reference#post-observations
 
     Example:
@@ -134,6 +141,7 @@ def create_observations(params: Dict[str, Dict[str, Any]], access_token: str) ->
     response = requests.post(url="{base_url}/observations.json".format(base_url=INAT_BASE_URL),
                              json=params,
                              headers=_build_auth_header(access_token))
+    response.raise_for_status()
     return response.json()
 
 
@@ -146,12 +154,11 @@ def update_observation(observation_id: int, params: Dict[str, Any], access_token
     :param access_token: the access token, as returned by :func:`get_access_token()`
     :return: iNaturalist's JSON response, as a Python object
     :raise: requests.HTTPError, if the call is not successful. iNaturalist returns an error 410 if the observation
-    doesn't exists or belongs to another user (as of November 2018).
+            doesn't exists or belongs to another user (as of November 2018).
     """
 
     response = requests.put(url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
                             json=params,
                             headers=_build_auth_header(access_token))
-
     response.raise_for_status()
     return response.json()
