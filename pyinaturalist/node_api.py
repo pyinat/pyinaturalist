@@ -1,7 +1,7 @@
 # Code to access the (read-only, but fast) Node based public iNaturalist API
 # See: http://api.inaturalist.org/v1/docs/
 from time import sleep
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 import requests
 from urllib.parse import urljoin
@@ -13,7 +13,7 @@ from pyinaturalist.helpers import merge_two_dicts
 PER_PAGE_RESULTS = 30  # Paginated queries: how many records do we ask per page?
 
 
-def make_inaturalist_api_get_call(endpoint, params, **kwargs):
+def make_inaturalist_api_get_call(endpoint: str, params: Dict, **kwargs) -> requests.Response:
     """Make an API call to iNaturalist.
 
     endpoint is a string such as 'observations' !! do not put / in front
@@ -42,7 +42,7 @@ def get_observation(observation_id: int) -> Dict[str, Any]:
     raise ObservationNotFound()
 
 
-def get_observations(params):
+def get_observations(params: Dict) -> Dict[str, Any]:
     """Search observations, see: http://api.inaturalist.org/v1/docs/#!/Observations/get_observations.
 
     Returns the parsed JSON returned by iNaturalist (observations in r['results'], a list of dicts)
@@ -52,7 +52,7 @@ def get_observations(params):
     return r.json()
 
 
-def get_all_observations(params):
+def get_all_observations(params: Dict) -> List[Dict[str, Any]]:
     """Like get_observations() but handles pagination so you get all the results in one shot.
 
     Some params will be overwritten: order_by, order, per_page, id_above (do NOT specify page when using this).
@@ -64,7 +64,7 @@ def get_all_observations(params):
     # when retrieving records from large result sets. If you need to retrieve large numbers of records, use the
     # per_page and id_above or id_below parameters instead.
 
-    results = []
+    results = []  # type: List[Dict[str, Any]]
     id_above = 0
 
     while True:
