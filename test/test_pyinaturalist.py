@@ -11,7 +11,7 @@ from requests import HTTPError
 
 from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import get_access_token, get_all_observation_fields, \
-    get_observation_fields, update_observation, create_observations
+    get_observation_fields, update_observation, create_observations, put_observation_field_values
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 
 
@@ -180,7 +180,6 @@ class TestRestApi(object):
         assert r[0]['latitude'] is None  # We have the field, but it's none since we didn't submitted anything
         assert r[0]['taxon_id'] == 55626 # Pieris Rapae @ iNaturalist
 
-
     @requests_mock.Mocker(kw='mock')
     def test_create_observation_fail(self, **kwargs):
         mock = kwargs['mock']
@@ -199,4 +198,21 @@ class TestRestApi(object):
             create_observations(params=params, access_token='valid token')
         assert excinfo.value.response.status_code == 422
         assert 'errors' in excinfo.value.response.json()  # iNat also give details about the errors
+
+    @requests_mock.Mocker(kw='mock')
+    def test_put_observation_field_values(self, **kwargs):
+        mock = kwargs['mock']
+        mock.put('https://www.inaturalist.org/observation_field_values/31',
+                 json=_load_sample_json('put_observation_field_value_result.json'),
+                 status_code=200)
+
+        r = put_observation_field_values(observation_id=18166477,
+                                         observation_field_id=31,  # Animal behavior
+                                         value='fouraging',
+                                         access_token='valid token')
+
+        assert r['id'] == 31
+        assert r['observation_field_id'] == 31
+        assert r['observation_id'] == 18166477
+        assert r['value'] == 'fouraging'
 

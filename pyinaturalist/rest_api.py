@@ -9,7 +9,7 @@ from pyinaturalist.constants import THROTTLING_DELAY, INAT_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError
 
 
-def get_observation_fields(search_query: str="", page: int=1):
+def get_observation_fields(search_query: str="", page: int=1) -> List[Dict[str, Any]]:
     """
     Search the (globally available) observation
     :param search_query:
@@ -45,9 +45,34 @@ def get_all_observation_fields(search_query: str="") -> List[Dict[str, Any]]:
         sleep(THROTTLING_DELAY)
 
 
-def put_observation_field_values(observation_id: int, observation_field_id: int, value: Any, access_token: str):
+def put_observation_field_values(observation_id: int, observation_field_id: int, value: Any,
+                                 access_token: str) -> Dict[str, Any]:
     # TODO: Also implement a put_or_update_observation_field_values() that deletes then recreates the field_value?
-    """Sets an observation field value.
+    # TODO: Write example use in docstring.
+    # TODO: Return some meaningful exception if it fails because the field is already set.
+    # TODO: Also show in example  to obtain the observation_field_id?
+    # TODO: What happens when parameters are invalid
+    # TODO: It appears pushing the same value/pair twice in a row (but deleting it meanwhile via the UI)...
+    # TODO: ...triggers an error 404 the second time (report to iNaturalist?)
+    """Sets an observation field (value) on an observation.
+
+    :param observation_id:
+    :param observation_field_id:
+    :param value
+    :param access_token: access_token: the access token, as returned by :func:`get_access_token()`
+
+    :returns: iNaturalist's response as a dict, for example:
+            {'id': 31,
+             'observation_id': 18166477,
+             'observation_field_id': 31,
+             'value': 'fouraging',
+             'created_at': '2012-09-29T11:05:44.935+02:00',
+             'updated_at': '2018-11-13T10:49:47.985+01:00',
+             'user_id': 1,
+             'updater_id': 1263313,
+             'uuid': 'b404b654-1bf0-4299-9288-52eeda7ac0db',
+             'created_at_utc': '2012-09-29T09:05:44.935Z',
+             'updated_at_utc': '2018-11-13T09:49:47.985Z'}
 
     Will fail if this observation_field is already set for this observation.
     """
@@ -64,8 +89,9 @@ def put_observation_field_values(observation_id: int, observation_field_id: int,
                                                                               id=observation_field_id),
                             headers=_build_auth_header(access_token),
                             json=payload)
-    # TODO: Return some meaningful exception if it fails because the field is already set.
-    return response
+
+    response.raise_for_status()
+    return response.json()
 
 
 def get_access_token(username: str, password: str, app_id: str, app_secret: str) -> str:
@@ -104,7 +130,7 @@ def add_photo_to_observation(observation_id: int, file_object: BinaryIO, access_
 
     :param observation_id: the ID of the observation
     :param file_object: a file-like object for the picture. Example: open('/Users/nicolasnoe/vespa.jpg', 'rb')
-    :param access_token: the access token, as returned by `get_access_token()`
+    :param access_token: the access token, as returned by :func:`get_access_token()`
     """
     data = {'observation_photo[observation_id]': observation_id}
     file_data = {'file': file_object}
@@ -121,7 +147,8 @@ def create_observations(params: Dict[str, Dict[str, Any]], access_token: str) ->
     """Create a single or several (if passed an array) observations).
 
     :param params:
-    :param access_token:
+    :param access_token: the access token, as returned by :func:`get_access_token()`
+
     :return: iNaturalist's JSON response, as a Python object
     :raise: requests.HTTPError, if the call is not successful. iNaturalist returns an error 422 (unprocessable entity)
             if it rejects the observation data (for example an observation date in the future or a latitude > 90. In
@@ -152,6 +179,7 @@ def update_observation(observation_id: int, params: Dict[str, Any], access_token
     :param observation_id: the ID of the observation to update
     :param params: to be passed to iNaturalist API
     :param access_token: the access token, as returned by :func:`get_access_token()`
+
     :return: iNaturalist's JSON response, as a Python object
     :raise: requests.HTTPError, if the call is not successful. iNaturalist returns an error 410 if the observation
             doesn't exists or belongs to another user (as of November 2018).
