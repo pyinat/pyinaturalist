@@ -203,8 +203,15 @@ def delete_observation(observation_id: int, access_token: str) -> List[Dict[str,
     :return:
     """
 
+    headers = _build_auth_header(access_token)
+    headers['Content-type'] = 'application/json'
+
     response = requests.delete(url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL,
                                                                               id=observation_id),
-                               headers=_build_auth_header(access_token))
+                               headers=headers)
     response.raise_for_status()
+    # According to iNaturalist documentation, proper JSON should be returned. It seems however that the response is
+    # currently empty (while the requests succeed), so you may receive a JSONDecode exception.
+    # TODO: report to iNaturalist team if the issue persists
     return response.json()
+

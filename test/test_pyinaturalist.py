@@ -11,7 +11,7 @@ from requests import HTTPError
 
 from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import get_access_token, get_all_observation_fields, \
-    get_observation_fields, update_observation, create_observations, put_observation_field_values
+    get_observation_fields, update_observation, create_observations, put_observation_field_values, delete_observation
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 
 
@@ -216,3 +216,5 @@ class TestRestApi(object):
         assert r['observation_id'] == 18166477
         assert r['value'] == 'fouraging'
 
+    def test_delete_observation(self):
+        pass
