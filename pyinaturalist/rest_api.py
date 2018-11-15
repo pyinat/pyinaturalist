@@ -190,3 +190,21 @@ def update_observation(observation_id: int, params: Dict[str, Any], access_token
                             headers=_build_auth_header(access_token))
     response.raise_for_status()
     return response.json()
+
+
+# TODO: test this
+# TODO: document this
+def delete_observation(observation_id: int, access_token: str) -> List[Dict[str, Any]]:
+    """
+    Delete an observation.
+
+    :param observation_id:
+    :param access_token:
+    :return:
+    """
+
+    response = requests.delete(url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL,
+                                                                              id=observation_id),
+                               headers=_build_auth_header(access_token))
+    response.raise_for_status()
+    return response.json()

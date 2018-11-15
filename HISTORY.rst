@@ -3,10 +3,15 @@
 History
 -------
 
+0.6.0 (2018-11-15)
+++++++++++++++++++
+
+* New function: rest_api.delete_observation()
+
 0.5.0 (2018-11-05)
 ++++++++++++++++++
 
-* New function: node_api.get_observation(
+* New function: node_api.get_observation()
 
 0.4.0 (2018-11-05)
 ++++++++++++++++++
