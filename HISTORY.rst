@@ -3,6 +3,12 @@
 History
 -------
 
+0.7.0 (2019-05-08)
+++++++++++++++++++
+
+* rest_api.delete_observation() now raises ObservationNotFound if the observation doesn't exists
+* minor dependencies update for security reasons
+
 0.6.0 (2018-11-15)
 ++++++++++++++++++
 
