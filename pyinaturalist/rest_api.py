@@ -6,7 +6,7 @@ from typing import Dict, Any, List, BinaryIO, Union  # noqa: F401
 import requests
 
 from pyinaturalist.constants import THROTTLING_DELAY, INAT_BASE_URL
-from pyinaturalist.exceptions import AuthenticationError
+from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 
 
 def get_observation_fields(search_query: str="", page: int=1) -> List[Dict[str, Any]]:
@@ -200,7 +200,10 @@ def delete_observation(observation_id: int, access_token: str) -> List[Dict[str,
 
     :param observation_id:
     :param access_token:
-    :return:
+    :return: iNaturalist's JSON response, as a Python object (currently raise a JSONDecodeError because of an
+             iNaturalist bug
+    :raise: ObservationNotFound if the requested observation doesn't exists, requests.HTTPError (403) if the
+            observation belongs to another user
     """
 
     headers = _build_auth_header(access_token)
@@ -209,9 +212,12 @@ def delete_observation(observation_id: int, access_token: str) -> List[Dict[str,
     response = requests.delete(url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL,
                                                                               id=observation_id),
                                headers=headers)
+    if response.status_code == 404:
+        raise ObservationNotFound
+
     response.raise_for_status()
     # According to iNaturalist documentation, proper JSON should be returned. It seems however that the response is
     # currently empty (while the requests succeed), so you may receive a JSONDecode exception.
-    # TODO: report to iNaturalist team if the issue persists
+    # It has been reported to the iNaturalist team because the issue persists month after:
+    # https://github.com/inaturalist/inaturalist/issues/2252
     return response.json()
-

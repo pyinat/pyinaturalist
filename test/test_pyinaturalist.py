@@ -217,4 +217,16 @@ class TestRestApi(object):
         assert r['value'] == 'fouraging'
 
     def test_delete_observation(self):
+        # Blocked because the expected behaviour is still unclear because of
+        # https://github.com/inaturalist/inaturalist/issues/2252
         pass
+
+    @requests_mock.Mocker(kw='mock')
+    def test_delete_unexisting_observation(self, **kwargs):
+        """ObservationNotFound is raised if the observation doesn't exists"""
+        mock = kwargs['mock']
+        mock.delete('https://www.inaturalist.org/observations/24774619.json', status_code=404)
+
+        with pytest.raises(ObservationNotFound):
+            delete_observation(observation_id=24774619,
+                               access_token='valid token')
