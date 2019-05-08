@@ -12,7 +12,7 @@ filelock==3.0.9
 future==0.16.0
 idna==2.7
 imagesize==1.1.0
-Jinja2==2.10
+Jinja2==2.10.1
 MarkupSafe==1.0
 more-itertools==4.3.0
 mypy==0.641
@@ -38,6 +38,6 @@ tox==3.5.2
 tqdm==4.26.0
 twine==1.12.1
 typed-ast==1.1.0
-urllib3==1.23
+urllib3==1.24.2
 virtualenv==16.0.0
 webencodings==0.5.1
