@@ -9,6 +9,7 @@ import pytest
 import requests_mock
 from requests import HTTPError
 
+import pyinaturalist
 from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import get_access_token, get_all_observation_fields, \
     get_observation_fields, update_observation, create_observations, put_observation_field_values, delete_observation
@@ -230,3 +231,40 @@ class TestRestApi(object):
         with pytest.raises(ObservationNotFound):
             delete_observation(observation_id=24774619,
                                access_token='valid token')
+
+    @requests_mock.Mocker(kw='mock')
+    def test_user_agent(self, **kwargs):
+        # TODO: test for all functions that access the inaturalist API?
+        mock = kwargs['mock']
+        mock.get('https://api.inaturalist.org/v1/observations?id=16227955',
+                 json=_load_sample_json('get_observation.json'), status_code=200)
+
+        default_ua = 'Pyinaturalist {v}'.format(v=pyinaturalist.__version__)
+
+        # By default, we have a 'Pyinaturalist' user agent:
+        get_observation(observation_id=16227955)
+        assert mock._adapter.last_request._request.headers['User-Agent'] == default_ua
+
+        # But if the user sets a custom one, it is indeed used:
+        get_observation(observation_id=16227955, user_agent='CustomUA')
+        assert mock._adapter.last_request._request.headers['User-Agent'] == 'CustomUA'
+
+        # We can also set it globally:
+        pyinaturalist.user_agent = 'GlobalUA'
+        get_observation(observation_id=16227955)
+        assert mock._adapter.last_request._request.headers['User-Agent'] == 'GlobalUA'
+
+        # And it persists across requests:
+        get_observation(observation_id=16227955)
+        assert mock._adapter.last_request._request.headers['User-Agent'] == 'GlobalUA'
+
+        # But if we have a global and local one, the local has priority
+        get_observation(observation_id=16227955, user_agent='CustomUA 2')
+        assert mock._adapter.last_request._request.headers['User-Agent'] == 'CustomUA 2'
+
+        # We can reset the global settings to the default:
+        pyinaturalist.user_agent = pyinaturalist.DEFAULT_USER_AGENT
+        get_observation(observation_id=16227955)
+        assert mock._adapter.last_request._request.headers['User-Agent'] == default_ua
+
+        # TODO: test at least the same with a function that calls the node API

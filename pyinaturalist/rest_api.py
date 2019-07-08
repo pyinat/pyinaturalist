@@ -7,13 +7,27 @@ import requests
 
 from pyinaturalist.constants import THROTTLING_DELAY, INAT_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
+from pyinaturalist.helpers import get_user_agent
 
 
-def get_observation_fields(search_query: str="", page: int=1) -> List[Dict[str, Any]]:
+def _build_headers(access_token: str = None, user_agent: str = None) -> Dict[str, str]:
+    headers = {'User-Agent': get_user_agent(user_agent)}
+
+    if access_token:
+        headers['Authorization'] = 'Bearer %s' % access_token
+
+    return headers
+
+
+def get_observation_fields(search_query: str = "", page: int = 1, user_agent: str = None) -> List[Dict[str, Any]]:
     """
     Search the (globally available) observation
+
     :param search_query:
     :param page:
+    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
+    If not set, 'Pyinaturalist <VERSION>' will be used.
+
     :return:
     """
     payload = {
@@ -21,21 +35,24 @@ def get_observation_fields(search_query: str="", page: int=1) -> List[Dict[str, 
         'page': page
     }  # type: Dict[str, Union[int, str]]
 
-    response = requests.get("{base_url}/observation_fields.json".format(base_url=INAT_BASE_URL), params=payload)
+    response = requests.get("{base_url}/observation_fields.json".format(base_url=INAT_BASE_URL), params=payload,
+                            headers=_build_headers(user_agent=user_agent))
     return response.json()
 
 
-def get_all_observation_fields(search_query: str="") -> List[Dict[str, Any]]:
+def get_all_observation_fields(search_query: str = "", user_agent: str = None) -> List[Dict[str, Any]]:
     """
     Like get_observation_fields(), but handles pagination for you.
 
     :param search_query: a string to search
+    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
+    If not set, 'Pyinaturalist <VERSION>' will be used.
     """
     results = []  # type: List[Dict[str, Any]]
     page = 1
 
     while True:
-        r = get_observation_fields(search_query=search_query, page=page)
+        r = get_observation_fields(search_query=search_query, page=page, user_agent=user_agent)
 
         if not r:
             return results
@@ -46,7 +63,7 @@ def get_all_observation_fields(search_query: str="") -> List[Dict[str, Any]]:
 
 
 def put_observation_field_values(observation_id: int, observation_field_id: int, value: Any,
-                                 access_token: str) -> Dict[str, Any]:
+                                 access_token: str, user_agent: str = None) -> Dict[str, Any]:
     # TODO: Also implement a put_or_update_observation_field_values() that deletes then recreates the field_value?
     # TODO: Write example use in docstring.
     # TODO: Return some meaningful exception if it fails because the field is already set.
@@ -58,8 +75,10 @@ def put_observation_field_values(observation_id: int, observation_field_id: int,
 
     :param observation_id:
     :param observation_field_id:
-    :param value
+    :param value:
     :param access_token: access_token: the access token, as returned by :func:`get_access_token()`
+    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
+    If not set, 'Pyinaturalist <VERSION>' will be used.
 
     :returns: iNaturalist's response as a dict, for example:
             {'id': 31,
@@ -87,14 +106,14 @@ def put_observation_field_values(observation_id: int, observation_field_id: int,
 
     response = requests.put("{base_url}/observation_field_values/{id}".format(base_url=INAT_BASE_URL,
                                                                               id=observation_field_id),
-                            headers=_build_auth_header(access_token),
+                            headers=_build_headers(access_token=access_token, user_agent=user_agent),
                             json=payload)
 
     response.raise_for_status()
     return response.json()
 
 
-def get_access_token(username: str, password: str, app_id: str, app_secret: str) -> str:
+def get_access_token(username: str, password: str, app_id: str, app_secret: str, user_agent: str = None) -> str:
     """
     Get an access token using the user's iNaturalist username and password.
 
@@ -104,6 +123,9 @@ def get_access_token(username: str, password: str, app_id: str, app_secret: str)
     :param password:
     :param app_id:
     :param app_secret:
+    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
+    If not set, 'Pyinaturalist <VERSION>' will be used.
+
     :return: the access token, example use: headers = {"Authorization": "Bearer %s" % access_token}
     """
     payload = {
@@ -114,40 +136,43 @@ def get_access_token(username: str, password: str, app_id: str, app_secret: str)
         'password': password
     }
 
-    response = requests.post("{base_url}/oauth/token".format(base_url=INAT_BASE_URL), payload)
+    response = requests.post("{base_url}/oauth/token".format(base_url=INAT_BASE_URL),
+                             payload,
+                             headers=_build_headers(user_agent=user_agent))
     try:
         return response.json()["access_token"]
     except KeyError:
         raise AuthenticationError("Authentication error, please check credentials.")
 
 
-def _build_auth_header(access_token: str) -> Dict[str, str]:
-    return {"Authorization": "Bearer %s" % access_token}
-
-
-def add_photo_to_observation(observation_id: int, file_object: BinaryIO, access_token: str):
+def add_photo_to_observation(observation_id: int, file_object: BinaryIO, access_token: str, user_agent: str = None):
     """Upload a picture and assign it to an existing observation.
 
     :param observation_id: the ID of the observation
     :param file_object: a file-like object for the picture. Example: open('/Users/nicolasnoe/vespa.jpg', 'rb')
     :param access_token: the access token, as returned by :func:`get_access_token()`
+    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
+    If not set, 'Pyinaturalist <VERSION>' will be used.
     """
     data = {'observation_photo[observation_id]': observation_id}
     file_data = {'file': file_object}
 
     response = requests.post(url="{base_url}/observation_photos".format(base_url=INAT_BASE_URL),
-                             headers=_build_auth_header(access_token),
+                             headers=_build_headers(access_token=access_token, user_agent=user_agent),
                              data=data,
                              files=file_data)
 
     return response.json()
 
 
-def create_observations(params: Dict[str, Dict[str, Any]], access_token: str) -> List[Dict[str, Any]]:
+def create_observations(params: Dict[str, Dict[str, Any]],
+                        access_token: str, user_agent: str = None) -> List[Dict[str, Any]]:
     """Create a single or several (if passed an array) observations).
 
     :param params:
     :param access_token: the access token, as returned by :func:`get_access_token()`
+    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
+    If not set, 'Pyinaturalist <VERSION>' will be used.
 
     :return: iNaturalist's JSON response, as a Python object
     :raise: requests.HTTPError, if the call is not successful. iNaturalist returns an error 422 (unprocessable entity)
@@ -167,18 +192,21 @@ def create_observations(params: Dict[str, Dict[str, Any]], access_token: str) ->
     """
     response = requests.post(url="{base_url}/observations.json".format(base_url=INAT_BASE_URL),
                              json=params,
-                             headers=_build_auth_header(access_token))
+                             headers=_build_headers(access_token=access_token, user_agent=user_agent))
     response.raise_for_status()
     return response.json()
 
 
-def update_observation(observation_id: int, params: Dict[str, Any], access_token: str) -> List[Dict[str, Any]]:
+def update_observation(observation_id: int, params: Dict[str, Any],
+                       access_token: str, user_agent: str = None) -> List[Dict[str, Any]]:
     """
     Update a single observation. See https://www.inaturalist.org/pages/api+reference#put-observations-id
 
     :param observation_id: the ID of the observation to update
     :param params: to be passed to iNaturalist API
     :param access_token: the access token, as returned by :func:`get_access_token()`
+    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
+    If not set, 'Pyinaturalist <VERSION>' will be used.
 
     :return: iNaturalist's JSON response, as a Python object
     :raise: requests.HTTPError, if the call is not successful. iNaturalist returns an error 410 if the observation
@@ -187,26 +215,29 @@ def update_observation(observation_id: int, params: Dict[str, Any], access_token
 
     response = requests.put(url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
                             json=params,
-                            headers=_build_auth_header(access_token))
+                            headers=_build_headers(access_token=access_token, user_agent=user_agent))
     response.raise_for_status()
     return response.json()
 
 
-# TODO: test this
-# TODO: document this
-def delete_observation(observation_id: int, access_token: str) -> List[Dict[str, Any]]:
+# TODO: test this (success case, wrong_user/403 case)
+# TODO: document example in readme
+def delete_observation(observation_id: int, access_token: str, user_agent: str = None) -> List[Dict[str, Any]]:
     """
     Delete an observation.
 
     :param observation_id:
     :param access_token:
+    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
+    If not set, 'Pyinaturalist <VERSION>' will be used.
+
     :return: iNaturalist's JSON response, as a Python object (currently raise a JSONDecodeError because of an
              iNaturalist bug
     :raise: ObservationNotFound if the requested observation doesn't exists, requests.HTTPError (403) if the
             observation belongs to another user
     """
 
-    headers = _build_auth_header(access_token)
+    headers = _build_headers(access_token=access_token, user_agent=user_agent)
     headers['Content-type'] = 'application/json'
 
     response = requests.delete(url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL,

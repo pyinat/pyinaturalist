@@ -31,7 +31,7 @@ setup(
     package_dir={'pyinaturalist': 'pyinaturalist'},
     include_package_data=True,
     install_requires=[
-        'requests>=2.20.0'
+        'requests>=2.21.0'
     ],
     license='MIT',
     zip_safe=False,
