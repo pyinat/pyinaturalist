@@ -3,10 +3,10 @@
 History
 -------
 
-Current
-+++++++
+0.8.0 (2019-07-11)
+++++++++++++++++++
 
-* all functions now take an optional `user-agent <https://en.wikipedia.org/wiki/User_agent>`_ parameter in order to identify yourself to iNaturalist. If not set, `Pyinaturalist <VERSION>` will be used.
+* all functions now take an optional `user-agent <https://en.wikipedia.org/wiki/User_agent>`_ parameter in order to identify yourself to iNaturalist. If not set, `Pyinaturalist/<VERSION>` will be used.
 
 0.7.0 (2019-05-08)
 ++++++++++++++++++
