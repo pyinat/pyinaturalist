@@ -239,7 +239,7 @@ class TestRestApi(object):
         mock.get('https://api.inaturalist.org/v1/observations?id=16227955',
                  json=_load_sample_json('get_observation.json'), status_code=200)
 
-        default_ua = 'Pyinaturalist {v}'.format(v=pyinaturalist.__version__)
+        default_ua = 'Pyinaturalist/{v}'.format(v=pyinaturalist.__version__)
 
         # By default, we have a 'Pyinaturalist' user agent:
         get_observation(observation_id=16227955)
@@ -267,4 +267,4 @@ class TestRestApi(object):
         get_observation(observation_id=16227955)
         assert mock._adapter.last_request._request.headers['User-Agent'] == default_ua
 
-        # TODO: test at least the same with a function that calls the node API
+        # TODO: test at least the same with a function that calls the REST API
