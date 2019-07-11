@@ -31,8 +31,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> Dict[str, An
     """Get details about an observation.
 
     :param observation_id:
-    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
-    If not set, 'Pyinaturalist <VERSION>' will be used.
+    :param user_agent: a user-agent string that will be passed to iNaturalist.
 
     :returns: a dict with details on the observation
     :raises: ObservationNotFound

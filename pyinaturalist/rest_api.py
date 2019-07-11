@@ -25,8 +25,7 @@ def get_observation_fields(search_query: str = "", page: int = 1, user_agent: st
 
     :param search_query:
     :param page:
-    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
-    If not set, 'Pyinaturalist <VERSION>' will be used.
+    :param user_agent: a user-agent string that will be passed to iNaturalist.
 
     :return:
     """
@@ -45,8 +44,7 @@ def get_all_observation_fields(search_query: str = "", user_agent: str = None) -
     Like get_observation_fields(), but handles pagination for you.
 
     :param search_query: a string to search
-    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
-    If not set, 'Pyinaturalist <VERSION>' will be used.
+    :param user_agent: a user-agent string that will be passed to iNaturalist.
     """
     results = []  # type: List[Dict[str, Any]]
     page = 1
@@ -77,8 +75,7 @@ def put_observation_field_values(observation_id: int, observation_field_id: int,
     :param observation_field_id:
     :param value:
     :param access_token: access_token: the access token, as returned by :func:`get_access_token()`
-    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
-    If not set, 'Pyinaturalist <VERSION>' will be used.
+    :param user_agent: a user-agent string that will be passed to iNaturalist.
 
     :returns: iNaturalist's response as a dict, for example:
             {'id': 31,
@@ -123,8 +120,7 @@ def get_access_token(username: str, password: str, app_id: str, app_secret: str,
     :param password:
     :param app_id:
     :param app_secret:
-    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
-    If not set, 'Pyinaturalist <VERSION>' will be used.
+    :param user_agent: a user-agent string that will be passed to iNaturalist.
 
     :return: the access token, example use: headers = {"Authorization": "Bearer %s" % access_token}
     """
@@ -151,8 +147,7 @@ def add_photo_to_observation(observation_id: int, file_object: BinaryIO, access_
     :param observation_id: the ID of the observation
     :param file_object: a file-like object for the picture. Example: open('/Users/nicolasnoe/vespa.jpg', 'rb')
     :param access_token: the access token, as returned by :func:`get_access_token()`
-    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
-    If not set, 'Pyinaturalist <VERSION>' will be used.
+    :param user_agent: a user-agent string that will be passed to iNaturalist.
     """
     data = {'observation_photo[observation_id]': observation_id}
     file_data = {'file': file_object}
@@ -171,8 +166,7 @@ def create_observations(params: Dict[str, Dict[str, Any]],
 
     :param params:
     :param access_token: the access token, as returned by :func:`get_access_token()`
-    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
-    If not set, 'Pyinaturalist <VERSION>' will be used.
+    :param user_agent: a user-agent string that will be passed to iNaturalist.
 
     :return: iNaturalist's JSON response, as a Python object
     :raise: requests.HTTPError, if the call is not successful. iNaturalist returns an error 422 (unprocessable entity)
@@ -205,8 +199,7 @@ def update_observation(observation_id: int, params: Dict[str, Any],
     :param observation_id: the ID of the observation to update
     :param params: to be passed to iNaturalist API
     :param access_token: the access token, as returned by :func:`get_access_token()`
-    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
-    If not set, 'Pyinaturalist <VERSION>' will be used.
+    :param user_agent: a user-agent string that will be passed to iNaturalist.
 
     :return: iNaturalist's JSON response, as a Python object
     :raise: requests.HTTPError, if the call is not successful. iNaturalist returns an error 410 if the observation
@@ -228,8 +221,7 @@ def delete_observation(observation_id: int, access_token: str, user_agent: str =
 
     :param observation_id:
     :param access_token:
-    :param user_agent: a user-agent (string) passed to iNaturalist in order to identify your project or application. \
-    If not set, 'Pyinaturalist <VERSION>' will be used.
+    :param user_agent: a user-agent string that will be passed to iNaturalist.
 
     :return: iNaturalist's JSON response, as a Python object (currently raise a JSONDecodeError because of an
              iNaturalist bug
