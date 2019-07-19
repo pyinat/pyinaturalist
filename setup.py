@@ -24,7 +24,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author='Nicolas Noé',
     author_email='nicolas@niconoe.eu',
-    url='https://github.com/inbo/pyinaturalist',
+    url='https://github.com/niconoe/pyinaturalist',
     packages=[
         'pyinaturalist',
     ],

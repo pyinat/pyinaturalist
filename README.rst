@@ -5,8 +5,8 @@ pyinaturalist
 .. image:: https://badge.fury.io/py/pyinaturalist.png
     :target: http://badge.fury.io/py/pyinaturalist
 
-.. image:: https://www.travis-ci.com/inbo/pyinaturalist.svg?branch=master
-    :target: https://www.travis-ci.com/inbo/pyinaturalist
+.. image:: https://www.travis-ci.com/niconoe/pyinaturalist.svg?branch=master
+    :target: https://www.travis-ci.com/niconoe/pyinaturalist
 
 .. image:: https://readthedocs.org/projects/pyinaturalist/badge/?version=latest
     :target: https://pyinaturalist.readthedocs.io/en/latest/?badge=latest

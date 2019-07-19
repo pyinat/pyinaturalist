@@ -8,4 +8,4 @@ Simply use pip::
 
 Or if you prefer using the development version::
 
-    $ pip install git+https://github.com/inbo/pyinaturalist.git
+    $ pip install git+https://github.com/niconoe/pyinaturalist.git
