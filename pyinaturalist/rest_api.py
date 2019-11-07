@@ -11,15 +11,17 @@ from pyinaturalist.helpers import get_user_agent
 
 
 def _build_headers(access_token: str = None, user_agent: str = None) -> Dict[str, str]:
-    headers = {'User-Agent': get_user_agent(user_agent)}
+    headers = {"User-Agent": get_user_agent(user_agent)}
 
     if access_token:
-        headers['Authorization'] = 'Bearer %s' % access_token
+        headers["Authorization"] = "Bearer %s" % access_token
 
     return headers
 
 
-def get_observation_fields(search_query: str = "", page: int = 1, user_agent: str = None) -> List[Dict[str, Any]]:
+def get_observation_fields(
+    search_query: str = "", page: int = 1, user_agent: str = None
+) -> List[Dict[str, Any]]:
     """
     Search the (globally available) observation
 
@@ -29,17 +31,19 @@ def get_observation_fields(search_query: str = "", page: int = 1, user_agent: st
 
     :return:
     """
-    payload = {
-        'q': search_query,
-        'page': page
-    }  # type: Dict[str, Union[int, str]]
+    payload = {"q": search_query, "page": page}  # type: Dict[str, Union[int, str]]
 
-    response = requests.get("{base_url}/observation_fields.json".format(base_url=INAT_BASE_URL), params=payload,
-                            headers=_build_headers(user_agent=user_agent))
+    response = requests.get(
+        "{base_url}/observation_fields.json".format(base_url=INAT_BASE_URL),
+        params=payload,
+        headers=_build_headers(user_agent=user_agent),
+    )
     return response.json()
 
 
-def get_all_observation_fields(search_query: str = "", user_agent: str = None) -> List[Dict[str, Any]]:
+def get_all_observation_fields(
+    search_query: str = "", user_agent: str = None
+) -> List[Dict[str, Any]]:
     """
     Like get_observation_fields(), but handles pagination for you.
 
@@ -50,7 +54,9 @@ def get_all_observation_fields(search_query: str = "", user_agent: str = None) -
     page = 1
 
     while True:
-        r = get_observation_fields(search_query=search_query, page=page, user_agent=user_agent)
+        r = get_observation_fields(
+            search_query=search_query, page=page, user_agent=user_agent
+        )
 
         if not r:
             return results
@@ -60,8 +66,13 @@ def get_all_observation_fields(search_query: str = "", user_agent: str = None) -
         sleep(THROTTLING_DELAY)
 
 
-def put_observation_field_values(observation_id: int, observation_field_id: int, value: Any,
-                                 access_token: str, user_agent: str = None) -> Dict[str, Any]:
+def put_observation_field_values(
+    observation_id: int,
+    observation_field_id: int,
+    value: Any,
+    access_token: str,
+    user_agent: str = None,
+) -> Dict[str, Any]:
     # TODO: Also implement a put_or_update_observation_field_values() that deletes then recreates the field_value?
     # TODO: Write example use in docstring.
     # TODO: Return some meaningful exception if it fails because the field is already set.
@@ -94,23 +105,28 @@ def put_observation_field_values(observation_id: int, observation_field_id: int,
     """
 
     payload = {
-        'observation_field_value': {
-            'observation_id': observation_id,
-            'observation_field_id': observation_field_id,
-            'value': value
+        "observation_field_value": {
+            "observation_id": observation_id,
+            "observation_field_id": observation_field_id,
+            "value": value,
         }
     }
 
-    response = requests.put("{base_url}/observation_field_values/{id}".format(base_url=INAT_BASE_URL,
-                                                                              id=observation_field_id),
-                            headers=_build_headers(access_token=access_token, user_agent=user_agent),
-                            json=payload)
+    response = requests.put(
+        "{base_url}/observation_field_values/{id}".format(
+            base_url=INAT_BASE_URL, id=observation_field_id
+        ),
+        headers=_build_headers(access_token=access_token, user_agent=user_agent),
+        json=payload,
+    )
 
     response.raise_for_status()
     return response.json()
 
 
-def get_access_token(username: str, password: str, app_id: str, app_secret: str, user_agent: str = None) -> str:
+def get_access_token(
+    username: str, password: str, app_id: str, app_secret: str, user_agent: str = None
+) -> str:
     """
     Get an access token using the user's iNaturalist username and password.
 
@@ -125,23 +141,30 @@ def get_access_token(username: str, password: str, app_id: str, app_secret: str,
     :return: the access token, example use: headers = {"Authorization": "Bearer %s" % access_token}
     """
     payload = {
-        'client_id': app_id,
-        'client_secret': app_secret,
-        'grant_type': "password",
-        'username': username,
-        'password': password
+        "client_id": app_id,
+        "client_secret": app_secret,
+        "grant_type": "password",
+        "username": username,
+        "password": password,
     }
 
-    response = requests.post("{base_url}/oauth/token".format(base_url=INAT_BASE_URL),
-                             payload,
-                             headers=_build_headers(user_agent=user_agent))
+    response = requests.post(
+        "{base_url}/oauth/token".format(base_url=INAT_BASE_URL),
+        payload,
+        headers=_build_headers(user_agent=user_agent),
+    )
     try:
         return response.json()["access_token"]
     except KeyError:
         raise AuthenticationError("Authentication error, please check credentials.")
 
 
-def add_photo_to_observation(observation_id: int, file_object: BinaryIO, access_token: str, user_agent: str = None):
+def add_photo_to_observation(
+    observation_id: int,
+    file_object: BinaryIO,
+    access_token: str,
+    user_agent: str = None,
+):
     """Upload a picture and assign it to an existing observation.
 
     :param observation_id: the ID of the observation
@@ -149,19 +172,22 @@ def add_photo_to_observation(observation_id: int, file_object: BinaryIO, access_
     :param access_token: the access token, as returned by :func:`get_access_token()`
     :param user_agent: a user-agent string that will be passed to iNaturalist.
     """
-    data = {'observation_photo[observation_id]': observation_id}
-    file_data = {'file': file_object}
+    data = {"observation_photo[observation_id]": observation_id}
+    file_data = {"file": file_object}
 
-    response = requests.post(url="{base_url}/observation_photos".format(base_url=INAT_BASE_URL),
-                             headers=_build_headers(access_token=access_token, user_agent=user_agent),
-                             data=data,
-                             files=file_data)
+    response = requests.post(
+        url="{base_url}/observation_photos".format(base_url=INAT_BASE_URL),
+        headers=_build_headers(access_token=access_token, user_agent=user_agent),
+        data=data,
+        files=file_data,
+    )
 
     return response.json()
 
 
-def create_observations(params: Dict[str, Dict[str, Any]],
-                        access_token: str, user_agent: str = None) -> List[Dict[str, Any]]:
+def create_observations(
+    params: Dict[str, Dict[str, Any]], access_token: str, user_agent: str = None
+) -> List[Dict[str, Any]]:
     """Create a single or several (if passed an array) observations).
 
     :param params:
@@ -184,15 +210,21 @@ def create_observations(params: Dict[str, Dict[str, Any]],
     TODO investigate: according to the doc, we should be able to pass multiple observations (in an array, and in
     renaming observation to observations, but as far as I saw they are not created (while a status of 200 is returned)
     """
-    response = requests.post(url="{base_url}/observations.json".format(base_url=INAT_BASE_URL),
-                             json=params,
-                             headers=_build_headers(access_token=access_token, user_agent=user_agent))
+    response = requests.post(
+        url="{base_url}/observations.json".format(base_url=INAT_BASE_URL),
+        json=params,
+        headers=_build_headers(access_token=access_token, user_agent=user_agent),
+    )
     response.raise_for_status()
     return response.json()
 
 
-def update_observation(observation_id: int, params: Dict[str, Any],
-                       access_token: str, user_agent: str = None) -> List[Dict[str, Any]]:
+def update_observation(
+    observation_id: int,
+    params: Dict[str, Any],
+    access_token: str,
+    user_agent: str = None,
+) -> List[Dict[str, Any]]:
     """
     Update a single observation. See https://www.inaturalist.org/pages/api+reference#put-observations-id
 
@@ -206,16 +238,22 @@ def update_observation(observation_id: int, params: Dict[str, Any],
             doesn't exists or belongs to another user (as of November 2018).
     """
 
-    response = requests.put(url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
-                            json=params,
-                            headers=_build_headers(access_token=access_token, user_agent=user_agent))
+    response = requests.put(
+        url="{base_url}/observations/{id}.json".format(
+            base_url=INAT_BASE_URL, id=observation_id
+        ),
+        json=params,
+        headers=_build_headers(access_token=access_token, user_agent=user_agent),
+    )
     response.raise_for_status()
     return response.json()
 
 
 # TODO: test this (success case, wrong_user/403 case)
 # TODO: document example in readme
-def delete_observation(observation_id: int, access_token: str, user_agent: str = None) -> List[Dict[str, Any]]:
+def delete_observation(
+    observation_id: int, access_token: str, user_agent: str = None
+) -> List[Dict[str, Any]]:
     """
     Delete an observation.
 
@@ -230,11 +268,14 @@ def delete_observation(observation_id: int, access_token: str, user_agent: str =
     """
 
     headers = _build_headers(access_token=access_token, user_agent=user_agent)
-    headers['Content-type'] = 'application/json'
+    headers["Content-type"] = "application/json"
 
-    response = requests.delete(url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL,
-                                                                              id=observation_id),
-                               headers=headers)
+    response = requests.delete(
+        url="{base_url}/observations/{id}.json".format(
+            base_url=INAT_BASE_URL, id=observation_id
+        ),
+        headers=headers,
+    )
     if response.status_code == 404:
         raise ObservationNotFound
 
