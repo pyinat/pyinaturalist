@@ -27,11 +27,13 @@ pyparsing==2.2.2
 pytz==2018.5
 readme-renderer==22.0
 requests==2.20.0
-requests-mock==1.5.2
+requests-mock==1.7.0
 requests-toolbelt==0.8.0
 six==1.11.0
 snowballstemmer==1.2.1
+sphinx==2.4.3
 sphinx-autodoc-typehints==1.3.0
+sphinx-rtd-theme==0.4.3
 sphinxcontrib-websupport==1.1.0
 toml==0.10.0
 tox==3.5.2
