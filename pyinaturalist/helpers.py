@@ -28,9 +28,5 @@ def concat_list_params(params) -> Dict[str, Any]:
 
 
 def strip_empty_params(params) -> Dict[str, Any]:
-    """Remove any request parameters with empty values."""
-    params = params.copy()
-    for k in params.keys():
-        if not params[k]:
-            params.pop(k)
-    return params
+    """Remove any request parameters with empty or ``None`` values."""
+    return {k: v for k, v in params.items() if v}
