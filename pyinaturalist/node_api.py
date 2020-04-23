@@ -107,10 +107,14 @@ def get_all_observations(params: Dict, user_agent: str = None) -> List[Dict[str,
 
 
 def get_taxa_by_id(taxon_id, user_agent: str = None) -> Dict[str, Any]:
-    """Get one or more taxa by ID"""
-    if isinstance(taxon_id, list):
-        taxon_id = ",".join(taxon_id)
+    """
+    Get one or more taxa by ID.
+    See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_id
 
+    :param: taxon_id: Get taxa with this ID. Multiple values are allowed.
+
+    :returns: A list of dicts containing taxa results
+    """
     r = make_inaturalist_api_get_call(
         "taxa/{}".format(taxon_id), {}, user_agent=user_agent
     )
@@ -118,7 +122,9 @@ def get_taxa_by_id(taxon_id, user_agent: str = None) -> Dict[str, Any]:
     return r.json()
 
 
-def get_taxa(user_agent: str = None, **params) -> Dict[str, Any]:
+def get_taxa(
+    user_agent: str = None, min_rank: str = None, max_rank: str = None, **params
+) -> Dict[str, Any]:
     """Given zero to many of following parameters, returns taxa matching the search criteria.
     See https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
 
@@ -126,7 +132,9 @@ def get_taxa(user_agent: str = None, **params) -> Dict[str, Any]:
     :param is_active: Taxon is active
     :param taxon_id: Only show taxa with this ID, or its descendants
     :param parent_id: Taxon's parent must have this ID
-    :param rank: Taxon must have this rank
+    :param rank: Taxon must have this exact rank
+    :param min_rank: Taxon must have this rank or higher; overrides ``rank``
+    :param max_rank: Taxon must have this rank or lower; overrides ``rank``
     :param rank_level: Taxon must have this rank level. Some example values are 70 (kingdom),
         60 (phylum), 50 (class), 40 (order), 30 (family), 20 (genus), 10 (species), 5 (subspecies)
     :param id_above: Must have an ID above this value
@@ -140,6 +148,8 @@ def get_taxa(user_agent: str = None, **params) -> Dict[str, Any]:
 
     :returns: A list of dicts containing taxa results
     """
+    if min_rank or max_rank:
+        params["rank"] = get_rank_range(min_rank, max_rank)
     r = make_inaturalist_api_get_call("taxa", params, user_agent=user_agent)
     r.raise_for_status()
     return r.json()
@@ -147,6 +157,7 @@ def get_taxa(user_agent: str = None, **params) -> Dict[str, Any]:
 
 def get_taxa_autocomplete(user_agent: str = None, **params) -> Dict[str, Any]:
     """Given a query string, returns taxa with names starting with the search term
+    See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_autocomplete
 
     :param q: Name must begin with this value
     :param is_active: Taxon is active
@@ -166,3 +177,16 @@ def get_taxa_autocomplete(user_agent: str = None, **params) -> Dict[str, Any]:
     )
     r.raise_for_status()
     return r.json()
+
+
+def get_rank_range(min_rank: str = None, max_rank: str = None) -> List[str]:
+    """ Translate min and/or max rank into a list of ranks """
+    min_rank_index = _get_rank_index(min_rank) if min_rank else 0
+    max_rank_index = _get_rank_index(max_rank) + 1 if max_rank else len(RANKS)
+    return RANKS[min_rank_index:max_rank_index]
+
+
+def _get_rank_index(rank: str) -> int:
+    if rank not in RANKS:
+        raise ValueError("Invalid rank")
+    return RANKS.index(rank)

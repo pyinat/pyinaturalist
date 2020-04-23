@@ -4,6 +4,7 @@ Tests for `pyinaturalist` module.
 import json
 import os
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
 import pytest
 import requests_mock
@@ -84,6 +85,30 @@ class TestNodeApi(object):
         assert first_result["rank"] == "species"
         assert first_result["is_active"] is True
         assert len(first_result["ancestor_ids"]) == 14
+
+    CLASS_AND_HIGHER = ["class", "superclass", "subphylum", "phylum", "kingdom"]
+    SPECIES_AND_LOWER = ["form", "variety", "subspecies", "hybrid", "species"]
+    CLASS_THOUGH_PHYLUM = ["class", "superclass", "subphylum", "phylum"]
+
+    @pytest.mark.parametrize(
+        "params, expected_ranks",
+        [
+            ({"rank": "genus"}, "genus"),
+            ({"min_rank": "class"}, CLASS_AND_HIGHER),
+            ({"max_rank": "species"}, SPECIES_AND_LOWER),
+            ({"min_rank": "class", "max_rank": "phylum"}, CLASS_THOUGH_PHYLUM),
+            ({"max_rank": "species", "rank": "override_me"}, SPECIES_AND_LOWER),
+        ],
+    )
+    @patch("pyinaturalist.node_api.make_inaturalist_api_get_call")
+    def test_get_taxa_by_rank_range(
+        self, mock_inaturalist_api_get_call, params, expected_ranks,
+    ):
+        # Make sure custom rank params result in the correct 'rank' param value
+        get_taxa(**params)
+        mock_inaturalist_api_get_call.assert_called_with(
+            "taxa", {"rank": expected_ranks}, user_agent=None
+        )
 
     def test_get_taxa_by_id(self, requests_mock):
         taxon_id = 70118
