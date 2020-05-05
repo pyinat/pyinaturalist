@@ -10,6 +10,7 @@ Development Lead
 Contributors
 ------------
 
+* Jordan Cook
 * Peter Desmet
 * Stijn Van Hoey
 
