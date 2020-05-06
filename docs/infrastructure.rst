@@ -14,10 +14,10 @@ To build the doc locally::
 
 To preview::
 
-    # OSX:
-    $ open docs/_build/html/index.html
+    # MacOS:
+    $ open docs/_build/index.html
     # Linux:
-    $ xdg-open docs/_build/html/index.html
+    $ xdg-open docs/_build/index.html
 
 Hosted documentation (https://pyinaturalist.readthedocs.io/) is automatically updated when code gets pushed to GitHub.
 
