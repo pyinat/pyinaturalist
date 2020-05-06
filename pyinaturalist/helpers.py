@@ -17,16 +17,24 @@ def get_user_agent(user_agent: str = None) -> str:
         return pyinaturalist.user_agent
 
 
-def concat_list_params(params) -> Dict[str, Any]:
+def convert_bool_params(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Convert any boolean request parameters to javascript-style boolean strings"""
+    for k, v in params.items():
+        if isinstance(v, bool):
+            params[k] = str(v).lower()
+    return params
+
+
+def convert_list_params(params: Dict[str, Any]) -> Dict[str, Any]:
     """Convert any list parameters into an API-compatible (comma-delimited) string.
     Will be url-encoded by requests. For example: `['k1', 'k2', 'k3'] -> k1%2Ck2%2Ck3`
     """
     for k, v in params.items():
         if isinstance(v, list):
-            params[k] = ",".join(v)
+            params[k] = ",".join(map(str, v))
     return params
 
 
-def strip_empty_params(params) -> Dict[str, Any]:
+def strip_empty_params(params: Dict[str, Any]) -> Dict[str, Any]:
     """Remove any request parameters with empty or ``None`` values."""
-    return {k: v for k, v in params.items() if v}
+    return {k: v for k, v in params.items() if v or v is False}
