@@ -4,13 +4,21 @@ Tests for `pyinaturalist` module.
 import json
 import os
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
 import pytest
 import requests_mock
 from requests import HTTPError
+from urllib.parse import urlencode, urljoin
 
 import pyinaturalist
-from pyinaturalist.node_api import get_observation
+from pyinaturalist.constants import INAT_NODE_API_BASE_URL
+from pyinaturalist.node_api import (
+    get_observation,
+    get_taxa,
+    get_taxa_by_id,
+    get_taxa_autocomplete,
+)
 from pyinaturalist.rest_api import (
     get_access_token,
     get_all_observation_fields,
@@ -37,11 +45,9 @@ PAGE_2_JSON_RESPONSE = _load_sample_json("get_observation_fields_page2.json")
 
 
 class TestNodeApi(object):
-    @requests_mock.Mocker(kw="mock")
-    def test_get_observation(self, **kwargs):
-        mock = kwargs["mock"]
-        mock.get(
-            "https://api.inaturalist.org/v1/observations?id=16227955",
+    def test_get_observation(self, requests_mock):
+        requests_mock.get(
+            urljoin(INAT_NODE_API_BASE_URL, "observations?id=16227955"),
             json=_load_sample_json("get_observation.json"),
             status_code=200,
         )
@@ -52,16 +58,93 @@ class TestNodeApi(object):
         assert obs_data["user"]["login"] == "niconoe"
         assert len(obs_data["photos"]) == 2
 
-    @requests_mock.Mocker(kw="mock")
-    def test_get_non_existent_observation(self, **kwargs):
-        mock = kwargs["mock"]
-        mock.get(
-            "https://api.inaturalist.org/v1/observations?id=99999999",
+    def test_get_non_existent_observation(self, requests_mock):
+        requests_mock.get(
+            urljoin(INAT_NODE_API_BASE_URL, "observations?id=99999999"),
             json=_load_sample_json("get_nonexistent_observation.json"),
             status_code=200,
         )
         with pytest.raises(ObservationNotFound):
             get_observation(observation_id=99999999)
+
+    def test_get_taxa(self, requests_mock):
+        params = urlencode({"q": "vespi", "rank": "genus,subgenus,species"})
+        requests_mock.get(
+            urljoin(INAT_NODE_API_BASE_URL, "taxa?" + params),
+            json=_load_sample_json("get_taxa.json"),
+            status_code=200,
+        )
+
+        response = get_taxa(q="vespi", rank=["genus", "subgenus", "species"])
+        first_result = response["results"][0]
+
+        assert len(response["results"]) == 30
+        assert response["total_results"] == 35
+        assert first_result["id"] == 70118
+        assert first_result["name"] == "Nicrophorus vespilloides"
+        assert first_result["rank"] == "species"
+        assert first_result["is_active"] is True
+        assert len(first_result["ancestor_ids"]) == 14
+
+    CLASS_AND_HIGHER = ["class", "superclass", "subphylum", "phylum", "kingdom"]
+    SPECIES_AND_LOWER = ["form", "variety", "subspecies", "hybrid", "species"]
+    CLASS_THOUGH_PHYLUM = ["class", "superclass", "subphylum", "phylum"]
+
+    @pytest.mark.parametrize(
+        "params, expected_ranks",
+        [
+            ({"rank": "genus"}, "genus"),
+            ({"min_rank": "class"}, CLASS_AND_HIGHER),
+            ({"max_rank": "species"}, SPECIES_AND_LOWER),
+            ({"min_rank": "class", "max_rank": "phylum"}, CLASS_THOUGH_PHYLUM),
+            ({"max_rank": "species", "rank": "override_me"}, SPECIES_AND_LOWER),
+        ],
+    )
+    @patch("pyinaturalist.node_api.make_inaturalist_api_get_call")
+    def test_get_taxa_by_rank_range(
+        self, mock_inaturalist_api_get_call, params, expected_ranks,
+    ):
+        # Make sure custom rank params result in the correct 'rank' param value
+        get_taxa(**params)
+        mock_inaturalist_api_get_call.assert_called_with(
+            "taxa", {"rank": expected_ranks}, user_agent=None
+        )
+
+    def test_get_taxa_by_id(self, requests_mock):
+        taxon_id = 70118
+        requests_mock.get(
+            urljoin(INAT_NODE_API_BASE_URL, "taxa/" + str(taxon_id)),
+            json=_load_sample_json("get_taxa_by_id.json"),
+            status_code=200,
+        )
+
+        response = get_taxa_by_id(taxon_id)
+        result = response["results"][0]
+        assert len(response["results"]) == 1
+        assert result["id"] == taxon_id
+        assert result["name"] == "Nicrophorus vespilloides"
+        assert result["rank"] == "species"
+        assert result["is_active"] is True
+        assert len(result["ancestors"]) == 12
+
+    def test_get_taxa_autocomplete(self, requests_mock):
+        requests_mock.get(
+            urljoin(INAT_NODE_API_BASE_URL, "taxa/autocomplete?q=vespi"),
+            json=_load_sample_json("get_taxa_autocomplete.json"),
+            status_code=200,
+        )
+
+        response = get_taxa_autocomplete(q="vespi")
+        first_result = response["results"][0]
+
+        assert len(response["results"]) == 10
+        assert response["total_results"] == 44
+        assert first_result["matched_term"] == "Vespidae"
+        assert first_result["id"] == 52747
+        assert first_result["name"] == "Vespidae"
+        assert first_result["rank"] == "family"
+        assert first_result["is_active"] is True
+        assert len(first_result["ancestor_ids"]) == 11
 
 
 class TestRestApi(object):
@@ -325,7 +408,7 @@ class TestRestApi(object):
         # TODO: test for all functions that access the inaturalist API?
         mock = kwargs["mock"]
         mock.get(
-            "https://api.inaturalist.org/v1/observations?id=16227955",
+            urljoin(INAT_NODE_API_BASE_URL, "observations?id=16227955"),
             json=_load_sample_json("get_observation.json"),
             status_code=200,
         )
