@@ -34,6 +34,7 @@ snowballstemmer==1.2.1
 sphinx==2.4.3
 sphinx-rtd-theme==0.4.3
 sphinx-autodoc-typehints==1.10.3
+sphinx-rtd-theme==0.4.3
 sphinxcontrib-websupport==1.1.0
 toml==0.10.0
 tox==3.5.2
