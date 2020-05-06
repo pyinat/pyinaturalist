@@ -12,9 +12,7 @@ from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.helpers import (
     merge_two_dicts,
     get_user_agent,
-    convert_bool_params,
-    convert_list_params,
-    strip_empty_params,
+    preprocess_request_params,
 )
 
 PER_PAGE_RESULTS = 30  # Paginated queries: how many records do we ask per page?
@@ -32,9 +30,7 @@ def make_inaturalist_api_get_call(
     kwargs are passed to requests.request
     Returns a requests.Response object
     """
-    params = convert_bool_params(params)
-    params = convert_list_params(params)
-    params = strip_empty_params(params)
+    params = preprocess_request_params(params)
     headers = {"Accept": "application/json", "User-Agent": get_user_agent(user_agent)}
 
     response = requests.get(

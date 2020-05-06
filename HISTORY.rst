@@ -3,6 +3,13 @@
 History
 -------
 
+0.10.0 (TBD)
++++++++++++++++++
+
+* Added more info & examples to README for taxa endpoints
+* Added `minify` option to `node_api.get_taxa_autocomplete()`
+* Convert all date and datetime parameters to timezone-aware ISO 8601 timestamps
+
 0.9.1 (2020-05-26)
 ++++++++++++++++++
 
