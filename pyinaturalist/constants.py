@@ -34,6 +34,9 @@ DATETIME_PARAMS = [
     "updated_since",  # TODO: test if this one behaves differently in Node API vs REST API
 ]
 
+# Reponse formats supported by GET /observations endpoint
+# TODO: custom geojson FeatureCollection format
+OBSERVATION_FORMATS = ["atom", "csv", "dwc", "json", "kml", "widget"]
 
 # Taxonomic ranks from Node API Swagger spec
 RANKS = [
