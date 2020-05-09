@@ -127,6 +127,9 @@ class TestNodeApi(object):
         assert result["is_active"] is True
         assert len(result["ancestors"]) == 12
 
+        with pytest.raises(ValueError):
+            get_taxa_by_id([1, 2])
+
     def test_get_taxa_autocomplete(self, requests_mock):
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "taxa/autocomplete?q=vespi"),
@@ -145,6 +148,28 @@ class TestNodeApi(object):
         assert first_result["rank"] == "family"
         assert first_result["is_active"] is True
         assert len(first_result["ancestor_ids"]) == 11
+
+    def test_get_taxa_autocomplete_minified(self, requests_mock):
+        requests_mock.get(
+            urljoin(INAT_NODE_API_BASE_URL, "taxa/autocomplete?q=vespi"),
+            json=_load_sample_json("get_taxa_autocomplete.json"),
+            status_code=200,
+        )
+        expected_results = [
+            "   52747:       Family Vespidae",
+            "   84738:    Subfamily Vespinae",
+            "  131878:      Species Nicrophorus vespillo",
+            "  495392:      Species Vespidae st1",
+            "   70118:      Species Nicrophorus vespilloides",
+            "   84737:        Genus Vespina",
+            "  621584:      Species Vespicula cypho",
+            "  621585:      Species Vespicula trachinoides",
+            "  621586:      Species Vespicula zollingeri",
+            "  299443:      Species Vespita woolleyi",
+        ]
+
+        response = get_taxa_autocomplete(q="vespi", minify=True)
+        assert response["results"] == expected_results
 
 
 class TestRestApi(object):

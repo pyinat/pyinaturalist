@@ -202,23 +202,12 @@ database. Here is an example that will run searches from console input:
 
 .. code-block:: python
 
-    #!/usr/bin/env python3
     from pyinaturalist.node_api import get_taxa_autocomplete
 
-    def format_matches(query):
-        response = get_taxa_autocomplete(q=query)
-        matches = [
-            '{:>8}: {:>12}: {}'.format(match['id'], match['rank'], match['name'])
-            for match in response['results']
-        ]
-        return '\n'.join(matches)
-
-    if __name__ == "__main__":
-        print("Press Ctrl-C to exit")
-
-        while True:
-            query = input("> ")
-            print(format_matches(query))
+    while True:
+        query = input("> ")
+        response = get_taxa_autocomplete(q=query, minify=True)
+        print("\n".join(response["results"]))
 
 Example usage::
 
@@ -234,3 +223,4 @@ Example usage::
     359229:      Species Coleotechnites florae
      53502:        Genus Brickellia
     ...
+    <Ctrl-C>
