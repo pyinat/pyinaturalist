@@ -62,14 +62,12 @@ Search all observations matching a criteria:
 .. code-block:: python
 
     from pyinaturalist.node_api import get_all_observations
-
     obs = get_all_observations(params={'user_id': 'niconoe'})
 
-see `available parameters <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations/>`_.
+See `available parameters <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations/>`_.
 
 For authenticated API calls, you first need to obtain a token for the user:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 .. code-block:: python
 
@@ -149,6 +147,17 @@ Sets an observation field value to an existing observation:
                                  observation_field_id=9613,
                                  value=250,
                                  access_token=token)
+
+Get observation data in alternative formats:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A separate endpoint can provide other data formats, including Darwin Core, KML, and CSV:
+
+.. code-block:: python
+
+    from pyinaturalist.rest_api import get_observations
+    obs = get_observations(user_id='niconoe', response_format='dwc')
+
+See `available parameters and formats <https://www.inaturalist.org/pages/api+reference#get-observations>`_.
 
 Taxonomy
 ^^^^^^^^

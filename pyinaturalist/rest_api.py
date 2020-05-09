@@ -1,11 +1,38 @@
-# Code used to access the (read/write, but slow) Rails based API of iNaturalist
-# See: https://www.inaturalist.org/pages/api+reference
+"""
+Code used to access the (read/write, but slow) Rails based API of iNaturalist
+See: https://www.inaturalist.org/pages/api+reference
+"""
 from time import sleep
 from typing import Dict, Any, List, BinaryIO, Union
 
-from pyinaturalist.constants import THROTTLING_DELAY, INAT_BASE_URL
+from urllib.parse import urljoin
+
+from pyinaturalist.constants import OBSERVATION_FORMATS, THROTTLING_DELAY, INAT_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 from pyinaturalist.api_requests import delete, get, post, put
+
+
+# TODO: Docs, tests
+def get_observations(response_format="json", user_agent: str = None, **params) -> Union[Dict, str]:
+    """Get observation data, optionally in an alternative format. Return type will be
+    ``dict`` for the ``json`` response format, and ``str`` for all others.
+    See: https://www.inaturalist.org/pages/api+reference#get-observations
+
+    Example::
+
+        get_observations(id=45414404, format="dwc")
+
+    """
+    if response_format not in OBSERVATION_FORMATS:
+        raise ValueError("Invalid response format")
+
+    response = get(
+        urljoin(INAT_BASE_URL, "observations.{}".format(response_format)),
+        params=params,
+        user_agent=user_agent,
+    )
+
+    return response.json() if response_format == "json" else response.text
 
 
 def get_observation_fields(

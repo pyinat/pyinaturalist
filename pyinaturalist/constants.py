@@ -1,6 +1,7 @@
 INAT_NODE_API_BASE_URL = "https://api.inaturalist.org/v1/"
 INAT_BASE_URL = "https://www.inaturalist.org"
 
+PER_PAGE_RESULTS = 30  # Number of records per page for paginated queries
 THROTTLING_DELAY = 1  # In seconds, support <1 floats such as 0.1
 
 # Toggle dry-run mode: this will run and log mock HTTP requests instead of real ones
@@ -28,6 +29,9 @@ DATETIME_PARAMS = [
     "updated_since",  # TODO: test if this one behaves differently in Node API vs REST API
 ]
 
+# Reponse formats supported by GET /observations endpoint
+# TODO: custom geojson FeatureCollection format
+OBSERVATION_FORMATS = ["atom", "csv", "dwc", "json", "kml", "widget"]
 
 # Taxonomic ranks from Node API Swagger spec
 RANKS = [

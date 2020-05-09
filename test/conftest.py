@@ -48,6 +48,9 @@ def _sample_data_path(filename):
     return os.path.join(os.path.dirname(__file__), "sample_data", filename)
 
 
-def load_sample_json(filename):
+def load_sample_data(filename):
     with open(_sample_data_path(filename), encoding="utf-8") as fh:
-        return json.load(fh)
+        if filename.endswith("json"):
+            return json.load(fh)
+        else:
+            return fh.read()
