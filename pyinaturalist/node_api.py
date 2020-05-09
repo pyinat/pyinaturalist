@@ -161,6 +161,9 @@ def get_taxa_autocomplete(user_agent: str = None, **params) -> Dict[str, Any]:
     """Given a query string, returns taxa with names starting with the search term
     See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_autocomplete
 
+    **Note:** There appears to currently be a bug in the API that causes ``per_page`` to not have
+    any effect.
+
     :param q: Name must begin with this value
     :param is_active: Taxon is active
     :param taxon_id: Only show taxa with this ID, or its descendants
