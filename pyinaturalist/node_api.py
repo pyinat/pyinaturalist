@@ -189,19 +189,22 @@ def get_taxa_autocomplete(
     json_response = r.json()
 
     if minify:
-        json_response["results"] = format_matches(json_response["results"])
+        json_response["results"] = [format_taxon(t) for t in json_response["results"]]
     return json_response
 
 
-def format_matches(results: List) -> List[str]:
-    """Format text search matches into a single string containing taxon ID, rank, and name.
-    Whitespace-aligned for display purposes.
+def format_taxon(taxon: Dict) -> str:
+    """Format a taxon result into a single string containing taxon ID, rank, and name
+    (including common name, if available).
     """
-    # Padding in format strings is to visually align taxon IDs (< 7 chars) and ranks (< 11 chars)
-    return [
-        "{:>8}: {:>12} {}".format(match["id"], match["rank"].title(), match["name"])
-        for match in results
-    ]
+    # Visually align taxon IDs (< 7 chars) and ranks (< 11 chars)
+    common = taxon.get("preferred_common_name")
+    return "{:>8}: {:>12} {}{}".format(
+        taxon["id"],
+        taxon["rank"].title(),
+        taxon["name"],
+        " ({})".format(common) if common else "",
+    )
 
 
 def get_rank_range(min_rank: str = None, max_rank: str = None) -> List[str]:

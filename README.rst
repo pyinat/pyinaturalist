@@ -213,14 +213,26 @@ Example usage::
 
     > opilio
     527573:        Genus Opilio
-     47367:        Order Opiliones
-     84644:      Species Phalangium opilio
+     47367:        Order Opiliones (Harvestmen)
+     84644:      Species Phalangium opilio (European Harvestman)
     527419:    Subfamily Opilioninae
     ...
     > coleo
-    372759:     Subclass Coleoidea
-     47208:        Order Coleoptera
-    359229:      Species Coleotechnites florae
-     53502:        Genus Brickellia
+    372759:     Subclass Coleoidea (Coleoids)
+     47208:        Order Coleoptera (Beetles)
+    359229:      Species Coleotechnites florae (Coleotechnites Flower Moth)
+     53502:        Genus Brickellia (brickellbushes)
     ...
     <Ctrl-C>
+
+If you get unexpected matches, the search likely matched a synonym, either in the form of a
+common name or an alternative classification. Check the ``matched_term`` property for more
+info. For example:
+
+ .. code-block:: python
+
+    >>> first_result = get_taxa_autocomplete(q='zygoca')['results'][0]
+    >>> first_result["name"]
+    "Schlumbergera truncata"
+    >>> first_result["matched_term"]
+    "Zygocactus truncatus"  # An older synonym for Schlumbergera

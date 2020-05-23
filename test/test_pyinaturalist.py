@@ -155,12 +155,13 @@ class TestNodeApi(object):
             json=_load_sample_json("get_taxa_autocomplete.json"),
             status_code=200,
         )
+
         expected_results = [
-            "   52747:       Family Vespidae",
-            "   84738:    Subfamily Vespinae",
-            "  131878:      Species Nicrophorus vespillo",
+            "   52747:       Family Vespidae (Hornets, Paper Wasps, Potter Wasps, and Allies)",
+            "   84738:    Subfamily Vespinae (Hornets and Yellowjackets)",
+            "  131878:      Species Nicrophorus vespillo (Vespillo Burying Beetle)",
             "  495392:      Species Vespidae st1",
-            "   70118:      Species Nicrophorus vespilloides",
+            "   70118:      Species Nicrophorus vespilloides (Lesser Vespillo Burying Beetle)",
             "   84737:        Genus Vespina",
             "  621584:      Species Vespicula cypho",
             "  621585:      Species Vespicula trachinoides",
