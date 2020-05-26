@@ -29,6 +29,20 @@ def test_convert_bool_params():
     assert params["only_id"] == "true"
 
 
+# Test both int and string lists
+def test_convert_list_params():
+    params = convert_list_params(TEST_PARAMS)
+    assert params["preferred_place_id"] == "1,2"
+    assert params["rank"] == "phylum,class"
+
+
+def test_strip_empty_params():
+    params = strip_empty_params(TEST_PARAMS)
+    assert len(params) == 5
+    assert "q" not in params and "locale" not in params
+    assert "is_active" in params and "only_id" in params
+
+
 # Test some recognized date(time) formats, with and without TZ info, in date and non-date params
 @pytest.mark.parametrize(
     "param, value, expected",
@@ -49,14 +63,13 @@ def test_convert_datetime_params(tzlocal, param, value, expected):
     assert converted[param] == expected
 
 
-def test_convert_list_params():
-    params = convert_list_params(TEST_PARAMS)
-    assert params["preferred_place_id"] == "1,2"
-    assert params["rank"] == "phylum,class"
-
-
-def test_strip_empty_params():
-    params = strip_empty_params(TEST_PARAMS)
-    assert len(params) == 5
-    assert "q" not in params and "locale" not in params
-    assert "is_active" in params and "only_id" in params
+# This is just here so that tests will fail if one of the conversion steps is removed
+@patch("pyinaturalist.helpers.convert_bool_params")
+@patch("pyinaturalist.helpers.convert_datetime_params")
+@patch("pyinaturalist.helpers.convert_list_params")
+@patch("pyinaturalist.helpers.strip_empty_params")
+def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_strip):
+    preprocess_request_params({"id": 1})
+    assert all(
+        [mock_bool.called, mock_datetime.called, mock_list.called, mock_strip.called]
+    )

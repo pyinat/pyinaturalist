@@ -4,6 +4,7 @@ Tests for `pyinaturalist` module.
 import json
 import os
 from datetime import datetime, timedelta
+from inspect import getmembers, isfunction
 from unittest.mock import patch
 
 import pytest
@@ -29,6 +30,15 @@ from pyinaturalist.rest_api import (
     delete_observation,
 )
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
+
+
+def _get_module_functions(module):
+    """ Get all functions belonging to a module """
+    return {
+        name: member
+        for name, member in getmembers(module)
+        if isfunction(member) and member.__module__ == module.__name__
+    }
 
 
 def _sample_data_path(filename):
@@ -110,6 +120,13 @@ class TestNodeApi(object):
             "taxa", {"rank": expected_ranks}, user_agent=None
         )
 
+    # This is just a spot test of a case in which boolean params should be converted
+    @patch("pyinaturalist.node_api.requests")
+    def test_get_taxa_by_name_and_is_active(self, requests):
+        get_taxa(q="Lixus bardanae", is_active=False)
+        request_args = requests.get.call_args[0]
+        assert request_args[1] == {"q": "Lixus bardanae", "is_active": "false"}
+
     def test_get_taxa_by_id(self, requests_mock):
         taxon_id = 70118
         requests_mock.get(
@@ -149,6 +166,7 @@ class TestNodeApi(object):
         assert first_result["is_active"] is True
         assert len(first_result["ancestor_ids"]) == 11
 
+    # Test usage of format_taxon() with get_taxa_autocomplete()
     def test_get_taxa_autocomplete_minified(self, requests_mock):
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "taxa/autocomplete?q=vespi"),
@@ -171,6 +189,28 @@ class TestNodeApi(object):
 
         response = get_taxa_autocomplete(q="vespi", minify=True)
         assert response["results"] == expected_results
+
+    # This test just ensures that all GET requests call preprocess_request_params() at some point
+    @patch("pyinaturalist.node_api.get_rank_range")
+    @patch("pyinaturalist.node_api.merge_two_dicts")
+    @patch("pyinaturalist.node_api.preprocess_request_params")
+    @patch("pyinaturalist.node_api.requests")
+    def test_all_get_requests_use_param_conversion(
+        self, requests, preprocess_request_params, merge_two_dicts, get_rank_range
+    ):
+        requests.get().json.return_value = {"total_results": 1, "results": [{}]}
+
+        # This dynamically gets all functions named pyinaturalist.node_api.get_*
+        http_get_functions = [
+            func
+            for name, func in _get_module_functions(pyinaturalist.node_api).items()
+            if name.startswith("get_")
+        ]
+
+        # With most other logic mocked out, just make sure all GETs call preprocess_request_params()
+        for func in http_get_functions:
+            func(1)
+        assert preprocess_request_params.call_count == len(http_get_functions)
 
 
 class TestRestApi(object):
