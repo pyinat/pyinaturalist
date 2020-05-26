@@ -3,6 +3,11 @@
 History
 -------
 
+0.9.1 (2020-05-26)
+++++++++++++++++++
+
+* Bugfix: proper support for boolean and integer list parameters (see https://github.com/niconoe/pyinaturalist/issues/17). Thanks Jordan Cook!
+
 0.9.0 (2020-05-06)
 ++++++++++++++++++
 
