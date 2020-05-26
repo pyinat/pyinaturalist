@@ -12,7 +12,8 @@ from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.helpers import (
     merge_two_dicts,
     get_user_agent,
-    concat_list_params,
+    convert_bool_params,
+    convert_list_params,
     strip_empty_params,
 )
 
@@ -31,8 +32,9 @@ def make_inaturalist_api_get_call(
     kwargs are passed to requests.request
     Returns a requests.Response object
     """
+    params = convert_bool_params(params)
+    params = convert_list_params(params)
     params = strip_empty_params(params)
-    params = concat_list_params(params)
     headers = {"Accept": "application/json", "User-Agent": get_user_agent(user_agent)}
 
     response = requests.get(
