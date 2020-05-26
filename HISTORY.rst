@@ -3,6 +3,11 @@
 History
 -------
 
+0.9.0 (2020-05-06)
+++++++++++++++++++
+
+* new taxa-related functions: node_api.get_taxa(), node_api.get_taxa_autocomplete(), node_api.get_taxa_by_id(). Many thanks to Jordan Cook!
+
 0.8.0 (2019-07-11)
 ++++++++++++++++++
 

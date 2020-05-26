@@ -19,7 +19,7 @@ history = open("HISTORY.rst").read().replace(".. :changelog:", "")
 
 setup(
     name="pyinaturalist",
-    version="0.8.0",
+    version="0.9.0",
     description="Python client for the iNaturalist APIs",
     long_description=readme + "\n\n" + history,
     author="Nicolas Noé",
@@ -40,6 +40,7 @@ setup(
             "sphinx-autodoc-typehints",
             "sphinx-rtd-theme",
             "tox",
+            "twine"
         ]
     },
     license="MIT",
