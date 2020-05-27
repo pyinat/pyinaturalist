@@ -3,6 +3,7 @@ import requests
 from typing import Dict
 
 import pyinaturalist
+from pyinaturalist.constants import DRY_RUN_ENABLED, MOCK_RESPONSE
 from pyinaturalist.helpers import preprocess_request_params
 
 
@@ -53,3 +54,14 @@ def request(
     params = preprocess_request_params(params)
 
     return requests.request(method, url, params=params, headers=headers, **kwargs)
+
+
+# Make dryable an optional dependency; if it is not installed, its decorator will not be applied.
+# Dryable must be both installed and enabled before requests are mocked.
+try:
+    import dryable
+
+    dryable.set(DRY_RUN_ENABLED)
+    request = dryable.Dryable(value=MOCK_RESPONSE)(request)
+except ImportError:
+    pass

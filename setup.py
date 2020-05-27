@@ -32,6 +32,7 @@ setup(
     extras_require={
         "dev": [
             "black",
+            "dryable",
             "flake8",
             "mypy",
             "pytest",
