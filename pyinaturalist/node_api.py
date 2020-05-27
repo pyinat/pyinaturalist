@@ -9,11 +9,8 @@ from urllib.parse import urljoin
 
 from pyinaturalist.constants import THROTTLING_DELAY, INAT_NODE_API_BASE_URL, RANKS
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.helpers import (
-    merge_two_dicts,
-    get_user_agent,
-    preprocess_request_params,
-)
+from pyinaturalist.helpers import merge_two_dicts
+from pyinaturalist.api_requests import get
 
 PER_PAGE_RESULTS = 30  # Paginated queries: how many records do we ask per page?
 
@@ -30,11 +27,11 @@ def make_inaturalist_api_get_call(
     kwargs are passed to requests.request
     Returns a requests.Response object
     """
-    params = preprocess_request_params(params)
-    headers = {"Accept": "application/json", "User-Agent": get_user_agent(user_agent)}
-
-    response = requests.get(
-        urljoin(INAT_NODE_API_BASE_URL, endpoint), params, headers=headers, **kwargs
+    response = get(
+        urljoin(INAT_NODE_API_BASE_URL, endpoint),
+        params=params,
+        user_agent=user_agent,
+        **kwargs
     )
     return response
 

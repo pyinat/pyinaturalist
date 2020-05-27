@@ -121,11 +121,11 @@ class TestNodeApi(object):
         )
 
     # This is just a spot test of a case in which boolean params should be converted
-    @patch("pyinaturalist.node_api.requests")
-    def test_get_taxa_by_name_and_is_active(self, requests):
+    @patch("pyinaturalist.api_requests.requests.request")
+    def test_get_taxa_by_name_and_is_active(self, request):
         get_taxa(q="Lixus bardanae", is_active=False)
-        request_args = requests.get.call_args[0]
-        assert request_args[1] == {"q": "Lixus bardanae", "is_active": "false"}
+        request_kwargs = request.call_args[1]
+        assert request_kwargs["params"] == {"q": "Lixus bardanae", "is_active": "false"}
 
     def test_get_taxa_by_id(self, requests_mock):
         taxon_id = 70118
@@ -193,12 +193,12 @@ class TestNodeApi(object):
     # This test just ensures that all GET requests call preprocess_request_params() at some point
     @patch("pyinaturalist.node_api.get_rank_range")
     @patch("pyinaturalist.node_api.merge_two_dicts")
-    @patch("pyinaturalist.node_api.preprocess_request_params")
-    @patch("pyinaturalist.node_api.requests")
+    @patch("pyinaturalist.api_requests.preprocess_request_params")
+    @patch("pyinaturalist.api_requests.requests.request")
     def test_all_get_requests_use_param_conversion(
-        self, requests, preprocess_request_params, merge_two_dicts, get_rank_range
+        self, request, preprocess_request_params, merge_two_dicts, get_rank_range
     ):
-        requests.get().json.return_value = {"total_results": 1, "results": [{}]}
+        request().json.return_value = {"total_results": 1, "results": [{}]}
 
         # This dynamically gets all functions named pyinaturalist.node_api.get_*
         http_get_functions = [
