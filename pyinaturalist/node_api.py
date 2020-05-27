@@ -146,7 +146,7 @@ def get_taxa(
     :returns: A list of dicts containing taxa results
     """
     if min_rank or max_rank:
-        params["rank"] = get_rank_range(min_rank, max_rank)
+        params["rank"] = _get_rank_range(min_rank, max_rank)
     r = make_inaturalist_api_get_call("taxa", params, user_agent=user_agent)
     r.raise_for_status()
     return r.json()
@@ -200,7 +200,7 @@ def format_taxon(taxon: Dict) -> str:
     )
 
 
-def get_rank_range(min_rank: str = None, max_rank: str = None) -> List[str]:
+def _get_rank_range(min_rank: str = None, max_rank: str = None) -> List[str]:
     """ Translate min and/or max rank into a list of ranks """
     min_rank_index = _get_rank_index(min_rank) if min_rank else 0
     max_rank_index = _get_rank_index(max_rank) + 1 if max_rank else len(RANKS)

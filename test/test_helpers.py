@@ -10,6 +10,9 @@ from pyinaturalist.helpers import (
     convert_list_params,
     strip_empty_params,
 )
+import pyinaturalist.rest_api
+import pyinaturalist.node_api
+from test.conftest import get_module_http_functions, get_mock_args_for_signature
 
 
 TEST_PARAMS = {
@@ -73,3 +76,52 @@ def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_str
     assert all(
         [mock_bool.called, mock_datetime.called, mock_list.called, mock_strip.called]
     )
+
+
+# The following tests ensure that all API requests call preprocess_request_params() at some point
+# Almost all logic except the request is mocked out so this can generically apply to all API functions
+# Using parametrization here so that on failure, pytest will show the specific function that failed
+@pytest.mark.parametrize(
+    "http_function", get_module_http_functions(pyinaturalist.node_api).values()
+)
+@patch("pyinaturalist.node_api._get_rank_range")
+@patch("pyinaturalist.node_api.isinstance")
+@patch("pyinaturalist.node_api.merge_two_dicts")
+@patch("pyinaturalist.api_requests.preprocess_request_params")
+@patch("pyinaturalist.api_requests.requests.request")
+def test_all_node_requests_use_param_conversion(
+    request,
+    preprocess_request_params,
+    merge_two_dicts,
+    get_rank_range,
+    isinstance,
+    http_function,
+):
+    request().json.return_value = {"total_results": 1, "results": [{}]}
+    mock_args = get_mock_args_for_signature(http_function)
+    http_function(*mock_args)
+    preprocess_request_params.assert_called()
+
+
+@pytest.mark.parametrize(
+    "http_function", get_module_http_functions(pyinaturalist.rest_api).values()
+)
+@patch("pyinaturalist.rest_api.sleep")
+@patch("pyinaturalist.api_requests.preprocess_request_params")
+@patch("pyinaturalist.api_requests.requests.request")
+def test_all_rest_requests_use_param_conversion(
+    request, preprocess_request_params, sleep, http_function
+):
+    # Handle the one API response that returns a list instead of a dict
+    if http_function == pyinaturalist.rest_api.get_all_observation_fields:
+        request().json.return_value = []
+    else:
+        request().json.return_value = {
+            "total_results": 1,
+            "access_token": "",
+            "results": [],
+        }
+
+    mock_args = get_mock_args_for_signature(http_function)
+    http_function(*mock_args)
+    preprocess_request_params.assert_called()

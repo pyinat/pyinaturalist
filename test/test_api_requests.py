@@ -27,7 +27,7 @@ def test_http_methods(mock_request, function, http_method):
         ),
         (
             {"access_token": "token"},
-            {"Accept": "application/json", "User-Agent": pyinaturalist.user_agent, "Authorization": "Bearer token",},
+            {"Accept": "application/json", "User-Agent": pyinaturalist.user_agent, "Authorization": "Bearer token"},
         ),
     ],
 )
