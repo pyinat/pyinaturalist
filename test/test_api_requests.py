@@ -53,16 +53,16 @@ def test_request_dry_run_disabled(requests_mock):
     assert request("GET", "http://url",).json() == real_response
 
 
-# TODO: Figure out the least ugly method of mocking this
-# @patch("pyinaturalist.api_requests.DRY_RUN_ENABLED")
-def test_request_dry_run_enabled():
-    real_response = {"results": ["I'm a real response object!"]}
-    # requests_mock.get("http://url", json=real_response, status_code=200)
-    # with patch.dict(os.environ, {"DRY_RUN_ENABLED": "True"}):
-    # with patch("pyinaturalist.api_requests.DRY_RUN_ENABLED", True):
-
-    import dryable
-
-    dryable.set(True)
+@patch("pyinaturalist.api_requests.DRY_RUN_ENABLED")
+@patch("pyinaturalist.api_requests.requests")
+def test_request_dry_run_enabled__by_constant(mock_requests, mock_dry_run_enabled):
     assert request("GET", "http://url") == MOCK_RESPONSE
-    dryable.set(False)
+    assert mock_requests.call_count == 0
+
+
+@patch("pyinaturalist.api_requests.getenv", return_value = 'True')
+@patch("pyinaturalist.api_requests.requests")
+def test_request_dry_run_enabled__by_envar(mock_requests, mock_os):
+    # mock_os.getenv.return_value = 'True'
+    assert request("GET", "http://url") == MOCK_RESPONSE
+    assert mock_requests.call_count == 0

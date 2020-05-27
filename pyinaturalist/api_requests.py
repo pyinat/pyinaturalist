@@ -1,29 +1,34 @@
 # Some common functions for HTTP requests used by both the Node and REST API modules
-import requests
+from logging import getLogger
+from os import getenv
 from typing import Dict
+
+import requests
 
 import pyinaturalist
 from pyinaturalist.constants import DRY_RUN_ENABLED, MOCK_RESPONSE
 from pyinaturalist.helpers import preprocess_request_params
 
+logger = getLogger(__name__)
+
 
 def delete(url: str, **kwargs) -> requests.Response:
-    """Wrapper around :py:func:`requests.delete` that supports dry-run mode"""
+    """ Wrapper around :py:func:`requests.delete` that supports dry-run mode """
     return request("DELETE", url, **kwargs)
 
 
 def get(url: str, **kwargs) -> requests.Response:
-    """Wrapper around :py:func:`requests.get` that supports dry-run mode"""
+    """ Wrapper around :py:func:`requests.get` that supports dry-run mode """
     return request("GET", url, **kwargs)
 
 
 def post(url: str, **kwargs) -> requests.Response:
-    """Wrapper around :py:func:`requests.post` that supports dry-run mode"""
+    """ Wrapper around :py:func:`requests.post` that supports dry-run mode """
     return request("POST", url, **kwargs)
 
 
 def put(url: str, **kwargs) -> requests.Response:
-    """Wrapper around :py:func:`requests.put` that supports dry-run mode"""
+    """ Wrapper around :py:func:`requests.put` that supports dry-run mode """
     return request("PUT", url, **kwargs)
 
 
@@ -36,7 +41,7 @@ def request(
     headers: Dict = None,
     **kwargs
 ) -> requests.Response:
-    """Wrapper around :py:func:`requests.request` that supports dry-run mode and
+    """ Wrapper around :py:func:`requests.request` that supports dry-run mode and
     adds appropriate headers.
 
     :param method: HTTP method
@@ -53,15 +58,21 @@ def request(
         headers["Authorization"] = "Bearer %s" % access_token
     params = preprocess_request_params(params)
 
-    return requests.request(method, url, params=params, headers=headers, **kwargs)
+    if is_dry_run_enabled():
+        log_request(method, url, params=params, headers=headers, **kwargs)
+        return MOCK_RESPONSE
+    else:
+        return requests.request(method, url, params=params, headers=headers, **kwargs)
 
 
-# Make dryable an optional dependency; if it is not installed, its decorator will not be applied.
-# Dryable must be both installed and enabled before requests are mocked.
-try:
-    import dryable
+def is_dry_run_enabled() -> bool:
+    """ A wrapper to determine if dry-run (aka test mode) has been enabled via either
+    the constant or the environment variable
+    """
+    return DRY_RUN_ENABLED or getenv("DRY_RUN_ENABLED")
 
-    dryable.set(DRY_RUN_ENABLED)
-    request = dryable.Dryable(value=MOCK_RESPONSE)(request)
-except ImportError:
-    pass
+
+def log_request(*args, **kwargs):
+    """ Log all relevant information about an HTTP request """
+    kwargs_strs = ["{}={}".format(k, v) for k, v in kwargs.items()]
+    logger.info('Request: {}'.format(', '.join(list(args) + kwargs_strs)))

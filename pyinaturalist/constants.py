@@ -1,4 +1,3 @@
-import os
 import requests
 from unittest.mock import Mock
 
@@ -8,7 +7,7 @@ INAT_BASE_URL = "https://www.inaturalist.org"
 THROTTLING_DELAY = 1  # In seconds, support <1 floats such as 0.1
 
 # Toggle dry-run mode: this will run and log mock HTTP requests instead of real ones
-DRY_RUN_ENABLED = bool(os.getenv("DRY_RUN_ENABLED"))
+DRY_RUN_ENABLED = False
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=requests.Response)
 MOCK_RESPONSE.json.return_value = {"results": ["nodata"]}
