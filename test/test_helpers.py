@@ -85,7 +85,6 @@ def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_str
     "http_function", get_module_http_functions(pyinaturalist.node_api).values()
 )
 @patch("pyinaturalist.node_api._get_rank_range")
-@patch("pyinaturalist.node_api.isinstance")
 @patch("pyinaturalist.node_api.merge_two_dicts")
 @patch("pyinaturalist.api_requests.preprocess_request_params")
 @patch("pyinaturalist.api_requests.requests.request")
@@ -94,13 +93,12 @@ def test_all_node_requests_use_param_conversion(
     preprocess_request_params,
     merge_two_dicts,
     get_rank_range,
-    isinstance,
     http_function,
 ):
     request().json.return_value = {"total_results": 1, "results": [{}]}
     mock_args = get_mock_args_for_signature(http_function)
     http_function(*mock_args)
-    preprocess_request_params.assert_called()
+    assert preprocess_request_params.call_count == 1
 
 
 @pytest.mark.parametrize(
@@ -124,4 +122,4 @@ def test_all_rest_requests_use_param_conversion(
 
     mock_args = get_mock_args_for_signature(http_function)
     http_function(*mock_args)
-    preprocess_request_params.assert_called()
+    assert preprocess_request_params.call_count == 1

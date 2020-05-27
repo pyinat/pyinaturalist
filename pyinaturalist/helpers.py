@@ -25,6 +25,15 @@ def preprocess_request_params(params: Dict[str, Any]) -> Dict[str, Any]:
     return params
 
 
+def is_int(value: Any) -> bool:
+    """Determine if a value is a valid integer"""
+    try:
+        int(value)
+        return True
+    except (TypeError, ValueError):
+        return False
+
+
 def convert_bool_params(params: Dict[str, Any]) -> Dict[str, Any]:
     """Convert any boolean request parameters to javascript-style boolean strings"""
     for k, v in params.items():

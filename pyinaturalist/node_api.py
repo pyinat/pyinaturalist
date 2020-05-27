@@ -9,7 +9,7 @@ from urllib.parse import urljoin
 
 from pyinaturalist.constants import THROTTLING_DELAY, INAT_NODE_API_BASE_URL, RANKS
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.helpers import merge_two_dicts
+from pyinaturalist.helpers import is_int, merge_two_dicts
 from pyinaturalist.api_requests import get
 
 PER_PAGE_RESULTS = 30  # Paginated queries: how many records do we ask per page?
@@ -110,7 +110,7 @@ def get_taxa_by_id(taxon_id: int, user_agent: str = None) -> Dict[str, Any]:
 
     :returns: A list of dicts containing taxa results
     """
-    if not isinstance(taxon_id, int):
+    if not is_int(taxon_id):
         raise ValueError("Please specify a single integer for the taxon ID")
     r = make_inaturalist_api_get_call(
         "taxa/{}".format(taxon_id), {}, user_agent=user_agent
