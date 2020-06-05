@@ -13,7 +13,6 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   installation
    reference
    contributing
    infrastructure

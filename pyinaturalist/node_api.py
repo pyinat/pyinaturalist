@@ -108,7 +108,7 @@ def get_all_observations(params: Dict, user_agent: str = None) -> List[Dict[str,
         id_above = results[-1]["id"]
 
 
-def get_taxa_by_id(taxon_id, user_agent: str = None) -> Dict[str, Any]:
+def get_taxa_by_id(taxon_id: int, user_agent: str = None) -> Dict[str, Any]:
     """
     Get one or more taxa by ID.
     See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_id
@@ -117,6 +117,8 @@ def get_taxa_by_id(taxon_id, user_agent: str = None) -> Dict[str, Any]:
 
     :returns: A list of dicts containing taxa results
     """
+    if not isinstance(taxon_id, int):
+        raise ValueError("Please specify a single integer for the taxon ID")
     r = make_inaturalist_api_get_call(
         "taxa/{}".format(taxon_id), {}, user_agent=user_agent
     )
@@ -157,9 +159,14 @@ def get_taxa(
     return r.json()
 
 
-def get_taxa_autocomplete(user_agent: str = None, **params) -> Dict[str, Any]:
+def get_taxa_autocomplete(
+    user_agent: str = None, minify: bool = False, **params
+) -> Dict[str, Any]:
     """Given a query string, returns taxa with names starting with the search term
     See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_autocomplete
+
+    **Note:** There appears to currently be a bug in the API that causes ``per_page`` to not have
+    any effect.
 
     :param q: Name must begin with this value
     :param is_active: Taxon is active
@@ -171,6 +178,7 @@ def get_taxa_autocomplete(user_agent: str = None, **params) -> Dict[str, Any]:
     :param locale: Locale preference for taxon common names
     :param preferred_place_id: Place preference for regional taxon common names
     :param all_names: Include all taxon names in the response
+    :param minify: Condense each match into a single string containg taxon ID, rank, and name
 
     :returns: A list of dicts containing taxa results
     """
@@ -178,7 +186,25 @@ def get_taxa_autocomplete(user_agent: str = None, **params) -> Dict[str, Any]:
         "taxa/autocomplete", params, user_agent=user_agent
     )
     r.raise_for_status()
-    return r.json()
+    json_response = r.json()
+
+    if minify:
+        json_response["results"] = [format_taxon(t) for t in json_response["results"]]
+    return json_response
+
+
+def format_taxon(taxon: Dict) -> str:
+    """Format a taxon result into a single string containing taxon ID, rank, and name
+    (including common name, if available).
+    """
+    # Visually align taxon IDs (< 7 chars) and ranks (< 11 chars)
+    common = taxon.get("preferred_common_name")
+    return "{:>8}: {:>12} {}{}".format(
+        taxon["id"],
+        taxon["rank"].title(),
+        taxon["name"],
+        " ({})".format(common) if common else "",
+    )
 
 
 def get_rank_range(min_rank: str = None, max_rank: str = None) -> List[str]:

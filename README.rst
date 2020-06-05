@@ -23,12 +23,33 @@ That being said, many things are already possible (searching observations, creat
 contributions are welcome!
 
 Python 3 only.
+See full documentation at `<https://pyinaturalist.readthedocs.io>`_.
+
+Installation
+------------
+
+Simply use pip::
+
+    $ pip install pyinaturalist
+
+Or if you prefer using the development version::
+
+    $ pip install git+https://github.com/niconoe/pyinaturalist.git
+
+Or, to set up for local development (preferably in a new virtualenv)::
+
+    $ git clone https://github.com/niconoe/pyinaturalist.git
+    $ cd pyinaturalist
+    $ pip install -Ue ".[dev]"
 
 Examples
 --------
 
+Observations
+^^^^^^^^^^^^
+
 Search all observations matching a criteria:
---------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -39,7 +60,7 @@ Search all observations matching a criteria:
 see `available parameters <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations/>`_.
 
 For authenticated API calls, you first need to obtain a token for the user:
----------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 .. code-block:: python
@@ -55,7 +76,7 @@ For authenticated API calls, you first need to obtain a token for the user:
 Note: you'll need to `create an iNaturalist app <https://www.inaturalist.org/oauth/applications/new>`_.
 
 Create a new observation:
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -82,7 +103,7 @@ Create a new observation:
     new_observation_id = r[0]['id']
 
 Upload a picture for this observation:
---------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. code-block:: python
 
     from pyinaturalist.rest_api import add_photo_to_observation
@@ -92,7 +113,7 @@ Upload a picture for this observation:
                                  access_token=token)
 
 Update an existing observation of yours:
-----------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. code-block:: python
 
         from pyinaturalist.rest_api import update_observation
@@ -103,7 +124,7 @@ Update an existing observation of yours:
 
 
 Get a list of all (globally available) observation fields:
-----------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. code-block:: python
 
     from pyinaturalist.rest_api import get_all_observation_fields
@@ -111,7 +132,7 @@ Get a list of all (globally available) observation fields:
     r = get_all_observation_fields(search_query="DNA")
 
 Sets an observation field value to an existing observation:
------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. code-block:: python
 
     from pyinaturalist.rest_api import put_observation_field_values
@@ -121,3 +142,97 @@ Sets an observation field value to an existing observation:
                                  value=250,
                                  access_token=token)
 
+Taxonomy
+^^^^^^^^
+
+Search for all taxa matching some criteria:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Let's say you partially remember either a genus or family name that started with **'vespi'**-something:
+
+.. code-block:: python
+
+    >>> from pyinaturalist.node_api import get_taxa
+    >>> response = get_taxa(q="vespi", rank=["genus", "family"])
+    >>> print({taxon["id"]: taxon["name"] for taxon in response["results"]})
+    {52747: "Vespidae", 84737: "Vespina", 92786: "Vespicula", 646195: "Vespiodes", ...}
+
+
+Oh, that's right, it was **'Vespidae'**! Now let's find all of its subfamilies using its taxon ID
+from the results above:
+
+.. code-block:: python
+
+    >>> response = get_taxa(parent_id=52747)
+    >>> print({taxon["id"]: taxon["name"] for taxon in response["results"]})
+    {343248: "Polistinae", 84738: "Vespinae", 119344: "Eumeninae", 121511: "Masarinae", ...}
+
+Get a specific taxon by ID:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Let's find out more about this 'Polistinae' genus. We could search for it by name or by ID,
+but since we already know the ID from the previous search, let's use that:
+
+.. code-block:: python
+
+    >>> from pyinaturalist.node_api import get_taxa_by_id
+    >>> response = get_taxa_by_id(343248)
+
+There is a lot of info in there, but let's just get the basics for now:
+
+.. code-block:: python
+
+    >>> basic_fields = ["preferred_common_name", "observations_count", "wikipedia_url", "wikipedia_summary"]
+    >>> print({f: response["results"][0][f] for f in basic_fields})
+    {
+        "preferred_common_name": "Paper Wasps",
+        "observations_count": 69728,
+        "wikipedia_url": "http://en.wikipedia.org/wiki/Polistinae",
+        "wikipedia_summary": "The Polistinae are eusocial wasps closely related to the more familiar yellow jackets...",
+    }
+
+Taxon autocomplete
+~~~~~~~~~~~~~~~~~~
+This is a text search-optimized endpoint that provides autocompletion in the Naturalist web UI:
+
+.. image:: docs/images/taxon_autocomplete.png
+    :alt: Taxon autocompletion in the iNaturalist web UI
+    :scale: 60%
+
+This one is a bit more niche, but it provides a fast way to search the iNaturalist taxonomy
+database. Here is an example that will run searches from console input:
+
+.. code-block:: python
+
+    from pyinaturalist.node_api import get_taxa_autocomplete
+
+    while True:
+        query = input("> ")
+        response = get_taxa_autocomplete(q=query, minify=True)
+        print("\n".join(response["results"]))
+
+Example usage::
+
+    > opilio
+    527573:        Genus Opilio
+     47367:        Order Opiliones (Harvestmen)
+     84644:      Species Phalangium opilio (European Harvestman)
+    527419:    Subfamily Opilioninae
+    ...
+    > coleo
+    372759:     Subclass Coleoidea (Coleoids)
+     47208:        Order Coleoptera (Beetles)
+    359229:      Species Coleotechnites florae (Coleotechnites Flower Moth)
+     53502:        Genus Brickellia (brickellbushes)
+    ...
+    <Ctrl-C>
+
+If you get unexpected matches, the search likely matched a synonym, either in the form of a
+common name or an alternative classification. Check the ``matched_term`` property for more
+info. For example:
+
+ .. code-block:: python
+
+    >>> first_result = get_taxa_autocomplete(q='zygoca')['results'][0]
+    >>> first_result["name"]
+    "Schlumbergera truncata"
+    >>> first_result["matched_term"]
+    "Zygocactus truncatus"  # An older synonym for Schlumbergera
