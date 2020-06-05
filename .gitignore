@@ -46,3 +46,4 @@ docs/_build
 
 .idea
 .mypy_cache
+venv/
