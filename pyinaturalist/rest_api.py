@@ -1,22 +1,11 @@
 # Code used to access the (read/write, but slow) Rails based API of iNaturalist
 # See: https://www.inaturalist.org/pages/api+reference
 from time import sleep
-from typing import Dict, Any, List, BinaryIO, Union  # noqa: F401
-
-import requests
+from typing import Dict, Any, List, BinaryIO, Union
 
 from pyinaturalist.constants import THROTTLING_DELAY, INAT_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
-from pyinaturalist.helpers import get_user_agent
-
-
-def _build_headers(access_token: str = None, user_agent: str = None) -> Dict[str, str]:
-    headers = {"User-Agent": get_user_agent(user_agent)}
-
-    if access_token:
-        headers["Authorization"] = "Bearer %s" % access_token
-
-    return headers
+from pyinaturalist.api_requests import delete, get, post, put
 
 
 def get_observation_fields(
@@ -33,10 +22,10 @@ def get_observation_fields(
     """
     payload = {"q": search_query, "page": page}  # type: Dict[str, Union[int, str]]
 
-    response = requests.get(
+    response = get(
         "{base_url}/observation_fields.json".format(base_url=INAT_BASE_URL),
         params=payload,
-        headers=_build_headers(user_agent=user_agent),
+        user_agent=user_agent,
     )
     return response.json()
 
@@ -112,11 +101,12 @@ def put_observation_field_values(
         }
     }
 
-    response = requests.put(
+    response = put(
         "{base_url}/observation_field_values/{id}".format(
             base_url=INAT_BASE_URL, id=observation_field_id
         ),
-        headers=_build_headers(access_token=access_token, user_agent=user_agent),
+        access_token=access_token,
+        user_agent=user_agent,
         json=payload,
     )
 
@@ -148,10 +138,10 @@ def get_access_token(
         "password": password,
     }
 
-    response = requests.post(
+    response = post(
         "{base_url}/oauth/token".format(base_url=INAT_BASE_URL),
-        payload,
-        headers=_build_headers(user_agent=user_agent),
+        json=payload,
+        user_agent=user_agent,
     )
     try:
         return response.json()["access_token"]
@@ -175,9 +165,10 @@ def add_photo_to_observation(
     data = {"observation_photo[observation_id]": observation_id}
     file_data = {"file": file_object}
 
-    response = requests.post(
+    response = post(
         url="{base_url}/observation_photos".format(base_url=INAT_BASE_URL),
-        headers=_build_headers(access_token=access_token, user_agent=user_agent),
+        access_token=access_token,
+        user_agent=user_agent,
         data=data,
         files=file_data,
     )
@@ -210,10 +201,11 @@ def create_observations(
     TODO investigate: according to the doc, we should be able to pass multiple observations (in an array, and in
     renaming observation to observations, but as far as I saw they are not created (while a status of 200 is returned)
     """
-    response = requests.post(
+    response = post(
         url="{base_url}/observations.json".format(base_url=INAT_BASE_URL),
         json=params,
-        headers=_build_headers(access_token=access_token, user_agent=user_agent),
+        access_token=access_token,
+        user_agent=user_agent,
     )
     response.raise_for_status()
     return response.json()
@@ -238,12 +230,13 @@ def update_observation(
             doesn't exists or belongs to another user (as of November 2018).
     """
 
-    response = requests.put(
+    response = put(
         url="{base_url}/observations/{id}.json".format(
             base_url=INAT_BASE_URL, id=observation_id
         ),
         json=params,
-        headers=_build_headers(access_token=access_token, user_agent=user_agent),
+        access_token=access_token,
+        user_agent=user_agent,
     )
     response.raise_for_status()
     return response.json()
@@ -266,15 +259,13 @@ def delete_observation(
     :raise: ObservationNotFound if the requested observation doesn't exists, requests.HTTPError (403) if the
             observation belongs to another user
     """
-
-    headers = _build_headers(access_token=access_token, user_agent=user_agent)
-    headers["Content-type"] = "application/json"
-
-    response = requests.delete(
+    response = delete(
         url="{base_url}/observations/{id}.json".format(
             base_url=INAT_BASE_URL, id=observation_id
         ),
-        headers=headers,
+        access_token=access_token,
+        user_agent=user_agent,
+        headers={"Content-type": "application/json"},
     )
     if response.status_code == 404:
         raise ObservationNotFound

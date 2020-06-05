@@ -9,11 +9,8 @@ from urllib.parse import urljoin
 
 from pyinaturalist.constants import THROTTLING_DELAY, INAT_NODE_API_BASE_URL, RANKS
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.helpers import (
-    merge_two_dicts,
-    get_user_agent,
-    preprocess_request_params,
-)
+from pyinaturalist.helpers import is_int, merge_two_dicts
+from pyinaturalist.api_requests import get
 
 PER_PAGE_RESULTS = 30  # Paginated queries: how many records do we ask per page?
 
@@ -30,11 +27,11 @@ def make_inaturalist_api_get_call(
     kwargs are passed to requests.request
     Returns a requests.Response object
     """
-    params = preprocess_request_params(params)
-    headers = {"Accept": "application/json", "User-Agent": get_user_agent(user_agent)}
-
-    response = requests.get(
-        urljoin(INAT_NODE_API_BASE_URL, endpoint), params, headers=headers, **kwargs
+    response = get(
+        urljoin(INAT_NODE_API_BASE_URL, endpoint),
+        params=params,
+        user_agent=user_agent,
+        **kwargs
     )
     return response
 
@@ -113,7 +110,7 @@ def get_taxa_by_id(taxon_id: int, user_agent: str = None) -> Dict[str, Any]:
 
     :returns: A list of dicts containing taxa results
     """
-    if not isinstance(taxon_id, int):
+    if not is_int(taxon_id):
         raise ValueError("Please specify a single integer for the taxon ID")
     r = make_inaturalist_api_get_call(
         "taxa/{}".format(taxon_id), {}, user_agent=user_agent
@@ -149,7 +146,7 @@ def get_taxa(
     :returns: A list of dicts containing taxa results
     """
     if min_rank or max_rank:
-        params["rank"] = get_rank_range(min_rank, max_rank)
+        params["rank"] = _get_rank_range(min_rank, max_rank)
     r = make_inaturalist_api_get_call("taxa", params, user_agent=user_agent)
     r.raise_for_status()
     return r.json()
@@ -203,7 +200,7 @@ def format_taxon(taxon: Dict) -> str:
     )
 
 
-def get_rank_range(min_rank: str = None, max_rank: str = None) -> List[str]:
+def _get_rank_range(min_rank: str = None, max_rank: str = None) -> List[str]:
     """ Translate min and/or max rank into a list of ranks """
     min_rank_index = _get_rank_index(min_rank) if min_rank else 0
     max_rank_index = _get_rank_index(max_rank) + 1 if max_rank else len(RANKS)

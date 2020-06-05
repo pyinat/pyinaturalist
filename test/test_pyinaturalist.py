@@ -1,13 +1,10 @@
 """
 Tests for `pyinaturalist` module.
 """
-import json
-import os
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import pytest
-import requests_mock
 from requests import HTTPError
 from urllib.parse import urlencode, urljoin
 
@@ -29,26 +26,17 @@ from pyinaturalist.rest_api import (
     delete_observation,
 )
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
+from test.conftest import load_sample_json
 
-
-def _sample_data_path(filename):
-    return os.path.join(os.path.dirname(__file__), "sample_data", filename)
-
-
-def _load_sample_json(filename):
-    with open(_sample_data_path(filename), encoding="utf-8") as fh:
-        return json.load(fh)
-
-
-PAGE_1_JSON_RESPONSE = _load_sample_json("get_observation_fields_page1.json")
-PAGE_2_JSON_RESPONSE = _load_sample_json("get_observation_fields_page2.json")
+PAGE_1_JSON_RESPONSE = load_sample_json("get_observation_fields_page1.json")
+PAGE_2_JSON_RESPONSE = load_sample_json("get_observation_fields_page2.json")
 
 
 class TestNodeApi(object):
     def test_get_observation(self, requests_mock):
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "observations?id=16227955"),
-            json=_load_sample_json("get_observation.json"),
+            json=load_sample_json("get_observation.json"),
             status_code=200,
         )
 
@@ -61,7 +49,7 @@ class TestNodeApi(object):
     def test_get_non_existent_observation(self, requests_mock):
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "observations?id=99999999"),
-            json=_load_sample_json("get_nonexistent_observation.json"),
+            json=load_sample_json("get_nonexistent_observation.json"),
             status_code=200,
         )
         with pytest.raises(ObservationNotFound):
@@ -71,7 +59,7 @@ class TestNodeApi(object):
         params = urlencode({"q": "vespi", "rank": "genus,subgenus,species"})
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "taxa?" + params),
-            json=_load_sample_json("get_taxa.json"),
+            json=load_sample_json("get_taxa.json"),
             status_code=200,
         )
 
@@ -110,11 +98,18 @@ class TestNodeApi(object):
             "taxa", {"rank": expected_ranks}, user_agent=None
         )
 
+    # This is just a spot test of a case in which boolean params should be converted
+    @patch("pyinaturalist.api_requests.requests.request")
+    def test_get_taxa_by_name_and_is_active(self, request):
+        get_taxa(q="Lixus bardanae", is_active=False)
+        request_kwargs = request.call_args[1]
+        assert request_kwargs["params"] == {"q": "Lixus bardanae", "is_active": "false"}
+
     def test_get_taxa_by_id(self, requests_mock):
         taxon_id = 70118
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "taxa/" + str(taxon_id)),
-            json=_load_sample_json("get_taxa_by_id.json"),
+            json=load_sample_json("get_taxa_by_id.json"),
             status_code=200,
         )
 
@@ -133,7 +128,7 @@ class TestNodeApi(object):
     def test_get_taxa_autocomplete(self, requests_mock):
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "taxa/autocomplete?q=vespi"),
-            json=_load_sample_json("get_taxa_autocomplete.json"),
+            json=load_sample_json("get_taxa_autocomplete.json"),
             status_code=200,
         )
 
@@ -149,10 +144,11 @@ class TestNodeApi(object):
         assert first_result["is_active"] is True
         assert len(first_result["ancestor_ids"]) == 11
 
+    # Test usage of format_taxon() with get_taxa_autocomplete()
     def test_get_taxa_autocomplete_minified(self, requests_mock):
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "taxa/autocomplete?q=vespi"),
-            json=_load_sample_json("get_taxa_autocomplete.json"),
+            json=load_sample_json("get_taxa_autocomplete.json"),
             status_code=200,
         )
 
@@ -174,12 +170,10 @@ class TestNodeApi(object):
 
 
 class TestRestApi(object):
-    @requests_mock.Mocker(kw="mock")
-    def test_get_observation_fields(self, **kwargs):
+    def test_get_observation_fields(self, requests_mock):
         """ get_observation_fields() work as expected (basic use)"""
-        mock = kwargs["mock"]
 
-        mock.get(
+        requests_mock.get(
             "https://www.inaturalist.org/observation_fields.json?q=sex&page=2",
             json=PAGE_2_JSON_RESPONSE,
             status_code=200,
@@ -188,25 +182,23 @@ class TestRestApi(object):
         obs_fields = get_observation_fields(search_query="sex", page=2)
         assert obs_fields == PAGE_2_JSON_RESPONSE
 
-    @requests_mock.Mocker(kw="mock")
-    def test_get_all_observation_fields(self, **kwargs):
+    def test_get_all_observation_fields(self, requests_mock):
         """get_all_observation_fields() is able to paginate, accepts a search query and return correct results"""
-        mock = kwargs["mock"]
 
-        mock.get(
+        requests_mock.get(
             "https://www.inaturalist.org/observation_fields.json?q=sex&page=1",
             json=PAGE_1_JSON_RESPONSE,
             status_code=200,
         )
 
-        mock.get(
+        requests_mock.get(
             "https://www.inaturalist.org/observation_fields.json?q=sex&page=2",
             json=PAGE_2_JSON_RESPONSE,
             status_code=200,
         )
 
         page_3_json_response = []
-        mock.get(
+        requests_mock.get(
             "https://www.inaturalist.org/observation_fields.json?q=sex&page=3",
             json=page_3_json_response,
             status_code=200,
@@ -215,12 +207,9 @@ class TestRestApi(object):
         all_fields = get_all_observation_fields(search_query="sex")
         assert all_fields == PAGE_1_JSON_RESPONSE + PAGE_2_JSON_RESPONSE
 
-    @requests_mock.Mocker(kw="mock")
-    def test_get_all_observation_fields_noparam(self, **kwargs):
+    def test_get_all_observation_fields_noparam(self, requests_mock):
         """get_all_observation_fields() can also be called without a search query without errors"""
-
-        mock = kwargs["mock"]
-        mock.get(
+        requests_mock.get(
             "https://www.inaturalist.org/observation_fields.json?page=1",
             json=[],
             status_code=200,
@@ -228,11 +217,9 @@ class TestRestApi(object):
 
         get_all_observation_fields()
 
-    @requests_mock.Mocker(kw="mock")
-    def test_get_access_token_fail(self, **kwargs):
+    def test_get_access_token_fail(self, requests_mock):
         """ If we provide incorrect credentials to get_access_token(), an AuthenticationError is raised"""
 
-        mock = kwargs["mock"]
         rejection_json = {
             "error": "invalid_client",
             "error_description": "Client authentication failed due to "
@@ -240,7 +227,7 @@ class TestRestApi(object):
             "included, or unsupported authentication "
             "method.",
         }
-        mock.post(
+        requests_mock.post(
             "https://www.inaturalist.org/oauth/token",
             json=rejection_json,
             status_code=401,
@@ -249,18 +236,16 @@ class TestRestApi(object):
         with pytest.raises(AuthenticationError):
             get_access_token("username", "password", "app_id", "app_secret")
 
-    @requests_mock.Mocker(kw="mock")
-    def test_get_access_token(self, **kwargs):
+    def test_get_access_token(self, requests_mock):
         """ Test a successful call to get_access_token() """
 
-        mock = kwargs["mock"]
         accepted_json = {
             "access_token": "604e5df329b98eecd22bb0a84f88b68a075a023ac437f2317b02f3a9ba414a08",
             "token_type": "Bearer",
             "scope": "write",
             "created_at": 1539352135,
         }
-        mock.post(
+        requests_mock.post(
             "https://www.inaturalist.org/oauth/token",
             json=accepted_json,
             status_code=200,
@@ -274,12 +259,10 @@ class TestRestApi(object):
             token == "604e5df329b98eecd22bb0a84f88b68a075a023ac437f2317b02f3a9ba414a08"
         )
 
-    @requests_mock.Mocker(kw="mock")
-    def test_update_observation(self, **kwargs):
-        mock = kwargs["mock"]
-        mock.put(
+    def test_update_observation(self, requests_mock):
+        requests_mock.put(
             "https://www.inaturalist.org/observations/17932425.json",
-            json=_load_sample_json("update_observation_result.json"),
+            json=load_sample_json("update_observation_result.json"),
             status_code=200,
         )
 
@@ -296,11 +279,9 @@ class TestRestApi(object):
         assert r[0]["id"] == 17932425
         assert r[0]["description"] == "updated description v2 !"
 
-    @requests_mock.Mocker(kw="mock")
-    def test_update_nonexistent_observation(self, **kwargs):
+    def test_update_nonexistent_observation(self, requests_mock):
         """When we try to update a non-existent observation, iNat returns an error 410 with "obs does not longer exists". """
-        mock = kwargs["mock"]
-        mock.put(
+        requests_mock.put(
             "https://www.inaturalist.org/observations/999999999.json",
             json={"error": "Cette observation n’existe plus."},
             status_code=410,
@@ -320,11 +301,9 @@ class TestRestApi(object):
             "error": "Cette observation n’existe plus."
         }
 
-    @requests_mock.Mocker(kw="mock")
-    def test_update_observation_not_mine(self, **kwargs):
+    def test_update_observation_not_mine(self, requests_mock):
         """When we try to update the obs of another user, iNat returns an error 410 with "obs does not longer exists"."""
-        mock = kwargs["mock"]
-        mock.put(
+        requests_mock.put(
             "https://www.inaturalist.org/observations/16227955.json",
             json={"error": "Cette observation n’existe plus."},
             status_code=410,
@@ -346,13 +325,10 @@ class TestRestApi(object):
             "error": "Cette observation n’existe plus."
         }
 
-    @requests_mock.Mocker(kw="mock")
-    def test_create_observation(self, **kwargs):
-        mock = kwargs["mock"]
-
-        mock.post(
+    def test_create_observation(self, requests_mock):
+        requests_mock.post(
             "https://www.inaturalist.org/observations.json",
-            json=_load_sample_json("create_observation_result.json"),
+            json=load_sample_json("create_observation_result.json"),
             status_code=200,
         )
 
@@ -367,9 +343,7 @@ class TestRestApi(object):
         )  # We have the field, but it's none since we didn't submitted anything
         assert r[0]["taxon_id"] == 55626  # Pieris Rapae @ iNaturalist
 
-    @requests_mock.Mocker(kw="mock")
-    def test_create_observation_fail(self, **kwargs):
-        mock = kwargs["mock"]
+    def test_create_observation_fail(self, requests_mock):
         params = {
             "observation": {
                 "species_guess": "Pieris rapae",
@@ -379,9 +353,9 @@ class TestRestApi(object):
             }
         }
 
-        mock.post(
+        requests_mock.post(
             "https://www.inaturalist.org/observations.json",
-            json=_load_sample_json("create_observation_fail.json"),
+            json=load_sample_json("create_observation_fail.json"),
             status_code=422,
         )
 
@@ -392,12 +366,10 @@ class TestRestApi(object):
             "errors" in excinfo.value.response.json()
         )  # iNat also give details about the errors
 
-    @requests_mock.Mocker(kw="mock")
-    def test_put_observation_field_values(self, **kwargs):
-        mock = kwargs["mock"]
-        mock.put(
+    def test_put_observation_field_values(self, requests_mock):
+        requests_mock.put(
             "https://www.inaturalist.org/observation_field_values/31",
-            json=_load_sample_json("put_observation_field_value_result.json"),
+            json=load_sample_json("put_observation_field_value_result.json"),
             status_code=200,
         )
 
@@ -418,24 +390,20 @@ class TestRestApi(object):
         # https://github.com/inaturalist/inaturalist/issues/2252
         pass
 
-    @requests_mock.Mocker(kw="mock")
-    def test_delete_unexisting_observation(self, **kwargs):
+    def test_delete_unexisting_observation(self, requests_mock):
         """ObservationNotFound is raised if the observation doesn't exists"""
-        mock = kwargs["mock"]
-        mock.delete(
+        requests_mock.delete(
             "https://www.inaturalist.org/observations/24774619.json", status_code=404
         )
 
         with pytest.raises(ObservationNotFound):
             delete_observation(observation_id=24774619, access_token="valid token")
 
-    @requests_mock.Mocker(kw="mock")
-    def test_user_agent(self, **kwargs):
+    def test_user_agent(self, requests_mock):
         # TODO: test for all functions that access the inaturalist API?
-        mock = kwargs["mock"]
-        mock.get(
+        requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "observations?id=16227955"),
-            json=_load_sample_json("get_observation.json"),
+            json=load_sample_json("get_observation.json"),
             status_code=200,
         )
         accepted_json = {
@@ -444,7 +412,7 @@ class TestRestApi(object):
             "scope": "write",
             "created_at": 1539352135,
         }
-        mock.post(
+        requests_mock.post(
             "https://www.inaturalist.org/oauth/token",
             json=accepted_json,
             status_code=200,
@@ -454,15 +422,15 @@ class TestRestApi(object):
 
         # By default, we have a 'Pyinaturalist' user agent:
         get_observation(observation_id=16227955)
-        assert mock._adapter.last_request._request.headers["User-Agent"] == default_ua
+        assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua
         get_access_token(
             "valid_username", "valid_password", "valid_app_id", "valid_app_secret"
         )
-        assert mock._adapter.last_request._request.headers["User-Agent"] == default_ua
+        assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua
 
         # But if the user sets a custom one, it is indeed used:
         get_observation(observation_id=16227955, user_agent="CustomUA")
-        assert mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA"
+        assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA"
         get_access_token(
             "valid_username",
             "valid_password",
@@ -470,28 +438,28 @@ class TestRestApi(object):
             "valid_app_secret",
             user_agent="CustomUA",
         )
-        assert mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA"
+        assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA"
 
         # We can also set it globally:
         pyinaturalist.user_agent = "GlobalUA"
         get_observation(observation_id=16227955)
-        assert mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
+        assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
         get_access_token(
             "valid_username", "valid_password", "valid_app_id", "valid_app_secret"
         )
-        assert mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
+        assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
 
         # And it persists across requests:
         get_observation(observation_id=16227955)
-        assert mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
+        assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
         get_access_token(
             "valid_username", "valid_password", "valid_app_id", "valid_app_secret"
         )
-        assert mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
+        assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
 
         # But if we have a global and local one, the local has priority
         get_observation(observation_id=16227955, user_agent="CustomUA 2")
-        assert mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA 2"
+        assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA 2"
         get_access_token(
             "valid_username",
             "valid_password",
@@ -499,13 +467,13 @@ class TestRestApi(object):
             "valid_app_secret",
             user_agent="CustomUA 2",
         )
-        assert mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA 2"
+        assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA 2"
 
         # We can reset the global settings to the default:
         pyinaturalist.user_agent = pyinaturalist.DEFAULT_USER_AGENT
         get_observation(observation_id=16227955)
-        assert mock._adapter.last_request._request.headers["User-Agent"] == default_ua
+        assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua
         get_access_token(
             "valid_username", "valid_password", "valid_app_id", "valid_app_secret"
         )
-        assert mock._adapter.last_request._request.headers["User-Agent"] == default_ua
+        assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua

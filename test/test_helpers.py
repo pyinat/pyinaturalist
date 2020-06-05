@@ -10,6 +10,9 @@ from pyinaturalist.helpers import (
     convert_list_params,
     strip_empty_params,
 )
+import pyinaturalist.rest_api
+import pyinaturalist.node_api
+from test.conftest import get_module_http_functions, get_mock_args_for_signature
 
 
 TEST_PARAMS = {
@@ -27,6 +30,20 @@ def test_convert_bool_params():
     params = convert_bool_params(TEST_PARAMS)
     assert params["is_active"] == "false"
     assert params["only_id"] == "true"
+
+
+# Test both int and string lists
+def test_convert_list_params():
+    params = convert_list_params(TEST_PARAMS)
+    assert params["preferred_place_id"] == "1,2"
+    assert params["rank"] == "phylum,class"
+
+
+def test_strip_empty_params():
+    params = strip_empty_params(TEST_PARAMS)
+    assert len(params) == 5
+    assert "q" not in params and "locale" not in params
+    assert "is_active" in params and "only_id" in params
 
 
 # Test some recognized date(time) formats, with and without TZ info, in date and non-date params
@@ -49,14 +66,60 @@ def test_convert_datetime_params(tzlocal, param, value, expected):
     assert converted[param] == expected
 
 
-def test_convert_list_params():
-    params = convert_list_params(TEST_PARAMS)
-    assert params["preferred_place_id"] == "1,2"
-    assert params["rank"] == "phylum,class"
+# This is just here so that tests will fail if one of the conversion steps is removed
+@patch("pyinaturalist.helpers.convert_bool_params")
+@patch("pyinaturalist.helpers.convert_datetime_params")
+@patch("pyinaturalist.helpers.convert_list_params")
+@patch("pyinaturalist.helpers.strip_empty_params")
+def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_strip):
+    preprocess_request_params({"id": 1})
+    assert all(
+        [mock_bool.called, mock_datetime.called, mock_list.called, mock_strip.called]
+    )
 
 
-def test_strip_empty_params():
-    params = strip_empty_params(TEST_PARAMS)
-    assert len(params) == 5
-    assert "q" not in params and "locale" not in params
-    assert "is_active" in params and "only_id" in params
+# The following tests ensure that all API requests call preprocess_request_params() at some point
+# Almost all logic except the request is mocked out so this can generically apply to all API functions
+# Using parametrization here so that on failure, pytest will show the specific function that failed
+@pytest.mark.parametrize(
+    "http_function", get_module_http_functions(pyinaturalist.node_api).values()
+)
+@patch("pyinaturalist.node_api._get_rank_range")
+@patch("pyinaturalist.node_api.merge_two_dicts")
+@patch("pyinaturalist.api_requests.preprocess_request_params")
+@patch("pyinaturalist.api_requests.requests.request")
+def test_all_node_requests_use_param_conversion(
+    request,
+    preprocess_request_params,
+    merge_two_dicts,
+    get_rank_range,
+    http_function,
+):
+    request().json.return_value = {"total_results": 1, "results": [{}]}
+    mock_args = get_mock_args_for_signature(http_function)
+    http_function(*mock_args)
+    assert preprocess_request_params.call_count == 1
+
+
+@pytest.mark.parametrize(
+    "http_function", get_module_http_functions(pyinaturalist.rest_api).values()
+)
+@patch("pyinaturalist.rest_api.sleep")
+@patch("pyinaturalist.api_requests.preprocess_request_params")
+@patch("pyinaturalist.api_requests.requests.request")
+def test_all_rest_requests_use_param_conversion(
+    request, preprocess_request_params, sleep, http_function
+):
+    # Handle the one API response that returns a list instead of a dict
+    if http_function == pyinaturalist.rest_api.get_all_observation_fields:
+        request().json.return_value = []
+    else:
+        request().json.return_value = {
+            "total_results": 1,
+            "access_token": "",
+            "results": [],
+        }
+
+    mock_args = get_mock_args_for_signature(http_function)
+    http_function(*mock_args)
+    assert preprocess_request_params.call_count == 1
