@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Dict, Any
+from typing import Any, Dict, Optional
 
 from dateutil.parser import parse as parse_timestamp
 from dateutil.tz import tzlocal
@@ -13,7 +13,7 @@ def merge_two_dicts(x, y):
     return z
 
 
-def preprocess_request_params(params: Dict[str, Any]) -> Dict[str, Any]:
+def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     """Perform type conversions, sanity checks, etc. on request parameters"""
     if not params:
         return {}

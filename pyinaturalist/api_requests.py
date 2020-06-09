@@ -2,12 +2,17 @@
 from logging import getLogger
 from os import getenv
 from typing import Dict
+from unittest.mock import Mock
 
 import requests
 
 import pyinaturalist
-from pyinaturalist.constants import WRITE_HTTP_METHODS, MOCK_RESPONSE
+from pyinaturalist.constants import WRITE_HTTP_METHODS
 from pyinaturalist.helpers import preprocess_request_params
+
+# Mock response content to return in dry-run mode
+MOCK_RESPONSE = Mock(spec=requests.Response)
+MOCK_RESPONSE.json.return_value = {"results": ["nodata"]}
 
 logger = getLogger(__name__)
 
@@ -74,9 +79,7 @@ def is_dry_run_enabled(method: str) -> bool:
     dry_run_enabled = pyinaturalist.DRY_RUN_ENABLED or env_to_bool("DRY_RUN_ENABLED")
     if method in WRITE_HTTP_METHODS:
         return (
-            dry_run_enabled
-            or pyinaturalist.DRY_RUN_WRITE_ONLY
-            or env_to_bool("DRY_RUN_WRITE_ONLY")
+            dry_run_enabled or pyinaturalist.DRY_RUN_WRITE_ONLY or env_to_bool("DRY_RUN_WRITE_ONLY")
         )
     return dry_run_enabled
 
@@ -86,7 +89,7 @@ def env_to_bool(environment_variable: str) -> bool:
     variations (case, None vs. False, etc.)
     """
     env_value = getenv(environment_variable)
-    return env_value and str(env_value).lower() not in ["false", "none"]
+    return bool(env_value) and str(env_value).lower() not in ["false", "none"]
 
 
 def log_request(*args, **kwargs):

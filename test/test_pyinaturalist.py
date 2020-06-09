@@ -210,9 +210,7 @@ class TestRestApi(object):
     def test_get_all_observation_fields_noparam(self, requests_mock):
         """get_all_observation_fields() can also be called without a search query without errors"""
         requests_mock.get(
-            "https://www.inaturalist.org/observation_fields.json?page=1",
-            json=[],
-            status_code=200,
+            "https://www.inaturalist.org/observation_fields.json?page=1", json=[], status_code=200,
         )
 
         get_all_observation_fields()
@@ -228,9 +226,7 @@ class TestRestApi(object):
             "method.",
         }
         requests_mock.post(
-            "https://www.inaturalist.org/oauth/token",
-            json=rejection_json,
-            status_code=401,
+            "https://www.inaturalist.org/oauth/token", json=rejection_json, status_code=401,
         )
 
         with pytest.raises(AuthenticationError):
@@ -246,18 +242,14 @@ class TestRestApi(object):
             "created_at": 1539352135,
         }
         requests_mock.post(
-            "https://www.inaturalist.org/oauth/token",
-            json=accepted_json,
-            status_code=200,
+            "https://www.inaturalist.org/oauth/token", json=accepted_json, status_code=200,
         )
 
         token = get_access_token(
             "valid_username", "valid_password", "valid_app_id", "valid_app_secret"
         )
 
-        assert (
-            token == "604e5df329b98eecd22bb0a84f88b68a075a023ac437f2317b02f3a9ba414a08"
-        )
+        assert token == "604e5df329b98eecd22bb0a84f88b68a075a023ac437f2317b02f3a9ba414a08"
 
     def test_update_observation(self, requests_mock):
         requests_mock.put(
@@ -270,9 +262,7 @@ class TestRestApi(object):
             "ignore_photos": 1,
             "observation": {"description": "updated description v2 !"},
         }
-        r = update_observation(
-            observation_id=17932425, params=p, access_token="valid token"
-        )
+        r = update_observation(observation_id=17932425, params=p, access_token="valid token")
 
         # If all goes well we got a single element representing the updated observation, enclosed in a list.
         assert len(r) == 1
@@ -293,13 +283,9 @@ class TestRestApi(object):
         }
 
         with pytest.raises(HTTPError) as excinfo:
-            update_observation(
-                observation_id=999999999, params=p, access_token="valid token"
-            )
+            update_observation(observation_id=999999999, params=p, access_token="valid token")
         assert excinfo.value.response.status_code == 410
-        assert excinfo.value.response.json() == {
-            "error": "Cette observation n’existe plus."
-        }
+        assert excinfo.value.response.json() == {"error": "Cette observation n’existe plus."}
 
     def test_update_observation_not_mine(self, requests_mock):
         """When we try to update the obs of another user, iNat returns an error 410 with "obs does not longer exists"."""
@@ -316,14 +302,10 @@ class TestRestApi(object):
 
         with pytest.raises(HTTPError) as excinfo:
             update_observation(
-                observation_id=16227955,
-                params=p,
-                access_token="valid token for another user",
+                observation_id=16227955, params=p, access_token="valid token for another user",
             )
         assert excinfo.value.response.status_code == 410
-        assert excinfo.value.response.json() == {
-            "error": "Cette observation n’existe plus."
-        }
+        assert excinfo.value.response.json() == {"error": "Cette observation n’existe plus."}
 
     def test_create_observation(self, requests_mock):
         requests_mock.post(
@@ -362,9 +344,7 @@ class TestRestApi(object):
         with pytest.raises(HTTPError) as excinfo:
             create_observations(params=params, access_token="valid token")
         assert excinfo.value.response.status_code == 422
-        assert (
-            "errors" in excinfo.value.response.json()
-        )  # iNat also give details about the errors
+        assert "errors" in excinfo.value.response.json()  # iNat also give details about the errors
 
     def test_put_observation_field_values(self, requests_mock):
         requests_mock.put(
@@ -413,9 +393,7 @@ class TestRestApi(object):
             "created_at": 1539352135,
         }
         requests_mock.post(
-            "https://www.inaturalist.org/oauth/token",
-            json=accepted_json,
-            status_code=200,
+            "https://www.inaturalist.org/oauth/token", json=accepted_json, status_code=200,
         )
 
         default_ua = "Pyinaturalist/{v}".format(v=pyinaturalist.__version__)
@@ -423,9 +401,7 @@ class TestRestApi(object):
         # By default, we have a 'Pyinaturalist' user agent:
         get_observation(observation_id=16227955)
         assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua
-        get_access_token(
-            "valid_username", "valid_password", "valid_app_id", "valid_app_secret"
-        )
+        get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
         assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua
 
         # But if the user sets a custom one, it is indeed used:
@@ -444,17 +420,13 @@ class TestRestApi(object):
         pyinaturalist.user_agent = "GlobalUA"
         get_observation(observation_id=16227955)
         assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
-        get_access_token(
-            "valid_username", "valid_password", "valid_app_id", "valid_app_secret"
-        )
+        get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
         assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
 
         # And it persists across requests:
         get_observation(observation_id=16227955)
         assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
-        get_access_token(
-            "valid_username", "valid_password", "valid_app_id", "valid_app_secret"
-        )
+        get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
         assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
 
         # But if we have a global and local one, the local has priority
@@ -473,7 +445,5 @@ class TestRestApi(object):
         pyinaturalist.user_agent = pyinaturalist.DEFAULT_USER_AGENT
         get_observation(observation_id=16227955)
         assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua
-        get_access_token(
-            "valid_username", "valid_password", "valid_app_id", "valid_app_secret"
-        )
+        get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
         assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua

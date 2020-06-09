@@ -15,7 +15,6 @@ Contents:
 
    reference
    contributing
-   infrastructure
    authors
    history
 

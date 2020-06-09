@@ -43,9 +43,7 @@ def get_all_observation_fields(
     page = 1
 
     while True:
-        r = get_observation_fields(
-            search_query=search_query, page=page, user_agent=user_agent
-        )
+        r = get_observation_fields(search_query=search_query, page=page, user_agent=user_agent)
 
         if not r:
             return results
@@ -150,10 +148,7 @@ def get_access_token(
 
 
 def add_photo_to_observation(
-    observation_id: int,
-    file_object: BinaryIO,
-    access_token: str,
-    user_agent: str = None,
+    observation_id: int, file_object: BinaryIO, access_token: str, user_agent: str = None,
 ):
     """Upload a picture and assign it to an existing observation.
 
@@ -212,10 +207,7 @@ def create_observations(
 
 
 def update_observation(
-    observation_id: int,
-    params: Dict[str, Any],
-    access_token: str,
-    user_agent: str = None,
+    observation_id: int, params: Dict[str, Any], access_token: str, user_agent: str = None,
 ) -> List[Dict[str, Any]]:
     """
     Update a single observation. See https://www.inaturalist.org/pages/api+reference#put-observations-id
@@ -231,9 +223,7 @@ def update_observation(
     """
 
     response = put(
-        url="{base_url}/observations/{id}.json".format(
-            base_url=INAT_BASE_URL, id=observation_id
-        ),
+        url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
         json=params,
         access_token=access_token,
         user_agent=user_agent,
@@ -260,9 +250,7 @@ def delete_observation(
             observation belongs to another user
     """
     response = delete(
-        url="{base_url}/observations/{id}.json".format(
-            base_url=INAT_BASE_URL, id=observation_id
-        ),
+        url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
         access_token=access_token,
         user_agent=user_agent,
         headers={"Content-type": "application/json"},
