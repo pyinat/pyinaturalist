@@ -6,7 +6,7 @@ from typing import Dict
 import requests
 
 import pyinaturalist
-from pyinaturalist.constants import DRY_RUN_ENABLED, MOCK_RESPONSE
+from pyinaturalist.constants import WRITE_HTTP_METHODS, MOCK_RESPONSE
 from pyinaturalist.helpers import preprocess_request_params
 
 logger = getLogger(__name__)
@@ -58,21 +58,38 @@ def request(
         headers["Authorization"] = "Bearer %s" % access_token
     params = preprocess_request_params(params)
 
-    if is_dry_run_enabled():
+    if is_dry_run_enabled(method):
+        logger.debug("Dry-run mode enabled; mocking request")
         log_request(method, url, params=params, headers=headers, **kwargs)
         return MOCK_RESPONSE
     else:
         return requests.request(method, url, params=params, headers=headers, **kwargs)
 
 
-def is_dry_run_enabled() -> bool:
+def is_dry_run_enabled(method: str) -> bool:
     """ A wrapper to determine if dry-run (aka test mode) has been enabled via either
-    the constant or the environment variable
+    a constant or an environment variable. Dry-run mode may be enabled for either write
+    requests, or all requests.
     """
-    return DRY_RUN_ENABLED or getenv("DRY_RUN_ENABLED")
+    dry_run_enabled = pyinaturalist.DRY_RUN_ENABLED or env_to_bool("DRY_RUN_ENABLED")
+    if method in WRITE_HTTP_METHODS:
+        return (
+            dry_run_enabled
+            or pyinaturalist.DRY_RUN_WRITE_ONLY
+            or env_to_bool("DRY_RUN_WRITE_ONLY")
+        )
+    return dry_run_enabled
+
+
+def env_to_bool(environment_variable: str) -> bool:
+    """ Translate an environment variable to a boolean value, accounting for minor
+    variations (case, None vs. False, etc.)
+    """
+    env_value = getenv(environment_variable)
+    return env_value and str(env_value).lower() not in ["false", "none"]
 
 
 def log_request(*args, **kwargs):
     """ Log all relevant information about an HTTP request """
     kwargs_strs = ["{}={}".format(k, v) for k, v in kwargs.items()]
-    logger.info('Request: {}'.format(', '.join(list(args) + kwargs_strs)))
+    logger.info("Request: {}".format(", ".join(list(args) + kwargs_strs)))

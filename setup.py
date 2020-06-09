@@ -28,7 +28,7 @@ setup(
     packages=["pyinaturalist"],
     package_dir={"pyinaturalist": "pyinaturalist"},
     include_package_data=True,
-    install_requires=["python-dateutil>=2.0", "requests>=2.21.0", "typing>=3.7.4",],
+    install_requires=["python-dateutil>=2.0", "requests>=2.21.0", "typing>=3.7.4"],
     extras_require={
         "dev": [
             "black",
@@ -40,7 +40,7 @@ setup(
             "sphinx-autodoc-typehints",
             "sphinx-rtd-theme",
             "tox",
-            "twine"
+            "twine",
         ]
     },
     license="MIT",

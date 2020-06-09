@@ -7,7 +7,9 @@ INAT_BASE_URL = "https://www.inaturalist.org"
 THROTTLING_DELAY = 1  # In seconds, support <1 floats such as 0.1
 
 # Toggle dry-run mode: this will run and log mock HTTP requests instead of real ones
-DRY_RUN_ENABLED = False
+DRY_RUN_ENABLED = False  # Mock all requests, including GET
+DRY_RUN_WRITE_ONLY = False  # Only mock 'write' requests
+WRITE_HTTP_METHODS = ["PATCH", "POST", "PUT", "DELETE"]
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=requests.Response)
 MOCK_RESPONSE.json.return_value = {"results": ["nodata"]}
