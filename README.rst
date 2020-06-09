@@ -236,3 +236,46 @@ info. For example:
     "Schlumbergera truncata"
     >>> first_result["matched_term"]
     "Zygocactus truncatus"  # An older synonym for Schlumbergera
+
+
+Dry-run mode
+------------
+While developing & testing an application that uses an API client like pyinaturalist, it can be
+useful to temporarily mock out HTTP requests, especially requests that add, modify, or delete
+real data. Pyinaturalist has some settings to make this easier.
+
+Dry-run all requests
+^^^^^^^^^^^^^^^^^^^^
+To enable dry-run mode, set the ``DRY_RUN_ENABLED`` variable. When set, requests will not be sent
+but will be logged instead:
+
+.. code-block:: python
+
+    >>> import pyinaturalist
+    >>> pyinaturalist.DRY_RUN_ENABLED = True
+    >>> get_taxa(q='warbler', locale=1)
+    {'results': ['nodata']}
+    INFO:pyinaturalist.api_requests:Request: GET, https://api.inaturalist.org/v1/taxa,
+        params={'q': 'warbler', 'locale': 1},
+        headers={'Accept': 'application/json', 'User-Agent': 'Pyinaturalist/0.9.1'}
+
+Or, if you are running your application in a command-line environment, you can set this as an
+environment variable instead (case-insensitive):
+
+.. code-block:: bash
+
+    $ export DRY_RUN_ENABLED=true
+    $ python my_script.py
+
+Dry-run only write requests
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+If you would like to run ``GET`` requests but mock out any requests that modify data
+(``POST``, ``PUT``, ``DELETE``, etc.), you can use the ``DRY_RUN_WRITE_ONLY`` variable
+instead:
+
+.. code-block:: python
+
+    >>> pyinaturalist.DRY_RUN_WRITE_ONLY = True
+    # Also works as an environment variable
+    >>> import os
+    >>> os.environ["DRY_RUN_WRITE_ONLY"] = 'True'

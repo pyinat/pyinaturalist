@@ -40,7 +40,7 @@ setup(
             "sphinx-autodoc-typehints",
             "sphinx-rtd-theme",
             "tox",
-            "twine"
+            "twine",
         ]
     },
     license="MIT",
