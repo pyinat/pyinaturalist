@@ -9,6 +9,7 @@ History
 * Added more info & examples to README for taxa endpoints
 * Added `minify` option to `node_api.get_taxa_autocomplete()`
 * Convert all date and datetime parameters to timezone-aware ISO 8601 timestamps
+* Added a dry-run mode to mock out API requests for testing
 
 0.9.1 (2020-05-26)
 ++++++++++++++++++
