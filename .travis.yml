@@ -10,13 +10,28 @@ matrix:
   - python: "3.5"
   - python: "3.6"
   - python: "3.7"
-  - python: "3.8-dev"
-    env: TOXENV=py38
+  - python: "3.8"
+  # Run a separate job for combined code quality checks
+  - python: "3.8"
+    env: TOXENV=coverage,mypy,style
 
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+# Install dependencies & run tests
 install: 
-  - pip install tox-travis
-
-# command to run tests, e.g. python setup.py test
+  - pip install tox-travis coveralls
 script:
   - tox
+# Run coveralls after 'coverage' env
+after_success:
+  - if [[ $TOXENV == *"coverage"* ]]; then coveralls; fi
+
+# Deploy to PyPI on git tags only (and master branch only by default)
+deploy:
+  provider: pypi
+  user: __token__
+  password:
+    secure: s7FY53bvG0e+xS/pVQC+SX/eGnZR7alAqpE3n6HZvGQec0kGCE3VofCpGVUyguUiUGmm027xIIdSq6Gpx+lBhWRGmf36RDUAaBOV2DVCgEdPf8nX8Gv4vinOepXWVTYal7QNXiDZCiryyA2O+/28A4abGTS37w+zUQyM70UgJwI9hO1zC4dj4maDY2WE1XHS0WHuI3+iRYc/48d5Pc58gDuGWB4adZ7lODB81/d6StxVJkFCCcVcDwpOAJPldHywULxhfQDu3+vwfchP0V7bMOd+eBwK799gfXERmuZROqxVRuNSRgd8a+TBOzOL7ckW66xyCBN+PT8sVro3P6ZJ9FE65f+opS+9Nz+nUK4Y7QhRNu8D4aUpwfJW8UrxUVl474Ni5YqdSPaARHzJsRi2H+Ft288mawzctsoV6xY/LUDh9d+p+qFR3BTVwyUnQC9NcrrBJl9CnHlsqMH2BXSP5Hr+UCP0Mnjq8UqBRIxk4WSx+4UmrtDzSAO4q1GA/Zo9SaXUyl2D/TodpkWqhgYJ9SdcyXITIhMISTCOtOAVHs1dzYkwKNf2Y+rvopfFXS037sAQm+k9MxyBpQyYaObZj+HS/k/QVwuIWOncyZOqcSb/DrLGiwEVe2aTSg/7YEFshnp0tswDhsNLv6jT9gRd4cB+cnVv3siZisvPpYIamH0=
+  distributions: sdist bdist_wheel
+  skip_cleanup: true
+  skip_existing: true
+  on:
+    tags: true

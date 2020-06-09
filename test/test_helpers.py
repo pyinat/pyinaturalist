@@ -73,9 +73,7 @@ def test_convert_datetime_params(tzlocal, param, value, expected):
 @patch("pyinaturalist.helpers.strip_empty_params")
 def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_strip):
     preprocess_request_params({"id": 1})
-    assert all(
-        [mock_bool.called, mock_datetime.called, mock_list.called, mock_strip.called]
-    )
+    assert all([mock_bool.called, mock_datetime.called, mock_list.called, mock_strip.called])
 
 
 # The following tests ensure that all API requests call preprocess_request_params() at some point

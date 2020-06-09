@@ -1,40 +1,25 @@
 #!/usr/bin/env python
+from setuptools import setup, find_packages
+from pyinaturalist import __version__
 
-import os
-import sys
-
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
-
-
-if sys.argv[-1] == "publish":
-    os.system("python setup.py sdist upload")
-    sys.exit()
-
-readme = open("README.rst").read()
-
-history = open("HISTORY.rst").read().replace(".. :changelog:", "")
 
 setup(
     name="pyinaturalist",
-    version="0.9.1",
-    description="Python client for the iNaturalist APIs",
-    long_description=readme + "\n\n" + history,
+    version=__version__,
     author="Nicolas Noé",
     author_email="nicolas@niconoe.eu",
     url="https://github.com/niconoe/pyinaturalist",
-    packages=["pyinaturalist"],
-    package_dir={"pyinaturalist": "pyinaturalist"},
+    packages=find_packages(),
     include_package_data=True,
     install_requires=["python-dateutil>=2.0", "requests>=2.21.0", "typing>=3.7.4"],
     extras_require={
         "dev": [
             "black",
+            "coveralls",
             "flake8",
             "mypy",
             "pytest",
+            "pytest-cov",
             "requests-mock>=1.7",
             "Sphinx",
             "sphinx-autodoc-typehints",
@@ -43,19 +28,5 @@ setup(
             "twine",
         ]
     },
-    license="MIT",
     zip_safe=False,
-    keywords="pyinaturalist",
-    classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
-        "Natural Language :: English",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-    ],
 )

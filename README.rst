@@ -12,6 +12,10 @@ pyinaturalist
     :target: https://pyinaturalist.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://coveralls.io/repos/github/niconoe/pyinaturalist/badge.svg?branch=dev
+    :target: https://coveralls.io/github/niconoe/pyinaturalist?branch=dev
+
+
 Python client for the `iNaturalist APIs <https://www.inaturalist.org/pages/api+reference>`_.
 
 Status
