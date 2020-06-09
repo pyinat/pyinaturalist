@@ -1,6 +1,3 @@
-import requests
-from unittest.mock import Mock
-
 INAT_NODE_API_BASE_URL = "https://api.inaturalist.org/v1/"
 INAT_BASE_URL = "https://www.inaturalist.org"
 
@@ -10,9 +7,6 @@ THROTTLING_DELAY = 1  # In seconds, support <1 floats such as 0.1
 DRY_RUN_ENABLED = False  # Mock all requests, including GET
 DRY_RUN_WRITE_ONLY = False  # Only mock 'write' requests
 WRITE_HTTP_METHODS = ["PATCH", "POST", "PUT", "DELETE"]
-# Mock response content to return in dry-run mode
-MOCK_RESPONSE = Mock(spec=requests.Response)
-MOCK_RESPONSE.json.return_value = {"results": ["nodata"]}
 
 # All request parameters from both Node API and REST (Rails) API that accept date or datetime strings
 DATETIME_PARAMS = [

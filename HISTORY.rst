@@ -1,10 +1,9 @@
-.. :changelog:
 
 History
 -------
 
-0.10.0 (TBD)
-+++++++++++++++++
+0.10.0 (2020-06-TBD)
+++++++++++++++++++++
 
 * Added more info & examples to README for taxa endpoints
 * Added `minify` option to `node_api.get_taxa_autocomplete()`

@@ -28,10 +28,7 @@ def make_inaturalist_api_get_call(
     Returns a requests.Response object
     """
     response = get(
-        urljoin(INAT_NODE_API_BASE_URL, endpoint),
-        params=params,
-        user_agent=user_agent,
-        **kwargs
+        urljoin(INAT_NODE_API_BASE_URL, endpoint), params=params, user_agent=user_agent, **kwargs
     )
     return response
 
@@ -59,9 +56,7 @@ def get_observations(params: Dict, user_agent: str = None) -> Dict[str, Any]:
     Returns the parsed JSON returned by iNaturalist (observations in r['results'], a list of dicts)
     """
 
-    r = make_inaturalist_api_get_call(
-        "observations", params=params, user_agent=user_agent
-    )
+    r = make_inaturalist_api_get_call("observations", params=params, user_agent=user_agent)
     return r.json()
 
 
@@ -83,12 +78,7 @@ def get_all_observations(params: Dict, user_agent: str = None) -> List[Dict[str,
     while True:
         iteration_params = merge_two_dicts(
             params,
-            {
-                "order_by": "id",
-                "order": "asc",
-                "per_page": PER_PAGE_RESULTS,
-                "id_above": id_above,
-            },
+            {"order_by": "id", "order": "asc", "per_page": PER_PAGE_RESULTS, "id_above": id_above,},
         )
 
         page_obs = get_observations(params=iteration_params, user_agent=user_agent)
@@ -112,9 +102,7 @@ def get_taxa_by_id(taxon_id: int, user_agent: str = None) -> Dict[str, Any]:
     """
     if not is_int(taxon_id):
         raise ValueError("Please specify a single integer for the taxon ID")
-    r = make_inaturalist_api_get_call(
-        "taxa/{}".format(taxon_id), {}, user_agent=user_agent
-    )
+    r = make_inaturalist_api_get_call("taxa/{}".format(taxon_id), {}, user_agent=user_agent)
     r.raise_for_status()
     return r.json()
 
@@ -152,9 +140,7 @@ def get_taxa(
     return r.json()
 
 
-def get_taxa_autocomplete(
-    user_agent: str = None, minify: bool = False, **params
-) -> Dict[str, Any]:
+def get_taxa_autocomplete(user_agent: str = None, minify: bool = False, **params) -> Dict[str, Any]:
     """Given a query string, returns taxa with names starting with the search term
     See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_autocomplete
 
@@ -175,9 +161,7 @@ def get_taxa_autocomplete(
 
     :returns: A list of dicts containing taxa results
     """
-    r = make_inaturalist_api_get_call(
-        "taxa/autocomplete", params, user_agent=user_agent
-    )
+    r = make_inaturalist_api_get_call("taxa/autocomplete", params, user_agent=user_agent)
     r.raise_for_status()
     json_response = r.json()
 
@@ -193,10 +177,7 @@ def format_taxon(taxon: Dict) -> str:
     # Visually align taxon IDs (< 7 chars) and ranks (< 11 chars)
     common = taxon.get("preferred_common_name")
     return "{:>8}: {:>12} {}{}".format(
-        taxon["id"],
-        taxon["rank"].title(),
-        taxon["name"],
-        " ({})".format(common) if common else "",
+        taxon["id"], taxon["rank"].title(), taxon["name"], " ({})".format(common) if common else "",
     )
 
 

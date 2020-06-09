@@ -23,9 +23,7 @@ def get_module_functions(module):
 def get_module_http_functions(module):
     """ Get all functions belonging to a module and prefixed with an HTTP method """
     return {
-        name: func
-        for name, func in getmembers(module)
-        if HTTP_FUNC_PATTERN.match(name.lower())
+        name: func for name, func in getmembers(module) if HTTP_FUNC_PATTERN.match(name.lower())
     }
 
 
