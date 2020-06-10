@@ -2,19 +2,23 @@
 pyinaturalist
 =============================
 
-.. image:: https://badge.fury.io/py/pyinaturalist.png
-    :target: http://badge.fury.io/py/pyinaturalist
-
 .. image:: https://www.travis-ci.com/niconoe/pyinaturalist.svg?branch=master
     :target: https://www.travis-ci.com/niconoe/pyinaturalist
-
+    :alt: Build Status
 .. image:: https://readthedocs.org/projects/pyinaturalist/badge/?version=latest
     :target: https://pyinaturalist.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
-
 .. image:: https://coveralls.io/repos/github/niconoe/pyinaturalist/badge.svg?branch=dev
     :target: https://coveralls.io/github/niconoe/pyinaturalist?branch=dev
-
+.. image:: https://img.shields.io/pypi/v/pyinaturalist?color=blue
+    :target: https://pypi.org/project/pyinaturalist
+    :alt: PyPI
+.. image:: https://img.shields.io/pypi/pyversions/pyinaturalist
+    :target: https://pypi.org/project/pyinaturalist
+    :alt: PyPI - Python Version
+.. image:: https://img.shields.io/pypi/format/pyinaturalist?color=blue
+    :target: https://pypi.org/project/pyinaturalist
+    :alt: PyPI - Format
 
 Python client for the `iNaturalist APIs <https://www.inaturalist.org/pages/api+reference>`_.
 

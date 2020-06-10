@@ -3,12 +3,15 @@ Shared unit test-related utilities.
 Pytest will also automatically pick up any fixtures defined here.
 """
 import json
+import logging
 import os
 import re
 from inspect import getmembers, isfunction, signature, Parameter
 from unittest.mock import MagicMock
 
 HTTP_FUNC_PATTERN = re.compile(r"(get|put|post|delete)_.+")
+# Enable logging for urllib and other external loggers
+logging.basicConfig(level="INFO")
 
 
 def get_module_functions(module):
