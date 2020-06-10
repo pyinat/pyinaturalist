@@ -1,6 +1,10 @@
 #!/usr/bin/env python
+from sys import version_info
 from setuptools import setup, find_packages
 from pyinaturalist import __version__
+
+# Only install the typing backport if we're on python < 3.5
+backports = ["typing>=3.7.4"] if version_info < (3, 5) else []
 
 
 setup(
@@ -11,22 +15,23 @@ setup(
     url="https://github.com/niconoe/pyinaturalist",
     packages=find_packages(),
     include_package_data=True,
-    install_requires=["python-dateutil>=2.0", "requests>=2.21.0", "typing>=3.7.4"],
+    install_requires=["python-dateutil>=2.0", "requests>=2.21.0"] + backports,
     extras_require={
         "dev": [
             "black",
-            "coveralls",
             "flake8",
             "mypy",
             "pytest",
             "pytest-cov",
             "requests-mock>=1.7",
+            "semantic-version",
             "Sphinx",
             "sphinx-autodoc-typehints",
             "sphinx-rtd-theme",
             "tox",
-            "twine",
-        ]
+        ],
+        # Additional packages used only within CI jobs
+        "build": ["coveralls", "semantic-version", "tox-travis"],
     },
     zip_safe=False,
 )
