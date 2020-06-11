@@ -40,7 +40,8 @@ output/*.html
 output/*/index.html
 
 # Sphinx
-docs/_build
+docs/_build/
+docs/docs/
 
 # Mac OS X
 .DS_Store
