@@ -24,14 +24,13 @@ setup(
             "pytest",
             "pytest-cov",
             "requests-mock>=1.7",
-            "semantic-version",
             "Sphinx",
             "sphinx-autodoc-typehints",
             "sphinx-rtd-theme",
             "tox",
         ],
         # Additional packages used only within CI jobs
-        "build": ["coveralls", "semantic-version", "tox-travis"],
+        "build": ["coveralls", "tox-travis"],
     },
     zip_safe=False,
 )

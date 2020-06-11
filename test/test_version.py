@@ -1,8 +1,6 @@
 # A couple tests to make sure that versioning works as expected within Travis
 # So, for example, the build would fail before accidentally publishing a bad version
-from sys import version_info
 from unittest.mock import patch
-import pytest
 
 
 # Mocking out getenv() instead of actually setting envars so this doesn't affect other tests
@@ -13,7 +11,6 @@ def test_version__stable_release(mock_getenv):
     assert "dev" not in pyinaturalist.__version__
 
 
-@pytest.mark.skipif(version_info < (3, 6), reason="semantic-version requires python >= 3.6")
 @patch("pyinaturalist.getenv", side_effect=["true", "dev", "123"])
 def test_version__pre_release(mock_getenv):
     import pyinaturalist

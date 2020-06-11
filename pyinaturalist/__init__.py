@@ -16,22 +16,13 @@ def get_prerelease_version(version: str) -> str:
     """ If we're running in a Travis CI job on the dev branch, get a prerelease version using the
     current build number. For example: ``1.0.0 -> 1.0.0-dev.123``
 
-    This could also be done in ``.travis.yml``, but it's a bit cleaner to do in python, and
-    ``semantic_version`` provides some extra sanity checks.
+    This could also be done in ``.travis.yml``, but it's a bit cleaner to do in python.
     """
     if not (getenv("TRAVIS") == "true" and getenv("TRAVIS_BRANCH") == "dev"):
         return version
-    # If we happen to be in a dev build, this will prevent the initial 'pip install' from failing
-    try:
-        from semantic_version import Version
-    except ImportError:
-        return version
-
-    new_version = Version(version)
-    new_version.prerelease = ("dev", getenv("TRAVIS_BUILD_NUMBER", "0"))
+    new_version = '{}-dev.{}'.format(version, getenv("TRAVIS_BUILD_NUMBER", "0"))
     getLogger(__name__).info("Using pre-release version: {}".format(new_version))
-    return str(new_version)
-
+    return new_version
 
 # This won't modify the version outside of Travis
 __version__ = get_prerelease_version(__version__)
