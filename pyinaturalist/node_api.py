@@ -1,5 +1,7 @@
-# Code to access the (read-only, but fast) Node based public iNaturalist API
-# See: http://api.inaturalist.org/v1/docs/
+"""
+Code to access the (read-only, but fast) Node based public iNaturalist API
+See: http://api.inaturalist.org/v1/docs/
+"""
 from logging import getLogger
 from time import sleep
 from typing import Dict, Any, List
@@ -7,12 +9,21 @@ from typing import Dict, Any, List
 import requests
 from urllib.parse import urljoin
 
-from pyinaturalist.constants import THROTTLING_DELAY, INAT_NODE_API_BASE_URL, RANKS
+from pyinaturalist.constants import (
+    DEFAULT_OBSERVATION_ATTRS,
+    INAT_NODE_API_BASE_URL,
+    PER_PAGE_RESULTS,
+    THROTTLING_DELAY,
+)
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.helpers import is_int, merge_two_dicts
+from pyinaturalist.request_params import is_int, merge_two_dicts
+from pyinaturalist.response_format import (
+    format_taxon,
+    as_geojson_feature_collection,
+    _get_rank_range,
+    flatten_nested_params,
+)
 from pyinaturalist.api_requests import get
-
-PER_PAGE_RESULTS = 30  # Paginated queries: how many records do we ask per page?
 
 logger = getLogger(__name__)
 
@@ -89,6 +100,23 @@ def get_all_observations(params: Dict, user_agent: str = None) -> List[Dict[str,
 
         sleep(THROTTLING_DELAY)
         id_above = results[-1]["id"]
+
+
+def get_geojson_observations(properties: List[str] = None, **kwargs) -> Dict[str, Any]:
+    """ Get all observation results combined into a GeoJSON ``FeatureCollection``.
+
+    Args:
+        properties: Properties from observation results to include as GeoJSON properties
+        kwargs: Arguments for :py:func:`.get_observations`
+
+    Returns:
+        A list of dicts containing taxa results
+    """
+    observations = get_all_observations(kwargs)
+    return as_geojson_feature_collection(
+        (flatten_nested_params(obs) for obs in observations),
+        properties=properties or DEFAULT_OBSERVATION_ATTRS,
+    )
 
 
 def get_taxa_by_id(taxon_id: int, user_agent: str = None) -> Dict[str, Any]:
@@ -168,27 +196,3 @@ def get_taxa_autocomplete(user_agent: str = None, minify: bool = False, **params
     if minify:
         json_response["results"] = [format_taxon(t) for t in json_response["results"]]
     return json_response
-
-
-def format_taxon(taxon: Dict) -> str:
-    """Format a taxon result into a single string containing taxon ID, rank, and name
-    (including common name, if available).
-    """
-    # Visually align taxon IDs (< 7 chars) and ranks (< 11 chars)
-    common = taxon.get("preferred_common_name")
-    return "{:>8}: {:>12} {}{}".format(
-        taxon["id"], taxon["rank"].title(), taxon["name"], " ({})".format(common) if common else "",
-    )
-
-
-def _get_rank_range(min_rank: str = None, max_rank: str = None) -> List[str]:
-    """ Translate min and/or max rank into a list of ranks """
-    min_rank_index = _get_rank_index(min_rank) if min_rank else 0
-    max_rank_index = _get_rank_index(max_rank) + 1 if max_rank else len(RANKS)
-    return RANKS[min_rank_index:max_rank_index]
-
-
-def _get_rank_index(rank: str) -> int:
-    if rank not in RANKS:
-        raise ValueError("Invalid rank")
-    return RANKS.index(rank)

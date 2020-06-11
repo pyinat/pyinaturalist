@@ -2,6 +2,7 @@
 Tests for `pyinaturalist` module.
 """
 from datetime import datetime, timedelta
+from sys import version_info
 from unittest.mock import patch
 
 import pytest
@@ -9,16 +10,19 @@ from requests import HTTPError
 from urllib.parse import urlencode, urljoin
 
 import pyinaturalist
-from pyinaturalist.constants import INAT_NODE_API_BASE_URL
+from pyinaturalist.constants import INAT_NODE_API_BASE_URL, INAT_BASE_URL
 from pyinaturalist.node_api import (
     get_observation,
+    get_geojson_observations,
     get_taxa,
     get_taxa_by_id,
     get_taxa_autocomplete,
 )
 from pyinaturalist.rest_api import (
+    OBSERVATION_FORMATS,
     get_access_token,
     get_all_observation_fields,
+    get_observations,
     get_observation_fields,
     update_observation,
     create_observations,
@@ -26,17 +30,22 @@ from pyinaturalist.rest_api import (
     delete_observation,
 )
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
-from test.conftest import load_sample_json
+from test.conftest import load_sample_data
 
-PAGE_1_JSON_RESPONSE = load_sample_json("get_observation_fields_page1.json")
-PAGE_2_JSON_RESPONSE = load_sample_json("get_observation_fields_page2.json")
+PAGE_1_JSON_RESPONSE = load_sample_data("get_observation_fields_page1.json")
+PAGE_2_JSON_RESPONSE = load_sample_data("get_observation_fields_page2.json")
+
+
+def get_observations_response(response_format):
+    response_format = response_format.replace("widget", "js")
+    return str(load_sample_data("get_observations.{}".format(response_format)))
 
 
 class TestNodeApi(object):
     def test_get_observation(self, requests_mock):
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "observations?id=16227955"),
-            json=load_sample_json("get_observation.json"),
+            json=load_sample_data("get_observation.json"),
             status_code=200,
         )
 
@@ -46,10 +55,26 @@ class TestNodeApi(object):
         assert obs_data["user"]["login"] == "niconoe"
         assert len(obs_data["photos"]) == 2
 
+    def test_get_geojson_observations(self, requests_mock):
+        requests_mock.get(
+            urljoin(
+                INAT_NODE_API_BASE_URL,
+                "observations?observation_id=16227955&order_by=id&order=asc&per_page=30",
+            ),
+            json=load_sample_data("get_observation.json"),
+            status_code=200,
+        )
+
+        geojson = get_geojson_observations(observation_id=16227955)
+        feature = geojson["features"][0]
+        assert feature["geometry"]["coordinates"] == [4.360086, 50.646894]
+        assert feature["properties"]["id"] == 16227955
+        assert feature["properties"]["taxon_id"] == 493595
+
     def test_get_non_existent_observation(self, requests_mock):
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "observations?id=99999999"),
-            json=load_sample_json("get_nonexistent_observation.json"),
+            json=load_sample_data("get_nonexistent_observation.json"),
             status_code=200,
         )
         with pytest.raises(ObservationNotFound):
@@ -59,7 +84,7 @@ class TestNodeApi(object):
         params = urlencode({"q": "vespi", "rank": "genus,subgenus,species"})
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "taxa?" + params),
-            json=load_sample_json("get_taxa.json"),
+            json=load_sample_data("get_taxa.json"),
             status_code=200,
         )
 
@@ -109,7 +134,7 @@ class TestNodeApi(object):
         taxon_id = 70118
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "taxa/" + str(taxon_id)),
-            json=load_sample_json("get_taxa_by_id.json"),
+            json=load_sample_data("get_taxa_by_id.json"),
             status_code=200,
         )
 
@@ -128,7 +153,7 @@ class TestNodeApi(object):
     def test_get_taxa_autocomplete(self, requests_mock):
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "taxa/autocomplete?q=vespi"),
-            json=load_sample_json("get_taxa_autocomplete.json"),
+            json=load_sample_data("get_taxa_autocomplete.json"),
             status_code=200,
         )
 
@@ -148,7 +173,7 @@ class TestNodeApi(object):
     def test_get_taxa_autocomplete_minified(self, requests_mock):
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "taxa/autocomplete?q=vespi"),
-            json=load_sample_json("get_taxa_autocomplete.json"),
+            json=load_sample_data("get_taxa_autocomplete.json"),
             status_code=200,
         )
 
@@ -170,6 +195,25 @@ class TestNodeApi(object):
 
 
 class TestRestApi(object):
+    @pytest.mark.skipif(
+        version_info < (3, 5), reason="Python 3.4 doesn't allow dict expansion in function calls"
+    )
+    @pytest.mark.parametrize("response_format", OBSERVATION_FORMATS)
+    def test_get_observations(self, response_format, requests_mock):
+        """ Test all supported observation data formats """
+        # A minor workaround to avoid pytest blowing up on 3.4 even when skipped
+        response = get_observations_response(response_format)
+        key = "json" if response_format == "json" else "text"
+        response_kwargs = {key: str(response), "status_code": 200}
+
+        requests_mock.get(
+            urljoin(INAT_BASE_URL, "observations.{}?id=16227955".format(response_format)),
+            **response_kwargs,
+        )
+
+        observations = get_observations(id=16227955, response_format=response_format)
+        assert observations == response
+
     def test_get_observation_fields(self, requests_mock):
         """ get_observation_fields() work as expected (basic use)"""
 
@@ -254,7 +298,7 @@ class TestRestApi(object):
     def test_update_observation(self, requests_mock):
         requests_mock.put(
             "https://www.inaturalist.org/observations/17932425.json",
-            json=load_sample_json("update_observation_result.json"),
+            json=load_sample_data("update_observation_result.json"),
             status_code=200,
         )
 
@@ -310,7 +354,7 @@ class TestRestApi(object):
     def test_create_observation(self, requests_mock):
         requests_mock.post(
             "https://www.inaturalist.org/observations.json",
-            json=load_sample_json("create_observation_result.json"),
+            json=load_sample_data("create_observation_result.json"),
             status_code=200,
         )
 
@@ -337,7 +381,7 @@ class TestRestApi(object):
 
         requests_mock.post(
             "https://www.inaturalist.org/observations.json",
-            json=load_sample_json("create_observation_fail.json"),
+            json=load_sample_data("create_observation_fail.json"),
             status_code=422,
         )
 
@@ -349,7 +393,7 @@ class TestRestApi(object):
     def test_put_observation_field_values(self, requests_mock):
         requests_mock.put(
             "https://www.inaturalist.org/observation_field_values/31",
-            json=load_sample_json("put_observation_field_value_result.json"),
+            json=load_sample_data("put_observation_field_value_result.json"),
             status_code=200,
         )
 
@@ -383,7 +427,7 @@ class TestRestApi(object):
         # TODO: test for all functions that access the inaturalist API?
         requests_mock.get(
             urljoin(INAT_NODE_API_BASE_URL, "observations?id=16227955"),
-            json=load_sample_json("get_observation.json"),
+            json=load_sample_data("get_observation.json"),
             status_code=200,
         )
         accepted_json = {

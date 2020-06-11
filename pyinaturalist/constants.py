@@ -9,6 +9,19 @@ DRY_RUN_ENABLED = False  # Mock all requests, including GET
 DRY_RUN_WRITE_ONLY = False  # Only mock 'write' requests
 WRITE_HTTP_METHODS = ["PATCH", "POST", "PUT", "DELETE"]
 
+# Basic observation attributes to include by default in geojson responses
+DEFAULT_OBSERVATION_ATTRS = [
+    "id",
+    "photo_url",
+    "positional_accuracy",
+    "preferred_common_name",
+    "quality_grade",
+    "taxon_id",
+    "taxon_name",
+    "time_observed_at",
+    "uri",
+]
+
 # All request parameters from both Node API and REST (Rails) API that accept date or datetime strings
 DATETIME_PARAMS = [
     "created_after",
@@ -30,7 +43,6 @@ DATETIME_PARAMS = [
 ]
 
 # Reponse formats supported by GET /observations endpoint
-# TODO: custom geojson FeatureCollection format
 OBSERVATION_FORMATS = ["atom", "csv", "dwc", "json", "kml", "widget"]
 
 # Taxonomic ranks from Node API Swagger spec

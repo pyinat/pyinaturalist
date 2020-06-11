@@ -12,7 +12,6 @@ from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 from pyinaturalist.api_requests import delete, get, post, put
 
 
-# TODO: Docs, tests
 def get_observations(response_format="json", user_agent: str = None, **params) -> Union[Dict, str]:
     """Get observation data, optionally in an alternative format. Return type will be
     ``dict`` for the ``json`` response format, and ``str`` for all others.
@@ -23,6 +22,8 @@ def get_observations(response_format="json", user_agent: str = None, **params) -
         get_observations(id=45414404, format="dwc")
 
     """
+    if response_format == "geojson":
+        raise ValueError("For geojson format, use pyinaturalist.node_api.get_geojson_observations")
     if response_format not in OBSERVATION_FORMATS:
         raise ValueError("Invalid response format")
 
