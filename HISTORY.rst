@@ -9,6 +9,7 @@ History
 * Added `minify` option to `node_api.get_taxa_autocomplete()`
 * Convert all date and datetime parameters to timezone-aware ISO 8601 timestamps
 * Added a dry-run mode to mock out API requests for testing
+* Added 6 additional observation response formats, including GeoJSON, Darwin Core, and others
 
 0.9.1 (2020-05-26)
 ++++++++++++++++++

@@ -1,4 +1,4 @@
-# Some common functions for HTTP requests used by both the Node and REST API modules
+""" Some common functions for HTTP requests used by both the Node and REST API modules """
 from logging import getLogger
 from os import getenv
 from typing import Dict
@@ -8,7 +8,7 @@ import requests
 
 import pyinaturalist
 from pyinaturalist.constants import WRITE_HTTP_METHODS
-from pyinaturalist.helpers import preprocess_request_params
+from pyinaturalist.request_params import preprocess_request_params
 
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=requests.Response)

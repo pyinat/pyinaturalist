@@ -3,7 +3,7 @@ from datetime import date, datetime
 from dateutil.tz import gettz
 from unittest.mock import patch
 
-from pyinaturalist.helpers import (
+from pyinaturalist.request_params import (
     preprocess_request_params,
     convert_bool_params,
     convert_datetime_params,
@@ -60,17 +60,17 @@ def test_strip_empty_params():
         ("q", "not a datetime", "not a datetime"),
     ],
 )
-@patch("pyinaturalist.helpers.tzlocal", return_value=gettz("US/Pacific"))
+@patch("pyinaturalist.request_params.tzlocal", return_value=gettz("US/Pacific"))
 def test_convert_datetime_params(tzlocal, param, value, expected):
     converted = convert_datetime_params({param: value})
     assert converted[param] == expected
 
 
 # This is just here so that tests will fail if one of the conversion steps is removed
-@patch("pyinaturalist.helpers.convert_bool_params")
-@patch("pyinaturalist.helpers.convert_datetime_params")
-@patch("pyinaturalist.helpers.convert_list_params")
-@patch("pyinaturalist.helpers.strip_empty_params")
+@patch("pyinaturalist.request_params.convert_bool_params")
+@patch("pyinaturalist.request_params.convert_datetime_params")
+@patch("pyinaturalist.request_params.convert_list_params")
+@patch("pyinaturalist.request_params.strip_empty_params")
 def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_strip):
     preprocess_request_params({"id": 1})
     assert all([mock_bool.called, mock_datetime.called, mock_list.called, mock_strip.called])
@@ -82,12 +82,13 @@ def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_str
 @pytest.mark.parametrize(
     "http_function", get_module_http_functions(pyinaturalist.node_api).values()
 )
-@patch("pyinaturalist.node_api._get_rank_range")
+@patch("pyinaturalist.response_format.as_geojson_feature")
+@patch("pyinaturalist.response_format._get_rank_range")
 @patch("pyinaturalist.node_api.merge_two_dicts")
 @patch("pyinaturalist.api_requests.preprocess_request_params")
 @patch("pyinaturalist.api_requests.requests.request")
 def test_all_node_requests_use_param_conversion(
-    request, preprocess_request_params, merge_two_dicts, get_rank_range, http_function,
+    request, preprocess_request_params, merge_two_dicts, get_rank_range, as_geojson, http_function,
 ):
     request().json.return_value = {"total_results": 1, "results": [{}]}
     mock_args = get_mock_args_for_signature(http_function)

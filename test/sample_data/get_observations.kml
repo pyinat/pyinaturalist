@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+  <Document>
+<Placemark id="ID16227955">
+  <name>Lixus bardanae</name>
+  <visibility>1</visibility>
+  <atom:link>https://www.inaturalist.org/observations/16227955</atom:link>
+  <TimeStamp>
+    <when>2018-09-05T14:06:00+02:00</when>
+  </TimeStamp>
+  <description>
+    <![CDATA[<table cellpadding="5" border="0">
+  <tr>
+    <td valign="top" style="vertical-align: top">
+      <a href="https://www.inaturalist.org/observations/16227955">
+        <img src="https://static.inaturalist.org/photos/24355315/thumb.jpeg?1536150664" alt="Thumb" />
+      </a>
+    </td>
+    <td valign="top" style="vertical-align: top">
+      <div>
+        Observed by <a href="https://www.inaturalist.org/observations/niconoe">niconoe</a>
+
+          <span class="observed_on"><span class="date">2018-09-05</span></span>
+          <span class="place_guess">54 rue des Badauds</span>
+        <br/>
+        <br/>
+      </div>
+      
+      
+
+      <div>
+        <a class="readmore" href="https://www.inaturalist.org/observations/16227955">View Observation</a>
+      </div>
+    </td>
+  </tr>
+</table>
+]]>
+  </description>
+  <styleUrl>/assets/observations/google_earth-824f44474a896e5afd52c3274499151b.kml?prevent=155#Insecta</styleUrl>
+  <Point>
+    <coordinates>4.360086,50.646894</coordinates>
+  </Point>
+</Placemark>
+  </Document>
+</kml>
