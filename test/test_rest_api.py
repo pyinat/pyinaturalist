@@ -38,19 +38,25 @@ def test_get_observations(response_format, requests_mock):
     # requests_mock.get(..., **{key: str(response)})
     if response_format == "json":
         requests_mock.get(
-            urljoin(INAT_BASE_URL, "observations.{}?id=16227955".format(response_format)),
+            urljoin(INAT_BASE_URL, "observations.{}".format(response_format)),
             status_code=200,
             json=response,
         )
     else:
         requests_mock.get(
-            urljoin(INAT_BASE_URL, "observations.{}?id=16227955".format(response_format)),
+            urljoin(INAT_BASE_URL, "observations.{}".format(response_format)),
             status_code=200,
             text=response,
         )
 
     observations = get_observations(id=16227955, response_format=response_format)
     assert observations == response
+
+
+@pytest.mark.parametrize("response_format", ["geojson", "yaml"])
+def test_get_observations__invalid_format(response_format):
+    with pytest.raises(ValueError):
+        get_observations(id=16227955, response_format=response_format)
 
 
 def test_get_observation_fields(requests_mock):

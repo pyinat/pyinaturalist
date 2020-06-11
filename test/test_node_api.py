@@ -26,7 +26,7 @@ def get_observations_response(response_format):
 
 def test_get_observation(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, "observations?id=16227955"),
+        urljoin(INAT_NODE_API_BASE_URL, "observations"),
         json=load_sample_data("get_observation.json"),
         status_code=200,
     )
@@ -40,10 +40,7 @@ def test_get_observation(requests_mock):
 
 def test_get_geojson_observations(requests_mock):
     requests_mock.get(
-        urljoin(
-            INAT_NODE_API_BASE_URL,
-            "observations?observation_id=16227955&order_by=id&order=asc&per_page=30",
-        ),
+        urljoin(INAT_NODE_API_BASE_URL, "observations"),
         json=load_sample_data("get_observation.json"),
         status_code=200,
     )
@@ -55,9 +52,25 @@ def test_get_geojson_observations(requests_mock):
     assert feature["properties"]["taxon_id"] == 493595
 
 
+def test_get_geojson_observations__custom_properties(requests_mock):
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, "observations"),
+        json=load_sample_data("get_observation.json"),
+        status_code=200,
+    )
+
+    properties = ["taxon_name", "taxon_rank"]
+    geojson = get_geojson_observations(observation_id=16227955, properties=properties)
+    print(geojson)
+    feature = geojson["features"][0]
+    assert feature["properties"]["taxon_name"] == "Lixus bardanae"
+    assert feature["properties"]["taxon_rank"] == "species"
+    assert "id" not in feature["properties"] and "taxon_id" not in feature["properties"]
+
+
 def test_get_non_existent_observation(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, "observations?id=99999999"),
+        urljoin(INAT_NODE_API_BASE_URL, "observations"),
         json=load_sample_data("get_nonexistent_observation.json"),
         status_code=200,
     )
@@ -142,7 +155,7 @@ def test_get_taxa_by_id(requests_mock):
 
 def test_get_taxa_autocomplete(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, "taxa/autocomplete?q=vespi"),
+        urljoin(INAT_NODE_API_BASE_URL, "taxa/autocomplete"),
         json=load_sample_data("get_taxa_autocomplete.json"),
         status_code=200,
     )
@@ -163,7 +176,7 @@ def test_get_taxa_autocomplete(requests_mock):
 # Test usage of format_taxon() with get_taxa_autocomplete()
 def test_get_taxa_autocomplete_minified(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, "taxa/autocomplete?q=vespi"),
+        urljoin(INAT_NODE_API_BASE_URL, "taxa/autocomplete"),
         json=load_sample_data("get_taxa_autocomplete.json"),
         status_code=200,
     )
@@ -188,7 +201,7 @@ def test_get_taxa_autocomplete_minified(requests_mock):
 def test_user_agent(requests_mock):
     # TODO: test for all functions that access the inaturalist API?
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, "observations?id=16227955"),
+        urljoin(INAT_NODE_API_BASE_URL, "observations"),
         json=load_sample_data("get_observation.json"),
         status_code=200,
     )

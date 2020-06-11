@@ -33,10 +33,9 @@ def make_inaturalist_api_get_call(
 ) -> requests.Response:
     """Make an API call to iNaturalist.
 
-    endpoint is a string such as 'observations'
-    method: 'GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'
-    kwargs are passed to requests.request
-    Returns a requests.Response object
+    Args:
+        endpoint: The name of an endpoint not including the base URL e.g. 'observations'
+        kwargs: Arguments for :py:func:`requests.request`
     """
     response = get(
         urljoin(INAT_NODE_API_BASE_URL, endpoint), params=params, user_agent=user_agent, **kwargs
@@ -47,11 +46,15 @@ def make_inaturalist_api_get_call(
 def get_observation(observation_id: int, user_agent: str = None) -> Dict[str, Any]:
     """Get details about an observation.
 
-    :param observation_id:
-    :param user_agent: a user-agent string that will be passed to iNaturalist.
+    Args:
+        observation_id: Observation ID
+        user_agent: a user-agent string that will be passed to iNaturalist.
 
-    :returns: a dict with details on the observation
-    :raises: ObservationNotFound
+    Returns:
+        A dict with details on the observation
+
+    Raises:
+        ObservationNotFound
     """
 
     r = get_observations(params={"id": observation_id}, user_agent=user_agent)
@@ -62,9 +65,11 @@ def get_observation(observation_id: int, user_agent: str = None) -> Dict[str, An
 
 
 def get_observations(params: Dict, user_agent: str = None) -> Dict[str, Any]:
-    """Search observations, see: http://api.inaturalist.org/v1/docs/#!/Observations/get_observations.
+    """Search observations.
+    See: http://api.inaturalist.org/v1/docs/#!/Observations/get_observations.
 
-    Returns the parsed JSON returned by iNaturalist (observations in r['results'], a list of dicts)
+    Returns:
+        The parsed JSON returned by iNaturalist (observations in r['results'], a list of dicts)
     """
 
     r = make_inaturalist_api_get_call("observations", params=params, user_agent=user_agent)
@@ -76,7 +81,8 @@ def get_all_observations(params: Dict, user_agent: str = None) -> List[Dict[str,
 
     Some params will be overwritten: order_by, order, per_page, id_above (do NOT specify page when using this).
 
-    Returns a list of dicts (one entry per observation)
+    Returns:
+        A list of dicts (one entry per observation)
     """
 
     # According to the doc: "The large size of the observations index prevents us from supporting the page parameter
@@ -104,18 +110,34 @@ def get_all_observations(params: Dict, user_agent: str = None) -> List[Dict[str,
 
 def get_geojson_observations(properties: List[str] = None, **kwargs) -> Dict[str, Any]:
     """ Get all observation results combined into a GeoJSON ``FeatureCollection``.
+    By default this includes some basic observation properties as GeoJSON ``Feature`` properties.
+    The ``properties`` argument can be used to override these defaults.
+
+    Example:
+        >>> get_geojson_observations(observation_id=16227955, properties=["photo_url"])
+        {"type": "FeatureCollection",
+            "features": [{
+                    "type": "Feature",
+                    "geometry": {"type": "Point", "coordinates": [4.360086, 50.646894]},
+                    "properties": {
+                        "photo_url": "https://static.inaturalist.org/photos/24355315/square.jpeg?1536150659"
+                    }
+                }
+            ]
+        }
 
     Args:
         properties: Properties from observation results to include as GeoJSON properties
         kwargs: Arguments for :py:func:`.get_observations`
 
     Returns:
-        A list of dicts containing taxa results
+        A ``FeatureCollection`` containing observation results as ``Feature`` dicts.
     """
+    kwargs["mappable"] = True
     observations = get_all_observations(kwargs)
     return as_geojson_feature_collection(
         (flatten_nested_params(obs) for obs in observations),
-        properties=properties or DEFAULT_OBSERVATION_ATTRS,
+        properties=properties if properties is not None else DEFAULT_OBSERVATION_ATTRS,
     )
 
 
@@ -124,9 +146,11 @@ def get_taxa_by_id(taxon_id: int, user_agent: str = None) -> Dict[str, Any]:
     Get one or more taxa by ID.
     See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_id
 
-    :param: taxon_id: Get taxa with this ID. Multiple values are allowed.
+    Args:
+        taxon_id: Get taxa with this ID. Multiple values are allowed.
 
-    :returns: A list of dicts containing taxa results
+    Returns:
+        A list of dicts containing taxa results
     """
     if not is_int(taxon_id):
         raise ValueError("Please specify a single integer for the taxon ID")
@@ -141,25 +165,27 @@ def get_taxa(
     """Given zero to many of following parameters, returns taxa matching the search criteria.
     See https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
 
-    :param q: Name must begin with this value
-    :param is_active: Taxon is active
-    :param taxon_id: Only show taxa with this ID, or its descendants
-    :param parent_id: Taxon's parent must have this ID
-    :param rank: Taxon must have this exact rank
-    :param min_rank: Taxon must have this rank or higher; overrides ``rank``
-    :param max_rank: Taxon must have this rank or lower; overrides ``rank``
-    :param rank_level: Taxon must have this rank level. Some example values are 70 (kingdom),
-        60 (phylum), 50 (class), 40 (order), 30 (family), 20 (genus), 10 (species), 5 (subspecies)
-    :param id_above: Must have an ID above this value
-    :param id_below: Must have an ID below this value
-    :param per_page: Number of results to return in a page. The maximum value is generally 200
-        unless otherwise noted
-    :param locale: Locale preference for taxon common names
-    :param preferred_place_id: Place preference for regional taxon common names
-    :param only_id: Return only the record IDs
-    :param all_names: Include all taxon names in the response
+    Args:
+        q: Name must begin with this value
+        is_active: Taxon is active
+        taxon_id: Only show taxa with this ID, or its descendants
+        parent_id: Taxon's parent must have this ID
+        rank: Taxon must have this exact rank
+        min_rank: Taxon must have this rank or higher; overrides ``rank``
+        max_rank: Taxon must have this rank or lower; overrides ``rank``
+        rank_level: Taxon must have this rank level. Some example values are 70 (kingdom), 60 (phylum),
+            50 (class), 40 (order), 30 (family), 20 (genus), 10 (species), 5 (subspecies)
+        id_above: Must have an ID above this value
+        id_below: Must have an ID below this value
+        per_page: Number of results to return in a page. The maximum value is generally 200 unless
+            otherwise noted
+        locale: Locale preference for taxon common names
+        preferred_place_id: Place preference for regional taxon common names
+        only_id: Return only the record IDs
+        all_names: Include all taxon names in the response
 
-    :returns: A list of dicts containing taxa results
+    Returns:
+        A list of dicts containing taxa results
     """
     if min_rank or max_rank:
         params["rank"] = _get_rank_range(min_rank, max_rank)
@@ -175,19 +201,21 @@ def get_taxa_autocomplete(user_agent: str = None, minify: bool = False, **params
     **Note:** There appears to currently be a bug in the API that causes ``per_page`` to not have
     any effect.
 
-    :param q: Name must begin with this value
-    :param is_active: Taxon is active
-    :param taxon_id: Only show taxa with this ID, or its descendants
-    :param rank: Taxon must have this rank
-    :param rank_level: Taxon must have this rank level. Some example values are 70 (kingdom),
-        60 (phylum), 50 (class), 40 (order), 30 (family), 20 (genus), 10 (species), 5 (subspecies)
-    :param per_page: Number of results to return in a page. The maximum value is generally 200 unless otherwise noted
-    :param locale: Locale preference for taxon common names
-    :param preferred_place_id: Place preference for regional taxon common names
-    :param all_names: Include all taxon names in the response
-    :param minify: Condense each match into a single string containg taxon ID, rank, and name
+    Args:
+        q: Name must begin with this value
+        is_active: Taxon is active
+        taxon_id: Only show taxa with this ID, or its descendants
+        rank: Taxon must have this rank
+        rank_level: Taxon must have this rank level. Some example values are 70 (kingdom),
+            60 (phylum), 50 (class), 40 (order), 30 (family), 20 (genus), 10 (species), 5 (subspecies)
+        per_page: Number of results to return in a page. The maximum value is generally 200 unless otherwise noted
+        locale: Locale preference for taxon common names
+        preferred_place_id: Place preference for regional taxon common names
+        all_names: Include all taxon names in the response
+        minify: Condense each match into a single string containg taxon ID, rank, and name
 
-    :returns: A list of dicts containing taxa results
+    Returns:
+        A list of dicts containing taxa results
     """
     r = make_inaturalist_api_get_call("taxa/autocomplete", params, user_agent=user_agent)
     r.raise_for_status()
