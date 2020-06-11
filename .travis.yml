@@ -10,9 +10,9 @@ matrix:
   - python: "3.5"
   - python: "3.6"
   - python: "3.7"
-  # Run a separate job for combined code quality checks
+  # Run a separate job for combined code quality checks & build tests
   - python: "3.8"
-    env: TOXENV=coverage,mypy,style
+    env: TOXENV=coverage,mypy,style,docs,dist-test
   # Only this job will contain an encrypted PYPI_TOKEN for deployment
   - python: "3.8"
     env:
@@ -40,7 +40,7 @@ deploy:
   - provider: pypi
     user: __token__
     password: $PYPI_TOKEN
-    distributions: sdist
+    distributions: sdist bdist_wheel
     skip_cleanup: true
     skip_existing: true
     on:

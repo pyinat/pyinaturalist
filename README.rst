@@ -21,34 +21,44 @@ pyinaturalist
     :alt: PyPI - Format
 
 Python client for the `iNaturalist APIs <https://www.inaturalist.org/pages/api+reference>`_.
-
-Status
-------
-
-Work in progress: features are implemented one by one, as time allows and as the authors needs them.
-
-That being said, many things are already possible (searching observations, creating a new observation, ...) and
-contributions are welcome!
-
-Python 3 only.
 See full documentation at `<https://pyinaturalist.readthedocs.io>`_.
 
 Installation
 ------------
 
-Simply use pip::
+Install with pip::
 
     $ pip install pyinaturalist
 
-Or if you prefer using the development version::
+Or, if you would like to use the latest development (non-stable) version::
 
-    $ pip install git+https://github.com/niconoe/pyinaturalist.git
+    $ pip install --pre pyinaturalist
 
 Or, to set up for local development (preferably in a new virtualenv)::
 
     $ git clone https://github.com/niconoe/pyinaturalist.git
     $ cd pyinaturalist
     $ pip install -Ue ".[dev]"
+
+Development Status
+------------------
+Pyinaturalist is under active development. Currently, a handful of the most relevant API endpoints
+are implemented, including:
+
+* Searching, creating, and updating observations and observation fields
+* Searching for species
+
+See below for some examples,
+see `Reference <https://pyinaturalist.readthedocs.io/en/latest/reference.html>`_ for a complete list, and
+see `Issues <https://github.com/niconoe/pyinaturalist/issues>`_ for planned & proposed features.
+More endpoints will continue to be added as they are needed. PRs are welcome!
+
+.. note::
+    The two iNaturalist APIs expose a combined total of 103 endpoints. Many of these are primarily for
+    internal use by the iNaturalist web application and mobile apps, and are unlikely to be added unless
+    there are specific use cases for them.
+
+.. 37 in REST API, 65 in Node API, 1 undocumented as of 2020-06-11
 
 Examples
 --------
@@ -58,7 +68,6 @@ Observations
 
 Search all observations matching a criteria:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 .. code-block:: python
 
     from pyinaturalist.node_api import get_all_observations
@@ -68,11 +77,9 @@ See `available parameters <https://api.inaturalist.org/v1/docs/#!/Observations/g
 
 For authenticated API calls, you first need to obtain a token for the user:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 .. code-block:: python
 
     from pyinaturalist.rest_api import get_access_token
-
     token = get_access_token(username='<your_inaturalist_username>', password='<your_inaturalist_password>',
                              app_id='<your_inaturalist_app_id>',
                              app_secret=<your_inaturalist_app_secret>)
@@ -83,11 +90,9 @@ Note: you'll need to `create an iNaturalist app <https://www.inaturalist.org/oau
 
 Create a new observation:
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-
 .. code-block:: python
 
     from pyinaturalist.rest_api import create_observations
-
     params = {'observation':
                 {'taxon_id': 54327,  # Vespa Crabro
                  'observed_on_string': datetime.datetime.now().isoformat(),
@@ -105,7 +110,6 @@ Create a new observation:
     }
 
     r = create_observations(params=params, access_token=token)
-
     new_observation_id = r[0]['id']
 
 Upload a picture for this observation:
@@ -113,7 +117,6 @@ Upload a picture for this observation:
 .. code-block:: python
 
     from pyinaturalist.rest_api import add_photo_to_observation
-
     r = add_photo_to_observation(observation_id=new_observation_id,
                                  file_object=open('/Users/nicolasnoe/vespa.jpg', 'rb'),
                                  access_token=token)
@@ -123,7 +126,6 @@ Update an existing observation of yours:
 .. code-block:: python
 
         from pyinaturalist.rest_api import update_observation
-
         p = {'ignore_photos': 1,  # Otherwise existing pictures will be deleted
              'observation': {'description': 'updated description !'}}
         r = update_observation(observation_id=17932425, params=p, access_token=token)
@@ -134,7 +136,6 @@ Get a list of all (globally available) observation fields:
 .. code-block:: python
 
     from pyinaturalist.rest_api import get_all_observation_fields
-
     r = get_all_observation_fields(search_query="DNA")
 
 Sets an observation field value to an existing observation:
@@ -142,7 +143,6 @@ Sets an observation field value to an existing observation:
 .. code-block:: python
 
     from pyinaturalist.rest_api import put_observation_field_values
-
     put_observation_field_values(observation_id=7345179,
                                  observation_field_id=9613,
                                  value=250,

@@ -11,11 +11,20 @@ from pyinaturalist.constants import OBSERVATION_FORMATS, THROTTLING_DELAY, INAT_
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 from pyinaturalist.api_requests import delete, get, post, put
 
+# Workaround for python 3.4
+try:
+    from json import JSONDecodeError
+except ImportError:
+    from builtins import ValueError as JSONDecodeError  # type: ignore
+
 
 def get_observations(response_format="json", user_agent: str = None, **params) -> Union[Dict, str]:
     """Get observation data, optionally in an alternative format. Return type will be
-    ``dict`` for the ``json`` response format, and ``str`` for all others.
-    See: https://www.inaturalist.org/pages/api+reference#get-observations
+    ``dict`` for the ``json`` response format, and ``str`` for all others. Also see
+    :py:func:`.get_geojson_observations` for GeoJSON format (not included here because it wraps
+    a separate API endpoint).
+
+    For API parameters, see: https://www.inaturalist.org/pages/api+reference#get-observations
 
     Example::
 
@@ -96,14 +105,11 @@ def put_observation_field_values(
     # TODO: It appears pushing the same value/pair twice in a row (but deleting it meanwhile via the UI)...
     # TODO: ...triggers an error 404 the second time (report to iNaturalist?)
     """Sets an observation field (value) on an observation.
+    Will fail if this observation_field is already set for this observation.
 
-    :param observation_id:
-    :param observation_field_id:
-    :param value:
-    :param access_token: access_token: the access token, as returned by :func:`get_access_token()`
-    :param user_agent: a user-agent string that will be passed to iNaturalist.
-
-    :returns: iNaturalist's response as a dict, for example:
+    Example:
+            >>> put_observation_field_values(
+            >>>     observation_id=7345179, observation_field_id=9613, value=250, access_token=token)
             {'id': 31,
              'observation_id': 18166477,
              'observation_field_id': 31,
@@ -116,7 +122,15 @@ def put_observation_field_values(
              'created_at_utc': '2012-09-29T09:05:44.935Z',
              'updated_at_utc': '2018-11-13T09:49:47.985Z'}
 
-    Will fail if this observation_field is already set for this observation.
+    Args:
+        observation_id:
+        observation_field_id:
+        value:
+        access_token: access_token: the access token, as returned by :func:`get_access_token()`
+        user_agent: a user-agent string that will be passed to iNaturalist.
+
+    Returns:
+        The nwely updated field value record
     """
 
     payload = {
@@ -143,18 +157,19 @@ def put_observation_field_values(
 def get_access_token(
     username: str, password: str, app_id: str, app_secret: str, user_agent: str = None
 ) -> str:
-    """
-    Get an access token using the user's iNaturalist username and password.
+    """ Get an access token using the user's iNaturalist username and password.
+    You still need an iNaturalist app to do this.
 
-    (you still need an iNaturalist app to do this)
+    Example:
+        >>> access_token = get_access_token('...')
+        >>> headers = {"Authorization": f"Bearer {access_token}"}
 
-    :param username:
-    :param password:
-    :param app_id:
-    :param app_secret:
-    :param user_agent: a user-agent string that will be passed to iNaturalist.
-
-    :return: the access token, example use: headers = {"Authorization": "Bearer %s" % access_token}
+    Args:
+        username: iNaturalist username
+        password: iNaturalist password
+        app_id: iNaturalist application ID
+        app_secret: iNaturalist application secret
+        user_agent: a user-agent string that will be passed to iNaturalist.
     """
     payload = {
         "client_id": app_id,
@@ -180,10 +195,11 @@ def add_photo_to_observation(
 ):
     """Upload a picture and assign it to an existing observation.
 
-    :param observation_id: the ID of the observation
-    :param file_object: a file-like object for the picture. Example: open('/Users/nicolasnoe/vespa.jpg', 'rb')
-    :param access_token: the access token, as returned by :func:`get_access_token()`
-    :param user_agent: a user-agent string that will be passed to iNaturalist.
+    Args:
+        observation_id: the ID of the observation
+        file_object: a file-like object for the picture. Example: open('/Users/nicolasnoe/vespa.jpg', 'rb')
+        access_token: the access token, as returned by :func:`get_access_token()`
+        user_agent: a user-agent string that will be passed to iNaturalist.
     """
     data = {"observation_photo[observation_id]": observation_id}
     file_data = {"file": file_object}
@@ -203,23 +219,25 @@ def create_observations(
     params: Dict[str, Dict[str, Any]], access_token: str, user_agent: str = None
 ) -> List[Dict[str, Any]]:
     """Create a single or several (if passed an array) observations).
-
-    :param params:
-    :param access_token: the access token, as returned by :func:`get_access_token()`
-    :param user_agent: a user-agent string that will be passed to iNaturalist.
-
-    :return: iNaturalist's JSON response, as a Python object
-    :raise: requests.HTTPError, if the call is not successful. iNaturalist returns an error 422 (unprocessable entity)
-            if it rejects the observation data (for example an observation date in the future or a latitude > 90. In
-            that case the exception's `response` attribute give details about the errors.
-
-    allowed params: see https://www.inaturalist.org/pages/api+reference#post-observations
+    For API reference, see: https://www.inaturalist.org/pages/api+reference#post-observations
 
     Example:
+        >>> params = {'observation': {'species_guess': 'Pieris rapae'}}
+        >>> token = get_access_token('...')
+        >>> create_observations(params=params, access_token=token)
 
-        params = {'observation':
-            {'species_guess': 'Pieris rapae'},
-        }
+    Args:
+        params:
+        access_token: the access token, as returned by :func:`get_access_token()`
+        user_agent: a user-agent string that will be passed to iNaturalist.
+
+    Returns:
+         The newly created observation(s) in JSON format
+
+    Raises:
+        :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an error 422 (unprocessable entity)
+        if it rejects the observation data (for example an observation date in the future or a latitude > 90. In
+        that case the exception's `response` attribute give details about the errors.
 
     TODO investigate: according to the doc, we should be able to pass multiple observations (in an array, and in
     renaming observation to observations, but as far as I saw they are not created (while a status of 200 is returned)
@@ -240,16 +258,19 @@ def update_observation(
     """
     Update a single observation. See https://www.inaturalist.org/pages/api+reference#put-observations-id
 
-    :param observation_id: the ID of the observation to update
-    :param params: to be passed to iNaturalist API
-    :param access_token: the access token, as returned by :func:`get_access_token()`
-    :param user_agent: a user-agent string that will be passed to iNaturalist.
+    Args:
+        observation_id: the ID of the observation to update
+        params: to be passed to iNaturalist API
+        access_token: the access token, as returned by :func:`get_access_token()`
+        user_agent: a user-agent string that will be passed to iNaturalist.
 
-    :return: iNaturalist's JSON response, as a Python object
-    :raise: requests.HTTPError, if the call is not successful. iNaturalist returns an error 410 if the observation
-            doesn't exists or belongs to another user (as of November 2018).
+    Returns:
+        iNaturalist's JSON response, as a Python object
+
+    Raises:
+        :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an
+            error 410 if the observation doesn't exists or belongs to another user.
     """
-
     response = put(
         url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
         json=params,
@@ -268,14 +289,17 @@ def delete_observation(
     """
     Delete an observation.
 
-    :param observation_id:
-    :param access_token:
-    :param user_agent: a user-agent string that will be passed to iNaturalist.
+    Args:
+        observation_id:
+        access_token:
+        user_agent: a user-agent string that will be passed to iNaturalist.
 
-    :return: iNaturalist's JSON response, as a Python object (currently raise a JSONDecodeError because of an
-             iNaturalist bug
-    :raise: ObservationNotFound if the requested observation doesn't exists, requests.HTTPError (403) if the
-            observation belongs to another user
+    Returns:
+        iNaturalist's JSON response, as a Python object
+
+    Raises:
+        :py:exc:`.ObservationNotFound` if the requested observation doesn't exist
+        :py:exc:`requests.HTTPError` (403) if the observation belongs to another user
     """
     response = delete(
         url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
@@ -285,10 +309,10 @@ def delete_observation(
     )
     if response.status_code == 404:
         raise ObservationNotFound
-
     response.raise_for_status()
-    # According to iNaturalist documentation, proper JSON should be returned. It seems however that the response is
-    # currently empty (while the requests succeed), so you may receive a JSONDecode exception.
-    # It has been reported to the iNaturalist team because the issue persists month after:
-    # https://github.com/inaturalist/inaturalist/issues/2252
-    return response.json()
+
+    # Handle an empty response; see https://github.com/inaturalist/inaturalist/issues/2252
+    try:
+        return response.json()
+    except JSONDecodeError:
+        return []
