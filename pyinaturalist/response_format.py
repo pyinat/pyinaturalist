@@ -9,7 +9,7 @@ def as_geojson_feature_collection(
 ) -> Dict[str, Any]:
     """"
     Convert results from an API response into a
-    `geojson FeatureCollection<https://tools.ietf.org/html/rfc7946#section-3.3>`_ object.
+    `geojson FeatureCollection <https://tools.ietf.org/html/rfc7946#section-3.3>`_ object.
     This is currently only used for observations, but could be used for any other responses with
     geospatial info.
 

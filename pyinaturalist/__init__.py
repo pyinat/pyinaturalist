@@ -20,9 +20,10 @@ def get_prerelease_version(version: str) -> str:
     """
     if not (getenv("TRAVIS") == "true" and getenv("TRAVIS_BRANCH") == "dev"):
         return version
-    new_version = '{}-dev.{}'.format(version, getenv("TRAVIS_BUILD_NUMBER", "0"))
+    new_version = "{}-dev.{}".format(version, getenv("TRAVIS_BUILD_NUMBER", "0"))
     getLogger(__name__).info("Using pre-release version: {}".format(new_version))
     return new_version
+
 
 # This won't modify the version outside of Travis
 __version__ = get_prerelease_version(__version__)

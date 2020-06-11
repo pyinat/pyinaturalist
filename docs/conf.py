@@ -45,7 +45,7 @@ napoleon_include_special_with_doc = False
 # Use apidoc to auto-generate rst sources
 apidoc_module_dir = PACKAGE_DIR
 apidoc_output_dir = "modules"
-apidoc_excluded_paths= ["__init__"]
+apidoc_excluded_paths = ["__init__"]
 apidoc_module_first = True
 apidoc_separate_modules = True
 apidoc_toc_file = False
