@@ -24,9 +24,9 @@ setup(
             "pytest",
             "pytest-cov",
             "requests-mock>=1.7",
-            "Sphinx",
-            "sphinx-autodoc-typehints",
+            "Sphinx>=3.0",
             "sphinx-rtd-theme",
+            "sphinxcontrib-apidoc",
             "tox",
         ],
         # Additional packages used only within CI jobs

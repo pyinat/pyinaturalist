@@ -45,24 +45,3 @@ Pyinaturalist provides functions to use both of those APIs.
 
     If you don't configure the user agent, `Pyinaturalist/<VERSION>` will be used.
 
-REST API
---------
-
-.. automodule:: pyinaturalist.rest_api
-    :members:
-    :show-inheritance:
-
-Node-based API
---------------
-
-.. automodule:: pyinaturalist.node_api
-    :members:
-    :show-inheritance:
-
-Exceptions
-----------
-
-.. automodule:: pyinaturalist.exceptions
-    :members:
-    :show-inheritance:
-

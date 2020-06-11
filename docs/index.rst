@@ -7,11 +7,11 @@
 
 .. include:: ../README.rst
 
-Contents:
-=========
+Contents
+========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    reference
    contributing

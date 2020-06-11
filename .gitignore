@@ -42,6 +42,7 @@ output/*/index.html
 # Sphinx
 docs/_build/
 docs/docs/
+docs/modules/
 
 # Mac OS X
 .DS_Store
