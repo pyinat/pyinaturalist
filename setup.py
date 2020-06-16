@@ -1,10 +1,23 @@
 #!/usr/bin/env python
+from itertools import chain
 from sys import version_info
 from setuptools import setup, find_packages
 from pyinaturalist import __version__
 
 # Only install the typing backport if we're on python < 3.5
 backports = ["typing>=3.7.4"] if version_info < (3, 5) else []
+
+# These package categories allow tox and build environments to install only what they need
+extras_require = {
+    # Packages used for CI jobs
+    "build": ["coveralls", "tox-travis"],
+    # Packages used for documentation builds
+    "docs": ["Sphinx>=3.0", "sphinx-rtd-theme", "sphinxcontrib-apidoc"],
+    # Packages used for testing both locally and in CI jobs
+    "test": ["black", "flake8", "mypy", "pytest", "pytest-cov", "requests-mock>=1.7", "tox"],
+}
+# All development/testing packages combined
+extras_require["dev"] = list(chain.from_iterable(extras_require.values()))
 
 
 setup(
@@ -16,21 +29,6 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=["python-dateutil>=2.0", "requests>=2.21.0"] + backports,
-    extras_require={
-        "dev": [
-            "black",
-            "flake8",
-            "mypy",
-            "pytest",
-            "pytest-cov",
-            "requests-mock>=1.7",
-            "Sphinx>=3.0",
-            "sphinx-rtd-theme",
-            "sphinxcontrib-apidoc",
-            "tox",
-        ],
-        # Additional packages used only within CI jobs
-        "build": ["coveralls", "tox-travis"],
-    },
+    extras_require=extras_require,
     zip_safe=False,
 )
