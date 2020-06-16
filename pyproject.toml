@@ -1,0 +1,9 @@
+[tool.black]
+line-length = 100
+
+[tool.coverage.html]
+directory = 'test-reports'
+
+[tool.coverage.run]
+branch = true
+source = ['pyinaturalist']

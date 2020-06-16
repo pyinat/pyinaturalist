@@ -25,6 +25,7 @@ pip-log.txt
 .coverage
 .tox
 nosetests.xml
+test-reports/
 
 # Translations
 *.mo
@@ -39,10 +40,13 @@ output/*.html
 output/*/index.html
 
 # Sphinx
-docs/_build
+docs/_build/
+docs/docs/
+docs/modules/
 
 # Mac OS X
 .DS_Store
 
 .idea
 .mypy_cache
+venv/

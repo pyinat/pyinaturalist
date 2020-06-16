@@ -7,16 +7,14 @@
 
 .. include:: ../README.rst
 
-Contents:
-=========
+Contents
+========
 
 .. toctree::
    :maxdepth: 2
 
-   installation
    reference
    contributing
-   infrastructure
    authors
    history
 

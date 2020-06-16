@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xml:lang="en-US" xmlns="http://www.w3.org/2005/Atom" xmlns:georss="http://www.georss.org/georss">
+  <id>tag:www.inaturalist.org,2005:/observations</id>
+  <link rel="alternate" type="text/html" href="https://www.inaturalist.org"/>
+  <link rel="self" type="application/atom+xml" href="https://www.inaturalist.org/observations.atom?id=16227955"/>
+  <title>iNaturalist: Observations by Everyone</title>
+  <updated>2020-06-10T23:05:37Z</updated>
+  <icon>/assets/favicon-cf3214988200dff386f744b79050b857.png</icon>
+  <entry>
+    <id>tag:www.inaturalist.org,2005:Observation/16227955</id>
+    <published>2018-09-05T12:31:08Z</published>
+    <updated>2018-09-22T17:19:27Z</updated>
+    <link rel="alternate" type="text/html" href="https://www.inaturalist.org/observations/16227955"/>
+    <title>Lixus bardanae</title>
+    <author>
+      <name>niconoe</name>
+    </author>
+    <content type="html">&lt;p&gt;&lt;img src="https://static.inaturalist.org/photos/24355313/medium.jpeg?1536150659" alt="Medium" /&gt; &lt;img src="https://static.inaturalist.org/photos/24355315/medium.jpeg?1536150664" alt="Medium" /&gt;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;</content>
+    <georss:point>50.646894 4.360086</georss:point>
+  </entry>
+</feed>

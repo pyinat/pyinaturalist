@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dwr:SimpleDarwinRecordSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://rs.tdwg.org/dwc/xsd/simpledarwincore/  http://rs.tdwg.org/dwc/xsd/tdwg_dwc_simple.xsd" xmlns:ac="http://rs.tdwg.org/ac/terms/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dwc="http://rs.tdwg.org/dwc/terms/" xmlns:dwr="http://rs.tdwg.org/dwc/xsd/simpledarwincore/" xmlns:eol="http://www.eol.org/transfer/content/1.0" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:media="http://eol.org/schema/media/" xmlns:ref="http://eol.org/schema/reference/" xmlns:xap="http://ns.adobe.com/xap/1.0/">
+<dwr:SimpleDarwinRecord>
+  <dwc:occurrenceID>https://www.inaturalist.org/observations/16227955</dwc:occurrenceID>
+  <dwc:occurrenceID>https://www.inaturalist.org/observations/16227955</dwc:occurrenceID>
+  <dwc:basisOfRecord>HumanObservation</dwc:basisOfRecord>
+  <dcterms:modified>2018-09-22T17:19:27Z</dcterms:modified>
+  <dwc:institutionCode>iNaturalist</dwc:institutionCode>
+  <dwc:collectionCode>Observations</dwc:collectionCode>
+  <dwc:datasetName>iNaturalist research-grade observations</dwc:datasetName>
+  <dwc:catalogNumber>16227955</dwc:catalogNumber>
+  <dcterms:references>https://www.inaturalist.org/observations/16227955</dcterms:references>
+  <dwc:occurrenceDetails>https://www.inaturalist.org/observations/16227955</dwc:occurrenceDetails>
+  <dwc:recordedBy>Nicolas Noé</dwc:recordedBy>
+  <dwc:establishmentMeans>wild</dwc:establishmentMeans>
+  <dwc:eventDate>2018-09-05T14:06:00+02:00</dwc:eventDate>
+  <dwc:eventTime>12:06:00Z</dwc:eventTime>
+  <dwc:verbatimEventDate>2018/09/05 2:06 PM CEST</dwc:verbatimEventDate>
+  <dwc:verbatimLocality>54 rue des Badauds</dwc:verbatimLocality>
+  <dwc:decimalLatitude>50.646894</dwc:decimalLatitude>
+  <dwc:decimalLongitude>4.360086</dwc:decimalLongitude>
+  <dwc:coordinateUncertaintyInMeters>23</dwc:coordinateUncertaintyInMeters>
+  <dwc:countryCode>BE</dwc:countryCode>
+  <dwc:stateProvince>Wallonie</dwc:stateProvince>
+  <dwc:identificationID>34896306</dwc:identificationID>
+  <dwc:dateIdentified>2018-09-05T12:34:22Z</dwc:dateIdentified>
+  <dwc:taxonID>493595</dwc:taxonID>
+  <dwc:scientificName>Lixus bardanae</dwc:scientificName>
+  <dwc:taxonRank>species</dwc:taxonRank>
+  <dwc:kingdom>Animalia</dwc:kingdom>
+  <dwc:phylum>Arthropoda</dwc:phylum>
+  <dwc:class>Insecta</dwc:class>
+  <dwc:order>Coleoptera</dwc:order>
+  <dwc:family>Curculionidae</dwc:family>
+  <dwc:genus>Lixus</dwc:genus>
+  <dcterms:license>http://creativecommons.org/publicdomain/zero/1.0/</dcterms:license>
+  <dcterms:rights>By Nicolas Noé no rights reserved</dcterms:rights>
+  <dcterms:rightsHolder>Nicolas Noé</dcterms:rightsHolder>
+  <dwc:inaturalistLogin>niconoe</dwc:inaturalistLogin>
+  <eol:dataObject>
+    <dcterms:identifier>https://www.inaturalist.org/photos/24355313</dcterms:identifier>
+    <dcterms:type>http://purl.org/dc/dcmitype/StillImage</dcterms:type>
+    <dcterms:format>image/jpeg</dcterms:format>
+    <ac:accessURI>https://static.inaturalist.org/photos/24355313/original.jpeg?1536150659</ac:accessURI>
+    <media:thumbnailURL>https://static.inaturalist.org/photos/24355313/thumb.jpeg?1536150659</media:thumbnailURL>
+    <ac:furtherInformationURL>https://www.inaturalist.org/photos/24355313</ac:furtherInformationURL>
+    <ac:derivedFrom>https://www.inaturalist.org/photos/24355313</ac:derivedFrom>
+    <xap:CreateDate>2018-09-05T12:31:01Z</xap:CreateDate>
+    <dcterms:modified>2018-09-05T12:31:01Z</dcterms:modified>
+    <xap:UsageTerms>http://creativecommons.org/licenses/by/4.0/</xap:UsageTerms>
+    <dcterms:rights>Copyright Nicolas Noé, licensed under a Creative Commons Attribution License license: http://creativecommons.org/licenses/by/4.0/</dcterms:rights>
+    <xap:Owner>Nicolas Noé</xap:Owner>
+    <dcterms:publisher>iNaturalist</dcterms:publisher>
+    <dcterms:creator>Nicolas Noé</dcterms:creator>
+  </eol:dataObject>
+  <eol:dataObject>
+    <dcterms:identifier>https://www.inaturalist.org/photos/24355315</dcterms:identifier>
+    <dcterms:type>http://purl.org/dc/dcmitype/StillImage</dcterms:type>
+    <dcterms:format>image/jpeg</dcterms:format>
+    <ac:accessURI>https://static.inaturalist.org/photos/24355315/original.jpeg?1536150664</ac:accessURI>
+    <media:thumbnailURL>https://static.inaturalist.org/photos/24355315/thumb.jpeg?1536150664</media:thumbnailURL>
+    <ac:furtherInformationURL>https://www.inaturalist.org/photos/24355315</ac:furtherInformationURL>
+    <ac:derivedFrom>https://www.inaturalist.org/photos/24355315</ac:derivedFrom>
+    <xap:CreateDate>2018-09-05T12:31:05Z</xap:CreateDate>
+    <dcterms:modified>2018-09-05T12:31:05Z</dcterms:modified>
+    <xap:UsageTerms>http://creativecommons.org/licenses/by/4.0/</xap:UsageTerms>
+    <dcterms:rights>Copyright Nicolas Noé, licensed under a Creative Commons Attribution License license: http://creativecommons.org/licenses/by/4.0/</dcterms:rights>
+    <xap:Owner>Nicolas Noé</xap:Owner>
+    <dcterms:publisher>iNaturalist</dcterms:publisher>
+    <dcterms:creator>Nicolas Noé</dcterms:creator>
+  </eol:dataObject>
+</dwr:SimpleDarwinRecord>
+</dwr:SimpleDarwinRecordSet>
