@@ -2,14 +2,15 @@
 History
 -------
 
-0.10.0 (2020-06-TBD)
-^^^^^^^^^^^^^^^^^^^^
+0.10.0 (2020-06-16)
+^^^^^^^^^^^^^^^^^^^
 
-* Added more info & examples to README for taxa endpoints
+* Added more info & examples to README for taxa endpoints, and other documentation improvements
 * Added `minify` option to `node_api.get_taxa_autocomplete()`
-* Convert all date and datetime parameters to timezone-aware ISO 8601 timestamps
+* Added conversion for all date and datetime parameters to timezone-aware ISO 8601 timestamps
 * Added a dry-run mode to mock out API requests for testing
 * Added 6 additional observation response formats, including GeoJSON, Darwin Core, and others
+* Set up pre-release builds for latest development version
 
 0.9.1 (2020-05-26)
 ^^^^^^^^^^^^^^^^^^

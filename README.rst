@@ -268,10 +268,15 @@ but will be logged instead:
 
 .. code-block:: python
 
+    >>> import logging
     >>> import pyinaturalist
+
+    # Enable at least INFO-level logging
+    >>> logging.basicConfig(level='INFO')
+
     >>> pyinaturalist.DRY_RUN_ENABLED = True
     >>> get_taxa(q='warbler', locale=1)
-    {'results': ['nodata']}
+    {'results': [], 'total_results': 0}
     INFO:pyinaturalist.api_requests:Request: GET, https://api.inaturalist.org/v1/taxa,
         params={'q': 'warbler', 'locale': 1},
         headers={'Accept': 'application/json', 'User-Agent': 'Pyinaturalist/0.9.1'}
@@ -293,6 +298,7 @@ instead:
 .. code-block:: python
 
     >>> pyinaturalist.DRY_RUN_WRITE_ONLY = True
+
     # Also works as an environment variable
     >>> import os
     >>> os.environ["DRY_RUN_WRITE_ONLY"] = 'True'
