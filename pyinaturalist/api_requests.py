@@ -12,7 +12,7 @@ from pyinaturalist.request_params import preprocess_request_params
 
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=requests.Response)
-MOCK_RESPONSE.json.return_value = {"results": ["nodata"]}
+MOCK_RESPONSE.json.return_value = {"results": [], "total_results": 0}
 
 logger = getLogger(__name__)
 
