@@ -28,6 +28,11 @@ def is_int(value: Any) -> bool:
         return False
 
 
+def is_int_list(values: Any) -> bool:
+    """Determine if a value is a list of valid integers"""
+    return isinstance(values, list) and all([is_int(v) for v in values])
+
+
 def convert_bool_params(params: Dict[str, Any]) -> Dict[str, Any]:
     """Convert any boolean request parameters to javascript-style boolean strings"""
     for k, v in params.items():
@@ -57,10 +62,16 @@ def convert_list_params(params: Dict[str, Any]) -> Dict[str, Any]:
     """Convert any list parameters into an API-compatible (comma-delimited) string.
     Will be url-encoded by requests. For example: `['k1', 'k2', 'k3'] -> k1%2Ck2%2Ck3`
     """
-    for k, v in params.items():
-        if isinstance(v, list):
-            params[k] = ",".join(map(str, v))
-    return params
+    return {k: convert_list(v) for k, v in params.items()}
+
+
+def convert_list(obj) -> str:
+    """ Convert a list parameters into an API-compatible (comma-delimited) string """
+    if not obj:
+        return ""
+    if isinstance(obj, list):
+        return ",".join(map(str, obj))
+    return str(obj)
 
 
 def strip_empty_params(params: Dict[str, Any]) -> Dict[str, Any]:
