@@ -7,13 +7,6 @@ from dateutil.tz import tzlocal
 from pyinaturalist.constants import DATETIME_PARAMS
 
 
-# For Python < 3.5 compatibility
-def merge_two_dicts(x, y):
-    z = x.copy()
-    z.update(y)
-    return z
-
-
 def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     """Perform type conversions, sanity checks, etc. on request parameters"""
     if not params:

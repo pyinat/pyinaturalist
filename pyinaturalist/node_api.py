@@ -16,7 +16,7 @@ from pyinaturalist.constants import (
     THROTTLING_DELAY,
 )
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.request_params import is_int, merge_two_dicts
+from pyinaturalist.request_params import is_int
 from pyinaturalist.response_format import (
     format_taxon,
     as_geojson_feature_collection,
@@ -91,15 +91,16 @@ def get_all_observations(params: Dict, user_agent: str = None) -> List[Dict[str,
 
     results = []  # type: List[Dict[str, Any]]
     id_above = 0
+    pagination_params = {
+        **params,
+        **{"order_by": "id", "order": "asc", "per_page": PER_PAGE_RESULTS},
+    }
 
     while True:
-        iteration_params = merge_two_dicts(
-            params,
-            {"order_by": "id", "order": "asc", "per_page": PER_PAGE_RESULTS, "id_above": id_above,},
-        )
+        pagination_params["id_above"] = id_above
 
-        page_obs = get_observations(params=iteration_params, user_agent=user_agent)
-        results = results + page_obs["results"]
+        page_obs = get_observations(params=pagination_params, user_agent=user_agent)
+        results = results + page_obs.get("results", [])
 
         if page_obs["total_results"] <= PER_PAGE_RESULTS:
             return results

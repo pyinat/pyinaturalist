@@ -32,22 +32,13 @@ def get_observations_response(response_format):
 def test_get_observations(response_format, requests_mock):
     """ Test all supported observation data formats """
     response = get_observations_response(response_format)
+    key = "json" if response_format == "json" else "text"
 
-    # Workaround to avoid pytest blowing up on 3.4 even when skipped. Otherwise this could be:
-    # key = "json" if response_format == "json" else "text"
-    # requests_mock.get(..., **{key: str(response)})
-    if response_format == "json":
-        requests_mock.get(
-            urljoin(INAT_BASE_URL, "observations.{}".format(response_format)),
-            status_code=200,
-            json=response,
-        )
-    else:
-        requests_mock.get(
-            urljoin(INAT_BASE_URL, "observations.{}".format(response_format)),
-            status_code=200,
-            text=response,
-        )
+    requests_mock.get(
+        urljoin(INAT_BASE_URL, "observations.{}".format(response_format)),
+        status_code=200,
+        **{key: str(response)},
+    )
 
     observations = get_observations(id=16227955, response_format=response_format)
     assert observations == response

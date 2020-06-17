@@ -2,6 +2,7 @@
 Code used to access the (read/write, but slow) Rails based API of iNaturalist
 See: https://www.inaturalist.org/pages/api+reference
 """
+from json import JSONDecodeError
 from time import sleep
 from typing import Dict, Any, List, BinaryIO, Union
 
@@ -10,12 +11,6 @@ from urllib.parse import urljoin
 from pyinaturalist.constants import OBSERVATION_FORMATS, THROTTLING_DELAY, INAT_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 from pyinaturalist.api_requests import delete, get, post, put
-
-# Workaround for python 3.4
-try:
-    from json import JSONDecodeError
-except ImportError:
-    from builtins import ValueError as JSONDecodeError  # type: ignore
 
 
 def get_observations(response_format="json", user_agent: str = None, **params) -> Union[Dict, str]:
