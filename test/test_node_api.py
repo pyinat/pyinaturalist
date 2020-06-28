@@ -7,6 +7,9 @@ from pyinaturalist.constants import INAT_NODE_API_BASE_URL
 from pyinaturalist.node_api import (
     get_observation,
     get_geojson_observations,
+    get_places_by_id,
+    get_places_nearby,
+    get_places_autocomplete,
     get_taxa,
     get_taxa_by_id,
     get_taxa_autocomplete,
@@ -61,7 +64,6 @@ def test_get_geojson_observations__custom_properties(requests_mock):
 
     properties = ["taxon_name", "taxon_rank"]
     geojson = get_geojson_observations(observation_id=16227955, properties=properties)
-    print(geojson)
     feature = geojson["features"][0]
     assert feature["properties"]["taxon_name"] == "Lixus bardanae"
     assert feature["properties"]["taxon_rank"] == "species"
@@ -76,6 +78,69 @@ def test_get_non_existent_observation(requests_mock):
     )
     with pytest.raises(ObservationNotFound):
         get_observation(observation_id=99999999)
+
+
+def test_get_places_by_id(requests_mock):
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, "places/93735,89191"),
+        json=load_sample_data("get_places_by_id.json"),
+        status_code=200,
+    )
+
+    response = get_places_by_id([93735, 89191])
+    result = response["results"][0]
+
+    assert response["total_results"] == len(response["results"]) == 2
+    assert result["id"] == 93735
+    assert result["name"] == "Springbok"
+    assert result["bbox_area"] == 0.000993854049
+    assert result["location"] == "-29.665119,17.88583"
+    assert len(result["ancestor_place_ids"]) == 4
+
+
+@pytest.mark.parametrize("place_id", ["asdf", [None], [1, "not a number"]])
+def test_get_places_by_id__invalid_inputs(place_id):
+    with pytest.raises(ValueError):
+        get_places_by_id(place_id)
+
+
+def test_get_places_nearby(requests_mock):
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, "places/nearby"),
+        json=load_sample_data("get_places_nearby.json"),
+        status_code=200,
+    )
+
+    response = get_places_nearby(150.0, -50.0, -149.999, -49.999)
+    result = response["results"]["standard"][0]
+
+    assert response["total_results"] == 20
+    assert len(response["results"]["standard"]) + len(response["results"]["community"]) == 20
+
+    assert result["id"] == 97394
+    assert result["admin_level"] == -1
+    assert result["name"] == "North America"
+    assert result["bbox_area"] == 28171.40875125
+    assert result["location"] == "56.7732555574,-179.68825"
+    assert result["ancestor_place_ids"] is None
+
+
+def test_get_places_autocomplete(requests_mock):
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, "places/autocomplete"),
+        json=load_sample_data("get_places_autocomplete.json"),
+        status_code=200,
+    )
+
+    response = get_places_autocomplete("springbo")
+    result = response["results"][0]
+
+    assert response["total_results"] == len(response["results"]) == 1
+    assert result["id"] == 93735
+    assert result["name"] == "Springbok"
+    assert result["bbox_area"] == 0.000993854049
+    assert result["location"] == "-29.665119,17.88583"
+    assert len(result["ancestor_place_ids"]) == 4
 
 
 def test_get_taxa(requests_mock):
@@ -120,7 +185,7 @@ def test_get_taxa_by_rank_range(
     # Make sure custom rank params result in the correct 'rank' param value
     get_taxa(**params)
     mock_inaturalist_api_get_call.assert_called_with(
-        "taxa", {"rank": expected_ranks}, user_agent=None
+        "taxa", params={"rank": expected_ranks}, user_agent=None
     )
 
 
@@ -142,15 +207,18 @@ def test_get_taxa_by_id(requests_mock):
 
     response = get_taxa_by_id(taxon_id)
     result = response["results"][0]
-    assert len(response["results"]) == 1
+    assert response["total_results"] == len(response["results"]) == 1
     assert result["id"] == taxon_id
     assert result["name"] == "Nicrophorus vespilloides"
     assert result["rank"] == "species"
     assert result["is_active"] is True
     assert len(result["ancestors"]) == 12
 
+
+@pytest.mark.parametrize("taxon_id", ["asdf", [None], [1, "not a number"]])
+def test_get_taxa_by_id__invalid_inputs(taxon_id):
     with pytest.raises(ValueError):
-        get_taxa_by_id([1, 2])
+        get_taxa_by_id(taxon_id)
 
 
 def test_get_taxa_autocomplete(requests_mock):
