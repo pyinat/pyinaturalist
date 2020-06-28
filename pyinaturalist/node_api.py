@@ -22,6 +22,7 @@ from pyinaturalist.response_format import (
     as_geojson_feature_collection,
     _get_rank_range,
     flatten_nested_params,
+    convert_location_to_float,
 )
 from pyinaturalist.api_requests import get
 
@@ -137,7 +138,6 @@ def get_geojson_observations(properties: List[str] = None, **kwargs) -> Dict[str
     )
 
 
-# TODO: Convert coordinate strings to floats (also in observation endpoints?)
 def get_places_by_id(place_id: Union[int, List[int]], user_agent: str = None) -> Dict[str, Any]:
     """
     Get one or more places by ID.
@@ -176,7 +176,11 @@ def get_places_by_id(place_id: Union[int, List[int]], user_agent: str = None) ->
         raise ValueError("Invalid ID(s); must specify integers only")
     r = make_inaturalist_api_get_call("places", resources=place_id, user_agent=user_agent)
     r.raise_for_status()
-    return r.json()
+
+    # Convert coordinates to floats
+    response = r.json()
+    response["results"] = convert_location_to_float(response["results"])
+    return response
 
 
 def get_places_nearby(
@@ -208,7 +212,16 @@ def get_places_nearby(
         user_agent=user_agent,
     )
     r.raise_for_status()
-    return r.json()
+    return _convert_all_locations_to_float(r.json())
+
+
+def _convert_all_locations_to_float(response):
+    """ Convert locations for both standard (curated) and community-contributed places to floats """
+    response["results"] = {
+        "standard": convert_location_to_float(response["results"].get("standard")),
+        "community": convert_location_to_float(response["results"].get("community")),
+    }
+    return response
 
 
 def get_places_autocomplete(q: str, user_agent: str = None) -> Dict[str, Any]:
@@ -223,7 +236,11 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> Dict[str, Any]:
     """
     r = make_inaturalist_api_get_call("places/autocomplete", params={"q": q}, user_agent=user_agent)
     r.raise_for_status()
-    return r.json()
+
+    # Convert coordinates to floats
+    response = r.json()
+    response["results"] = convert_location_to_float(response["results"])
+    return response
 
 
 def get_taxa_by_id(taxon_id: Union[int, List[int]], user_agent: str = None) -> Dict[str, Any]:

@@ -70,7 +70,6 @@ def request(
     if access_token:
         headers["Authorization"] = "Bearer %s" % access_token
     params = preprocess_request_params(params)
-    print(params)
 
     # If a resource is requested instead of params, convert to a list if specified
     if resources:

@@ -94,7 +94,7 @@ def test_get_places_by_id(requests_mock):
     assert result["id"] == 93735
     assert result["name"] == "Springbok"
     assert result["bbox_area"] == 0.000993854049
-    assert result["location"] == "-29.665119,17.88583"
+    assert result["location"] == [-29.665119, 17.88583]
     assert len(result["ancestor_place_ids"]) == 4
 
 
@@ -121,7 +121,7 @@ def test_get_places_nearby(requests_mock):
     assert result["admin_level"] == -1
     assert result["name"] == "North America"
     assert result["bbox_area"] == 28171.40875125
-    assert result["location"] == "56.7732555574,-179.68825"
+    assert result["location"] == [56.7732555574, -179.68825]
     assert result["ancestor_place_ids"] is None
 
 
@@ -132,14 +132,14 @@ def test_get_places_autocomplete(requests_mock):
         status_code=200,
     )
 
-    response = get_places_autocomplete("springbo")
+    response = get_places_autocomplete("springbok")
     result = response["results"][0]
 
     assert response["total_results"] == len(response["results"]) == 1
     assert result["id"] == 93735
     assert result["name"] == "Springbok"
     assert result["bbox_area"] == 0.000993854049
-    assert result["location"] == "-29.665119,17.88583"
+    assert result["location"] == [-29.665119, 17.88583]
     assert len(result["ancestor_place_ids"]) == 4
 
 

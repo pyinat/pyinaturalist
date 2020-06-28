@@ -84,10 +84,18 @@ def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_str
 )
 @patch("pyinaturalist.response_format.as_geojson_feature")
 @patch("pyinaturalist.response_format._get_rank_range")
+@patch("pyinaturalist.node_api.convert_location_to_float")
+@patch("pyinaturalist.node_api._convert_all_locations_to_float")
 @patch("pyinaturalist.api_requests.preprocess_request_params")
 @patch("pyinaturalist.api_requests.requests.request")
 def test_all_node_requests_use_param_conversion(
-    request, preprocess_request_params, get_rank_range, as_geojson, http_function,
+    request,
+    preprocess_request_params,
+    convert_all_locations_to_float,
+    convert_location_to_float,
+    get_rank_range,
+    as_geojson,
+    http_function,
 ):
     request().json.return_value = {"total_results": 1, "results": [{}]}
     mock_args = get_mock_args_for_signature(http_function)
