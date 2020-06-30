@@ -25,7 +25,7 @@ PAGE_2_JSON_RESPONSE = load_sample_data("get_observation_fields_page2.json")
 
 def get_observations_response(response_format):
     response_format = response_format.replace("widget", "js")
-    return str(load_sample_data("get_observations.{}".format(response_format)))
+    return load_sample_data("get_observations.{}".format(response_format))
 
 
 @pytest.mark.parametrize("response_format", OBSERVATION_FORMATS)
@@ -37,10 +37,15 @@ def test_get_observations(response_format, requests_mock):
     requests_mock.get(
         urljoin(INAT_BASE_URL, "observations.{}".format(response_format)),
         status_code=200,
-        **{key: str(response)},
+        **{key: response},
     )
 
     observations = get_observations(id=16227955, response_format=response_format)
+
+    # Ensure coordinate strings were converted to floats, for JSON format only
+    if response_format == "json":
+        response[0]["latitude"] = 50.646894
+        response[0]["longitude"] = 4.360086
     assert observations == response
 
 

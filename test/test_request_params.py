@@ -106,11 +106,12 @@ def test_all_node_requests_use_param_conversion(
 @pytest.mark.parametrize(
     "http_function", get_module_http_functions(pyinaturalist.rest_api).values()
 )
+@patch("pyinaturalist.rest_api.convert_lat_long_to_float")
 @patch("pyinaturalist.rest_api.sleep")
 @patch("pyinaturalist.api_requests.preprocess_request_params")
 @patch("pyinaturalist.api_requests.requests.request")
 def test_all_rest_requests_use_param_conversion(
-    request, preprocess_request_params, sleep, http_function
+    request, preprocess_request_params, sleep, convert_lat_long_to_float, http_function
 ):
     # Handle the one API response that returns a list instead of a dict
     if http_function == pyinaturalist.rest_api.get_all_observation_fields:
