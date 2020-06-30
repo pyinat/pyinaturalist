@@ -6,16 +6,18 @@ History
 ^^^^^^^^^^^^^^^^^
 
 * Dropped support for python 3.4
-
+* Added new functions for Places endpoints: ``get_places_by_id()``, ``get_places_nearby()``, ``get_places_autocomplete()``
+* Updated ``get_taxa_by_id()`` to accept multiple IDs
+* Updated ``rest_api.get_observations()`` to convert coordinate strings to floats
 
 0.10.0 (2020-06-16)
 ^^^^^^^^^^^^^^^^^^^
 
 * Added more info & examples to README for taxa endpoints, and other documentation improvements
-* Added `minify` option to `node_api.get_taxa_autocomplete()`
+* Added ``minify`` option to ``node_api.get_taxa_autocomplete()``
 * Added conversion for all date and datetime parameters to timezone-aware ISO 8601 timestamps
 * Added a dry-run mode to mock out API requests for testing
-* Added 6 additional observation response formats, including GeoJSON, Darwin Core, and others
+* Added ``rest_api.get_observations()`` with 6 additional observation response formats, including GeoJSON, Darwin Core, and others
 * Set up pre-release builds for latest development version
 
 0.9.1 (2020-05-26)

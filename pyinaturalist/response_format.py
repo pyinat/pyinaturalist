@@ -1,5 +1,5 @@
 """ Helper functions for formatting API responses """
-from typing import Any, Dict, List, Iterable
+from typing import Any, Dict, List, Iterable, Optional
 
 from pyinaturalist.constants import RANKS
 
@@ -80,3 +80,35 @@ def _get_rank_index(rank: str) -> int:
     if rank not in RANKS:
         raise ValueError("Invalid rank")
     return RANKS.index(rank)
+
+
+def convert_location_to_float(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """ Convert coordinate pairs in response items from strings to floats, if valid.
+
+    Args:
+        results: Results from API response; expects coordinates in the "location" key
+    """
+    for result in results or []:
+        if "," in (result["location"] or ""):
+            result["location"] = [convert_float(coord) for coord in result["location"].split(",")]
+    return results
+
+
+def convert_lat_long_to_float(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """ Convert coordinate pairs in response items from strings to floats, if valid
+
+    Args:
+        results: Results from API response; expects coordinates in "latitude" and "longitude" keys
+    """
+    for result in results:
+        result["latitude"] = convert_float(result["latitude"])
+        result["longitude"] = convert_float(result["longitude"])
+    return results
+
+
+def convert_float(value: Any) -> Optional[float]:
+    """ Convert a value to a float, if valid; return ``None`` otherwise """
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None

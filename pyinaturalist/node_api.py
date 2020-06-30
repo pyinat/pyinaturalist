@@ -4,7 +4,7 @@ See: http://api.inaturalist.org/v1/docs/
 """
 from logging import getLogger
 from time import sleep
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Union
 
 import requests
 from urllib.parse import urljoin
@@ -16,31 +16,27 @@ from pyinaturalist.constants import (
     THROTTLING_DELAY,
 )
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.request_params import is_int
+from pyinaturalist.request_params import is_int, is_int_list
 from pyinaturalist.response_format import (
     format_taxon,
     as_geojson_feature_collection,
     _get_rank_range,
     flatten_nested_params,
+    convert_location_to_float,
 )
 from pyinaturalist.api_requests import get
 
 logger = getLogger(__name__)
 
 
-def make_inaturalist_api_get_call(
-    endpoint: str, params: Dict, user_agent: str = None, **kwargs
-) -> requests.Response:
+def make_inaturalist_api_get_call(endpoint: str, **kwargs) -> requests.Response:
     """Make an API call to iNaturalist.
 
     Args:
         endpoint: The name of an endpoint not including the base URL e.g. 'observations'
-        kwargs: Arguments for :py:func:`requests.request`
+        kwargs: Arguments for :py:func:`.api_requests.request`
     """
-    response = get(
-        urljoin(INAT_NODE_API_BASE_URL, endpoint), params=params, user_agent=user_agent, **kwargs
-    )
-    return response
+    return get(urljoin(INAT_NODE_API_BASE_URL, endpoint), **kwargs)
 
 
 def get_observation(observation_id: int, user_agent: str = None) -> Dict[str, Any]:
@@ -142,9 +138,121 @@ def get_geojson_observations(properties: List[str] = None, **kwargs) -> Dict[str
     )
 
 
-def get_taxa_by_id(taxon_id: int, user_agent: str = None) -> Dict[str, Any]:
+def get_places_by_id(place_id: Union[int, List[int]], user_agent: str = None) -> Dict[str, Any]:
     """
-    Get one or more taxa by ID.
+    Get one or more places by ID.
+    See: https://api.inaturalist.org/v1/docs/#!/Places/get_places_id
+
+    Example:
+        >>> get_places_by_id(93735)
+        {
+            "total_results": 1,
+            "page": 1,
+            "per_page": 2,
+            "results": ['...']
+        }
+
+    Args:
+        place_id: Get a place with this ID. Multiple values are allowed.
+
+    Returns:
+        A list of dicts containing places results
+    """
+    if not (is_int(place_id) or is_int_list(place_id)):
+        raise ValueError("Invalid ID(s); must specify integers only")
+    r = make_inaturalist_api_get_call("places", resources=place_id, user_agent=user_agent)
+    r.raise_for_status()
+
+    # Convert coordinates to floats
+    response = r.json()
+    response["results"] = convert_location_to_float(response["results"])
+    return response
+
+
+def get_places_nearby(
+    nelat: float,
+    nelng: float,
+    swlat: float,
+    swlng: float,
+    name: str = None,
+    user_agent: str = None,
+) -> Dict[str, Any]:
+    """
+    Given an bounding box, and an optional name query, return standard iNaturalist curator approved
+    and community non-curated places nearby
+    See: https://api.inaturalist.org/v1/docs/#!/Places/get_places_nearby
+
+    Example:
+        >>> bounding_box = (150.0, -50.0, -149.999, -49.999)
+        >>> get_places_nearby(*bounding_box)
+        {
+            "total_results": 20,
+            "page": 1,
+            "per_page": 20,
+            "results": {
+                "standard": ['...'],
+                "community": ['...']
+            }
+        }
+
+    Args:
+        nelat: NE latitude of bounding box
+        nelng: NE longitude of bounding box
+        swlat: SW latitude of bounding box
+        swlng: SW longitude of bounding box
+        name: Name must match this value
+
+    Returns:
+        A list of dicts containing places results
+    """
+    r = make_inaturalist_api_get_call(
+        "places/nearby",
+        params={"nelat": nelat, "nelng": nelng, "swlat": swlat, "swlng": swlng, "name": name},
+        user_agent=user_agent,
+    )
+    r.raise_for_status()
+    return _convert_all_locations_to_float(r.json())
+
+
+def _convert_all_locations_to_float(response):
+    """ Convert locations for both standard (curated) and community-contributed places to floats """
+    response["results"] = {
+        "standard": convert_location_to_float(response["results"].get("standard")),
+        "community": convert_location_to_float(response["results"].get("community")),
+    }
+    return response
+
+
+def get_places_autocomplete(q: str, user_agent: str = None) -> Dict[str, Any]:
+    """ Given a query string, get places with names starting with the search term
+    See: https://api.inaturalist.org/v1/docs/#!/Places/get_places_autocomplete
+
+    Example:
+        >>> get_places_autocomplete('Irkutsk')
+        {
+            'total_results': 8,
+            'page': 1,
+            'per_page': 8,
+            'results': ['...']
+        }
+
+    Args:
+        q: Name must begin with this value
+
+    Returns:
+        A list of dicts containing places results
+    """
+    r = make_inaturalist_api_get_call("places/autocomplete", params={"q": q}, user_agent=user_agent)
+    r.raise_for_status()
+
+    # Convert coordinates to floats
+    response = r.json()
+    response["results"] = convert_location_to_float(response["results"])
+    return response
+
+
+def get_taxa_by_id(taxon_id: Union[int, List[int]], user_agent: str = None) -> Dict[str, Any]:
+    """ Get one or more taxa by ID.
     See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_id
 
     Args:
@@ -153,15 +261,15 @@ def get_taxa_by_id(taxon_id: int, user_agent: str = None) -> Dict[str, Any]:
     Returns:
         A list of dicts containing taxa results
     """
-    if not is_int(taxon_id):
-        raise ValueError("Please specify a single integer for the taxon ID")
-    r = make_inaturalist_api_get_call("taxa/{}".format(taxon_id), {}, user_agent=user_agent)
+    if not (is_int(taxon_id) or is_int_list(taxon_id)):
+        raise ValueError("Invalid ID(s); must specify integers only")
+    r = make_inaturalist_api_get_call("taxa", resources=taxon_id, user_agent=user_agent)
     r.raise_for_status()
     return r.json()
 
 
 def get_taxa(
-    user_agent: str = None, min_rank: str = None, max_rank: str = None, **params
+    min_rank: str = None, max_rank: str = None, user_agent: str = None, **params
 ) -> Dict[str, Any]:
     """Given zero to many of following parameters, returns taxa matching the search criteria.
     See https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
@@ -190,13 +298,13 @@ def get_taxa(
     """
     if min_rank or max_rank:
         params["rank"] = _get_rank_range(min_rank, max_rank)
-    r = make_inaturalist_api_get_call("taxa", params, user_agent=user_agent)
+    r = make_inaturalist_api_get_call("taxa", params=params, user_agent=user_agent)
     r.raise_for_status()
     return r.json()
 
 
 def get_taxa_autocomplete(user_agent: str = None, minify: bool = False, **params) -> Dict[str, Any]:
-    """Given a query string, returns taxa with names starting with the search term
+    """ Given a query string, returns taxa with names starting with the search term
     See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_autocomplete
 
     **Note:** There appears to currently be a bug in the API that causes ``per_page`` to not have
@@ -218,7 +326,7 @@ def get_taxa_autocomplete(user_agent: str = None, minify: bool = False, **params
     Returns:
         A list of dicts containing taxa results
     """
-    r = make_inaturalist_api_get_call("taxa/autocomplete", params, user_agent=user_agent)
+    r = make_inaturalist_api_get_call("taxa/autocomplete", params=params, user_agent=user_agent)
     r.raise_for_status()
     json_response = r.json()
 

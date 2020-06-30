@@ -11,9 +11,10 @@ from urllib.parse import urljoin
 from pyinaturalist.constants import OBSERVATION_FORMATS, THROTTLING_DELAY, INAT_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 from pyinaturalist.api_requests import delete, get, post, put
+from pyinaturalist.response_format import convert_lat_long_to_float
 
 
-def get_observations(response_format="json", user_agent: str = None, **params) -> Union[Dict, str]:
+def get_observations(response_format="json", user_agent: str = None, **params) -> Union[List, str]:
     """Get observation data, optionally in an alternative format. Return type will be
     ``dict`` for the ``json`` response format, and ``str`` for all others. Also see
     :py:func:`.get_geojson_observations` for GeoJSON format (not included here because it wraps
@@ -37,7 +38,10 @@ def get_observations(response_format="json", user_agent: str = None, **params) -
         user_agent=user_agent,
     )
 
-    return response.json() if response_format == "json" else response.text
+    if response_format == "json":
+        return convert_lat_long_to_float(response.json())
+    else:
+        return response.text
 
 
 def get_observation_fields(
