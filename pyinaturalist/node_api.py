@@ -149,21 +149,7 @@ def get_places_by_id(place_id: Union[int, List[int]], user_agent: str = None) ->
             "total_results": 1,
             "page": 1,
             "per_page": 2,
-            "results": [
-                {
-                    "ancestor_place_ids": [52929, 64964, 93736, 93735],
-                    "bounding_box_geojson": null,
-                    "bbox_area": 0.000993854049,
-                    "admin_level": null,
-                    "place_type": 7,
-                    "name": "Springbok",
-                    "location": "-29.665119,17.88583",
-                    "id": 93735,
-                    "display_name": "Springbok, Northern Cape",
-                    "slug": "springbok",
-                    "geometry_geojson": null
-                }
-            ]
+            "results": ['...']
         }
 
     Args:
@@ -196,6 +182,19 @@ def get_places_nearby(
     and community non-curated places nearby
     See: https://api.inaturalist.org/v1/docs/#!/Places/get_places_nearby
 
+    Example:
+        >>> bounding_box = (150.0, -50.0, -149.999, -49.999)
+        >>> get_places_nearby(*bounding_box)
+        {
+            "total_results": 20,
+            "page": 1,
+            "per_page": 20,
+            "results": {
+                "standard": ['...'],
+                "community": ['...']
+            }
+        }
+
     Args:
         nelat: NE latitude of bounding box
         nelng: NE longitude of bounding box
@@ -225,8 +224,17 @@ def _convert_all_locations_to_float(response):
 
 
 def get_places_autocomplete(q: str, user_agent: str = None) -> Dict[str, Any]:
-    """Given a query string, get places with names starting with the search term
+    """ Given a query string, get places with names starting with the search term
     See: https://api.inaturalist.org/v1/docs/#!/Places/get_places_autocomplete
+
+    Example:
+        >>> get_places_autocomplete('Irkutsk')
+        {
+            'total_results': 8,
+            'page': 1,
+            'per_page': 8,
+            'results': ['...']
+        }
 
     Args:
         q: Name must begin with this value
@@ -244,8 +252,7 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> Dict[str, Any]:
 
 
 def get_taxa_by_id(taxon_id: Union[int, List[int]], user_agent: str = None) -> Dict[str, Any]:
-    """
-    Get one or more taxa by ID.
+    """ Get one or more taxa by ID.
     See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_id
 
     Args:
@@ -297,7 +304,7 @@ def get_taxa(
 
 
 def get_taxa_autocomplete(user_agent: str = None, minify: bool = False, **params) -> Dict[str, Any]:
-    """Given a query string, returns taxa with names starting with the search term
+    """ Given a query string, returns taxa with names starting with the search term
     See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_autocomplete
 
     **Note:** There appears to currently be a bug in the API that causes ``per_page`` to not have
