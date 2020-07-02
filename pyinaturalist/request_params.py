@@ -52,7 +52,7 @@ def convert_datetime_params(params: Dict[str, Any]) -> Dict[str, Any]:
     for k, v in params.items():
         if isinstance(v, datetime) or isinstance(v, date):
             params[k] = _isoformat(v)
-        if k in DATETIME_PARAMS:
+        if v is not None and k in DATETIME_PARAMS:
             params[k] = _isoformat(parse_timestamp(v))
 
     return params

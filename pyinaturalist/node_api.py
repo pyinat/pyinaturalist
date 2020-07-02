@@ -4,16 +4,23 @@ See: http://api.inaturalist.org/v1/docs/
 """
 from logging import getLogger
 from time import sleep
-from typing import Dict, Any, List, Union
+from typing import Dict, List
 
 import requests
 from urllib.parse import urljoin
 
+from pyinaturalist import docstrings
 from pyinaturalist.constants import (
     DEFAULT_OBSERVATION_ATTRS,
     INAT_NODE_API_BASE_URL,
     PER_PAGE_RESULTS,
     THROTTLING_DELAY,
+    MultiInt,
+    MultiStr,
+    Date,
+    DateTime,
+    IntOrStr,
+    JsonResponse,
 )
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.request_params import is_int, is_int_list
@@ -39,7 +46,7 @@ def make_inaturalist_api_get_call(endpoint: str, **kwargs) -> requests.Response:
     return get(urljoin(INAT_NODE_API_BASE_URL, endpoint), **kwargs)
 
 
-def get_observation(observation_id: int, user_agent: str = None) -> Dict[str, Any]:
+def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse:
     """Get details about an observation.
 
     Args:
@@ -60,9 +67,9 @@ def get_observation(observation_id: int, user_agent: str = None) -> Dict[str, An
     raise ObservationNotFound()
 
 
-def get_observations(params: Dict, user_agent: str = None) -> Dict[str, Any]:
+def get_observations(params: Dict, user_agent: str = None) -> JsonResponse:
     """Search observations.
-    See: http://api.inaturalist.org/v1/docs/#!/Observations/get_observations.
+    See: http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
 
     Returns:
         The parsed JSON returned by iNaturalist (observations in r['results'], a list of dicts)
@@ -72,7 +79,7 @@ def get_observations(params: Dict, user_agent: str = None) -> Dict[str, Any]:
     return r.json()
 
 
-def get_all_observations(params: Dict, user_agent: str = None) -> List[Dict[str, Any]]:
+def get_all_observations(params: Dict, user_agent: str = None) -> List[JsonResponse]:
     """Like get_observations() but handles pagination so you get all the results in one shot.
 
     Some params will be overwritten: order_by, order, per_page, id_above (do NOT specify page when using this).
@@ -84,8 +91,7 @@ def get_all_observations(params: Dict, user_agent: str = None) -> List[Dict[str,
     # According to the doc: "The large size of the observations index prevents us from supporting the page parameter
     # when retrieving records from large result sets. If you need to retrieve large numbers of records, use the
     # per_page and id_above or id_below parameters instead.
-
-    results = []  # type: List[Dict[str, Any]]
+    results = []  # type: List[JsonResponse]
     id_above = 0
     pagination_params = {
         **params,
@@ -105,7 +111,191 @@ def get_all_observations(params: Dict, user_agent: str = None) -> List[Dict[str,
         id_above = results[-1]["id"]
 
 
-def get_geojson_observations(properties: List[str] = None, **kwargs) -> Dict[str, Any]:
+# TODO: These explicit kwargs are useful but super verbose...
+# TODO: It may be helpful to programmatically modify the function signature for a bit of code reuse
+def get_observation_species_counts(
+    acc: bool = None,
+    captive: bool = None,
+    endemic: bool = None,
+    geo: bool = None,
+    id_please: bool = None,
+    identified: bool = None,
+    introduced: bool = None,
+    mappable: bool = None,
+    native: bool = None,
+    out_of_range: bool = None,
+    pcid: bool = None,
+    photos: bool = None,
+    popular: bool = None,
+    sounds: bool = None,
+    taxon_is_active: bool = None,
+    threatened: bool = None,
+    verifiable: bool = None,
+    id: MultiInt = None,
+    not_id: MultiInt = None,
+    license: MultiStr = None,  # TODO: Choices
+    photo_license: MultiStr = None,
+    sound_license: MultiStr = None,
+    ofv_datatype: MultiStr = None,
+    place_id: MultiInt = None,
+    project_id: MultiInt = None,
+    rank: MultiStr = None,
+    site_id: MultiStr = None,
+    taxon_id: MultiInt = None,
+    without_taxon_id: MultiInt = None,
+    taxon_name: MultiStr = None,
+    user_id: MultiInt = None,
+    user_login: MultiStr = None,
+    day: MultiInt = None,
+    month: MultiInt = None,
+    year: MultiInt = None,
+    term_id: MultiInt = None,
+    term_value_id: MultiInt = None,
+    without_term_value_id: MultiInt = None,
+    acc_above: str = None,
+    acc_below: str = None,
+    d1: Date = None,
+    d2: Date = None,
+    created_d1: DateTime = None,
+    created_d2: DateTime = None,
+    created_on: Date = None,
+    observed_on: Date = None,
+    unobserved_by_user_id: int = None,
+    apply_project_rules_for: str = None,
+    cs: str = None,
+    csa: str = None,
+    csi: MultiStr = None,
+    geoprivacy: MultiStr = None,  # TODO: Choices
+    taxon_geoprivacy: MultiStr = None,
+    hrank: str = None,  # TODO: alias to max_rank
+    lrank: str = None,  # TODO: alias to min_rank
+    iconic_taxa: MultiStr = None,  # TODO: Choices
+    id_above: int = None,
+    id_below: int = None,
+    identifications: str = None,
+    lat: float = None,
+    lng: float = None,
+    radius: float = None,
+    nelat: float = None,
+    nelng: float = None,
+    swlat: float = None,
+    swlng: float = None,
+    list_id: int = None,
+    not_in_project: IntOrStr = None,
+    not_matching_project_rules_for: IntOrStr = None,
+    q: str = None,
+    search_on: str = None,
+    quality_grade: str = None,  # TODO: Xhoices
+    updated_since: DateTime = None,
+    viewer_id: int = None,
+    reviewed: bool = None,
+    locale: str = None,
+    preferred_place_id: int = None,
+    ttl: str = None,
+    user_agent: str = None,
+) -> JsonResponse:
+    """ Get all species (or other "leaf taxa") associated with observations matching the search
+    criteria, and the count of observations they are associated with.
+    **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
+
+    See: https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_species_counts
+    """
+    # TODO: Parameter validation
+    params = {
+        'acc': acc,
+        'captive': captive,
+        'endemic': endemic,
+        'geo': geo,
+        'id_please': id_please,
+        'identified': identified,
+        'introduced': introduced,
+        'mappable': mappable,
+        'native': native,
+        'out_of_range': out_of_range,
+        'pcid': pcid,
+        'photos': photos,
+        'popular': popular,
+        'sounds': sounds,
+        'taxon_is_active': taxon_is_active,
+        'threatened': threatened,
+        'verifiable': verifiable,
+        'id': id,
+        'not_id': not_id,
+        'license': license,
+        'photo_license': photo_license,
+        'sound_license': sound_license,
+        'ofv_datatype': ofv_datatype,
+        'place_id': place_id,
+        'project_id': project_id,
+        'rank': rank,
+        'site_id': site_id,
+        'taxon_id': taxon_id,
+        'without_taxon_id': without_taxon_id,
+        'taxon_name': taxon_name,
+        'user_id': user_id,
+        'user_login': user_login,
+        'day': day,
+        'month': month,
+        'year': year,
+        'term_id': term_id,
+        'term_value_id': term_value_id,
+        'without_term_value_id': without_term_value_id,
+        'acc_above': acc_above,
+        'acc_below': acc_below,
+        'd1': d1,
+        'd2': d2,
+        'created_d1': created_d1,
+        'created_d2': created_d2,
+        'created_on': created_on,
+        'observed_on': observed_on,
+        'unobserved_by_user_id': unobserved_by_user_id,
+        'apply_project_rules_for': apply_project_rules_for,
+        'cs': cs,
+        'csa': csa,
+        'csi': csi,
+        'geoprivacy': geoprivacy,
+        'taxon_geoprivacy': taxon_geoprivacy,
+        'hrank': hrank,
+        'lrank': lrank,
+        'iconic_taxa': iconic_taxa,
+        'id_above': id_above,
+        'id_below': id_below,
+        'identifications': identifications,
+        'lat': lat,
+        'lng': lng,
+        'radius': radius,
+        'nelat': nelat,
+        'nelng': nelng,
+        'swlat': swlat,
+        'swlng': swlng,
+        'list_id': list_id,
+        'not_in_project': not_in_project,
+        'not_matching_project_rules_for': not_matching_project_rules_for,
+        'q': q,
+        'search_on': search_on,
+        'quality_grade': quality_grade,
+        'updated_since': updated_since,
+        'viewer_id': viewer_id,
+        'reviewed': reviewed,
+        'locale': locale,
+        'preferred_place_id': preferred_place_id,
+        'ttl': ttl,
+        'user_agent': user_agent,
+    }
+
+    r = make_inaturalist_api_get_call("observations/species_counts", params=params)
+    return r.json()
+
+
+# Update docstring with super long argument documentation
+_returns = """
+Returns:
+    JSON containing observation counts, ordered by count descending
+"""
+docstrings.append(get_observation_species_counts, [docstrings.GET_OBSERVATIONS, _returns])
+
+
+def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResponse:
     """ Get all observation results combined into a GeoJSON ``FeatureCollection``.
     By default this includes some basic observation properties as GeoJSON ``Feature`` properties.
     The ``properties`` argument can be used to override these defaults.
@@ -138,7 +328,7 @@ def get_geojson_observations(properties: List[str] = None, **kwargs) -> Dict[str
     )
 
 
-def get_places_by_id(place_id: Union[int, List[int]], user_agent: str = None) -> Dict[str, Any]:
+def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse:
     """
     Get one or more places by ID.
     See: https://api.inaturalist.org/v1/docs/#!/Places/get_places_id
@@ -176,7 +366,7 @@ def get_places_nearby(
     swlng: float,
     name: str = None,
     user_agent: str = None,
-) -> Dict[str, Any]:
+) -> JsonResponse:
     """
     Given an bounding box, and an optional name query, return standard iNaturalist curator approved
     and community non-curated places nearby
@@ -223,7 +413,7 @@ def _convert_all_locations_to_float(response):
     return response
 
 
-def get_places_autocomplete(q: str, user_agent: str = None) -> Dict[str, Any]:
+def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
     """ Given a query string, get places with names starting with the search term
     See: https://api.inaturalist.org/v1/docs/#!/Places/get_places_autocomplete
 
@@ -251,7 +441,7 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> Dict[str, Any]:
     return response
 
 
-def get_taxa_by_id(taxon_id: Union[int, List[int]], user_agent: str = None) -> Dict[str, Any]:
+def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     """ Get one or more taxa by ID.
     See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_id
 
@@ -270,7 +460,7 @@ def get_taxa_by_id(taxon_id: Union[int, List[int]], user_agent: str = None) -> D
 
 def get_taxa(
     min_rank: str = None, max_rank: str = None, user_agent: str = None, **params
-) -> Dict[str, Any]:
+) -> JsonResponse:
     """Given zero to many of following parameters, returns taxa matching the search criteria.
     See https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
 
@@ -303,7 +493,7 @@ def get_taxa(
     return r.json()
 
 
-def get_taxa_autocomplete(user_agent: str = None, minify: bool = False, **params) -> Dict[str, Any]:
+def get_taxa_autocomplete(user_agent: str = None, minify: bool = False, **params) -> JsonResponse:
     """ Given a query string, returns taxa with names starting with the search term
     See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_autocomplete
 
