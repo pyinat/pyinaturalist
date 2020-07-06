@@ -56,7 +56,31 @@ DATETIME_PARAMS = [
 # Reponse formats supported by GET /observations endpoint
 OBSERVATION_FORMATS = ["atom", "csv", "dwc", "json", "kml", "widget"]
 
-# Taxonomic ranks from Node API Swagger spec
+# Creative Commons license codes
+CC_LICENSES = ["CC-BY", "CC-BY-NC", "CC-BY-ND", "CC-BY-SA", "CC-BY-NC-ND", "CC-BY-NC-SA", "CC0"]
+
+# IUCN Conservation status codes; for more info, see: https://www.iucnredlist.org
+CONSERVATION_STATUSES = ["LC", "NT", "VU", "EN", "CR", "EW", "EX"]
+
+# Main taxa "categories" that can be filtered on
+ICONIC_TAXA = {
+    0: "Unknown",
+    1: "Animalia",
+    3: "Aves",
+    20978: "Amphibia",
+    26036: "Reptilia",
+    40151: "Mammalia",
+    47178: "Actinopterygii",
+    47115: "Mollusca",
+    47119: "Arachnida",
+    47158: "Insecta",
+    47126: "Plantae",
+    47170: "Fungi",
+    48222: "Chromista",
+    47686: "Protozoa",
+}
+
+# Taxonomic ranks that can be filtered on
 RANKS = [
     "form",
     "variety",
@@ -64,6 +88,7 @@ RANKS = [
     "hybrid",
     "species",
     "genushybrid",
+    "subgenus",
     "genus",
     "subtribe",
     "tribe",
@@ -76,6 +101,7 @@ RANKS = [
     "suborder",
     "order",
     "superorder",
+    "infraclass",
     "subclass",
     "class",
     "superclass",
@@ -83,3 +109,9 @@ RANKS = [
     "phylum",
     "kingdom",
 ]
+
+# Additional options for multiple-choice search filters, used for validation
+COMMUNITY_ID_STATUSES = ["most_agree", "most_disagree", "some_agree"]
+GEOPRIVACY_LEVELS = ["obscured", "obscured_private", "open", "private"]
+SEARCH_PROPERTIES = ["names", "tags", "description", "place"]
+QUALITY_GRADES = ["casual", "needs_id", "research"]

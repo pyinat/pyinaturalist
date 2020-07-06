@@ -9,6 +9,7 @@ from pyinaturalist.request_params import (
     convert_datetime_params,
     convert_list_params,
     strip_empty_params,
+    validate_multiple_choice_params,
 )
 import pyinaturalist.rest_api
 import pyinaturalist.node_api
@@ -126,3 +127,30 @@ def test_all_rest_requests_use_param_conversion(
     mock_args = get_mock_args_for_signature(http_function)
     http_function(*mock_args)
     assert preprocess_request_params.call_count == 1
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        {"csi": "LC"},
+        {"csi": ["EW", "EX"]},
+        {"geoprivacy": "open"},
+        {"iconic_taxa": "Animalia"},
+        {"identifications": "most_agree"},
+        {"license": "CC-BY-NC"},
+        {"rank": "order"},
+        {"quality_grade": "research"},
+        {"search_on": "tags"},
+        {"geoprivacy": ["open", "obscured"]},
+        {"geoprivacy": "open", "iconic_taxa": "Animalia", "license": "CC-BY-NC"},
+    ],
+)
+def test_validate_multiple_choice_params(params):
+    # If valid, there is no return value, but an exception should not be raised
+    validate_multiple_choice_params(params)
+    # If invalid, an exception should be raised
+    with pytest.raises(ValueError):
+        validate_multiple_choice_params({k: "Invalid_value" for k in params})
+    # A valid + invalid value should also raise an exception
+    with pytest.raises(ValueError):
+        validate_multiple_choice_params({k: [v, "Invalid_value"] for k, v in params.items()})

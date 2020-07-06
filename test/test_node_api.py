@@ -80,6 +80,11 @@ def test_get_non_existent_observation(requests_mock):
         get_observation(observation_id=99999999)
 
 
+# TODO
+def test_get_observation_species_counts(requests_mock):
+    pass
+
+
 def test_get_places_by_id(requests_mock):
     requests_mock.get(
         urljoin(INAT_NODE_API_BASE_URL, "places/93735,89191"),

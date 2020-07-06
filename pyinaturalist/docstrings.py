@@ -2,6 +2,7 @@
 request parameter descriptions.
 """
 from typing import Callable, List
+from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
 
 
 def append(func: Callable, doc_chunks: List[str]):
@@ -10,6 +11,14 @@ def append(func: Callable, doc_chunks: List[str]):
     for chunk in doc_chunks:
         func.__doc__ += chunk
 
+
+def _format_param_choices():
+    return "\n".join(
+        ["  * {}: {}".format(param, choices) for param, choices in MULTIPLE_CHOICE_PARAMS.items()]
+    )
+
+
+MULTIPLE_CHOICE_PARAM_DOCS = "**Multiple-Choice Parameters:**\n" + _format_param_choices()
 
 GET_OBSERVATIONS = """
 Args:
