@@ -6,6 +6,7 @@ import pyinaturalist
 from pyinaturalist.constants import INAT_NODE_API_BASE_URL
 from pyinaturalist.node_api import (
     get_observation,
+    get_observation_species_counts,
     get_geojson_observations,
     get_places_by_id,
     get_places_nearby,
@@ -80,9 +81,23 @@ def test_get_non_existent_observation(requests_mock):
         get_observation(observation_id=99999999)
 
 
-# TODO
 def test_get_observation_species_counts(requests_mock):
-    pass
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, "observations/species_counts"),
+        json=load_sample_data("get_observation_species_counts.json"),
+        status_code=200,
+    )
+    response = get_observation_species_counts(user_login="my_username", quality_grade="research")
+    first_result = response["results"][0]
+
+    assert first_result["count"] == 31
+    assert first_result["taxon"]["id"] == 48484
+    assert first_result["taxon"]["name"] == "Harmonia axyridis"
+
+
+def test_get_observation_species_counts__invalid_multiple_choice_params():
+    with pytest.raises(ValueError):
+        get_observation_species_counts(quality_grade="None", iconic_taxa="slime molds")
 
 
 def test_get_places_by_id(requests_mock):
