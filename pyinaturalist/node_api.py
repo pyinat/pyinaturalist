@@ -201,6 +201,18 @@ def get_observation_species_counts(
     **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
 
     See: https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_species_counts
+
+    Example:
+        >>> get_observation_species_counts(user_login='my_username', quality_grade='research')
+        {
+            'total_results': 214,
+            'page': 1,
+            'per_page': 500,
+            'results': [
+                {'count': 12, 'taxon': {'...'}},
+            ]
+        }
+
     """
     params = {
         "acc": acc,
