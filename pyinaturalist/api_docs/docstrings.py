@@ -7,7 +7,7 @@ from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
 
 def append(func: Callable, doc_chunks: List[str]):
     """ Append information to a function's docstring """
-    func.__doc__ = func.__doc__ or ""  # Makes type checker happy
+    func.__doc__ = func.__doc__ or ""  # Reassure type checker that __doc__ is not None
     for chunk in doc_chunks:
         func.__doc__ += chunk
 
@@ -20,7 +20,7 @@ def _format_param_choices():
 
 MULTIPLE_CHOICE_PARAM_DOCS = "**Multiple-Choice Parameters:**\n" + _format_param_choices()
 
-GET_OBSERVATIONS = """
+OBSERVATION_PARAMS = """
 Args:
     acc: Whether or not positional accuracy / coordinate uncertainty has been specified
     captive: Captive or cultivated observations
@@ -33,7 +33,7 @@ Args:
     mappable: Observations that show on map tiles
     native: Observations whose taxa are native to their location
     out_of_range: Observations whose taxa are outside their known ranges
-    pcid: Observations identified by the curator of a project. If the project_id parameter
+    pcid: Observations identified by the curator of a project. If the ``project_id`` parameter
         is also specified, this will only consider observations identified by curators of the
         specified project(s)
     photos: Observations with photos
@@ -41,7 +41,8 @@ Args:
     sounds: Observations with sounds
     taxon_is_active: Observations of active taxon concepts
     threatened: Observations whose taxa are threatened in their location
-    verifiable: Observations with a quality_grade of either needs_id or research. Equivalent to quality_grade=needs_id,research
+    verifiable: Observations with a ``quality_grade`` of either ``needs_id`` or ``research``.
+        Equivalent to ``quality_grade=needs_id,research``
     id: Must have this ID
     not_id: Must not have this ID
     license: Observation must have this license
@@ -62,9 +63,9 @@ Args:
     year: Must be observed within this year
     term_id: Must have an annotation using this controlled term ID
     term_value_id: Must have an annotation using this controlled value ID.
-        Must be combined with the term_id parameter
+        Must be combined with the ``term_id`` parameter
     without_term_value_id: Exclude observations with annotations using this controlled value ID.
-        Must be combined with the term_id parameter
+        Must be combined with the ``term_id`` parameter
     acc_above: Must have an positional accuracy above this value (meters)
     acc_below: Must have an positional accuracy below this value (meters)
     d1: Must be observed on or after this date
@@ -75,11 +76,11 @@ Args:
     observed_on: Must be observed on this date
     unobserved_by_user_id: Must not be of a taxon previously observed by this user
     apply_project_rules_for: Must match the rules of the project with this ID or slug
-    cs: Taxon must have this conservation status code. If the place_id parameter is also
+    cs: Taxon must have this conservation status code. If the ``place_id`` parameter is also
         specified, this will only consider statuses specific to that place
-    csa: Taxon must have a conservation status from this authority. If the place_id parameter is
+    csa: Taxon must have a conservation status from this authority. If the ``place_id`` parameter is
         also specified, this will only consider statuses specific to that place
-    csi: Taxon must have this IUCN conservation status. If the place_id parameter is also
+    csi: Taxon must have this IUCN conservation status. If the ``place_id`` parameter is also
         specified, this will only consider statuses specific to that place
     geoprivacy: Must have this geoprivacy setting
     taxon_geoprivacy: Filter observations by the most conservative geoprivacy applied by a
@@ -101,7 +102,7 @@ Args:
     list_id: Taxon must be in the list with this ID
     not_in_project: Must not be in the project with this ID or slug
     not_matching_project_rules_for: Must not match the rules of the project with this ID or slug
-    q: Search observation properties. Can be combined with search_on
+    q: Search observation properties. Can be combined with ``search_on``
     search_on: Properties to search on, when combined with q. Searches across all properties by
         default
     quality_grade: Must have this quality grade
@@ -113,3 +114,20 @@ Args:
     preferred_place_id: Place preference for regional taxon common names
     ttl: Set the ``Cache-Control`` HTTP header with this value as ``max-age``, in seconds
 """
+
+PAGINATION_PARAMS = """
+    page: Pagination page number
+    per_page: Number of results to return in a page. The maximum value is generally 200,
+        unless otherwise noted
+    order: Sort order
+    order_by: Field to sort on
+"""
+
+ONLY_ID = """
+    only_id: Return only the record IDs
+"""
+
+# Parameter combinations for individual functions
+GET_OBSERVATIONS = OBSERVATION_PARAMS + PAGINATION_PARAMS + ONLY_ID
+GET_ALL_OBSERVATIONS = OBSERVATION_PARAMS + ONLY_ID
+GET_OBSERVATION_SPECIES_COUNTS = OBSERVATION_PARAMS

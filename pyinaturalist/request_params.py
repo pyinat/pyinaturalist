@@ -12,6 +12,8 @@ from pyinaturalist.constants import (
     GEOPRIVACY_LEVELS,
     ICONIC_TAXA,
     RANKS,
+    ORDER_BY_PROPERTIES,
+    ORDER_DIRECTIONS,
     SEARCH_PROPERTIES,
     QUALITY_GRADES,
 )
@@ -31,6 +33,8 @@ MULTIPLE_CHOICE_PARAMS = {
     "max_rank": RANKS,
     "hrank": RANKS,
     "lrank": RANKS,
+    "order": ORDER_DIRECTIONS,
+    "order_by": ORDER_BY_PROPERTIES,
     "quality_grade": QUALITY_GRADES,
     "search_on": SEARCH_PROPERTIES,
 }

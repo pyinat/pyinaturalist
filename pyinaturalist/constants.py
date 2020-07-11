@@ -113,5 +113,7 @@ RANKS = [
 # Additional options for multiple-choice search filters, used for validation
 COMMUNITY_ID_STATUSES = ["most_agree", "most_disagree", "some_agree"]
 GEOPRIVACY_LEVELS = ["obscured", "obscured_private", "open", "private"]
+ORDER_DIRECTIONS = ["asc", "desc"]
+ORDER_BY_PROPERTIES = ["created_at", "id", "observed_on", "species_guess", "votes"]
 SEARCH_PROPERTIES = ["names", "tags", "description", "place"]
 QUALITY_GRADES = ["casual", "needs_id", "research"]
