@@ -9,6 +9,8 @@ History
 * Added new functions for Places endpoints: ``get_places_by_id()``, ``get_places_nearby()``, ``get_places_autocomplete()``
 * Updated ``get_taxa_by_id()`` to accept multiple IDs
 * Updated ``rest_api.get_observations()`` to convert coordinate strings to floats
+* Added new function for an additional Observations endpoint: ``node_api.get_observation_species_counts()``
+* Added parameter validation for multiple-choice request parameters
 
 0.10.0 (2020-06-16)
 ^^^^^^^^^^^^^^^^^^^

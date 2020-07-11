@@ -46,7 +46,8 @@ Pyinaturalist is under active development. Currently, a handful of the most rele
 are implemented, including:
 
 * Searching, creating, and updating observations and observation fields
-* Searching for species
+* Searching for places, species, and species counts
+* Text search autocompletion for species and places
 
 See below for some examples,
 see `Reference <https://pyinaturalist.readthedocs.io/en/latest/reference.html>`_ for a complete list, and
@@ -66,8 +67,8 @@ Examples
 Observations
 ^^^^^^^^^^^^
 
-Search all observations matching a criteria:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Search observations:
+~~~~~~~~~~~~~~~~~~~~
 .. code-block:: python
 
     from pyinaturalist.node_api import get_all_observations
@@ -75,18 +76,20 @@ Search all observations matching a criteria:
 
 See `available parameters <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations/>`_.
 
-For authenticated API calls, you first need to obtain a token for the user:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Get an access token:
+~~~~~~~~~~~~~~~~~~~~
+For authenticated API calls (creating/updating/deleting data), you first need to obtain an access token.
+This requires creating an `iNaturalist app <https://www.inaturalist.org/oauth/applications/new>`_.
+
 .. code-block:: python
 
     from pyinaturalist.rest_api import get_access_token
-    token = get_access_token(username='<your_inaturalist_username>', password='<your_inaturalist_password>',
-                             app_id='<your_inaturalist_app_id>',
-                             app_secret=<your_inaturalist_app_secret>)
-
-
-
-Note: you'll need to `create an iNaturalist app <https://www.inaturalist.org/oauth/applications/new>`_.
+    token = get_access_token(
+        username='<your_inaturalist_username>',
+        password='<your_inaturalist_password>',
+        app_id='<your_inaturalist_app_id>',
+        app_secret='<your_inaturalist_app_secret>',
+    )
 
 Create a new observation:
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -130,7 +133,6 @@ Update an existing observation of yours:
              'observation': {'description': 'updated description !'}}
         r = update_observation(observation_id=17932425, params=p, access_token=token)
 
-
 Get a list of all (globally available) observation fields:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. code-block:: python
@@ -138,15 +140,17 @@ Get a list of all (globally available) observation fields:
     from pyinaturalist.rest_api import get_all_observation_fields
     r = get_all_observation_fields(search_query="DNA")
 
-Sets an observation field value to an existing observation:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Set an observation field value on an existing observation:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. code-block:: python
 
     from pyinaturalist.rest_api import put_observation_field_values
-    put_observation_field_values(observation_id=7345179,
-                                 observation_field_id=9613,
-                                 value=250,
-                                 access_token=token)
+    put_observation_field_values(
+        observation_id=7345179,
+        observation_field_id=9613,
+        value=250,
+        access_token=token,
+    )
 
 Get observation data in alternative formats:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -159,11 +163,23 @@ A separate endpoint can provide other data formats, including Darwin Core, KML, 
 
 See `available parameters and formats <https://www.inaturalist.org/pages/api+reference#get-observations>`_.
 
+Get observation species counts:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+There is an additional endpoint to get counts of observations by species.
+On the iNaturalist web UI, this information can be found on the 'Species' tab of search results.
+For example, to get the counts of all your own research-grade observations:
+
+.. code-block:: python
+
+    from pyinaturalist.node_api import get_observation_species_counts
+    obs_counts = get_observation_species_counts(user_id='my_username', quality_grade='research')
+
+
 Taxonomy
 ^^^^^^^^
 
-Search for all taxa matching some criteria:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Search species and other taxa:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Let's say you partially remember either a genus or family name that started with **'vespi'**-something:
 
 .. code-block:: python
@@ -172,7 +188,6 @@ Let's say you partially remember either a genus or family name that started with
     >>> response = get_taxa(q="vespi", rank=["genus", "family"])
     >>> print({taxon["id"]: taxon["name"] for taxon in response["results"]})
     {52747: "Vespidae", 84737: "Vespina", 92786: "Vespicula", 646195: "Vespiodes", ...}
-
 
 Oh, that's right, it was **'Vespidae'**! Now let's find all of its subfamilies using its taxon ID
 from the results above:
@@ -183,8 +198,8 @@ from the results above:
     >>> print({taxon["id"]: taxon["name"] for taxon in response["results"]})
     {343248: "Polistinae", 84738: "Vespinae", 119344: "Eumeninae", 121511: "Masarinae", ...}
 
-Get a specific taxon by ID:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Get a species by ID:
+~~~~~~~~~~~~~~~~~~~~
 Let's find out more about this 'Polistinae' genus. We could search for it by name or by ID,
 but since we already know the ID from the previous search, let's use that:
 
@@ -246,7 +261,7 @@ If you get unexpected matches, the search likely matched a synonym, either in th
 common name or an alternative classification. Check the ``matched_term`` property for more
 info. For example:
 
- .. code-block:: python
+.. code-block:: python
 
     >>> first_result = get_taxa_autocomplete(q='zygoca')['results'][0]
     >>> first_result["name"]

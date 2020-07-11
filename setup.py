@@ -8,7 +8,7 @@ extras_require = {
     # Packages used for CI jobs
     "build": ["coveralls", "tox-travis"],
     # Packages used for documentation builds
-    "docs": ["Sphinx>=3.0", "sphinx-rtd-theme", "sphinxcontrib-apidoc"],
+    "docs": ["Sphinx>=3.0", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinxcontrib-apidoc"],
     # Packages used for testing both locally and in CI jobs
     "test": [
         "black",

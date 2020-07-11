@@ -13,7 +13,7 @@ from pyinaturalist import __version__
 # General information about the project.
 project = "pyinaturalist"
 copyright = "2020, Nicolas Noé"
-needs_sphinx = "3.0"  # Minimum Sphinx version; needed for latest version of autodoc type hints
+needs_sphinx = "3.0"
 master_doc = "index"
 source_suffix = ".rst"
 version = release = __version__
@@ -29,6 +29,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
+    "sphinx_autodoc_typehints",
     "sphinxcontrib.apidoc",
 ]
 
