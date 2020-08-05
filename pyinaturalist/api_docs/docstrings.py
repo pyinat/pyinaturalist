@@ -127,7 +127,16 @@ ONLY_ID = """
     only_id: Return only the record IDs
 """
 
+GEOJSON_PROPERTIES = """
+    properties: Properties from observation results to include as GeoJSON properties
+"""
+
+USER_AGENT = """
+    user_agent: A custom user-agent string to provide to the iNaturalist API
+"""
+
 # Parameter combinations for individual functions
 GET_OBSERVATIONS = OBSERVATION_PARAMS + PAGINATION_PARAMS + ONLY_ID
 GET_ALL_OBSERVATIONS = OBSERVATION_PARAMS + ONLY_ID
 GET_OBSERVATION_SPECIES_COUNTS = OBSERVATION_PARAMS
+GET_GEOJSON_OBSERVATIONS = OBSERVATION_PARAMS + GEOJSON_PROPERTIES

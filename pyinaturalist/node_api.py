@@ -10,7 +10,7 @@ from warnings import warn
 import requests
 from urllib.parse import urljoin
 
-from pyinaturalist.api_docs import docstrings
+from pyinaturalist.api_docs import docstrings, params
 from pyinaturalist.constants import (
     DEFAULT_OBSERVATION_ATTRS,
     INAT_NODE_API_BASE_URL,
@@ -34,6 +34,9 @@ from pyinaturalist.response_format import (
 )
 from pyinaturalist.api_requests import get
 
+DEPRECATION_MSG = (
+    "The 'params' positional argument is deprecated; please use keyword arguments instead"
+)
 logger = getLogger(__name__)
 
 
@@ -68,381 +71,46 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
     raise ObservationNotFound()
 
 
-# TODO: pagination params
-# TODO: These explicit kwargs are useful but super verbose... For code reuse, it may be useful to
-# define this as get_observations(**kwargs), and then programmatically modify the function signature
-def get_observations(
-    params: Dict = None,
-    acc: bool = None,
-    captive: bool = None,
-    endemic: bool = None,
-    geo: bool = None,
-    id_please: bool = None,
-    identified: bool = None,
-    introduced: bool = None,
-    mappable: bool = None,
-    native: bool = None,
-    out_of_range: bool = None,
-    pcid: bool = None,
-    photos: bool = None,
-    popular: bool = None,
-    sounds: bool = None,
-    taxon_is_active: bool = None,
-    threatened: bool = None,
-    verifiable: bool = None,
-    id: MultiInt = None,
-    not_id: MultiInt = None,
-    license: MultiStr = None,
-    photo_license: MultiStr = None,
-    sound_license: MultiStr = None,
-    ofv_datatype: MultiStr = None,
-    place_id: MultiInt = None,
-    project_id: MultiInt = None,
-    rank: MultiStr = None,
-    site_id: MultiStr = None,
-    taxon_id: MultiInt = None,
-    without_taxon_id: MultiInt = None,
-    taxon_name: MultiStr = None,
-    user_id: MultiInt = None,
-    user_login: MultiStr = None,
-    day: MultiInt = None,
-    month: MultiInt = None,
-    year: MultiInt = None,
-    term_id: MultiInt = None,
-    term_value_id: MultiInt = None,
-    without_term_value_id: MultiInt = None,
-    acc_above: str = None,
-    acc_below: str = None,
-    d1: Date = None,
-    d2: Date = None,
-    created_d1: DateTime = None,
-    created_d2: DateTime = None,
-    created_on: Date = None,
-    observed_on: Date = None,
-    unobserved_by_user_id: int = None,
-    apply_project_rules_for: str = None,
-    cs: str = None,
-    csa: str = None,
-    csi: MultiStr = None,
-    geoprivacy: MultiStr = None,
-    taxon_geoprivacy: MultiStr = None,
-    max_rank: str = None,
-    min_rank: str = None,
-    hrank: str = None,
-    lrank: str = None,
-    iconic_taxa: MultiStr = None,
-    id_above: int = None,
-    id_below: int = None,
-    identifications: str = None,
-    lat: float = None,
-    lng: float = None,
-    radius: float = None,
-    nelat: float = None,
-    nelng: float = None,
-    swlat: float = None,
-    swlng: float = None,
-    list_id: int = None,
-    not_in_project: IntOrStr = None,
-    not_matching_project_rules_for: IntOrStr = None,
-    q: str = None,
-    search_on: str = None,
-    quality_grade: str = None,
-    updated_since: DateTime = None,
-    viewer_id: int = None,
-    reviewed: bool = None,
-    locale: str = None,
-    preferred_place_id: int = None,
-    ttl: str = None,
-    page: int = None,
-    per_page: int = None,
-    order: str = None,
-    order_by: str = None,
-    only_id: bool = False,
-    user_agent: str = None,
-) -> JsonResponse:
+def get_observations(params=None, user_agent: str = None, **kwargs) -> JsonResponse:
     """ Search observations
     See: http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
     """
     if params:
-        warn(DeprecationWarning("The 'params' arg is deprecated; please use keyword args instead"))
-    else:
-        params = {
-            "acc": acc,
-            "captive": captive,
-            "endemic": endemic,
-            "geo": geo,
-            "id_please": id_please,
-            "identified": identified,
-            "introduced": introduced,
-            "mappable": mappable,
-            "native": native,
-            "out_of_range": out_of_range,
-            "pcid": pcid,
-            "photos": photos,
-            "popular": popular,
-            "sounds": sounds,
-            "taxon_is_active": taxon_is_active,
-            "threatened": threatened,
-            "verifiable": verifiable,
-            "id": id,
-            "not_id": not_id,
-            "license": license,
-            "photo_license": photo_license,
-            "sound_license": sound_license,
-            "ofv_datatype": ofv_datatype,
-            "place_id": place_id,
-            "project_id": project_id,
-            "rank": rank,
-            "site_id": site_id,
-            "taxon_id": taxon_id,
-            "without_taxon_id": without_taxon_id,
-            "taxon_name": taxon_name,
-            "user_id": user_id,
-            "user_login": user_login,
-            "day": day,
-            "month": month,
-            "year": year,
-            "term_id": term_id,
-            "term_value_id": term_value_id,
-            "without_term_value_id": without_term_value_id,
-            "acc_above": acc_above,
-            "acc_below": acc_below,
-            "d1": d1,
-            "d2": d2,
-            "created_d1": created_d1,
-            "created_d2": created_d2,
-            "created_on": created_on,
-            "observed_on": observed_on,
-            "unobserved_by_user_id": unobserved_by_user_id,
-            "apply_project_rules_for": apply_project_rules_for,
-            "cs": cs,
-            "csa": csa,
-            "csi": csi,
-            "geoprivacy": geoprivacy,
-            "taxon_geoprivacy": taxon_geoprivacy,
-            "hrank": hrank or max_rank,
-            "lrank": lrank or min_rank,
-            "iconic_taxa": iconic_taxa,
-            "id_above": id_above,
-            "id_below": id_below,
-            "identifications": identifications,
-            "lat": lat,
-            "lng": lng,
-            "radius": radius,
-            "nelat": nelat,
-            "nelng": nelng,
-            "swlat": swlat,
-            "swlng": swlng,
-            "list_id": list_id,
-            "not_in_project": not_in_project,
-            "not_matching_project_rules_for": not_matching_project_rules_for,
-            "q": q,
-            "search_on": search_on,
-            "quality_grade": quality_grade,
-            "updated_since": updated_since,
-            "viewer_id": viewer_id,
-            "reviewed": reviewed,
-            "locale": locale,
-            "preferred_place_id": preferred_place_id,
-            "ttl": ttl,
-            "page": page,
-            "per_page": per_page,
-            "order": order,
-            "order_by": order_by,
-            "only_id": only_id,
-        }
-    r = make_inaturalist_api_get_call("observations", params=params, user_agent=user_agent)
+        warn(DeprecationWarning(DEPRECATION_MSG))
+        kwargs.update(params)
+
+    r = make_inaturalist_api_get_call("observations", params=kwargs, user_agent=user_agent)
     return r.json()
 
 
-# Update docstring with argument documentation
+# Update function with request param docs + annotations
 _returns = """Returns:
     JSON response containing observation records
 """
 docstrings.append(get_observations, [docstrings.GET_OBSERVATIONS, _returns])
+get_observations = params.copy_signatures(get_observations, params.get_observations_params)
 
 
-def get_all_observations(
-    params: Dict = None,
-    acc: bool = None,
-    captive: bool = None,
-    endemic: bool = None,
-    geo: bool = None,
-    id_please: bool = None,
-    identified: bool = None,
-    introduced: bool = None,
-    mappable: bool = None,
-    native: bool = None,
-    out_of_range: bool = None,
-    pcid: bool = None,
-    photos: bool = None,
-    popular: bool = None,
-    sounds: bool = None,
-    taxon_is_active: bool = None,
-    threatened: bool = None,
-    verifiable: bool = None,
-    id: MultiInt = None,
-    not_id: MultiInt = None,
-    license: MultiStr = None,
-    photo_license: MultiStr = None,
-    sound_license: MultiStr = None,
-    ofv_datatype: MultiStr = None,
-    place_id: MultiInt = None,
-    project_id: MultiInt = None,
-    rank: MultiStr = None,
-    site_id: MultiStr = None,
-    taxon_id: MultiInt = None,
-    without_taxon_id: MultiInt = None,
-    taxon_name: MultiStr = None,
-    user_id: MultiInt = None,
-    user_login: MultiStr = None,
-    day: MultiInt = None,
-    month: MultiInt = None,
-    year: MultiInt = None,
-    term_id: MultiInt = None,
-    term_value_id: MultiInt = None,
-    without_term_value_id: MultiInt = None,
-    acc_above: str = None,
-    acc_below: str = None,
-    d1: Date = None,
-    d2: Date = None,
-    created_d1: DateTime = None,
-    created_d2: DateTime = None,
-    created_on: Date = None,
-    observed_on: Date = None,
-    unobserved_by_user_id: int = None,
-    apply_project_rules_for: str = None,
-    cs: str = None,
-    csa: str = None,
-    csi: MultiStr = None,
-    geoprivacy: MultiStr = None,
-    taxon_geoprivacy: MultiStr = None,
-    max_rank: str = None,
-    min_rank: str = None,
-    hrank: str = None,
-    lrank: str = None,
-    iconic_taxa: MultiStr = None,
-    id_above: int = None,
-    id_below: int = None,
-    identifications: str = None,
-    lat: float = None,
-    lng: float = None,
-    radius: float = None,
-    nelat: float = None,
-    nelng: float = None,
-    swlat: float = None,
-    swlng: float = None,
-    list_id: int = None,
-    not_in_project: IntOrStr = None,
-    not_matching_project_rules_for: IntOrStr = None,
-    q: str = None,
-    search_on: str = None,
-    quality_grade: str = None,
-    updated_since: DateTime = None,
-    viewer_id: int = None,
-    reviewed: bool = None,
-    locale: str = None,
-    preferred_place_id: int = None,
-    ttl: str = None,
-    only_id: bool = False,
-    user_agent: str = None,
-) -> List[JsonResponse]:
-    """Like get_observations() but handles pagination so you get all the results in one shot.
+def get_all_observations(params=None, user_agent: str = None, **kwargs) -> List[JsonResponse]:
+    """ Like :py:func:`get_observations()`, but handles pagination and returns all results in one
+    call. Explicit pagination parameters will be ignored.
 
-    Some params will be overwritten: order_by, order, per_page, id_above (do NOT specify page when using this).
+    From the iNaturalist documentation:
+    "The large size of the observations index prevents us from supporting the page parameter when
+    retrieving records from large result sets. If you need to retrieve large numbers of records,
+    use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead."
     """
     if params:
-        warn(DeprecationWarning("The 'params' arg is deprecated; please use keyword args instead"))
-    else:
-        params = {
-            "acc": acc,
-            "captive": captive,
-            "endemic": endemic,
-            "geo": geo,
-            "id_please": id_please,
-            "identified": identified,
-            "introduced": introduced,
-            "mappable": mappable,
-            "native": native,
-            "out_of_range": out_of_range,
-            "pcid": pcid,
-            "photos": photos,
-            "popular": popular,
-            "sounds": sounds,
-            "taxon_is_active": taxon_is_active,
-            "threatened": threatened,
-            "verifiable": verifiable,
-            "id": id,
-            "not_id": not_id,
-            "license": license,
-            "photo_license": photo_license,
-            "sound_license": sound_license,
-            "ofv_datatype": ofv_datatype,
-            "place_id": place_id,
-            "project_id": project_id,
-            "rank": rank,
-            "site_id": site_id,
-            "taxon_id": taxon_id,
-            "without_taxon_id": without_taxon_id,
-            "taxon_name": taxon_name,
-            "user_id": user_id,
-            "user_login": user_login,
-            "day": day,
-            "month": month,
-            "year": year,
-            "term_id": term_id,
-            "term_value_id": term_value_id,
-            "without_term_value_id": without_term_value_id,
-            "acc_above": acc_above,
-            "acc_below": acc_below,
-            "d1": d1,
-            "d2": d2,
-            "created_d1": created_d1,
-            "created_d2": created_d2,
-            "created_on": created_on,
-            "observed_on": observed_on,
-            "unobserved_by_user_id": unobserved_by_user_id,
-            "apply_project_rules_for": apply_project_rules_for,
-            "cs": cs,
-            "csa": csa,
-            "csi": csi,
-            "geoprivacy": geoprivacy,
-            "taxon_geoprivacy": taxon_geoprivacy,
-            "hrank": hrank or max_rank,
-            "lrank": lrank or min_rank,
-            "iconic_taxa": iconic_taxa,
-            "id_above": id_above,
-            "id_below": id_below,
-            "identifications": identifications,
-            "lat": lat,
-            "lng": lng,
-            "radius": radius,
-            "nelat": nelat,
-            "nelng": nelng,
-            "swlat": swlat,
-            "swlng": swlng,
-            "list_id": list_id,
-            "not_in_project": not_in_project,
-            "not_matching_project_rules_for": not_matching_project_rules_for,
-            "q": q,
-            "search_on": search_on,
-            "quality_grade": quality_grade,
-            "updated_since": updated_since,
-            "viewer_id": viewer_id,
-            "reviewed": reviewed,
-            "locale": locale,
-            "preferred_place_id": preferred_place_id,
-            "ttl": ttl,
-            "only_id": only_id,
-        }
+        warn(DeprecationWarning(DEPRECATION_MSG))
+        kwargs.update(params)
+    if "page" in kwargs:
+        logger.warning("Cannot specify `page` parameter for this function; see documentation")
+        del kwargs["page"]
 
-    # According to the doc: "The large size of the observations index prevents us from supporting the page parameter
-    # when retrieving records from large result sets. If you need to retrieve large numbers of records, use the
-    # per_page and id_above or id_below parameters instead.
     results = []  # type: List[JsonResponse]
     id_above = 0
     pagination_params = {
-        **params,
+        **kwargs,
         **{
             "order_by": "id",
             "order": "asc",
@@ -463,96 +131,17 @@ def get_all_observations(
         id_above = results[-1]["id"]
 
 
-# Update docstring with argument documentation
+# Update function with request param docs + annotations
 _returns = """Returns:
     Combined list of observation records
 """
 docstrings.append(get_all_observations, [docstrings.GET_ALL_OBSERVATIONS, _returns])
+get_all_observations = params.copy_signatures(
+    get_all_observations, params.get_all_observations_params
+)
 
 
-def get_observation_species_counts(
-    acc: bool = None,
-    captive: bool = None,
-    endemic: bool = None,
-    geo: bool = None,
-    id_please: bool = None,
-    identified: bool = None,
-    introduced: bool = None,
-    mappable: bool = None,
-    native: bool = None,
-    out_of_range: bool = None,
-    pcid: bool = None,
-    photos: bool = None,
-    popular: bool = None,
-    sounds: bool = None,
-    taxon_is_active: bool = None,
-    threatened: bool = None,
-    verifiable: bool = None,
-    id: MultiInt = None,
-    not_id: MultiInt = None,
-    license: MultiStr = None,
-    photo_license: MultiStr = None,
-    sound_license: MultiStr = None,
-    ofv_datatype: MultiStr = None,
-    place_id: MultiInt = None,
-    project_id: MultiInt = None,
-    rank: MultiStr = None,
-    site_id: MultiStr = None,
-    taxon_id: MultiInt = None,
-    without_taxon_id: MultiInt = None,
-    taxon_name: MultiStr = None,
-    user_id: MultiInt = None,
-    user_login: MultiStr = None,
-    day: MultiInt = None,
-    month: MultiInt = None,
-    year: MultiInt = None,
-    term_id: MultiInt = None,
-    term_value_id: MultiInt = None,
-    without_term_value_id: MultiInt = None,
-    acc_above: str = None,
-    acc_below: str = None,
-    d1: Date = None,
-    d2: Date = None,
-    created_d1: DateTime = None,
-    created_d2: DateTime = None,
-    created_on: Date = None,
-    observed_on: Date = None,
-    unobserved_by_user_id: int = None,
-    apply_project_rules_for: str = None,
-    cs: str = None,
-    csa: str = None,
-    csi: MultiStr = None,
-    geoprivacy: MultiStr = None,
-    taxon_geoprivacy: MultiStr = None,
-    max_rank: str = None,
-    min_rank: str = None,
-    hrank: str = None,
-    lrank: str = None,
-    iconic_taxa: MultiStr = None,
-    id_above: int = None,
-    id_below: int = None,
-    identifications: str = None,
-    lat: float = None,
-    lng: float = None,
-    radius: float = None,
-    nelat: float = None,
-    nelng: float = None,
-    swlat: float = None,
-    swlng: float = None,
-    list_id: int = None,
-    not_in_project: IntOrStr = None,
-    not_matching_project_rules_for: IntOrStr = None,
-    q: str = None,
-    search_on: str = None,
-    quality_grade: str = None,
-    updated_since: DateTime = None,
-    viewer_id: int = None,
-    reviewed: bool = None,
-    locale: str = None,
-    preferred_place_id: int = None,
-    ttl: str = None,
-    user_agent: str = None,
-) -> JsonResponse:
+def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResponse:
     """ Get all species (or other "leaf taxa") associated with observations matching the search
     criteria, and the count of observations they are associated with.
     **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
@@ -571,100 +160,23 @@ def get_observation_species_counts(
         }
 
     """
-    params = {
-        "acc": acc,
-        "captive": captive,
-        "endemic": endemic,
-        "geo": geo,
-        "id_please": id_please,
-        "identified": identified,
-        "introduced": introduced,
-        "mappable": mappable,
-        "native": native,
-        "out_of_range": out_of_range,
-        "pcid": pcid,
-        "photos": photos,
-        "popular": popular,
-        "sounds": sounds,
-        "taxon_is_active": taxon_is_active,
-        "threatened": threatened,
-        "verifiable": verifiable,
-        "id": id,
-        "not_id": not_id,
-        "license": license,
-        "photo_license": photo_license,
-        "sound_license": sound_license,
-        "ofv_datatype": ofv_datatype,
-        "place_id": place_id,
-        "project_id": project_id,
-        "rank": rank,
-        "site_id": site_id,
-        "taxon_id": taxon_id,
-        "without_taxon_id": without_taxon_id,
-        "taxon_name": taxon_name,
-        "user_id": user_id,
-        "user_login": user_login,
-        "day": day,
-        "month": month,
-        "year": year,
-        "term_id": term_id,
-        "term_value_id": term_value_id,
-        "without_term_value_id": without_term_value_id,
-        "acc_above": acc_above,
-        "acc_below": acc_below,
-        "d1": d1,
-        "d2": d2,
-        "created_d1": created_d1,
-        "created_d2": created_d2,
-        "created_on": created_on,
-        "observed_on": observed_on,
-        "unobserved_by_user_id": unobserved_by_user_id,
-        "apply_project_rules_for": apply_project_rules_for,
-        "cs": cs,
-        "csa": csa,
-        "csi": csi,
-        "geoprivacy": geoprivacy,
-        "taxon_geoprivacy": taxon_geoprivacy,
-        "hrank": hrank or max_rank,
-        "lrank": lrank or min_rank,
-        "iconic_taxa": iconic_taxa,
-        "id_above": id_above,
-        "id_below": id_below,
-        "identifications": identifications,
-        "lat": lat,
-        "lng": lng,
-        "radius": radius,
-        "nelat": nelat,
-        "nelng": nelng,
-        "swlat": swlat,
-        "swlng": swlng,
-        "list_id": list_id,
-        "not_in_project": not_in_project,
-        "not_matching_project_rules_for": not_matching_project_rules_for,
-        "q": q,
-        "search_on": search_on,
-        "quality_grade": quality_grade,
-        "updated_since": updated_since,
-        "viewer_id": viewer_id,
-        "reviewed": reviewed,
-        "locale": locale,
-        "preferred_place_id": preferred_place_id,
-        "ttl": ttl,
-    }
     r = make_inaturalist_api_get_call(
-        "observations/species_counts", params=params, user_agent=user_agent,
+        "observations/species_counts", params=kwargs, user_agent=user_agent,
     )
     r.raise_for_status()
     return r.json()
 
 
-# Update docstring with argument documentation
+# Update function with request param docs + annotations
 _returns = """
 Returns:
     JSON containing observation counts, ordered by count descending
 """
 docstrings.append(
     get_observation_species_counts, [docstrings.GET_OBSERVATION_SPECIES_COUNTS, _returns]
+)
+get_observation_species_counts = params.copy_signatures(
+    get_observation_species_counts, params.get_observation_species_counts_params
 )
 
 
@@ -689,9 +201,6 @@ def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResp
     Args:
         properties: Properties from observation results to include as GeoJSON properties
         kwargs: Arguments for :py:func:`.get_observations`
-
-    Returns:
-        A ``FeatureCollection`` containing observation results as ``Feature`` dicts.
     """
     kwargs["mappable"] = True
     observations = get_all_observations(**kwargs)
@@ -699,6 +208,17 @@ def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResp
         (flatten_nested_params(obs) for obs in observations),
         properties=properties if properties is not None else DEFAULT_OBSERVATION_ATTRS,
     )
+
+
+# Update function with request param docs + annotations
+_returns = """
+Returns:
+    A ``FeatureCollection`` containing observation results as ``Feature`` dicts.
+"""
+docstrings.append(get_geojson_observations, [docstrings.GET_GEOJSON_OBSERVATIONS, _returns])
+get_geojson_observations = params.copy_signatures(
+    get_geojson_observations, params.get_geojson_observations_params
+)
 
 
 def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse:

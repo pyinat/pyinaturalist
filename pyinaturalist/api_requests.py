@@ -18,6 +18,7 @@ MOCK_RESPONSE.json.return_value = {"results": [], "total_results": 0}
 logger = getLogger(__name__)
 
 
+# TODO: Copy function signature of request(), add `url`, and apply to these 4 wrapper functions
 def delete(url: str, **kwargs) -> requests.Response:
     """ Wrapper around :py:func:`requests.delete` that supports dry-run mode """
     return request("DELETE", url, **kwargs)

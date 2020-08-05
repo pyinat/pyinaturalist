@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Any, Dict, List, Union
+from typing import Any, Callable, Dict, List, Union
 
 INAT_NODE_API_BASE_URL = "https://api.inaturalist.org/v1/"
 INAT_BASE_URL = "https://www.inaturalist.org"
@@ -19,6 +19,8 @@ IntOrStr = Union[int, str]
 JsonResponse = Dict[str, Any]
 MultiInt = Union[int, List[int]]
 MultiStr = Union[str, List[str]]
+TemplateFunction = Any  # Cannot use Callable/Protocol, as they will not allow a mix of signatures
+
 
 # Basic observation attributes to include by default in geojson responses
 DEFAULT_OBSERVATION_ATTRS = [
