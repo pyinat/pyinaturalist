@@ -1,6 +1,7 @@
 """ Helper functions for processing request parameters """
 from datetime import date, datetime
 from typing import Any, Dict, Optional
+from warnings import warn
 
 from dateutil.parser import parse as parse_timestamp
 from dateutil.tz import tzlocal
@@ -38,6 +39,17 @@ MULTIPLE_CHOICE_PARAMS = {
     "quality_grade": QUALITY_GRADES,
     "search_on": SEARCH_PROPERTIES,
 }
+
+
+def check_deprecated_params(params, **kwargs) -> Dict[str, Any]:
+    if params:
+        warn(
+            DeprecationWarning(
+                "The 'params' argument is deprecated; please use keyword arguments instead"
+            )
+        )
+        kwargs.update(params)
+    return kwargs
 
 
 def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any]:

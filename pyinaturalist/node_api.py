@@ -5,26 +5,27 @@ See: http://api.inaturalist.org/v1/docs/
 from logging import getLogger
 from time import sleep
 from typing import Dict, List
-from warnings import warn
 
 import requests
 from urllib.parse import urljoin
 
-from pyinaturalist.api_docs import docstrings, params
+from pyinaturalist.api_docs import (
+    document_request_params,
+    get_observations_params,
+    get_all_observations_params,
+    get_observation_species_counts_params,
+    get_geojson_observations_params,
+)
 from pyinaturalist.constants import (
     DEFAULT_OBSERVATION_ATTRS,
     INAT_NODE_API_BASE_URL,
     PER_PAGE_RESULTS,
     THROTTLING_DELAY,
     MultiInt,
-    MultiStr,
-    Date,
-    DateTime,
-    IntOrStr,
     JsonResponse,
 )
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.request_params import is_int, is_int_list
+from pyinaturalist.request_params import check_deprecated_params, is_int, is_int_list
 from pyinaturalist.response_format import (
     format_taxon,
     as_geojson_feature_collection,
@@ -34,9 +35,6 @@ from pyinaturalist.response_format import (
 )
 from pyinaturalist.api_requests import get
 
-DEPRECATION_MSG = (
-    "The 'params' positional argument is deprecated; please use keyword arguments instead"
-)
 logger = getLogger(__name__)
 
 
@@ -71,38 +69,34 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
     raise ObservationNotFound()
 
 
-def get_observations(params=None, user_agent: str = None, **kwargs) -> JsonResponse:
-    """ Search observations
-    See: http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
-    """
-    if params:
-        warn(DeprecationWarning(DEPRECATION_MSG))
-        kwargs.update(params)
+@document_request_params(get_observations_params)
+def get_observations(params: Dict = None, user_agent: str = None, **kwargs) -> JsonResponse:
+    """ Search observations. See: http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
 
+    Returns:
+        JSON response containing observation records
+    """
+    kwargs = check_deprecated_params(params, **kwargs)
     r = make_inaturalist_api_get_call("observations", params=kwargs, user_agent=user_agent)
     return r.json()
 
 
-# Update function with request param docs + annotations
-_returns = """Returns:
-    JSON response containing observation records
-"""
-docstrings.append(get_observations, [docstrings.GET_OBSERVATIONS, _returns])
-get_observations = params.copy_signatures(get_observations, params.get_observations_params)
-
-
-def get_all_observations(params=None, user_agent: str = None, **kwargs) -> List[JsonResponse]:
+@document_request_params(get_all_observations_params)
+def get_all_observations(
+    params: Dict = None, user_agent: str = None, **kwargs
+) -> List[JsonResponse]:
     """ Like :py:func:`get_observations()`, but handles pagination and returns all results in one
     call. Explicit pagination parameters will be ignored.
 
-    From the iNaturalist documentation:
+    Notes on pagination from the iNaturalist documentation:
     "The large size of the observations index prevents us from supporting the page parameter when
     retrieving records from large result sets. If you need to retrieve large numbers of records,
     use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead."
+
+    Returns:
+        Combined list of observation records
     """
-    if params:
-        warn(DeprecationWarning(DEPRECATION_MSG))
-        kwargs.update(params)
+    kwargs = check_deprecated_params(params, **kwargs)
     if "page" in kwargs:
         logger.warning("Cannot specify `page` parameter for this function; see documentation")
         del kwargs["page"]
@@ -131,16 +125,7 @@ def get_all_observations(params=None, user_agent: str = None, **kwargs) -> List[
         id_above = results[-1]["id"]
 
 
-# Update function with request param docs + annotations
-_returns = """Returns:
-    Combined list of observation records
-"""
-docstrings.append(get_all_observations, [docstrings.GET_ALL_OBSERVATIONS, _returns])
-get_all_observations = params.copy_signatures(
-    get_all_observations, params.get_all_observations_params
-)
-
-
+@document_request_params(get_observation_species_counts_params)
 def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResponse:
     """ Get all species (or other "leaf taxa") associated with observations matching the search
     criteria, and the count of observations they are associated with.
@@ -167,19 +152,7 @@ def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResp
     return r.json()
 
 
-# Update function with request param docs + annotations
-_returns = """
-Returns:
-    JSON containing observation counts, ordered by count descending
-"""
-docstrings.append(
-    get_observation_species_counts, [docstrings.GET_OBSERVATION_SPECIES_COUNTS, _returns]
-)
-get_observation_species_counts = params.copy_signatures(
-    get_observation_species_counts, params.get_observation_species_counts_params
-)
-
-
+@document_request_params(get_geojson_observations_params)
 def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResponse:
     """ Get all observation results combined into a GeoJSON ``FeatureCollection``.
     By default this includes some basic observation properties as GeoJSON ``Feature`` properties.
@@ -198,9 +171,8 @@ def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResp
             ]
         }
 
-    Args:
-        properties: Properties from observation results to include as GeoJSON properties
-        kwargs: Arguments for :py:func:`.get_observations`
+    Returns:
+        A ``FeatureCollection`` containing observation results as ``Feature`` dicts.
     """
     kwargs["mappable"] = True
     observations = get_all_observations(**kwargs)
@@ -208,17 +180,6 @@ def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResp
         (flatten_nested_params(obs) for obs in observations),
         properties=properties if properties is not None else DEFAULT_OBSERVATION_ATTRS,
     )
-
-
-# Update function with request param docs + annotations
-_returns = """
-Returns:
-    A ``FeatureCollection`` containing observation results as ``Feature`` dicts.
-"""
-docstrings.append(get_geojson_observations, [docstrings.GET_GEOJSON_OBSERVATIONS, _returns])
-get_geojson_observations = params.copy_signatures(
-    get_geojson_observations, params.get_geojson_observations_params
-)
 
 
 def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse:
