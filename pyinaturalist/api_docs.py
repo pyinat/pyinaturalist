@@ -144,7 +144,45 @@ def _get_combined_revision(template_functions: List[TemplateFunction]):
     return forge.sign(*list(chain.from_iterable(fparams)))
 
 
-def observation_params(
+# Params that are in most observation-related endpoints in both Node and REST APIs
+def observation_params_common(
+    q: str = None,
+    d1: Date = None,
+    d2: Date = None,
+    day: MultiInt = None,
+    month: MultiInt = None,
+    year: MultiInt = None,
+    license: MultiStr = None,
+    list_id: int = None,
+    photo_license: MultiStr = None,
+    out_of_range: bool = None,
+    quality_grade: str = None,
+    taxon_id: MultiInt = None,
+    taxon_name: MultiStr = None,
+    iconic_taxa: MultiStr = None,
+    updated_since: DateTime = None,
+):
+    """
+    q: Search observation properties
+    d1: Must be observed on or after this date
+    d2: Must be observed on or before this date
+    day: Must be observed within this day of the month
+    month: Must be observed within this month
+    year: Must be observed within this year
+    license: Observation must have this license
+    photo_license: Must have at least one photo with this license
+    out_of_range: Observations whose taxa are outside their known ranges
+    list_id: Taxon must be in the list with this ID
+    quality_grade: Must have this quality grade
+    taxon_id: Only show observations of these taxa and their descendants
+    taxon_name: Taxon must have a scientific or common name matching this string
+    iconic_taxa: Taxon must by within this iconic taxon
+    updated_since: Must be updated since this time
+    """
+
+
+# Observation params that are only in the Node API
+def observation_params_node_only(
     params: Dict = None,
     acc: bool = None,
     captive: bool = None,
@@ -155,7 +193,6 @@ def observation_params(
     introduced: bool = None,
     mappable: bool = None,
     native: bool = None,
-    out_of_range: bool = None,
     pcid: bool = None,
     photos: bool = None,
     popular: bool = None,
@@ -165,29 +202,20 @@ def observation_params(
     verifiable: bool = None,
     id: MultiInt = None,
     not_id: MultiInt = None,
-    license: MultiStr = None,
-    photo_license: MultiStr = None,
     sound_license: MultiStr = None,
     ofv_datatype: MultiStr = None,
     place_id: MultiInt = None,
     project_id: MultiInt = None,
     rank: MultiStr = None,
     site_id: MultiStr = None,
-    taxon_id: MultiInt = None,
     without_taxon_id: MultiInt = None,
-    taxon_name: MultiStr = None,
     user_id: MultiInt = None,
     user_login: MultiStr = None,
-    day: MultiInt = None,
-    month: MultiInt = None,
-    year: MultiInt = None,
     term_id: MultiInt = None,
     term_value_id: MultiInt = None,
     without_term_value_id: MultiInt = None,
     acc_above: str = None,
     acc_below: str = None,
-    d1: Date = None,
-    d2: Date = None,
     created_d1: DateTime = None,
     created_d2: DateTime = None,
     created_on: Date = None,
@@ -203,20 +231,15 @@ def observation_params(
     min_rank: str = None,
     hrank: str = None,
     lrank: str = None,
-    iconic_taxa: MultiStr = None,
     id_above: int = None,
     id_below: int = None,
     identifications: str = None,
     lat: float = None,
     lng: float = None,
     radius: float = None,
-    list_id: int = None,
     not_in_project: IntOrStr = None,
     not_matching_project_rules_for: IntOrStr = None,
-    q: str = None,
     search_on: str = None,
-    quality_grade: str = None,
-    updated_since: DateTime = None,
     viewer_id: int = None,
     reviewed: bool = None,
     locale: str = None,
@@ -224,6 +247,7 @@ def observation_params(
     ttl: str = None,
 ):
     """
+    ofv_datatype: Must have an observation field value with this datatype
     acc: Whether or not positional accuracy / coordinate uncertainty has been specified
     captive: Captive or cultivated observations
     endemic: Observations whose taxa are endemic to their location
@@ -234,7 +258,6 @@ def observation_params(
     introduced: Observations whose taxa are introduced in their location
     mappable: Observations that show on map tiles
     native: Observations whose taxa are native to their location
-    out_of_range: Observations whose taxa are outside their known ranges
     pcid: Observations identified by the curator of a project. If the ``project_id`` parameter
         is also specified, this will only consider observations identified by curators of the
         specified project(s)
@@ -247,22 +270,14 @@ def observation_params(
         Equivalent to ``quality_grade=needs_id,research``
     id: Must have this ID
     not_id: Must not have this ID
-    license: Observation must have this license
-    ofv_datatype: Must have an observation field value with this datatype
-    photo_license: Must have at least one photo with this license
     place_id: Must be observed within the place with this ID
     project_id: Must be added to the project this ID or slug
     rank: Taxon must have this rank
     site_id: Must be affiliated with the iNaturalist network website with this ID
     sound_license: Must have at least one sound with this license
-    taxon_id: Only show observations of these taxa and their descendants
     without_taxon_id: Exclude observations of these taxa and their descendants
-    taxon_name: Taxon must have a scientific or common name matching this string
     user_id: User must have this ID or login
     user_login: User must have this login
-    day: Must be observed within this day of the month
-    month: Must be observed within this month
-    year: Must be observed within this year
     term_id: Must have an annotation using this controlled term ID
     term_value_id: Must have an annotation using this controlled value ID.
         Must be combined with the ``term_id`` parameter
@@ -270,8 +285,6 @@ def observation_params(
         Must be combined with the ``term_id`` parameter
     acc_above: Must have an positional accuracy above this value (meters)
     acc_below: Must have an positional accuracy below this value (meters)
-    d1: Must be observed on or after this date
-    d2: Must be observed on or before this date
     created_d1: Must be created at or after this time
     created_d2: Must be created at or before this time
     created_on: Must be created on this date
@@ -290,27 +303,50 @@ def observation_params(
         identifications.
     hrank: Taxon must have this rank or lower
     lrank: Taxon must have this rank or higher
-    iconic_taxa: Taxon must by within this iconic taxon
     id_above: Must have an ID above this value
     id_below: Must have an ID below this value
     identifications: Identifications must meet these criteria
     lat: Must be within a ``radius`` kilometer circle around this lat/lng (lat, lng, radius)
     lng: Must be within a ``radius`` kilometer circle around this lat/lng (lat, lng, radius)
     radius: Must be within a {radius} kilometer circle around this lat/lng (lat, lng, radius)
-    list_id: Taxon must be in the list with this ID
     not_in_project: Must not be in the project with this ID or slug
     not_matching_project_rules_for: Must not match the rules of the project with this ID or slug
-    q: Search observation properties. Can be combined with ``search_on``
     search_on: Properties to search on, when combined with q. Searches across all properties by
         default
-    quality_grade: Must have this quality grade
-    updated_since: Must be updated since this time
     viewer_id: See reviewed
     reviewed: Observations have been reviewed by the user with ID equal to the value of the
         ``viewer_id`` parameter
     locale: Locale preference for taxon common names
     preferred_place_id: Place preference for regional taxon common names
     ttl: Set the ``Cache-Control`` HTTP header with this value as ``max-age``, in seconds
+    """
+
+
+# Observation params that are only in the REST API
+def observation_params_rest_only(
+    has: MultiStr = None,
+    on: Date = None,
+    m1: Date = None,
+    m2: Date = None,
+    h1: Date = None,
+    h2: Date = None,
+    extra: str = None,
+    response_format: str = "json",
+):
+    """
+    has: Catch-all for some boolean selectors. This can be used multiple times, e.g.
+        ``has=['photos', 'geo']``
+    m1: First month of a month range
+    m2: Last month of a month range
+    h1: First hour of an hour range
+    h2: Last hour of an hour range
+    on: Filter by date string
+    extra: Retrieve additional information.
+        **'projects'** returns info about the projects the observations have been added to,
+        **'fields'** returns observation field values,
+        **'observation_photos'** returns information about the photos' relationship with the
+        observation, like their order.
+    response_format: A supported response format to return
     """
 
 
@@ -414,14 +450,23 @@ def _format_param_choices():
     )
 
 
-# Request param combinations for specific API endpoints
-get_observations_params = [observation_params, bounding_box, pagination, only_id]
-get_all_observations_params = [observation_params, bounding_box, only_id]
-get_observation_species_counts_params = [observation_params, bounding_box]
-get_geojson_observations_params = [observation_params, bounding_box, geojson_properties]
+# Request param combinations for Node API endpoints
+_get_observations = [observation_params_common, observation_params_node_only, bounding_box]
+get_observations_params = _get_observations + [pagination, only_id]
+get_all_observations_params = _get_observations + [only_id]
+get_observation_species_counts_params = _get_observations
+get_geojson_observations_params = _get_observations + [geojson_properties]
 get_places_nearby_params = [bounding_box, name]
 get_taxa_params = [taxon_params, taxon_id_params]
 get_taxa_autocomplete_params = [taxon_params, minify]
+
+# Request param combinations for REST API endpoints
+get_observations_params_rest = [
+    observation_params_common,
+    observation_params_rest_only,
+    bounding_box,
+    pagination,
+]
 
 
 MULTIPLE_CHOICE_PARAM_DOCS = "**Multiple-Choice Parameters:**\n" + _format_param_choices()

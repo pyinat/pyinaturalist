@@ -8,15 +8,19 @@ from typing import Dict, Any, List, BinaryIO, Union
 
 from urllib.parse import urljoin
 
+from pyinaturalist.api_docs import (
+    document_request_params,
+    get_observations_params_rest as get_observations_params,
+)
 from pyinaturalist.constants import OBSERVATION_FORMATS, THROTTLING_DELAY, INAT_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 from pyinaturalist.api_requests import delete, get, post, put
 from pyinaturalist.response_format import convert_lat_long_to_float
 
 
-def get_observations(response_format="json", user_agent: str = None, **params) -> Union[List, str]:
-    """Get observation data, optionally in an alternative format. Return type will be
-    ``dict`` for the ``json`` response format, and ``str`` for all others. Also see
+@document_request_params(get_observations_params)
+def get_observations(user_agent: str = None, **params) -> Union[List, str]:
+    """Get observation data, optionally in an alternative format. Also see
     :py:func:`.get_geojson_observations` for GeoJSON format (not included here because it wraps
     a separate API endpoint).
 
@@ -26,7 +30,11 @@ def get_observations(response_format="json", user_agent: str = None, **params) -
 
         get_observations(id=45414404, format="dwc")
 
+    Returns:
+        Return type will be ``dict`` for the ``json`` response format, and ``str`` for all
+        others.
     """
+    response_format = params.get("response_format", "json")
     if response_format == "geojson":
         raise ValueError("For geojson format, use pyinaturalist.node_api.get_geojson_observations")
     if response_format not in OBSERVATION_FORMATS:

@@ -1,4 +1,3 @@
-import os
 import pytest
 from unittest.mock import patch
 
@@ -97,7 +96,7 @@ def test_request_dry_run(
         settings.DRY_RUN_WRITE_ONLY = write_only_const
         response = request(method, "http://url")
 
-    # Verify that the request was or wasn""t mocked based on settings
+    # Verify that the request was or wasn't mocked based on settings
     if expected_real_request:
         assert mock_requests.request.call_count == 1
         assert response == mock_requests.request()
@@ -113,4 +112,4 @@ def test_request_dry_run_disabled(requests_mock):
         "http://url", json={"results": ["I'm a real response object!"]}, status_code=200
     )
 
-    assert request("GET", "http://url",).json() == real_response
+    assert request("GET", "http://url").json() == real_response

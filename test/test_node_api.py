@@ -199,7 +199,7 @@ def test_get_taxa_by_rank_range(
 ):
     # Make sure custom rank params result in the correct 'rank' param value
     get_taxa(**params)
-    requested_rank = mock_inaturalist_api_get_call.mock_calls[0].kwargs['params']['rank']
+    requested_rank = mock_inaturalist_api_get_call.mock_calls[0].kwargs["params"]["rank"]
     assert requested_rank == expected_ranks
 
 

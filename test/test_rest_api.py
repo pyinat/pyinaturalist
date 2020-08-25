@@ -40,7 +40,7 @@ def test_get_observations(response_format, requests_mock):
         **{key: response},
     )
 
-    observations = get_observations(id=16227955, response_format=response_format)
+    observations = get_observations(taxon_id=493595, response_format=response_format)
 
     # Ensure coordinate strings were converted to floats, for JSON format only
     if response_format == "json":
@@ -52,7 +52,7 @@ def test_get_observations(response_format, requests_mock):
 @pytest.mark.parametrize("response_format", ["geojson", "yaml"])
 def test_get_observations__invalid_format(response_format):
     with pytest.raises(ValueError):
-        get_observations(id=16227955, response_format=response_format)
+        get_observations(taxon_id=493595, response_format=response_format)
 
 
 def test_get_observation_fields(requests_mock):
