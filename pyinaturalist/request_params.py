@@ -1,6 +1,6 @@
 """ Helper functions for processing request parameters """
 from datetime import date, datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 from warnings import warn
 
 from dateutil.parser import parse as parse_timestamp
@@ -158,3 +158,22 @@ def _isoformat(d):
     if isinstance(d, datetime) and not d.tzinfo:
         d = d.replace(tzinfo=tzlocal())
     return d.isoformat()
+
+
+def translate_rank_range(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    if kwargs.get("min_rank") or kwargs.get("max_rank"):
+        kwargs["rank"] = _get_rank_range(kwargs.pop("min_rank", None), kwargs.pop("max_rank", None))
+    return kwargs
+
+
+def _get_rank_range(min_rank: str = None, max_rank: str = None) -> List[str]:
+    """ Translate min and/or max rank into a list of ranks """
+
+    def _get_rank_index(rank: str) -> int:
+        if rank not in RANKS:
+            raise ValueError("Invalid rank")
+        return RANKS.index(rank)
+
+    min_rank_index = _get_rank_index(min_rank) if min_rank else 0
+    max_rank_index = _get_rank_index(max_rank) + 1 if max_rank else len(RANKS)
+    return RANKS[min_rank_index:max_rank_index]

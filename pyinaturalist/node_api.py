@@ -15,6 +15,9 @@ from pyinaturalist.api_docs import (
     get_all_observations_params,
     get_observation_species_counts_params,
     get_geojson_observations_params,
+    get_places_nearby_params,
+    get_taxa_params,
+    get_taxa_autocomplete_params,
 )
 from pyinaturalist.constants import (
     DEFAULT_OBSERVATION_ATTRS,
@@ -25,11 +28,15 @@ from pyinaturalist.constants import (
     JsonResponse,
 )
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.request_params import check_deprecated_params, is_int, is_int_list
+from pyinaturalist.request_params import (
+    check_deprecated_params,
+    is_int,
+    is_int_list,
+    translate_rank_range,
+)
 from pyinaturalist.response_format import (
     format_taxon,
     as_geojson_feature_collection,
-    _get_rank_range,
     flatten_nested_params,
     convert_location_to_float,
 )
@@ -214,14 +221,8 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
     return response
 
 
-def get_places_nearby(
-    nelat: float,
-    nelng: float,
-    swlat: float,
-    swlng: float,
-    name: str = None,
-    user_agent: str = None,
-) -> JsonResponse:
+@document_request_params(get_places_nearby_params)
+def get_places_nearby(user_agent: str = None, **kwargs) -> JsonResponse:
     """
     Given an bounding box, and an optional name query, return standard iNaturalist curator approved
     and community non-curated places nearby
@@ -240,21 +241,10 @@ def get_places_nearby(
             }
         }
 
-    Args:
-        nelat: NE latitude of bounding box
-        nelng: NE longitude of bounding box
-        swlat: SW latitude of bounding box
-        swlng: SW longitude of bounding box
-        name: Name must match this value
-
     Returns:
         A list of dicts containing places results
     """
-    r = make_inaturalist_api_get_call(
-        "places/nearby",
-        params={"nelat": nelat, "nelng": nelng, "swlat": swlat, "swlng": swlng, "name": name},
-        user_agent=user_agent,
-    )
+    r = make_inaturalist_api_get_call("places/nearby", params=kwargs, user_agent=user_agent)
     r.raise_for_status()
     return _convert_all_locations_to_float(r.json())
 
@@ -313,68 +303,36 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     return r.json()
 
 
-def get_taxa(
-    min_rank: str = None, max_rank: str = None, user_agent: str = None, **params
-) -> JsonResponse:
+@document_request_params(get_taxa_params)
+def get_taxa(user_agent: str = None, **kwargs) -> JsonResponse:
     """Given zero to many of following parameters, returns taxa matching the search criteria.
     See https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
-
-    Args:
-        q: Name must begin with this value
-        is_active: Taxon is active
-        taxon_id: Only show taxa with this ID, or its descendants
-        parent_id: Taxon's parent must have this ID
-        rank: Taxon must have this exact rank
-        min_rank: Taxon must have this rank or higher; overrides ``rank``
-        max_rank: Taxon must have this rank or lower; overrides ``rank``
-        rank_level: Taxon must have this rank level. Some example values are 70 (kingdom), 60 (phylum),
-            50 (class), 40 (order), 30 (family), 20 (genus), 10 (species), 5 (subspecies)
-        id_above: Must have an ID above this value
-        id_below: Must have an ID below this value
-        per_page: Number of results to return in a page. The maximum value is generally 200 unless
-            otherwise noted
-        locale: Locale preference for taxon common names
-        preferred_place_id: Place preference for regional taxon common names
-        only_id: Return only the record IDs
-        all_names: Include all taxon names in the response
 
     Returns:
         A list of dicts containing taxa results
     """
-    if min_rank or max_rank:
-        params["rank"] = _get_rank_range(min_rank, max_rank)
-    r = make_inaturalist_api_get_call("taxa", params=params, user_agent=user_agent)
+    kwargs = translate_rank_range(kwargs)
+    r = make_inaturalist_api_get_call("taxa", params=kwargs, user_agent=user_agent)
     r.raise_for_status()
     return r.json()
 
 
-def get_taxa_autocomplete(user_agent: str = None, minify: bool = False, **params) -> JsonResponse:
-    """ Given a query string, returns taxa with names starting with the search term
+@document_request_params(get_taxa_autocomplete_params)
+def get_taxa_autocomplete(user_agent: str = None, **kwargs) -> JsonResponse:
+    """Given a query string, returns taxa with names starting with the search term
     See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_autocomplete
 
     **Note:** There appears to currently be a bug in the API that causes ``per_page`` to not have
     any effect.
 
-    Args:
-        q: Name must begin with this value
-        is_active: Taxon is active
-        taxon_id: Only show taxa with this ID, or its descendants
-        rank: Taxon must have this rank
-        rank_level: Taxon must have this rank level. Some example values are 70 (kingdom),
-            60 (phylum), 50 (class), 40 (order), 30 (family), 20 (genus), 10 (species), 5 (subspecies)
-        per_page: Number of results to return in a page. The maximum value is generally 200 unless otherwise noted
-        locale: Locale preference for taxon common names
-        preferred_place_id: Place preference for regional taxon common names
-        all_names: Include all taxon names in the response
-        minify: Condense each match into a single string containg taxon ID, rank, and name
-
     Returns:
         A list of dicts containing taxa results
     """
-    r = make_inaturalist_api_get_call("taxa/autocomplete", params=params, user_agent=user_agent)
+    kwargs = translate_rank_range(kwargs)
+    r = make_inaturalist_api_get_call("taxa/autocomplete", params=kwargs, user_agent=user_agent)
     r.raise_for_status()
     json_response = r.json()
 
-    if minify:
+    if kwargs.get("minify"):
         json_response["results"] = [format_taxon(t) for t in json_response["results"]]
     return json_response

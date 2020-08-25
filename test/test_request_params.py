@@ -83,8 +83,8 @@ def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_str
 @pytest.mark.parametrize(
     "http_function", get_module_http_functions(pyinaturalist.node_api).values()
 )
+@patch("pyinaturalist.request_params.translate_rank_range")
 @patch("pyinaturalist.response_format.as_geojson_feature")
-@patch("pyinaturalist.response_format._get_rank_range")
 @patch("pyinaturalist.node_api.convert_location_to_float")
 @patch("pyinaturalist.node_api._convert_all_locations_to_float")
 @patch("pyinaturalist.api_requests.preprocess_request_params")
@@ -94,8 +94,8 @@ def test_all_node_requests_use_param_conversion(
     preprocess_request_params,
     convert_all_locations_to_float,
     convert_location_to_float,
-    get_rank_range,
     as_geojson,
+    translate_rank_range,
     http_function,
 ):
     request().json.return_value = {"total_results": 1, "results": [{}]}

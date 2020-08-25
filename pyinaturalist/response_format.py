@@ -1,8 +1,6 @@
 """ Helper functions for formatting API responses """
 from typing import Any, Dict, List, Iterable, Optional
 
-from pyinaturalist.constants import RANKS
-
 
 def as_geojson_feature_collection(
     results: Iterable[Dict[str, Any]], properties: List[str] = None
@@ -67,19 +65,6 @@ def format_taxon(taxon: Dict) -> str:
     return "{:>8}: {:>12} {}{}".format(
         taxon["id"], taxon["rank"].title(), taxon["name"], " ({})".format(common) if common else "",
     )
-
-
-def _get_rank_range(min_rank: str = None, max_rank: str = None) -> List[str]:
-    """ Translate min and/or max rank into a list of ranks """
-    min_rank_index = _get_rank_index(min_rank) if min_rank else 0
-    max_rank_index = _get_rank_index(max_rank) + 1 if max_rank else len(RANKS)
-    return RANKS[min_rank_index:max_rank_index]
-
-
-def _get_rank_index(rank: str) -> int:
-    if rank not in RANKS:
-        raise ValueError("Invalid rank")
-    return RANKS.index(rank)
 
 
 def convert_location_to_float(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:

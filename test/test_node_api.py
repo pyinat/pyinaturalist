@@ -126,7 +126,7 @@ def test_get_places_nearby(requests_mock):
         status_code=200,
     )
 
-    response = get_places_nearby(150.0, -50.0, -149.999, -49.999)
+    response = get_places_nearby(nelat=150.0, nelng=-50.0, swlat=-149.999, swlng=-49.999)
     result = response["results"]["standard"][0]
 
     assert response["total_results"] == 20
@@ -199,9 +199,8 @@ def test_get_taxa_by_rank_range(
 ):
     # Make sure custom rank params result in the correct 'rank' param value
     get_taxa(**params)
-    mock_inaturalist_api_get_call.assert_called_with(
-        "taxa", params={"rank": expected_ranks}, user_agent=None
-    )
+    requested_rank = mock_inaturalist_api_get_call.mock_calls[0].kwargs['params']['rank']
+    assert requested_rank == expected_ranks
 
 
 # This is just a spot test of a case in which boolean params should be converted

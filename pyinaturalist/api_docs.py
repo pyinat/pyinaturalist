@@ -210,10 +210,6 @@ def observation_params(
     lat: float = None,
     lng: float = None,
     radius: float = None,
-    nelat: float = None,
-    nelng: float = None,
-    swlat: float = None,
-    swlng: float = None,
     list_id: int = None,
     not_in_project: IntOrStr = None,
     not_matching_project_rules_for: IntOrStr = None,
@@ -301,10 +297,6 @@ def observation_params(
     lat: Must be within a ``radius`` kilometer circle around this lat/lng (lat, lng, radius)
     lng: Must be within a ``radius`` kilometer circle around this lat/lng (lat, lng, radius)
     radius: Must be within a {radius} kilometer circle around this lat/lng (lat, lng, radius)
-    nelat: NE latitude of bounding box
-    nelng: NE longitude of bounding box
-    swlat: SW latitude of bounding box
-    swlng: SW longitude of bounding box
     list_id: Taxon must be in the list with this ID
     not_in_project: Must not be in the project with this ID or slug
     not_matching_project_rules_for: Must not match the rules of the project with this ID or slug
@@ -322,9 +314,73 @@ def observation_params(
     """
 
 
+def taxon_params(
+    q: str = None,
+    is_active: bool = None,
+    taxon_id: int = None,
+    rank: str = None,
+    max_rank: str = None,
+    min_rank: str = None,
+    rank_level: int = None,
+    locale: str = None,
+    preferred_place_id: int = None,
+    all_names: bool = None,
+    per_page: int = None,
+):
+    """
+    q: Name must begin with this value
+    is_active: Taxon is active
+    taxon_id: Only show taxa with this ID, or its descendants
+    rank: Taxon must have this exact rank
+    min_rank: Taxon must have this rank or higher; overrides ``rank``
+    max_rank: Taxon must have this rank or lower; overrides ``rank``
+    rank_level: Taxon must have this rank level. Some example values are 70 (kingdom), 60 (phylum),
+        50 (class), 40 (order), 30 (family), 20 (genus), 10 (species), 5 (subspecies)
+    locale: Locale preference for taxon common names
+    preferred_place_id: Place preference for regional taxon common names
+    all_names: Include all taxon names in the response
+    per_page: Number of results to return in a page. The maximum value is generally 200 unless
+        otherwise noted
+    """
+
+
+def taxon_id_params(
+    id_above: int = None, id_below: int = None, only_id: int = None, parent_id: int = None,
+):
+    """
+    id_above: Must have an ID above this value
+    id_below: Must have an ID below this value
+    only_id: Return only the record IDs
+    parent_id: Taxon's parent must have this ID
+    """
+
+
+def minify(minify: str = None):
+    """
+    minify: Condense each match into a single string containg taxon ID, rank, and name
+    """
+
+
+def bounding_box(
+    nelat: float = None, nelng: float = None, swlat: float = None, swlng: float = None,
+):
+    """
+    nelat: NE latitude of bounding box
+    nelng: NE longitude of bounding box
+    swlat: SW latitude of bounding box
+    swlng: SW longitude of bounding box
+    """
+
+
 def geojson_properties(properties: List[str] = None):
     """
     properties: Properties from observation results to include as GeoJSON properties
+    """
+
+
+def name(name: str = None):
+    """
+    name: Name must match this value
     """
 
 
@@ -334,7 +390,7 @@ def only_id(only_id: bool = False):
     """
 
 
-def pagination_params(
+def pagination(
     page: int = None, per_page: int = None, order: str = None, order_by: str = None,
 ):
     """
@@ -359,10 +415,13 @@ def _format_param_choices():
 
 
 # Request param combinations for specific API endpoints
-get_observations_params = [observation_params, pagination_params, only_id]
-get_all_observations_params = [observation_params, only_id]
-get_observation_species_counts_params = [observation_params]
-get_geojson_observations_params = [observation_params, geojson_properties]
+get_observations_params = [observation_params, bounding_box, pagination, only_id]
+get_all_observations_params = [observation_params, bounding_box, only_id]
+get_observation_species_counts_params = [observation_params, bounding_box]
+get_geojson_observations_params = [observation_params, bounding_box, geojson_properties]
+get_places_nearby_params = [bounding_box, name]
+get_taxa_params = [taxon_params, taxon_id_params]
+get_taxa_autocomplete_params = [taxon_params, minify]
 
 
 MULTIPLE_CHOICE_PARAM_DOCS = "**Multiple-Choice Parameters:**\n" + _format_param_choices()
