@@ -71,7 +71,8 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
 
 @document_request_params(get_observations_params)
 def get_observations(params: Dict = None, user_agent: str = None, **kwargs) -> JsonResponse:
-    """ Search observations. See: http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
+    """ Search observations.
+    See: http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
 
     Returns:
         JSON response containing observation records

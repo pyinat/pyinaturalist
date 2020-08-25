@@ -5,19 +5,19 @@ type annotations and docstrings.
 
 Example usage::
 
-    # Template function with individual request params + docs
+    # 1. Template function with individual request params + docs
     >>> def get_foo_template(arg_1: str = None, arg_2: bool = False):
     >>>     '''
     >>>     arg_1: Example request parameter 1
     >>>     arg_2: Example request parameter 2
     >>>     '''
 
-    # API Endpoint function with generic (variadic) keyword args
-    @document_request_params(get_foo_template)
+    # 2. API Endpoint function with generic (variadic) keyword args
+    >>> @document_request_params(get_foo_template)
     >>> def get_foo(**kwargs) -> List:
         ''' Get Foo resource '''
 
-    # Modified function signature + docstring
+    # 3. Modified function signature + docstring
     >>> help(get_foo)
     '''
     Help on function get_foo:
@@ -30,6 +30,7 @@ Example usage::
           arg_2: Example request parameter 2
     '''
 """
+from inspect import cleandoc
 from itertools import chain
 from functools import wraps
 from logging import getLogger
@@ -48,7 +49,6 @@ from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
 logger = getLogger(__name__)
 
 
-# Todo: remove extra indentation in initial function description
 def document_request_params(template_functions: List[TemplateFunction]):
     """ Document a function with both docstrings and function signatures from one or more
     template functions.
@@ -81,7 +81,6 @@ def document_request_params(template_functions: List[TemplateFunction]):
     return f
 
 
-# TODO: Ensure consistent newline separation when appending docstrings
 def copy_docstrings(
     target_function: Callable, template_functions: List[TemplateFunction]
 ) -> Callable:
@@ -117,7 +116,7 @@ def _split_docstring(docstring):
         function_desc = docstring
         return_value_desc = ""
 
-    return function_desc.strip(), return_value_desc.strip()
+    return cleandoc(function_desc.strip()), cleandoc(return_value_desc.strip())
 
 
 def copy_signatures(
