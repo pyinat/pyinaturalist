@@ -1,7 +1,7 @@
 """ Helper functions for processing request parameters """
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional
-from warnings import warn
+import warnings
 
 from dateutil.parser import parse as parse_timestamp
 from dateutil.tz import tzlocal
@@ -45,17 +45,6 @@ MULTIPLE_CHOICE_PARAMS = {
 }
 
 
-def check_deprecated_params(params, **kwargs) -> Dict[str, Any]:
-    if params:
-        warn(
-            DeprecationWarning(
-                "The 'params' argument is deprecated; please use keyword arguments instead"
-            )
-        )
-        kwargs.update(params)
-    return kwargs
-
-
 def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     """ Perform type conversions, sanity checks, etc. on request parameters """
     if not params:
@@ -67,6 +56,25 @@ def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any
     params = convert_list_params(params)
     params = strip_empty_params(params)
     return params
+
+
+# TODO: Remove in 0.12
+def check_deprecated_params(params=None, **kwargs) -> Dict[str, Any]:
+    """ Check for usage of request parameters that are deprecated but still supported for
+    backwards-compatibility
+    """
+
+    def warn(msg):
+        warnings.warn(DeprecationWarning(msg))
+
+    if params:
+        warn("The 'params' argument is deprecated; please use keyword arguments instead")
+        kwargs.update(params)
+    if kwargs.get("search_query"):
+        warn("The 'search_query' argument is deprecated; use 'q' instead")
+        kwargs["q"] = kwargs.pop("search_query")
+
+    return kwargs
 
 
 def is_int(value: Any) -> bool:

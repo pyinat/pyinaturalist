@@ -391,10 +391,8 @@ def taxon_id_params(
     """
 
 
-def minify(minify: str = None):
-    """
-    minify: Condense each match into a single string containg taxon ID, rank, and name
-    """
+# Individual/common params
+# ------------------------
 
 
 def bounding_box(
@@ -414,6 +412,12 @@ def geojson_properties(properties: List[str] = None):
     """
 
 
+def minify(minify: str = None):
+    """
+    minify: Condense each match into a single string containg taxon ID, rank, and name
+    """
+
+
 def name(name: str = None):
     """
     name: Name must match this value
@@ -423,6 +427,12 @@ def name(name: str = None):
 def only_id(only_id: bool = False):
     """
     only_id: Return only the record IDs
+    """
+
+
+def page(page: int = None):
+    """
+    page: Page number of results to return
     """
 
 
@@ -438,6 +448,14 @@ def pagination(
     """
 
 
+# TODO: Remove deprecated `search_query` kwarg in 0.12
+def search_query(q: str = None, search_query: str = None):
+    """
+    q: Search query
+    """
+
+
+# Added to every function signature by default
 def user_agent(user_agent: str = None):
     """
     user_agent: A custom user-agent string to provide to the iNaturalist API
@@ -467,6 +485,8 @@ get_observations_params_rest = [
     bounding_box,
     pagination,
 ]
+get_observation_fields_params = [search_query, page]
+get_all_observation_fields_params = [search_query]
 
 
 MULTIPLE_CHOICE_PARAM_DOCS = "**Multiple-Choice Parameters:**\n" + _format_param_choices()

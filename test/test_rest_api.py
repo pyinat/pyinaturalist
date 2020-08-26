@@ -64,7 +64,7 @@ def test_get_observation_fields(requests_mock):
         status_code=200,
     )
 
-    obs_fields = get_observation_fields(search_query="sex", page=2)
+    obs_fields = get_observation_fields(q="sex", page=2)
     assert obs_fields == PAGE_2_JSON_RESPONSE
 
 
@@ -90,7 +90,7 @@ def test_get_all_observation_fields(requests_mock):
         status_code=200,
     )
 
-    all_fields = get_all_observation_fields(search_query="sex")
+    all_fields = get_all_observation_fields(q="sex")
     assert all_fields == PAGE_1_JSON_RESPONSE + PAGE_2_JSON_RESPONSE
 
 
@@ -146,11 +146,11 @@ def test_update_observation(requests_mock):
         status_code=200,
     )
 
-    p = {
+    params = {
         "ignore_photos": 1,
         "observation": {"description": "updated description v2 !"},
     }
-    r = update_observation(observation_id=17932425, params=p, access_token="valid token")
+    r = update_observation(observation_id=17932425, access_token="valid token", params=params)
 
     # If all goes well we got a single element representing the updated observation, enclosed in a list.
     assert len(r) == 1
@@ -166,13 +166,13 @@ def test_update_nonexistent_observation(requests_mock):
         status_code=410,
     )
 
-    p = {
+    params = {
         "ignore_photos": 1,
         "observation": {"description": "updated description v2 !"},
     }
 
     with pytest.raises(HTTPError) as excinfo:
-        update_observation(observation_id=999999999, params=p, access_token="valid token")
+        update_observation(observation_id=999999999, access_token="valid token", params=params)
     assert excinfo.value.response.status_code == 410
     assert excinfo.value.response.json() == {"error": "Cette observation n’existe plus."}
 
@@ -185,14 +185,14 @@ def test_update_observation_not_mine(requests_mock):
         status_code=410,
     )
 
-    p = {
+    params = {
         "ignore_photos": 1,
         "observation": {"description": "updated description v2 !"},
     }
 
     with pytest.raises(HTTPError) as excinfo:
         update_observation(
-            observation_id=16227955, params=p, access_token="valid token for another user",
+            observation_id=16227955, access_token="valid token for another user", params=params,
         )
     assert excinfo.value.response.status_code == 410
     assert excinfo.value.response.json() == {"error": "Cette observation n’existe plus."}

@@ -5,6 +5,7 @@ See: http://api.inaturalist.org/v1/docs/
 from logging import getLogger
 from time import sleep
 from typing import Dict, List
+from warnings import warn
 
 import requests
 from urllib.parse import urljoin
@@ -106,7 +107,7 @@ def get_all_observations(
     """
     kwargs = check_deprecated_params(params, **kwargs)
     if "page" in kwargs:
-        logger.warning("Cannot specify `page` parameter for this function; see documentation")
+        warn("Cannot specify `page` parameter for this function; see API documentation")
         del kwargs["page"]
 
     results = []  # type: List[JsonResponse]

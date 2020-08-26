@@ -11,10 +11,13 @@ from urllib.parse import urljoin
 from pyinaturalist.api_docs import (
     document_request_params,
     get_observations_params_rest as get_observations_params,
+    get_observation_fields_params,
+    get_all_observation_fields_params,
 )
 from pyinaturalist.constants import OBSERVATION_FORMATS, THROTTLING_DELAY, INAT_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 from pyinaturalist.api_requests import delete, get, post, put
+from pyinaturalist.request_params import check_deprecated_params
 from pyinaturalist.response_format import convert_lat_long_to_float
 
 
@@ -52,48 +55,43 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
         return response.text
 
 
-def get_observation_fields(
-    search_query: str = "", page: int = 1, user_agent: str = None
-) -> List[Dict[str, Any]]:
+@document_request_params(get_observation_fields_params)
+def get_observation_fields(user_agent: str = None, **kwargs) -> List[Dict[str, Any]]:
+    """ Search observation fields. Observation fields are basically typed data fields that
+    users can attach to observation.
+    API reference: https://www.inaturalist.org/pages/api+reference#get-observation_fields
+
+    Returns:
+        Observation fields as a list of dicts
     """
-    Search the (globally available) observation
-
-    :param search_query:
-    :param page:
-    :param user_agent: a user-agent string that will be passed to iNaturalist.
-
-    :return:
-    """
-    payload = {"q": search_query, "page": page}  # type: Dict[str, Union[int, str]]
-
+    kwargs = check_deprecated_params(kwargs)
     response = get(
         "{base_url}/observation_fields.json".format(base_url=INAT_BASE_URL),
-        params=payload,
+        params=kwargs,
         user_agent=user_agent,
     )
     return response.json()
 
 
-def get_all_observation_fields(
-    search_query: str = "", user_agent: str = None
-) -> List[Dict[str, Any]]:
+@document_request_params(get_all_observation_fields_params)
+def get_all_observation_fields(**kwargs) -> List[Dict[str, Any]]:
     """
-    Like get_observation_fields(), but handles pagination for you.
+    Like :py:func:`.get_observation_fields()`, but handles pagination for you.
 
-    :param search_query: a string to search
-    :param user_agent: a user-agent string that will be passed to iNaturalist.
+    Returns:
+        Observation fields as a list of dicts
     """
     results = []  # type: List[Dict[str, Any]]
     page = 1
 
     while True:
-        r = get_observation_fields(search_query=search_query, page=page, user_agent=user_agent)
+        r = get_observation_fields(page=page, **kwargs)
 
         if not r:
             return results
 
-        results = results + r
-        page = page + 1
+        results += r
+        page += 1
         sleep(THROTTLING_DELAY)
 
 
@@ -111,12 +109,16 @@ def put_observation_field_values(
     # TODO: What happens when parameters are invalid
     # TODO: It appears pushing the same value/pair twice in a row (but deleting it meanwhile via the UI)...
     # TODO: ...triggers an error 404 the second time (report to iNaturalist?)
-    """Sets an observation field (value) on an observation.
+    """Set an observation field (value) on an observation.
     Will fail if this observation_field is already set for this observation.
 
     Example:
             >>> put_observation_field_values(
-            >>>     observation_id=7345179, observation_field_id=9613, value=250, access_token=token)
+            >>>     observation_id=7345179,
+            >>>     observation_field_id=9613,
+            >>>     value=250,
+            >>>     access_token=token,
+            >>> )
             {'id': 31,
              'observation_id': 18166477,
              'observation_field_id': 31,
@@ -130,11 +132,11 @@ def put_observation_field_values(
              'updated_at_utc': '2018-11-13T09:49:47.985Z'}
 
     Args:
-        observation_id:
-        observation_field_id:
-        value:
-        access_token: access_token: the access token, as returned by :func:`get_access_token()`
-        user_agent: a user-agent string that will be passed to iNaturalist.
+        observation_id: ID of the observation receiving this observation field value
+        observation_field_id: ID of the observation field for this observation field value
+        value: Value for the observation field
+        access_token: access_token: The access token, as returned by :func:`get_access_token()`
+        user_agent: A user-agent string that will be passed to iNaturalist.
 
     Returns:
         The nwely updated field value record
@@ -225,7 +227,7 @@ def add_photo_to_observation(
 def create_observations(
     params: Dict[str, Dict[str, Any]], access_token: str, user_agent: str = None
 ) -> List[Dict[str, Any]]:
-    """Create a single or several (if passed an array) observations).
+    """Create one or more observations.
     For API reference, see: https://www.inaturalist.org/pages/api+reference#post-observations
 
     Example:
