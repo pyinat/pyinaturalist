@@ -60,7 +60,7 @@ def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any
 
 # TODO: Remove in 0.12
 def check_deprecated_params(params=None, **kwargs) -> Dict[str, Any]:
-    """ Check for usage of request parameters that are deprecated but still supported for
+    """Check for usage of request parameters that are deprecated but still supported for
     backwards-compatibility
     """
 
@@ -100,7 +100,7 @@ def convert_bool_params(params: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def convert_datetime_params(params: Dict[str, Any]) -> Dict[str, Any]:
-    """ Convert any dates, datetimes, or timestamps in other formats into ISO 8601 strings.
+    """Convert any dates, datetimes, or timestamps in other formats into ISO 8601 strings.
 
     API behavior note: params that take date but not time info will accept a full timestamp and
     just ignore the time, so it's safe to parse both date and datetime strings into timestamps
@@ -117,7 +117,7 @@ def convert_datetime_params(params: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def convert_list_params(params: Dict[str, Any]) -> Dict[str, Any]:
-    """ Convert any list parameters into an API-compatible (comma-delimited) string.
+    """Convert any list parameters into an API-compatible (comma-delimited) string.
     Will be url-encoded by requests. For example: `['k1', 'k2', 'k3'] -> k1%2Ck2%2Ck3`
     """
     return {k: convert_list(v) for k, v in params.items()}
@@ -138,7 +138,7 @@ def strip_empty_params(params: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def validate_multiple_choice_params(params: Dict):
-    """ Verify that all multiple-choice request parameters contain a valid value
+    """Verify that all multiple-choice request parameters contain a valid value
 
     Raises:
         :py:exc:`ValueError`

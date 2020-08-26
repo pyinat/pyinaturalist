@@ -49,7 +49,7 @@ def request(
     headers: Dict = None,
     **kwargs
 ) -> requests.Response:
-    """ Wrapper around :py:func:`requests.request` that supports dry-run mode and
+    """Wrapper around :py:func:`requests.request` that supports dry-run mode and
     adds appropriate headers.
 
     Args:
@@ -87,7 +87,7 @@ def request(
 
 
 def is_dry_run_enabled(method: str) -> bool:
-    """ A wrapper to determine if dry-run (aka test mode) has been enabled via either
+    """A wrapper to determine if dry-run (aka test mode) has been enabled via either
     a constant or an environment variable. Dry-run mode may be enabled for either write
     requests, or all requests.
     """
@@ -100,7 +100,7 @@ def is_dry_run_enabled(method: str) -> bool:
 
 
 def env_to_bool(environment_variable: str) -> bool:
-    """ Translate an environment variable to a boolean value, accounting for minor
+    """Translate an environment variable to a boolean value, accounting for minor
     variations (case, None vs. False, etc.)
     """
     env_value = getenv(environment_variable)

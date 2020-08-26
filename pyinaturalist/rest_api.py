@@ -57,7 +57,7 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
 
 @document_request_params(get_observation_fields_params)
 def get_observation_fields(user_agent: str = None, **kwargs) -> List[Dict[str, Any]]:
-    """ Search observation fields. Observation fields are basically typed data fields that
+    """Search observation fields. Observation fields are basically typed data fields that
     users can attach to observation.
     API reference: https://www.inaturalist.org/pages/api+reference#get-observation_fields
 
@@ -166,7 +166,7 @@ def put_observation_field_values(
 def get_access_token(
     username: str, password: str, app_id: str, app_secret: str, user_agent: str = None
 ) -> str:
-    """ Get an access token using the user's iNaturalist username and password.
+    """Get an access token using the user's iNaturalist username and password.
     You still need an iNaturalist app to do this.
 
     Example:
@@ -200,7 +200,10 @@ def get_access_token(
 
 
 def add_photo_to_observation(
-    observation_id: int, file_object: BinaryIO, access_token: str, user_agent: str = None,
+    observation_id: int,
+    file_object: BinaryIO,
+    access_token: str,
+    user_agent: str = None,
 ):
     """Upload a picture and assign it to an existing observation.
 
@@ -262,7 +265,10 @@ def create_observations(
 
 
 def update_observation(
-    observation_id: int, params: Dict[str, Any], access_token: str, user_agent: str = None,
+    observation_id: int,
+    params: Dict[str, Any],
+    access_token: str,
+    user_agent: str = None,
 ) -> List[Dict[str, Any]]:
     """
     Update a single observation. See https://www.inaturalist.org/pages/api+reference#put-observations-id

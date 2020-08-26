@@ -195,7 +195,9 @@ CLASS_THOUGH_PHYLUM = ["class", "superclass", "subphylum", "phylum"]
 )
 @patch("pyinaturalist.node_api.make_inaturalist_api_get_call")
 def test_get_taxa_by_rank_range(
-    mock_inaturalist_api_get_call, params, expected_ranks,
+    mock_inaturalist_api_get_call,
+    params,
+    expected_ranks,
 ):
     # Make sure custom rank params result in the correct 'rank' param value
     get_taxa(**params)
@@ -294,7 +296,9 @@ def test_user_agent(requests_mock):
         "created_at": 1539352135,
     }
     requests_mock.post(
-        "https://www.inaturalist.org/oauth/token", json=accepted_json, status_code=200,
+        "https://www.inaturalist.org/oauth/token",
+        json=accepted_json,
+        status_code=200,
     )
 
     default_ua = "Pyinaturalist/{v}".format(v=pyinaturalist.__version__)

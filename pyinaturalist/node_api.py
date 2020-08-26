@@ -79,7 +79,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
 
 @document_request_params(get_observations_params)
 def get_observations(params: Dict = None, user_agent: str = None, **kwargs) -> JsonResponse:
-    """ Search observations.
+    """Search observations.
     See: http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
 
     Returns:
@@ -94,7 +94,7 @@ def get_observations(params: Dict = None, user_agent: str = None, **kwargs) -> J
 def get_all_observations(
     params: Dict = None, user_agent: str = None, **kwargs
 ) -> List[JsonResponse]:
-    """ Like :py:func:`get_observations()`, but handles pagination and returns all results in one
+    """Like :py:func:`get_observations()`, but handles pagination and returns all results in one
     call. Explicit pagination parameters will be ignored.
 
     Notes on pagination from the iNaturalist documentation:
@@ -136,7 +136,7 @@ def get_all_observations(
 
 @document_request_params(get_observation_species_counts_params)
 def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResponse:
-    """ Get all species (or other "leaf taxa") associated with observations matching the search
+    """Get all species (or other "leaf taxa") associated with observations matching the search
     criteria, and the count of observations they are associated with.
     **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
 
@@ -155,7 +155,9 @@ def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResp
 
     """
     r = make_inaturalist_api_get_call(
-        "observations/species_counts", params=kwargs, user_agent=user_agent,
+        "observations/species_counts",
+        params=kwargs,
+        user_agent=user_agent,
     )
     r.raise_for_status()
     return r.json()
@@ -163,7 +165,7 @@ def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResp
 
 @document_request_params(get_geojson_observations_params)
 def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResponse:
-    """ Get all observation results combined into a GeoJSON ``FeatureCollection``.
+    """Get all observation results combined into a GeoJSON ``FeatureCollection``.
     By default this includes some basic observation properties as GeoJSON ``Feature`` properties.
     The ``properties`` argument can be used to override these defaults.
 
@@ -260,7 +262,7 @@ def _convert_all_locations_to_float(response):
 
 
 def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
-    """ Given a query string, get places with names starting with the search term
+    """Given a query string, get places with names starting with the search term
     See: https://api.inaturalist.org/v1/docs/#!/Places/get_places_autocomplete
 
     Example:
@@ -288,7 +290,7 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
 
 
 def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
-    """ Get one or more taxa by ID.
+    """Get one or more taxa by ID.
     See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_id
 
     Args:

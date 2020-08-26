@@ -17,7 +17,7 @@ extras_require = {
     ],
     # Packages used for testing both locally and in CI jobs
     "test": [
-        "black",
+        "black==20.8b1",
         "flake8",
         "mypy",
         "pytest>=5.0",

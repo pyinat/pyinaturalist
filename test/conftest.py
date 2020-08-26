@@ -33,7 +33,7 @@ def get_module_http_functions(module):
 
 
 def get_mock_args_for_signature(func):
-    """ Automagically get a list of mock objects corresponding to the required arguments
+    """Automagically get a list of mock objects corresponding to the required arguments
     in a function's signature. Using ``inspect.Signature``, 'Required' is defined by:
     1. positional and 2. no default
     """

@@ -7,7 +7,8 @@ from pyinaturalist.api_requests import MOCK_RESPONSE, delete, get, post, put, re
 
 # Just test that the wrapper methods call requests.request with the appropriate HTTP method
 @pytest.mark.parametrize(
-    "function, http_method", [(delete, "DELETE"), (get, "GET"), (post, "POST"), (put, "PUT")],
+    "function, http_method",
+    [(delete, "DELETE"), (get, "GET"), (post, "POST"), (put, "PUT")],
 )
 @patch("pyinaturalist.api_requests.request")
 def test_http_methods(mock_request, function, http_method):
@@ -20,7 +21,10 @@ def test_http_methods(mock_request, function, http_method):
     "input_kwargs, expected_headers",
     [
         ({}, {"Accept": "application/json", "User-Agent": pyinaturalist.user_agent}),
-        ({"user_agent": "CustomUA"}, {"Accept": "application/json", "User-Agent": "CustomUA"},),
+        (
+            {"user_agent": "CustomUA"},
+            {"Accept": "application/json", "User-Agent": "CustomUA"},
+        ),
         (
             {"access_token": "token"},
             {

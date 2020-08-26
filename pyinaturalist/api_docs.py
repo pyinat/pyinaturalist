@@ -50,7 +50,7 @@ logger = getLogger(__name__)
 
 
 def document_request_params(template_functions: List[TemplateFunction]):
-    """ Document a function with both docstrings and function signatures from one or more
+    """Document a function with both docstrings and function signatures from one or more
     template functions.
 
     Signature modification requires ``forge``. If not installed, only docstrings will be modified.
@@ -84,7 +84,7 @@ def document_request_params(template_functions: List[TemplateFunction]):
 def copy_docstrings(
     target_function: Callable, template_functions: List[TemplateFunction]
 ) -> Callable:
-    """ Copy docstrings from one or more template functions to a target function.
+    """Copy docstrings from one or more template functions to a target function.
     Assumes Google-style docstrings.
 
     Args:
@@ -122,7 +122,7 @@ def _split_docstring(docstring):
 def copy_signatures(
     target_function: Callable, template_functions: List[TemplateFunction]
 ) -> Callable:
-    """ Copy function signatures from one or more template functions to a target function.
+    """Copy function signatures from one or more template functions to a target function.
 
     Args:
         target_function: Function to modify
@@ -381,7 +381,10 @@ def taxon_params(
 
 
 def taxon_id_params(
-    id_above: int = None, id_below: int = None, only_id: int = None, parent_id: int = None,
+    id_above: int = None,
+    id_below: int = None,
+    only_id: int = None,
+    parent_id: int = None,
 ):
     """
     id_above: Must have an ID above this value
@@ -396,7 +399,10 @@ def taxon_id_params(
 
 
 def bounding_box(
-    nelat: float = None, nelng: float = None, swlat: float = None, swlng: float = None,
+    nelat: float = None,
+    nelng: float = None,
+    swlat: float = None,
+    swlng: float = None,
 ):
     """
     nelat: NE latitude of bounding box
@@ -437,7 +443,10 @@ def page(page: int = None):
 
 
 def pagination(
-    page: int = None, per_page: int = None, order: str = None, order_by: str = None,
+    page: int = None,
+    per_page: int = None,
+    order: str = None,
+    order_by: str = None,
 ):
     """
     page: Pagination page number

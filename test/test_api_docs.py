@@ -14,7 +14,7 @@ def func_template():
 
 def test_copy_docstrings__with_return_desc():
     def func():
-        """ Test function.
+        """Test function.
 
         Returns:
             None

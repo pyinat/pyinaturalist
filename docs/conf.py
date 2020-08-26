@@ -62,7 +62,7 @@ html_theme = "sphinx_rtd_theme"
 
 
 def setup(app):
-    """ Run some additional steps after the Sphinx builder is intialized. This allows us to
+    """Run some additional steps after the Sphinx builder is intialized. This allows us to
     run any custom behavior that would otherwise go in the Makefile, so the readthedocs builder
     will behave the same as building the docs manually.
 
@@ -75,9 +75,9 @@ def setup(app):
 
 
 def make_symlinks(app):
-    """ Create symlinks so that relative links to static content will resolve correctly in both:
-        * README.rst (as displayed on GitHub and PyPi) and
-        * Sphinx html docs (as displayed on readthedocs.io)
+    """Create symlinks so that relative links to static content will resolve correctly in both:
+    * README.rst (as displayed on GitHub and PyPi) and
+    * Sphinx html docs (as displayed on readthedocs.io)
     """
     doc_symlinks_dir = join(DOCS_DIR, "docs")
     symlinked_images_dir = join(doc_symlinks_dir, "images")

@@ -97,7 +97,9 @@ def test_get_all_observation_fields(requests_mock):
 def test_get_all_observation_fields_noparam(requests_mock):
     """get_all_observation_fields() can also be called without a search query without errors"""
     requests_mock.get(
-        "https://www.inaturalist.org/observation_fields.json?page=1", json=[], status_code=200,
+        "https://www.inaturalist.org/observation_fields.json?page=1",
+        json=[],
+        status_code=200,
     )
 
     get_all_observation_fields()
@@ -114,7 +116,9 @@ def test_get_access_token_fail(requests_mock):
         "method.",
     }
     requests_mock.post(
-        "https://www.inaturalist.org/oauth/token", json=rejection_json, status_code=401,
+        "https://www.inaturalist.org/oauth/token",
+        json=rejection_json,
+        status_code=401,
     )
 
     with pytest.raises(AuthenticationError):
@@ -131,7 +135,9 @@ def test_get_access_token(requests_mock):
         "created_at": 1539352135,
     }
     requests_mock.post(
-        "https://www.inaturalist.org/oauth/token", json=accepted_json, status_code=200,
+        "https://www.inaturalist.org/oauth/token",
+        json=accepted_json,
+        status_code=200,
     )
 
     token = get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
@@ -192,7 +198,9 @@ def test_update_observation_not_mine(requests_mock):
 
     with pytest.raises(HTTPError) as excinfo:
         update_observation(
-            observation_id=16227955, access_token="valid token for another user", params=params,
+            observation_id=16227955,
+            access_token="valid token for another user",
+            params=params,
         )
     assert excinfo.value.response.status_code == 410
     assert excinfo.value.response.json() == {"error": "Cette observation n’existe plus."}

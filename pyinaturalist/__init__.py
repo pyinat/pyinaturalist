@@ -13,7 +13,7 @@ user_agent = DEFAULT_USER_AGENT
 
 
 def get_prerelease_version(version: str) -> str:
-    """ If we're running in a Travis CI job on the dev branch, get a prerelease version using the
+    """If we're running in a Travis CI job on the dev branch, get a prerelease version using the
     current build number. For example: ``1.0.0 -> 1.0.0-dev.123``
 
     This could also be done in ``.travis.yml``, but it's a bit cleaner to do in python.
