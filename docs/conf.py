@@ -51,6 +51,12 @@ apidoc_module_first = True
 apidoc_separate_modules = True
 apidoc_toc_file = False
 
+# Move type hint info to function description instead of signature;
+# since we have some really long signatures, the default (`autodoc_typehints = "signature"`)
+# becomes unreadable because all params + types get crammed into a single line.
+autodoc_typehints = "description"
+set_type_checking_flag = True
+
 # HTML theme settings
 pygments_style = "sphinx"
 html_theme = "sphinx_rtd_theme"
