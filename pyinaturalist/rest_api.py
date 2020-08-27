@@ -13,6 +13,8 @@ from pyinaturalist.api_docs import (
     get_observations_params_rest as get_observations_params,
     get_observation_fields_params,
     get_all_observation_fields_params,
+    create_observations_params,
+    update_observation_params,
 )
 from pyinaturalist.constants import OBSERVATION_FORMATS, THROTTLING_DELAY, INAT_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
@@ -227,8 +229,11 @@ def add_photo_to_observation(
     return response.json()
 
 
+# TODO: Implement `observation_field_values_attributes`, and simplify nested data structures
+# TODO: implement `local_photos` and allow simply passing local file path(s)
+@document_request_params(create_observations_params)
 def create_observations(
-    params: Dict[str, Dict[str, Any]], access_token: str, user_agent: str = None
+    params: Dict[str, Dict[str, Any]], access_token: str, user_agent: str = None, **kwargs
 ) -> List[Dict[str, Any]]:
     """Create one or more observations.
     For API reference, see: https://www.inaturalist.org/pages/api+reference#post-observations
@@ -238,22 +243,22 @@ def create_observations(
         >>> token = get_access_token('...')
         >>> create_observations(params=params, access_token=token)
 
-    Args:
-        params:
-        access_token: the access token, as returned by :func:`get_access_token()`
-        user_agent: a user-agent string that will be passed to iNaturalist.
-
     Returns:
          The newly created observation(s) in JSON format
 
     Raises:
-        :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an error 422 (unprocessable entity)
-        if it rejects the observation data (for example an observation date in the future or a latitude > 90. In
-        that case the exception's `response` attribute give details about the errors.
+        :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an
+        error 422 (unprocessable entity) if it rejects the observation data (for example an
+        observation date in the future or a latitude > 90. In that case the exception's
+        `response` attribute give details about the errors.
 
     TODO investigate: according to the doc, we should be able to pass multiple observations (in an array, and in
     renaming observation to observations, but as far as I saw they are not created (while a status of 200 is returned)
     """
+    # This is the one Boolean parameter that's specified as an int, for some reason
+    if "ignore_photos" in kwargs:
+        kwargs["ignore_photos"] = int(kwargs["ignore_photos"])
+
     response = post(
         url="{base_url}/observations.json".format(base_url=INAT_BASE_URL),
         json=params,
@@ -264,20 +269,12 @@ def create_observations(
     return response.json()
 
 
+@document_request_params(update_observation_params)
 def update_observation(
-    observation_id: int,
-    params: Dict[str, Any],
-    access_token: str,
-    user_agent: str = None,
+    observation_id: int, params: Dict[str, Any], access_token: str, user_agent: str = None, **kwargs
 ) -> List[Dict[str, Any]]:
     """
     Update a single observation. See https://www.inaturalist.org/pages/api+reference#put-observations-id
-
-    Args:
-        observation_id: the ID of the observation to update
-        params: to be passed to iNaturalist API
-        access_token: the access token, as returned by :func:`get_access_token()`
-        user_agent: a user-agent string that will be passed to iNaturalist.
 
     Returns:
         iNaturalist's JSON response, as a Python object
@@ -286,6 +283,9 @@ def update_observation(
         :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an
             error 410 if the observation doesn't exists or belongs to another user.
     """
+    if "ignore_photos" in kwargs:
+        kwargs["ignore_photos"] = int(kwargs["ignore_photos"])
+
     response = put(
         url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
         json=params,

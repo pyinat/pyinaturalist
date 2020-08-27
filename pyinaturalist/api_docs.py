@@ -1,3 +1,4 @@
+# TODO: Consistent naming for template functions
 """
 Reusable template functions + utilities used for API documentation.
 Each template function contains a portion of an endpoint's request parameters, with corresponding
@@ -34,7 +35,7 @@ from inspect import cleandoc
 from itertools import chain
 from functools import wraps
 from logging import getLogger
-from typing import Callable, Dict, List
+from typing import Any, Callable, Dict, List
 
 from pyinaturalist.constants import (
     MultiInt,
@@ -183,7 +184,6 @@ def observation_params_common(
 
 # Observation params that are only in the Node API
 def observation_params_node_only(
-    params: Dict = None,
     acc: bool = None,
     captive: bool = None,
     endemic: bool = None,
@@ -247,7 +247,6 @@ def observation_params_node_only(
     ttl: str = None,
 ):
     """
-    ofv_datatype: Must have an observation field value with this datatype
     acc: Whether or not positional accuracy / coordinate uncertainty has been specified
     captive: Captive or cultivated observations
     endemic: Observations whose taxa are endemic to their location
@@ -274,6 +273,7 @@ def observation_params_node_only(
     project_id: Must be added to the project this ID or slug
     rank: Taxon must have this rank
     site_id: Must be affiliated with the iNaturalist network website with this ID
+    ofv_datatype: Must have an observation field value with this datatype
     sound_license: Must have at least one sound with this license
     without_taxon_id: Exclude observations of these taxa and their descendants
     user_id: User must have this ID or login
@@ -350,6 +350,67 @@ def observation_params_rest_only(
     """
 
 
+# TODO: Are array params (e.g. `flickr_photos[]`) required to have "[]" in the param name?
+def _create_observations_params(
+    species_guess: str = None,
+    taxon_id: int = None,
+    observed_on_string: Date = None,
+    time_zone: str = None,
+    description: str = None,
+    tag_list: MultiStr = None,
+    place_guess: str = None,
+    latitude: float = None,
+    longitude: float = None,
+    map_scale: int = None,
+    positional_accuracy: int = None,
+    geoprivacy: str = None,
+    observation_field_values_attributes: str = None,
+    flickr_photos: MultiInt = None,
+    picasa_photos: MultiStr = None,
+    facebook_photos: MultiStr = None,
+    local_photos: MultiStr = None,
+):
+    """
+    species_guess: Equivalent to the "What did you see?" field on the observation form.
+        iNat will try to choose a single taxon based on this, but it may fail if it's ambuguous
+    taxon_id: ID of the taxon to associate with this observation
+    observed_on_string: Date/time of the observation. Time zone will default to the user's
+        time zone if not specified.
+    time_zone: Time zone the observation was made in
+    description: Observation description
+    tag_list: Comma-separated list of tags
+    place_guess: Name of the place where the observation was recorded.
+        **Note:** iNat will *not* try to automatically look up coordinates based on this string
+    latitude: Latitude of the observation; presumed datum is **WGS84**
+    longitude: Longitude of the observation; presumed datum is **WGS84**
+    map_scale: Google Maps zoom level (from **0 to 19**) at which to show this observation's map marker.
+    positional_accuracy: Positional accuracy of the observation coordinates, in meters
+    geoprivacy: Geoprivacy for the observation
+    observation_field_values_attributes[order]: [NOT IMPLEMENTED] Nested fields for observation field values.
+        ``order`` is just an integer starting with zero specifying the order of entry.
+    flickr_photos: Flickr photo ID(s) to add as photos for this observation. User must have
+        their Flickr and iNat accounts connected, and the user must own the photo(s) on Flickr.
+    picasa_photos: Picasa photo ID(s) to add as photos for this observation. User must have
+        their Picasa and iNat accounts connected, and the user must own the photo(s) on Picasa.
+    facebook_photos: Facebook photo IDs to add as photos for this observation. User must have
+        their Facebook and iNat accounts connected, and the user must own the photo on Facebook.
+    local_photos: [NOT IMPLEMENTED] Fields containing uploaded photo data. Request must have a ``Content-Type``
+        of ``"multipart"``. We recommend that you use the ``POST /observation_photos`` endpoint
+        instead.
+    """
+
+
+def _update_observation_params(
+    # _method: str = None,  # Exposed as a client-specific workaround; not needed w/ `requests`
+    ignore_photos: bool = False,
+):
+    """
+    ignore_photos
+        If photos exist on the observation but are missing in the request, simpy ignore them
+        instead of deleting the missing observation photos
+    """
+
+
 def taxon_params(
     q: str = None,
     is_active: bool = None,
@@ -398,6 +459,13 @@ def taxon_id_params(
 # ------------------------
 
 
+def access_token(access_token: str = None):
+    """
+    access_token: An access token required for user authentication, as returned by
+        :py:func:`get_access_token()`
+    """
+
+
 def bounding_box(
     nelat: float = None,
     nelng: float = None,
@@ -418,6 +486,12 @@ def geojson_properties(properties: List[str] = None):
     """
 
 
+def legacy_params(params: Dict[str, Any] = None):
+    """
+    params: [DEPRECATED] Request parameters as a dict instead of keyword arguments
+    """
+
+
 def minify(minify: str = None):
     """
     minify: Condense each match into a single string containg taxon ID, rank, and name
@@ -433,6 +507,12 @@ def name(name: str = None):
 def only_id(only_id: bool = False):
     """
     only_id: Return only the record IDs
+    """
+
+
+def observation_id(observation_id: int):
+    """
+    observation_id: iNaturalist observation ID to update
     """
 
 
@@ -478,7 +558,12 @@ def _format_param_choices():
 
 
 # Request param combinations for Node API endpoints
-_get_observations = [observation_params_common, observation_params_node_only, bounding_box]
+_get_observations = [
+    legacy_params,
+    observation_params_common,
+    observation_params_node_only,
+    bounding_box,
+]
 get_observations_params = _get_observations + [pagination, only_id]
 get_all_observations_params = _get_observations + [only_id]
 get_observation_species_counts_params = _get_observations
@@ -496,6 +581,14 @@ get_observations_params_rest = [
 ]
 get_observation_fields_params = [search_query, page]
 get_all_observation_fields_params = [search_query]
+create_observations_params = [legacy_params, access_token, _create_observations_params]
+update_observation_params = [
+    observation_id,
+    legacy_params,
+    access_token,
+    _create_observations_params,
+    _update_observation_params,
+]
 
 
 MULTIPLE_CHOICE_PARAM_DOCS = "**Multiple-Choice Parameters:**\n" + _format_param_choices()
