@@ -6,11 +6,21 @@ History
 ^^^^^^^^^^^^^^^^^
 
 * Dropped support for python 3.4
-* Added new functions for Places endpoints: ``get_places_by_id()``, ``get_places_nearby()``, ``get_places_autocomplete()``
-* Updated ``get_taxa_by_id()`` to accept multiple IDs
-* Updated ``rest_api.get_observations()`` to convert coordinate strings to floats
-* Added new function for an additional Observations endpoint: ``node_api.get_observation_species_counts()``
+* Added new functions for Node API Places endpoints: ``get_places_by_id()``, ``get_places_nearby()``, ``get_places_autocomplete()``
+* Updated ``node_api.get_taxa_by_id()`` to accept multiple IDs
+* Updated ``rest_api.get_observations()`` with type conversion from strings to floats for response lat/long coordinates.
+  Only applies to JSON response format.
+* Added new function for an additional Observation endpoint: ``node_api.get_observation_species_counts()``
+* Updated ``node_api.get_taxa_autocomplete()`` with optional ``min_rank`` and ``max_rank`` parameters, for consistency with ``get_taxa()``
+* Added full API request parameters to all API functions, in the form of keyword arguments with type annotations and docstrings
+* Added links to official API docs for each endpoint
 * Added parameter validation for multiple-choice request parameters
+* Made all API function signatures consistent by taking request params as keyword arguments
+* Using the ``params`` positional argument for the handful of functions that used it
+  will raise a ``DeprecationWarning``, but will otherwise still be functional until ``0.12``
+* Renamed ``search_query`` argument to ``q`` to be consistent with API request parameters
+* Using the ``search_query`` argument for ``rest_api.get_observation_fields()`` and ``rest_api.get_all_observation_fields()``
+  will raise a ``DeprecationWarning``, but will otherwise still be functional until ``0.12``
 
 0.10.0 (2020-06-16)
 ^^^^^^^^^^^^^^^^^^^

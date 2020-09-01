@@ -1,4 +1,3 @@
-import os
 import pytest
 from unittest.mock import patch
 
@@ -8,7 +7,8 @@ from pyinaturalist.api_requests import MOCK_RESPONSE, delete, get, post, put, re
 
 # Just test that the wrapper methods call requests.request with the appropriate HTTP method
 @pytest.mark.parametrize(
-    "function, http_method", [(delete, "DELETE"), (get, "GET"), (post, "POST"), (put, "PUT")],
+    "function, http_method",
+    [(delete, "DELETE"), (get, "GET"), (post, "POST"), (put, "PUT")],
 )
 @patch("pyinaturalist.api_requests.request")
 def test_http_methods(mock_request, function, http_method):
@@ -21,7 +21,10 @@ def test_http_methods(mock_request, function, http_method):
     "input_kwargs, expected_headers",
     [
         ({}, {"Accept": "application/json", "User-Agent": pyinaturalist.user_agent}),
-        ({"user_agent": "CustomUA"}, {"Accept": "application/json", "User-Agent": "CustomUA"},),
+        (
+            {"user_agent": "CustomUA"},
+            {"Accept": "application/json", "User-Agent": "CustomUA"},
+        ),
         (
             {"access_token": "token"},
             {
@@ -97,7 +100,7 @@ def test_request_dry_run(
         settings.DRY_RUN_WRITE_ONLY = write_only_const
         response = request(method, "http://url")
 
-    # Verify that the request was or wasn""t mocked based on settings
+    # Verify that the request was or wasn't mocked based on settings
     if expected_real_request:
         assert mock_requests.request.call_count == 1
         assert response == mock_requests.request()
@@ -113,4 +116,4 @@ def test_request_dry_run_disabled(requests_mock):
         "http://url", json={"results": ["I'm a real response object!"]}, status_code=200
     )
 
-    assert request("GET", "http://url",).json() == real_response
+    assert request("GET", "http://url").json() == real_response

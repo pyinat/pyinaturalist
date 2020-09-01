@@ -8,10 +8,16 @@ extras_require = {
     # Packages used for CI jobs
     "build": ["coveralls", "tox-travis"],
     # Packages used for documentation builds
-    "docs": ["Sphinx>=3.0", "sphinx-rtd-theme", "sphinx-autodoc-typehints", "sphinxcontrib-apidoc"],
+    "docs": [
+        "python-forge",
+        "Sphinx>=3.0",
+        "sphinx-rtd-theme",
+        "sphinx-autodoc-typehints",
+        "sphinxcontrib-apidoc",
+    ],
     # Packages used for testing both locally and in CI jobs
     "test": [
-        "black",
+        "black==20.8b1",
         "flake8",
         "mypy",
         "pytest>=5.0",
@@ -22,6 +28,9 @@ extras_require = {
 }
 # All development/testing packages combined
 extras_require["dev"] = list(chain.from_iterable(extras_require.values()))
+
+# Optional non-dev dependencies
+extras_require["extras"] = ["python-forge"]
 
 
 setup(

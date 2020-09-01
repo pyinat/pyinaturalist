@@ -40,7 +40,7 @@ def test_get_observations(response_format, requests_mock):
         **{key: response},
     )
 
-    observations = get_observations(id=16227955, response_format=response_format)
+    observations = get_observations(taxon_id=493595, response_format=response_format)
 
     # Ensure coordinate strings were converted to floats, for JSON format only
     if response_format == "json":
@@ -52,7 +52,7 @@ def test_get_observations(response_format, requests_mock):
 @pytest.mark.parametrize("response_format", ["geojson", "yaml"])
 def test_get_observations__invalid_format(response_format):
     with pytest.raises(ValueError):
-        get_observations(id=16227955, response_format=response_format)
+        get_observations(taxon_id=493595, response_format=response_format)
 
 
 def test_get_observation_fields(requests_mock):
@@ -64,7 +64,7 @@ def test_get_observation_fields(requests_mock):
         status_code=200,
     )
 
-    obs_fields = get_observation_fields(search_query="sex", page=2)
+    obs_fields = get_observation_fields(q="sex", page=2)
     assert obs_fields == PAGE_2_JSON_RESPONSE
 
 
@@ -90,14 +90,16 @@ def test_get_all_observation_fields(requests_mock):
         status_code=200,
     )
 
-    all_fields = get_all_observation_fields(search_query="sex")
+    all_fields = get_all_observation_fields(q="sex")
     assert all_fields == PAGE_1_JSON_RESPONSE + PAGE_2_JSON_RESPONSE
 
 
 def test_get_all_observation_fields_noparam(requests_mock):
     """get_all_observation_fields() can also be called without a search query without errors"""
     requests_mock.get(
-        "https://www.inaturalist.org/observation_fields.json?page=1", json=[], status_code=200,
+        "https://www.inaturalist.org/observation_fields.json?page=1",
+        json=[],
+        status_code=200,
     )
 
     get_all_observation_fields()
@@ -114,7 +116,9 @@ def test_get_access_token_fail(requests_mock):
         "method.",
     }
     requests_mock.post(
-        "https://www.inaturalist.org/oauth/token", json=rejection_json, status_code=401,
+        "https://www.inaturalist.org/oauth/token",
+        json=rejection_json,
+        status_code=401,
     )
 
     with pytest.raises(AuthenticationError):
@@ -131,7 +135,9 @@ def test_get_access_token(requests_mock):
         "created_at": 1539352135,
     }
     requests_mock.post(
-        "https://www.inaturalist.org/oauth/token", json=accepted_json, status_code=200,
+        "https://www.inaturalist.org/oauth/token",
+        json=accepted_json,
+        status_code=200,
     )
 
     token = get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
@@ -146,11 +152,11 @@ def test_update_observation(requests_mock):
         status_code=200,
     )
 
-    p = {
+    params = {
         "ignore_photos": 1,
         "observation": {"description": "updated description v2 !"},
     }
-    r = update_observation(observation_id=17932425, params=p, access_token="valid token")
+    r = update_observation(observation_id=17932425, access_token="valid token", params=params)
 
     # If all goes well we got a single element representing the updated observation, enclosed in a list.
     assert len(r) == 1
@@ -166,13 +172,13 @@ def test_update_nonexistent_observation(requests_mock):
         status_code=410,
     )
 
-    p = {
+    params = {
         "ignore_photos": 1,
         "observation": {"description": "updated description v2 !"},
     }
 
     with pytest.raises(HTTPError) as excinfo:
-        update_observation(observation_id=999999999, params=p, access_token="valid token")
+        update_observation(observation_id=999999999, access_token="valid token", params=params)
     assert excinfo.value.response.status_code == 410
     assert excinfo.value.response.json() == {"error": "Cette observation n’existe plus."}
 
@@ -185,14 +191,16 @@ def test_update_observation_not_mine(requests_mock):
         status_code=410,
     )
 
-    p = {
+    params = {
         "ignore_photos": 1,
         "observation": {"description": "updated description v2 !"},
     }
 
     with pytest.raises(HTTPError) as excinfo:
         update_observation(
-            observation_id=16227955, params=p, access_token="valid token for another user",
+            observation_id=16227955,
+            access_token="valid token for another user",
+            params=params,
         )
     assert excinfo.value.response.status_code == 410
     assert excinfo.value.response.json() == {"error": "Cette observation n’existe plus."}

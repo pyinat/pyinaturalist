@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Any, Dict, List, Union
+from typing import Any, Callable, Dict, List, Union
 
 INAT_NODE_API_BASE_URL = "https://api.inaturalist.org/v1/"
 INAT_BASE_URL = "https://www.inaturalist.org"
@@ -19,6 +19,8 @@ IntOrStr = Union[int, str]
 JsonResponse = Dict[str, Any]
 MultiInt = Union[int, List[int]]
 MultiStr = Union[str, List[str]]
+TemplateFunction = Any  # Cannot use Callable/Protocol, as they will not allow a mix of signatures
+
 
 # Basic observation attributes to include by default in geojson responses
 DEFAULT_OBSERVATION_ATTRS = [
@@ -112,6 +114,10 @@ RANKS = [
 
 # Additional options for multiple-choice search filters, used for validation
 COMMUNITY_ID_STATUSES = ["most_agree", "most_disagree", "some_agree"]
+EXTRA_PROPERTIES = ["fields", "identifications", "projects"]
 GEOPRIVACY_LEVELS = ["obscured", "obscured_private", "open", "private"]
+HAS_PROPERTIES = ["photo", "geo"]
+ORDER_DIRECTIONS = ["asc", "desc"]
+ORDER_BY_PROPERTIES = ["created_at", "date_added", "id", "observed_on", "species_guess", "votes"]
 SEARCH_PROPERTIES = ["names", "tags", "description", "place"]
 QUALITY_GRADES = ["casual", "needs_id", "research"]

@@ -23,11 +23,6 @@ PAGE_1_JSON_RESPONSE = load_sample_data("get_observation_fields_page1.json")
 PAGE_2_JSON_RESPONSE = load_sample_data("get_observation_fields_page2.json")
 
 
-def get_observations_response(response_format):
-    response_format = response_format.replace("widget", "js")
-    return str(load_sample_data("get_observations.{}".format(response_format)))
-
-
 def test_get_observation(requests_mock):
     requests_mock.get(
         urljoin(INAT_NODE_API_BASE_URL, "observations"),
@@ -35,7 +30,7 @@ def test_get_observation(requests_mock):
         status_code=200,
     )
 
-    obs_data = get_observation(observation_id=16227955)
+    obs_data = get_observation(16227955)
     assert obs_data["quality_grade"] == "research"
     assert obs_data["id"] == 16227955
     assert obs_data["user"]["login"] == "niconoe"
@@ -49,7 +44,7 @@ def test_get_geojson_observations(requests_mock):
         status_code=200,
     )
 
-    geojson = get_geojson_observations(observation_id=16227955)
+    geojson = get_geojson_observations(id=16227955)
     feature = geojson["features"][0]
     assert feature["geometry"]["coordinates"] == [4.360086, 50.646894]
     assert feature["properties"]["id"] == 16227955
@@ -64,7 +59,7 @@ def test_get_geojson_observations__custom_properties(requests_mock):
     )
 
     properties = ["taxon_name", "taxon_rank"]
-    geojson = get_geojson_observations(observation_id=16227955, properties=properties)
+    geojson = get_geojson_observations(id=16227955, properties=properties)
     feature = geojson["features"][0]
     assert feature["properties"]["taxon_name"] == "Lixus bardanae"
     assert feature["properties"]["taxon_rank"] == "species"
@@ -78,7 +73,7 @@ def test_get_non_existent_observation(requests_mock):
         status_code=200,
     )
     with pytest.raises(ObservationNotFound):
-        get_observation(observation_id=99999999)
+        get_observation(99999999)
 
 
 def test_get_observation_species_counts(requests_mock):
@@ -131,7 +126,7 @@ def test_get_places_nearby(requests_mock):
         status_code=200,
     )
 
-    response = get_places_nearby(150.0, -50.0, -149.999, -49.999)
+    response = get_places_nearby(nelat=150.0, nelng=-50.0, swlat=-149.999, swlng=-49.999)
     result = response["results"]["standard"][0]
 
     assert response["total_results"] == 20
@@ -200,13 +195,15 @@ CLASS_THOUGH_PHYLUM = ["class", "superclass", "subphylum", "phylum"]
 )
 @patch("pyinaturalist.node_api.make_inaturalist_api_get_call")
 def test_get_taxa_by_rank_range(
-    mock_inaturalist_api_get_call, params, expected_ranks,
+    mock_inaturalist_api_get_call,
+    params,
+    expected_ranks,
 ):
     # Make sure custom rank params result in the correct 'rank' param value
     get_taxa(**params)
-    mock_inaturalist_api_get_call.assert_called_with(
-        "taxa", params={"rank": expected_ranks}, user_agent=None
-    )
+    kwargs = mock_inaturalist_api_get_call.call_args[1]
+    requested_rank = kwargs["params"]["rank"]
+    assert requested_rank == expected_ranks
 
 
 # This is just a spot test of a case in which boolean params should be converted
@@ -300,19 +297,21 @@ def test_user_agent(requests_mock):
         "created_at": 1539352135,
     }
     requests_mock.post(
-        "https://www.inaturalist.org/oauth/token", json=accepted_json, status_code=200,
+        "https://www.inaturalist.org/oauth/token",
+        json=accepted_json,
+        status_code=200,
     )
 
     default_ua = "Pyinaturalist/{v}".format(v=pyinaturalist.__version__)
 
     # By default, we have a 'Pyinaturalist' user agent:
-    get_observation(observation_id=16227955)
+    get_observation(16227955)
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua
     get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua
 
     # But if the user sets a custom one, it is indeed used:
-    get_observation(observation_id=16227955, user_agent="CustomUA")
+    get_observation(16227955, user_agent="CustomUA")
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA"
     get_access_token(
         "valid_username",
@@ -325,19 +324,19 @@ def test_user_agent(requests_mock):
 
     # We can also set it globally:
     pyinaturalist.user_agent = "GlobalUA"
-    get_observation(observation_id=16227955)
+    get_observation(16227955)
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
     get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
 
     # And it persists across requests:
-    get_observation(observation_id=16227955)
+    get_observation(16227955)
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
     get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
 
     # But if we have a global and local one, the local has priority
-    get_observation(observation_id=16227955, user_agent="CustomUA 2")
+    get_observation(16227955, user_agent="CustomUA 2")
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA 2"
     get_access_token(
         "valid_username",
@@ -350,7 +349,7 @@ def test_user_agent(requests_mock):
 
     # We can reset the global settings to the default:
     pyinaturalist.user_agent = pyinaturalist.DEFAULT_USER_AGENT
-    get_observation(observation_id=16227955)
+    get_observation(16227955)
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua
     get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua

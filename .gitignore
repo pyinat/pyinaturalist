@@ -50,3 +50,5 @@ docs/modules/
 .idea
 .mypy_cache
 venv/
+
+swagger.json

@@ -18,6 +18,7 @@ MOCK_RESPONSE.json.return_value = {"results": [], "total_results": 0}
 logger = getLogger(__name__)
 
 
+# TODO: Copy function signature of request(), add `url`, and apply to these 4 wrapper functions
 def delete(url: str, **kwargs) -> requests.Response:
     """ Wrapper around :py:func:`requests.delete` that supports dry-run mode """
     return request("DELETE", url, **kwargs)
@@ -48,7 +49,7 @@ def request(
     headers: Dict = None,
     **kwargs
 ) -> requests.Response:
-    """ Wrapper around :py:func:`requests.request` that supports dry-run mode and
+    """Wrapper around :py:func:`requests.request` that supports dry-run mode and
     adds appropriate headers.
 
     Args:
@@ -67,6 +68,7 @@ def request(
     headers = headers or {}
     headers["Accept"] = "application/json"
     headers["User-Agent"] = user_agent or pyinaturalist.user_agent
+
     if access_token:
         headers["Authorization"] = "Bearer %s" % access_token
     params = preprocess_request_params(params)
@@ -85,7 +87,7 @@ def request(
 
 
 def is_dry_run_enabled(method: str) -> bool:
-    """ A wrapper to determine if dry-run (aka test mode) has been enabled via either
+    """A wrapper to determine if dry-run (aka test mode) has been enabled via either
     a constant or an environment variable. Dry-run mode may be enabled for either write
     requests, or all requests.
     """
@@ -98,7 +100,7 @@ def is_dry_run_enabled(method: str) -> bool:
 
 
 def env_to_bool(environment_variable: str) -> bool:
-    """ Translate an environment variable to a boolean value, accounting for minor
+    """Translate an environment variable to a boolean value, accounting for minor
     variations (case, None vs. False, etc.)
     """
     env_value = getenv(environment_variable)

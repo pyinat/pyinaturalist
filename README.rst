@@ -26,15 +26,19 @@ See full documentation at `<https://pyinaturalist.readthedocs.io>`_.
 Installation
 ------------
 
-Install with pip::
+Install the latest stable version with pip::
 
-    $ pip install pyinaturalist
+    $ pip install pyinaturalist["extras"]
 
 Or, if you would like to use the latest development (non-stable) version::
 
-    $ pip install --pre pyinaturalist
+    $ pip install --pre pyinaturalist["extras"]
 
-Or, to set up for local development (preferably in a new virtualenv)::
+Note that ``["extras"]`` will include dependencies that are recommended but not required for usage.
+pyinaturalist will function just fine without them, but will lack certain conveniences,
+such as full API documentation and type checking within an IDE.
+
+To set up for local development (preferably in a new virtualenv)::
 
     $ git clone https://github.com/niconoe/pyinaturalist.git
     $ cd pyinaturalist
@@ -52,14 +56,15 @@ are implemented, including:
 See below for some examples,
 see `Reference <https://pyinaturalist.readthedocs.io/en/latest/reference.html>`_ for a complete list, and
 see `Issues <https://github.com/niconoe/pyinaturalist/issues>`_ for planned & proposed features.
-More endpoints will continue to be added as they are needed. PRs are welcome!
+More endpoints will continue to be added as they are needed.
+Please **create an issue** if there is an endpoint you would like to have added, and **PRs are welcome!**
 
 .. note::
-    The two iNaturalist APIs expose a combined total of 103 endpoints. Many of these are primarily for
+    The two iNaturalist APIs expose a combined total of 103 endpoints\*. Many of these are primarily for
     internal use by the iNaturalist web application and mobile apps, and are unlikely to be added unless
     there are specific use cases for them.
 
-.. 37 in REST API, 65 in Node API, 1 undocumented as of 2020-06-11
+    \*37 in REST API, 65 in Node API, and 1 undocumented as of 2020-09-01
 
 Examples
 --------
@@ -270,50 +275,4 @@ info. For example:
     "Zygocactus truncatus"  # An older synonym for Schlumbergera
 
 
-Dry-run mode
-------------
-While developing & testing an application that uses an API client like pyinaturalist, it can be
-useful to temporarily mock out HTTP requests, especially requests that add, modify, or delete
-real data. Pyinaturalist has some settings to make this easier.
 
-Dry-run all requests
-^^^^^^^^^^^^^^^^^^^^
-To enable dry-run mode, set the ``DRY_RUN_ENABLED`` variable. When set, requests will not be sent
-but will be logged instead:
-
-.. code-block:: python
-
-    >>> import logging
-    >>> import pyinaturalist
-
-    # Enable at least INFO-level logging
-    >>> logging.basicConfig(level='INFO')
-
-    >>> pyinaturalist.DRY_RUN_ENABLED = True
-    >>> get_taxa(q='warbler', locale=1)
-    {'results': [], 'total_results': 0}
-    INFO:pyinaturalist.api_requests:Request: GET, https://api.inaturalist.org/v1/taxa,
-        params={'q': 'warbler', 'locale': 1},
-        headers={'Accept': 'application/json', 'User-Agent': 'Pyinaturalist/0.9.1'}
-
-Or, if you are running your application in a command-line environment, you can set this as an
-environment variable instead (case-insensitive):
-
-.. code-block:: bash
-
-    $ export DRY_RUN_ENABLED=true
-    $ python my_script.py
-
-Dry-run only write requests
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-If you would like to run ``GET`` requests but mock out any requests that modify data
-(``POST``, ``PUT``, ``DELETE``, etc.), you can use the ``DRY_RUN_WRITE_ONLY`` variable
-instead:
-
-.. code-block:: python
-
-    >>> pyinaturalist.DRY_RUN_WRITE_ONLY = True
-
-    # Also works as an environment variable
-    >>> import os
-    >>> os.environ["DRY_RUN_WRITE_ONLY"] = 'True'

@@ -44,12 +44,19 @@ napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = False
 
 # Use apidoc to auto-generate rst sources
+# Added here instead of instead of in Makefile so it will be used by ReadTheDocs
 apidoc_module_dir = PACKAGE_DIR
 apidoc_output_dir = "modules"
-apidoc_excluded_paths = ["__init__"]
+apidoc_excluded_paths = ["api_docs.py"]
 apidoc_module_first = True
 apidoc_separate_modules = True
 apidoc_toc_file = False
+
+# Move type hint info to function description instead of signature;
+# since we have some really long signatures, the default (`autodoc_typehints = "signature"`)
+# becomes unreadable because all params + types get crammed into a single line.
+autodoc_typehints = "description"
+set_type_checking_flag = True
 
 # HTML theme settings
 pygments_style = "sphinx"
@@ -62,7 +69,7 @@ html_theme = "sphinx_rtd_theme"
 
 
 def setup(app):
-    """ Run some additional steps after the Sphinx builder is intialized. This allows us to
+    """Run some additional steps after the Sphinx builder is intialized. This allows us to
     run any custom behavior that would otherwise go in the Makefile, so the readthedocs builder
     will behave the same as building the docs manually.
 
@@ -75,9 +82,9 @@ def setup(app):
 
 
 def make_symlinks(app):
-    """ Create symlinks so that relative links to static content will resolve correctly in both:
-        * README.rst (as displayed on GitHub and PyPi) and
-        * Sphinx html docs (as displayed on readthedocs.io)
+    """Create symlinks so that relative links to static content will resolve correctly in both:
+    * README.rst (as displayed on GitHub and PyPi) and
+    * Sphinx html docs (as displayed on readthedocs.io)
     """
     doc_symlinks_dir = join(DOCS_DIR, "docs")
     symlinked_images_dir = join(doc_symlinks_dir, "images")

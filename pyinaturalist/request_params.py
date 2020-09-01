@@ -1,6 +1,7 @@
 """ Helper functions for processing request parameters """
 from datetime import date, datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
+import warnings
 
 from dateutil.parser import parse as parse_timestamp
 from dateutil.tz import tzlocal
@@ -9,9 +10,13 @@ from pyinaturalist.constants import (
     COMMUNITY_ID_STATUSES,
     CONSERVATION_STATUSES,
     DATETIME_PARAMS,
+    EXTRA_PROPERTIES,
     GEOPRIVACY_LEVELS,
+    HAS_PROPERTIES,
     ICONIC_TAXA,
     RANKS,
+    ORDER_BY_PROPERTIES,
+    ORDER_DIRECTIONS,
     SEARCH_PROPERTIES,
     QUALITY_GRADES,
 )
@@ -19,20 +24,24 @@ from pyinaturalist.constants import (
 # Multiple-choice request parameters and their possible choices
 MULTIPLE_CHOICE_PARAMS = {
     "csi": CONSERVATION_STATUSES,
+    "extra": EXTRA_PROPERTIES,
     "geoprivacy": GEOPRIVACY_LEVELS,
-    "taxon_geoprivacy": GEOPRIVACY_LEVELS,
+    "has": HAS_PROPERTIES,
+    "hrank": RANKS,
     "iconic_taxa": ICONIC_TAXA.values(),
     "identifications": COMMUNITY_ID_STATUSES,
     "license": CC_LICENSES,
-    "photo_license": CC_LICENSES,
-    "sound_license": CC_LICENSES,
-    "rank": RANKS,
-    "min_rank": RANKS,
-    "max_rank": RANKS,
-    "hrank": RANKS,
     "lrank": RANKS,
+    "max_rank": RANKS,
+    "min_rank": RANKS,
+    "order": ORDER_DIRECTIONS,
+    "order_by": ORDER_BY_PROPERTIES,
+    "photo_license": CC_LICENSES,
     "quality_grade": QUALITY_GRADES,
+    "rank": RANKS,
     "search_on": SEARCH_PROPERTIES,
+    "sound_license": CC_LICENSES,
+    "taxon_geoprivacy": GEOPRIVACY_LEVELS,
 }
 
 
@@ -47,6 +56,25 @@ def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any
     params = convert_list_params(params)
     params = strip_empty_params(params)
     return params
+
+
+# TODO: Remove in 0.12
+def check_deprecated_params(params=None, **kwargs) -> Dict[str, Any]:
+    """Check for usage of request parameters that are deprecated but still supported for
+    backwards-compatibility
+    """
+
+    def warn(msg):
+        warnings.warn(DeprecationWarning(msg))
+
+    if params:
+        warn("The 'params' argument is deprecated; please use keyword arguments instead")
+        kwargs.update(params)
+    if kwargs.get("search_query"):
+        warn("The 'search_query' argument is deprecated; use 'q' instead")
+        kwargs["q"] = kwargs.pop("search_query")
+
+    return kwargs
 
 
 def is_int(value: Any) -> bool:
@@ -72,7 +100,7 @@ def convert_bool_params(params: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def convert_datetime_params(params: Dict[str, Any]) -> Dict[str, Any]:
-    """ Convert any dates, datetimes, or timestamps in other formats into ISO 8601 strings.
+    """Convert any dates, datetimes, or timestamps in other formats into ISO 8601 strings.
 
     API behavior note: params that take date but not time info will accept a full timestamp and
     just ignore the time, so it's safe to parse both date and datetime strings into timestamps
@@ -89,7 +117,7 @@ def convert_datetime_params(params: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def convert_list_params(params: Dict[str, Any]) -> Dict[str, Any]:
-    """ Convert any list parameters into an API-compatible (comma-delimited) string.
+    """Convert any list parameters into an API-compatible (comma-delimited) string.
     Will be url-encoded by requests. For example: `['k1', 'k2', 'k3'] -> k1%2Ck2%2Ck3`
     """
     return {k: convert_list(v) for k, v in params.items()}
@@ -110,7 +138,7 @@ def strip_empty_params(params: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def validate_multiple_choice_params(params: Dict):
-    """ Verify that all multiple-choice request parameters contain a valid value
+    """Verify that all multiple-choice request parameters contain a valid value
 
     Raises:
         :py:exc:`ValueError`
@@ -142,3 +170,22 @@ def _isoformat(d):
     if isinstance(d, datetime) and not d.tzinfo:
         d = d.replace(tzinfo=tzlocal())
     return d.isoformat()
+
+
+def translate_rank_range(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    if kwargs.get("min_rank") or kwargs.get("max_rank"):
+        kwargs["rank"] = _get_rank_range(kwargs.pop("min_rank", None), kwargs.pop("max_rank", None))
+    return kwargs
+
+
+def _get_rank_range(min_rank: str = None, max_rank: str = None) -> List[str]:
+    """ Translate min and/or max rank into a list of ranks """
+
+    def _get_rank_index(rank: str) -> int:
+        if rank not in RANKS:
+            raise ValueError("Invalid rank")
+        return RANKS.index(rank)
+
+    min_rank_index = _get_rank_index(min_rank) if min_rank else 0
+    max_rank_index = _get_rank_index(max_rank) + 1 if max_rank else len(RANKS)
+    return RANKS[min_rank_index:max_rank_index]
