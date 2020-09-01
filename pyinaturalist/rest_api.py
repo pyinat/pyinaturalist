@@ -15,6 +15,7 @@ from pyinaturalist.api_docs import (
     get_all_observation_fields_params,
     create_observations_params,
     update_observation_params,
+    delete_observation_params,
 )
 from pyinaturalist.constants import OBSERVATION_FORMATS, THROTTLING_DELAY, INAT_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
@@ -298,19 +299,13 @@ def update_observation(
 
 # TODO: test this (success case, wrong_user/403 case)
 # TODO: document example in readme
-def delete_observation(
-    observation_id: int, access_token: str, user_agent: str = None
-) -> List[Dict[str, Any]]:
+@document_request_params(delete_observation_params)
+def delete_observation(observation_id: int, access_token: str = None, user_agent: str = None):
     """
     Delete an observation.
 
-    Args:
-        observation_id:
-        access_token:
-        user_agent: a user-agent string that will be passed to iNaturalist.
-
     Returns:
-        iNaturalist's JSON response, as a Python object
+        If successful, no response is returned from this endpoint
 
     Raises:
         :py:exc:`.ObservationNotFound` if the requested observation doesn't exist
@@ -325,9 +320,3 @@ def delete_observation(
     if response.status_code == 404:
         raise ObservationNotFound
     response.raise_for_status()
-
-    # Handle an empty response; see https://github.com/inaturalist/inaturalist/issues/2252
-    try:
-        return response.json()
-    except JSONDecodeError:
-        return []

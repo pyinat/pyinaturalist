@@ -512,7 +512,7 @@ def only_id(only_id: bool = False):
 
 def observation_id(observation_id: int):
     """
-    observation_id: iNaturalist observation ID to update
+    observation_id: iNaturalist observation ID
     """
 
 
@@ -589,6 +589,7 @@ update_observation_params = [
     _create_observations_params,
     _update_observation_params,
 ]
+delete_observation_params = [observation_id, access_token]
 
 
 MULTIPLE_CHOICE_PARAM_DOCS = "**Multiple-Choice Parameters:**\n" + _format_param_choices()
