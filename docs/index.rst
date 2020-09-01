@@ -5,7 +5,13 @@
 
 .. _index-page:
 
+.. Omit README link to ReadTheDocs, since we're already on ReadTheDocs!
 .. include:: ../README.rst
+    :end-line: 23
+
+.. include:: ../README.rst
+    :start-line: 25
+
 
 Contents
 ========

@@ -26,15 +26,19 @@ See full documentation at `<https://pyinaturalist.readthedocs.io>`_.
 Installation
 ------------
 
-Install with pip::
+Install the latest stable version with pip::
 
-    $ pip install pyinaturalist
+    $ pip install pyinaturalist["extras"]
 
 Or, if you would like to use the latest development (non-stable) version::
 
-    $ pip install --pre pyinaturalist
+    $ pip install --pre pyinaturalist["extras"]
 
-Or, to set up for local development (preferably in a new virtualenv)::
+Note that ``["extras"]`` will include dependencies that are recommended but not required for usage.
+pyinaturalist will function just fine without them, but will lack certain conveniences,
+such as full API documentation and type checking within an IDE.
+
+To set up for local development (preferably in a new virtualenv)::
 
     $ git clone https://github.com/niconoe/pyinaturalist.git
     $ cd pyinaturalist
@@ -52,14 +56,15 @@ are implemented, including:
 See below for some examples,
 see `Reference <https://pyinaturalist.readthedocs.io/en/latest/reference.html>`_ for a complete list, and
 see `Issues <https://github.com/niconoe/pyinaturalist/issues>`_ for planned & proposed features.
-More endpoints will continue to be added as they are needed. PRs are welcome!
+More endpoints will continue to be added as they are needed.
+Please **create an issue** if there is an endpoint you would like to have added, and **PRs are welcome!**
 
 .. note::
-    The two iNaturalist APIs expose a combined total of 103 endpoints. Many of these are primarily for
+    The two iNaturalist APIs expose a combined total of 103 endpoints\*. Many of these are primarily for
     internal use by the iNaturalist web application and mobile apps, and are unlikely to be added unless
     there are specific use cases for them.
 
-.. 37 in REST API, 65 in Node API, 1 undocumented as of 2020-06-11
+    \*37 in REST API, 65 in Node API, and 1 undocumented as of 2020-09-01
 
 Examples
 --------

@@ -29,6 +29,9 @@ extras_require = {
 # All development/testing packages combined
 extras_require["dev"] = list(chain.from_iterable(extras_require.values()))
 
+# Optional non-dev dependencies
+extras_require["extras"] = ["python-forge"]
+
 
 setup(
     name="pyinaturalist",
