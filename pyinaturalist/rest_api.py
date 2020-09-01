@@ -9,7 +9,6 @@ from typing import Dict, Any, List, BinaryIO, Union
 from urllib.parse import urljoin
 
 from pyinaturalist.api_docs import (
-    document_request_params,
     get_observations_params_rest as get_observations_params,
     get_observation_fields_params,
     get_all_observation_fields_params,
@@ -20,6 +19,7 @@ from pyinaturalist.api_docs import (
 from pyinaturalist.constants import OBSERVATION_FORMATS, THROTTLING_DELAY, INAT_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 from pyinaturalist.api_requests import delete, get, post, put
+from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.request_params import check_deprecated_params
 from pyinaturalist.response_format import convert_lat_long_to_float
 

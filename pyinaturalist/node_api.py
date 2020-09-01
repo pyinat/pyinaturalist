@@ -11,7 +11,6 @@ import requests
 from urllib.parse import urljoin
 
 from pyinaturalist.api_docs import (
-    document_request_params,
     get_observations_params,
     get_all_observations_params,
     get_observation_species_counts_params,
@@ -29,6 +28,7 @@ from pyinaturalist.constants import (
     JsonResponse,
 )
 from pyinaturalist.exceptions import ObservationNotFound
+from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.request_params import (
     check_deprecated_params,
     is_int,

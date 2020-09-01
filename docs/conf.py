@@ -44,9 +44,10 @@ napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = False
 
 # Use apidoc to auto-generate rst sources
+# Added here instead of instead of in Makefile so it will be used by ReadTheDocs
 apidoc_module_dir = PACKAGE_DIR
 apidoc_output_dir = "modules"
-apidoc_excluded_paths = ["__init__"]
+apidoc_excluded_paths = ["api_docs.py"]
 apidoc_module_first = True
 apidoc_separate_modules = True
 apidoc_toc_file = False
