@@ -30,7 +30,7 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
     :py:func:`.get_geojson_observations` for GeoJSON format (not included here because it wraps
     a separate API endpoint).
 
-    For API parameters, see: https://www.inaturalist.org/pages/api+reference#get-observations
+    **API reference:** https://www.inaturalist.org/pages/api+reference#get-observations
 
     Example::
 
@@ -62,7 +62,8 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
 def get_observation_fields(user_agent: str = None, **kwargs) -> List[Dict[str, Any]]:
     """Search observation fields. Observation fields are basically typed data fields that
     users can attach to observation.
-    API reference: https://www.inaturalist.org/pages/api+reference#get-observation_fields
+
+    **API reference:** https://www.inaturalist.org/pages/api+reference#get-observation_fields
 
     Returns:
         Observation fields as a list of dicts
@@ -114,6 +115,8 @@ def put_observation_field_values(
     # TODO: ...triggers an error 404 the second time (report to iNaturalist?)
     """Set an observation field (value) on an observation.
     Will fail if this observation_field is already set for this observation.
+
+    **API reference:** https://www.inaturalist.org/pages/api+reference#put-observation_field_values-id
 
     Example:
             >>> put_observation_field_values(
@@ -172,6 +175,8 @@ def get_access_token(
     """Get an access token using the user's iNaturalist username and password.
     You still need an iNaturalist app to do this.
 
+    **API reference:** https://www.inaturalist.org/pages/api+reference#auth
+
     Example:
         >>> access_token = get_access_token('...')
         >>> headers = {"Authorization": f"Bearer {access_token}"}
@@ -202,6 +207,7 @@ def get_access_token(
         raise AuthenticationError("Authentication error, please check credentials.")
 
 
+# TODO: Support either local file path(s) or object(s)
 def add_photo_to_observation(
     observation_id: int,
     file_object: BinaryIO,
@@ -209,6 +215,8 @@ def add_photo_to_observation(
     user_agent: str = None,
 ):
     """Upload a picture and assign it to an existing observation.
+
+    **API reference:** https://www.inaturalist.org/pages/api+reference#post-observation_photos
 
     Args:
         observation_id: the ID of the observation
@@ -231,13 +239,14 @@ def add_photo_to_observation(
 
 
 # TODO: Implement `observation_field_values_attributes`, and simplify nested data structures
-# TODO: implement `local_photos` and allow simply passing local file path(s)
+# TODO: implement `local_photos` and support either local file path(s) or object(s)
 @document_request_params(create_observations_params)
 def create_observations(
     params: Dict[str, Dict[str, Any]], access_token: str, user_agent: str = None, **kwargs
 ) -> List[Dict[str, Any]]:
     """Create one or more observations.
-    For API reference, see: https://www.inaturalist.org/pages/api+reference#post-observations
+
+    **API reference:** https://www.inaturalist.org/pages/api+reference#post-observations
 
     Example:
         >>> params = {'observation': {'species_guess': 'Pieris rapae'}}
@@ -275,7 +284,9 @@ def update_observation(
     observation_id: int, params: Dict[str, Any], access_token: str, user_agent: str = None, **kwargs
 ) -> List[Dict[str, Any]]:
     """
-    Update a single observation. See https://www.inaturalist.org/pages/api+reference#put-observations-id
+    Update a single observation.
+
+    **API reference:** https://www.inaturalist.org/pages/api+reference#put-observations-id
 
     Returns:
         iNaturalist's JSON response, as a Python object
@@ -303,6 +314,8 @@ def update_observation(
 def delete_observation(observation_id: int, access_token: str = None, user_agent: str = None):
     """
     Delete an observation.
+
+    **API reference:** https://www.inaturalist.org/pages/api+reference#delete-observations-id
 
     Returns:
         If successful, no response is returned from this endpoint

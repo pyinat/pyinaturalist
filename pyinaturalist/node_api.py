@@ -59,6 +59,8 @@ def make_inaturalist_api_get_call(endpoint: str, **kwargs) -> requests.Response:
 def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse:
     """Get details about an observation.
 
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_id
+
     Args:
         observation_id: Observation ID
         user_agent: a user-agent string that will be passed to iNaturalist.
@@ -80,7 +82,8 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
 @document_request_params(get_observations_params)
 def get_observations(params: Dict = None, user_agent: str = None, **kwargs) -> JsonResponse:
     """Search observations.
-    See: http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
+
+    **API reference:** http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
 
     Returns:
         JSON response containing observation records
@@ -140,7 +143,7 @@ def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResp
     criteria, and the count of observations they are associated with.
     **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
 
-    See: https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_species_counts
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_species_counts
 
     Example:
         >>> get_observation_species_counts(user_login='my_username', quality_grade='research')
@@ -196,7 +199,8 @@ def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResp
 def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse:
     """
     Get one or more places by ID.
-    See: https://api.inaturalist.org/v1/docs/#!/Places/get_places_id
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Places/get_places_id
 
     Example:
         >>> get_places_by_id(93735)
@@ -229,7 +233,8 @@ def get_places_nearby(user_agent: str = None, **kwargs) -> JsonResponse:
     """
     Given an bounding box, and an optional name query, return standard iNaturalist curator approved
     and community non-curated places nearby
-    See: https://api.inaturalist.org/v1/docs/#!/Places/get_places_nearby
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Places/get_places_nearby
 
     Example:
         >>> bounding_box = (150.0, -50.0, -149.999, -49.999)
@@ -263,7 +268,8 @@ def _convert_all_locations_to_float(response):
 
 def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
     """Given a query string, get places with names starting with the search term
-    See: https://api.inaturalist.org/v1/docs/#!/Places/get_places_autocomplete
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Places/get_places_autocomplete
 
     Example:
         >>> get_places_autocomplete('Irkutsk')
@@ -291,7 +297,8 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
 
 def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     """Get one or more taxa by ID.
-    See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_id
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_id
 
     Args:
         taxon_id: Get taxa with this ID. Multiple values are allowed.
@@ -309,7 +316,8 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
 @document_request_params(get_taxa_params)
 def get_taxa(user_agent: str = None, **kwargs) -> JsonResponse:
     """Given zero to many of following parameters, returns taxa matching the search criteria.
-    See https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
 
     Returns:
         A list of dicts containing taxa results
@@ -323,7 +331,8 @@ def get_taxa(user_agent: str = None, **kwargs) -> JsonResponse:
 @document_request_params(get_taxa_autocomplete_params)
 def get_taxa_autocomplete(user_agent: str = None, **kwargs) -> JsonResponse:
     """Given a query string, returns taxa with names starting with the search term
-    See: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_autocomplete
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_autocomplete
 
     **Note:** There appears to currently be a bug in the API that causes ``per_page`` to not have
     any effect.
