@@ -24,6 +24,44 @@ from pyinaturalist.request_params import check_deprecated_params
 from pyinaturalist.response_format import convert_lat_long_to_float
 
 
+def get_access_token(
+    username: str, password: str, app_id: str, app_secret: str, user_agent: str = None
+) -> str:
+    """Get an access token using the user's iNaturalist username and password.
+    You still need an iNaturalist app to do this.
+
+    **API reference:** https://www.inaturalist.org/pages/api+reference#auth
+
+    Example:
+        >>> access_token = get_access_token('...')
+        >>> headers = {"Authorization": f"Bearer {access_token}"}
+
+    Args:
+        username: iNaturalist username
+        password: iNaturalist password
+        app_id: iNaturalist application ID
+        app_secret: iNaturalist application secret
+        user_agent: a user-agent string that will be passed to iNaturalist.
+    """
+    payload = {
+        "client_id": app_id,
+        "client_secret": app_secret,
+        "grant_type": "password",
+        "username": username,
+        "password": password,
+    }
+
+    response = post(
+        "{base_url}/oauth/token".format(base_url=INAT_BASE_URL),
+        json=payload,
+        user_agent=user_agent,
+    )
+    try:
+        return response.json()["access_token"]
+    except KeyError:
+        raise AuthenticationError("Authentication error, please check credentials.")
+
+
 @document_request_params(get_observations_params)
 def get_observations(user_agent: str = None, **params) -> Union[List, str]:
     """Get observation data, optionally in an alternative format. Also see
@@ -167,44 +205,6 @@ def put_observation_field_values(
 
     response.raise_for_status()
     return response.json()
-
-
-def get_access_token(
-    username: str, password: str, app_id: str, app_secret: str, user_agent: str = None
-) -> str:
-    """Get an access token using the user's iNaturalist username and password.
-    You still need an iNaturalist app to do this.
-
-    **API reference:** https://www.inaturalist.org/pages/api+reference#auth
-
-    Example:
-        >>> access_token = get_access_token('...')
-        >>> headers = {"Authorization": f"Bearer {access_token}"}
-
-    Args:
-        username: iNaturalist username
-        password: iNaturalist password
-        app_id: iNaturalist application ID
-        app_secret: iNaturalist application secret
-        user_agent: a user-agent string that will be passed to iNaturalist.
-    """
-    payload = {
-        "client_id": app_id,
-        "client_secret": app_secret,
-        "grant_type": "password",
-        "username": username,
-        "password": password,
-    }
-
-    response = post(
-        "{base_url}/oauth/token".format(base_url=INAT_BASE_URL),
-        json=payload,
-        user_agent=user_agent,
-    )
-    try:
-        return response.json()["access_token"]
-    except KeyError:
-        raise AuthenticationError("Authentication error, please check credentials.")
 
 
 # TODO: Support either local file path(s) or object(s)
