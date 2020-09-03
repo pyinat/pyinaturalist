@@ -9,6 +9,8 @@ from pyinaturalist.request_params import (
     convert_datetime_params,
     convert_list_params,
     strip_empty_params,
+    validate_ids,
+    validate_multiple_choice_param,
     validate_multiple_choice_params,
 )
 import pyinaturalist.rest_api
@@ -33,20 +35,6 @@ def test_convert_bool_params():
     assert params["only_id"] == "true"
 
 
-# Test both int and string lists
-def test_convert_list_params():
-    params = convert_list_params(TEST_PARAMS)
-    assert params["preferred_place_id"] == "1,2"
-    assert params["rank"] == "phylum,class"
-
-
-def test_strip_empty_params():
-    params = strip_empty_params(TEST_PARAMS)
-    assert len(params) == 5
-    assert "q" not in params and "locale" not in params
-    assert "is_active" in params and "only_id" in params
-
-
 # Test some recognized date(time) formats, with and without TZ info, in date and non-date params
 @pytest.mark.parametrize(
     "param, value, expected",
@@ -65,6 +53,40 @@ def test_strip_empty_params():
 def test_convert_datetime_params(tzlocal, param, value, expected):
     converted = convert_datetime_params({param: value})
     assert converted[param] == expected
+
+
+# Test both int and string lists
+def test_convert_list_params():
+    params = convert_list_params(TEST_PARAMS)
+    assert params["preferred_place_id"] == "1,2"
+    assert params["rank"] == "phylum,class"
+
+
+def test_strip_empty_params():
+    params = strip_empty_params(TEST_PARAMS)
+    assert len(params) == 5
+    assert "q" not in params and "locale" not in params
+    assert "is_active" in params and "only_id" in params
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("1", "1"),
+        (1, "1"),
+        ("1,2,3", "1,2,3"),
+        ([1, 2, 3], "1,2,3"),
+        ([1e5, 2e5], "100000,200000"),
+    ],
+)
+def test_validate_ids(value, expected):
+    assert validate_ids(value) == expected
+
+
+@pytest.mark.parametrize("value", ["NaN", "", None, []])
+def test_validate_ids__invalid(value):
+    with pytest.raises(ValueError):
+        validate_ids("not a number")
 
 
 # This is just here so that tests will fail if one of the conversion steps is removed
@@ -127,6 +149,19 @@ def test_all_rest_requests_use_param_conversion(
     mock_args = get_mock_args_for_signature(http_function)
     http_function(*mock_args)
     assert preprocess_request_params.call_count == 1
+
+
+def test_validate_multiple_choice_param():
+    params = {
+        "param1": "valid_str",
+        "param2": "invalid_str",
+    }
+    choices = ["str1", "str2", "valid_str"]
+
+    validate_multiple_choice_param(params, "param1", choices)
+    assert True
+    with pytest.raises(ValueError):
+        validate_multiple_choice_param(params, "param2", choices)
 
 
 @pytest.mark.parametrize(

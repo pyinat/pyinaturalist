@@ -9,7 +9,7 @@ import requests
 
 import pyinaturalist
 from pyinaturalist.constants import WRITE_HTTP_METHODS
-from pyinaturalist.request_params import preprocess_request_params, convert_list
+from pyinaturalist.request_params import preprocess_request_params, convert_list, validate_ids
 
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=requests.Response)
@@ -44,7 +44,7 @@ def request(
     url: str,
     access_token: str = None,
     user_agent: str = None,
-    resources: Union[str, List] = None,
+    ids: Union[str, List] = None,
     params: Dict = None,
     headers: Dict = None,
     **kwargs
@@ -57,7 +57,7 @@ def request(
         url: Request URL
         access_token: access_token: the access token, as returned by :func:`get_access_token()`
         user_agent: a user-agent string that will be passed to iNaturalist
-        resources: REST resource(s) to request (typically one or more IDs)
+        ids: One or more integer IDs used as REST resource(s) to request
         params: Requests parameters
         headers: Request headers
 
@@ -68,14 +68,14 @@ def request(
     headers = headers or {}
     headers["Accept"] = "application/json"
     headers["User-Agent"] = user_agent or pyinaturalist.user_agent
-
     if access_token:
         headers["Authorization"] = "Bearer %s" % access_token
+
     params = preprocess_request_params(params)
 
-    # If a resource is requested instead of params, convert to a list if specified
-    if resources:
-        url = url.rstrip("/") + "/" + convert_list(resources)
+    # If one or more REST resources are requested, update the request URL accordignly
+    if ids:
+        url = url.rstrip("/") + "/" + validate_ids(ids)
 
     # Run either real request or mock request depending on settings
     if is_dry_run_enabled(method):

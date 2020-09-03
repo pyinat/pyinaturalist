@@ -2,7 +2,6 @@
 Code used to access the (read/write, but slow) Rails based API of iNaturalist
 See: https://www.inaturalist.org/pages/api+reference
 """
-from json import JSONDecodeError
 from time import sleep
 from typing import Dict, Any, List, BinaryIO, Union
 
@@ -16,11 +15,16 @@ from pyinaturalist.api_docs import (
     update_observation_params,
     delete_observation_params,
 )
-from pyinaturalist.constants import OBSERVATION_FORMATS, THROTTLING_DELAY, INAT_BASE_URL
+from pyinaturalist.constants import THROTTLING_DELAY, INAT_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 from pyinaturalist.api_requests import delete, get, post, put
 from pyinaturalist.forge_utils import document_request_params
-from pyinaturalist.request_params import check_deprecated_params
+from pyinaturalist.request_params import (
+    OBSERVATION_FORMATS,
+    REST_OBS_ORDER_BY_PROPERTIES,
+    check_deprecated_params,
+    validate_multiple_choice_param,
+)
 from pyinaturalist.response_format import convert_lat_long_to_float
 
 
@@ -63,14 +67,14 @@ def get_access_token(
 
 
 @document_request_params(get_observations_params)
-def get_observations(user_agent: str = None, **params) -> Union[List, str]:
+def get_observations(user_agent: str = None, **kwargs) -> Union[List, str]:
     """Get observation data, optionally in an alternative format. Also see
     :py:func:`.get_geojson_observations` for GeoJSON format (not included here because it wraps
     a separate API endpoint).
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#get-observations
 
-    Example::
+    Example:
 
         get_observations(id=45414404, format="dwc")
 
@@ -78,15 +82,16 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
         Return type will be ``dict`` for the ``json`` response format, and ``str`` for all
         others.
     """
-    response_format = params.get("response_format", "json")
+    response_format = kwargs.pop("response_format", "json")
     if response_format == "geojson":
         raise ValueError("For geojson format, use pyinaturalist.node_api.get_geojson_observations")
     if response_format not in OBSERVATION_FORMATS:
         raise ValueError("Invalid response format")
+    validate_multiple_choice_param(kwargs, "order_by", REST_OBS_ORDER_BY_PROPERTIES)
 
     response = get(
         urljoin(INAT_BASE_URL, "observations.{}".format(response_format)),
-        params=params,
+        params=kwargs,
         user_agent=user_agent,
     )
 

@@ -21,7 +21,6 @@ from pyinaturalist.api_docs import (
     get_taxa_autocomplete_params,
 )
 from pyinaturalist.constants import (
-    DEFAULT_OBSERVATION_ATTRS,
     INAT_NODE_API_BASE_URL,
     PER_PAGE_RESULTS,
     THROTTLING_DELAY,
@@ -31,10 +30,12 @@ from pyinaturalist.constants import (
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.request_params import (
+    DEFAULT_OBSERVATION_ATTRS,
+    NODE_OBS_ORDER_BY_PROPERTIES,
+    PROJECT_ORDER_BY_PROPERTIES,
     check_deprecated_params,
-    is_int,
-    is_int_list,
     translate_rank_range,
+    validate_multiple_choice_param,
 )
 from pyinaturalist.response_format import (
     format_taxon,
@@ -94,6 +95,7 @@ def get_observations(params: Dict = None, user_agent: str = None, **kwargs) -> J
         JSON response containing observation records
     """
     kwargs = check_deprecated_params(params, **kwargs)
+    validate_multiple_choice_param(kwargs, "order_by", NODE_OBS_ORDER_BY_PROPERTIES)
     r = make_inaturalist_api_get_call("observations", params=kwargs, user_agent=user_agent)
     return r.json()
 
@@ -226,9 +228,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
     Returns:
         JSON response containing place records
     """
-    if not (is_int(place_id) or is_int_list(place_id)):
-        raise ValueError("Invalid ID(s); must specify integers only")
-    r = make_inaturalist_api_get_call("places", resources=place_id, user_agent=user_agent)
+    r = make_inaturalist_api_get_call("places", ids=place_id, user_agent=user_agent)
     r.raise_for_status()
 
     # Convert coordinates to floats
@@ -317,6 +317,7 @@ def get_projects(user_agent: str = None, **kwargs) -> JsonResponse:
     Returns:
         JSON response containing project records
     """
+    validate_multiple_choice_param(kwargs, "order_by", PROJECT_ORDER_BY_PROPERTIES)
     r = make_inaturalist_api_get_call("projects", params=kwargs, user_agent=user_agent)
     r.raise_for_status()
     return r.json()
@@ -337,12 +338,10 @@ def get_projects_by_id(
     Returns:
         JSON response containing project records
     """
-    if not (is_int(project_id) or is_int_list(project_id)):
-        raise ValueError("Invalid ID(s); must specify integers only")
     r = make_inaturalist_api_get_call(
         "projects",
+        ids=project_id,
         params={"rule_details": rule_details},
-        resources=project_id,
         user_agent=user_agent,
     )
     r.raise_for_status()
@@ -379,9 +378,7 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     Returns:
         JSON response containing taxon records
     """
-    if not (is_int(taxon_id) or is_int_list(taxon_id)):
-        raise ValueError("Invalid ID(s); must specify integers only")
-    r = make_inaturalist_api_get_call("taxa", resources=taxon_id, user_agent=user_agent)
+    r = make_inaturalist_api_get_call("taxa", ids=taxon_id, user_agent=user_agent)
     r.raise_for_status()
     return r.json()
 
