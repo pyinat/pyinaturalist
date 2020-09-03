@@ -133,6 +133,7 @@ MULTIPLE_CHOICE_PARAMS = {
     "search_on": SEARCH_PROPERTIES,
     "sound_license": CC_LICENSES,
     "taxon_geoprivacy": GEOPRIVACY_LEVELS,
+    "type": PROJECT_TYPES,
 }
 
 MULTIPLE_CHOICE_ERROR_MSG = (
