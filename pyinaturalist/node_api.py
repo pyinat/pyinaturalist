@@ -16,6 +16,7 @@ from pyinaturalist.api_docs import (
     get_observation_species_counts_params,
     get_geojson_observations_params,
     get_places_nearby_params,
+    get_projects_params,
     get_taxa_params,
     get_taxa_autocomplete_params,
 )
@@ -54,6 +55,10 @@ def make_inaturalist_api_get_call(endpoint: str, **kwargs) -> requests.Response:
         kwargs: Arguments for :py:func:`.api_requests.request`
     """
     return get(urljoin(INAT_NODE_API_BASE_URL, endpoint), **kwargs)
+
+
+# Observations
+# --------------------
 
 
 def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse:
@@ -196,6 +201,10 @@ def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResp
     )
 
 
+# Places
+# --------------------
+
+
 def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse:
     """
     Get one or more places by ID.
@@ -215,7 +224,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
         place_id: Get a place with this ID. Multiple values are allowed.
 
     Returns:
-        A list of dicts containing places results
+        JSON response containing place records
     """
     if not (is_int(place_id) or is_int_list(place_id)):
         raise ValueError("Invalid ID(s); must specify integers only")
@@ -250,7 +259,7 @@ def get_places_nearby(user_agent: str = None, **kwargs) -> JsonResponse:
         }
 
     Returns:
-        A list of dicts containing places results
+        JSON response containing place records
     """
     r = make_inaturalist_api_get_call("places/nearby", params=kwargs, user_agent=user_agent)
     r.raise_for_status()
@@ -284,7 +293,7 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
         q: Name must begin with this value
 
     Returns:
-        A list of dicts containing places results
+        JSON response containing place records
     """
     r = make_inaturalist_api_get_call("places/autocomplete", params={"q": q}, user_agent=user_agent)
     r.raise_for_status()
@@ -293,6 +302,70 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
     response = r.json()
     response["results"] = convert_location_to_float(response["results"])
     return response
+
+
+# Projects
+# --------------------
+
+
+@document_request_params(get_projects_params)
+def get_projects(user_agent: str = None, **kwargs) -> JsonResponse:
+    """Given zero to many of following parameters, get projects matching the search criteria.
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Projects/get_projects
+
+    Returns:
+        JSON response containing project records
+    """
+    r = make_inaturalist_api_get_call("projects", params=kwargs, user_agent=user_agent)
+    r.raise_for_status()
+    return r.json()
+
+
+def get_projects_by_id(
+    project_id: MultiInt, rule_details: bool = None, user_agent: str = None
+) -> JsonResponse:
+    """Get one or more projects by ID.
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_id
+
+    Args:
+        project_id: Get projects with this ID. Multiple values are allowed.
+        rule_details: Return more information about project rules, for example return a full taxon
+            object instead of simply an ID
+
+    Returns:
+        JSON response containing project records
+    """
+    if not (is_int(project_id) or is_int_list(project_id)):
+        raise ValueError("Invalid ID(s); must specify integers only")
+    r = make_inaturalist_api_get_call(
+        "projects",
+        params={"rule_details": rule_details},
+        resources=project_id,
+        user_agent=user_agent,
+    )
+    r.raise_for_status()
+    return r.json()
+
+
+# Taxa
+# --------------------
+
+
+@document_request_params(get_taxa_params)
+def get_taxa(user_agent: str = None, **kwargs) -> JsonResponse:
+    """Given zero to many of following parameters, get taxa matching the search criteria.
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
+
+    Returns:
+        JSON response containing taxon records
+    """
+    kwargs = translate_rank_range(kwargs)
+    r = make_inaturalist_api_get_call("taxa", params=kwargs, user_agent=user_agent)
+    r.raise_for_status()
+    return r.json()
 
 
 def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
@@ -304,26 +377,11 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
         taxon_id: Get taxa with this ID. Multiple values are allowed.
 
     Returns:
-        A list of dicts containing taxa results
+        JSON response containing taxon records
     """
     if not (is_int(taxon_id) or is_int_list(taxon_id)):
         raise ValueError("Invalid ID(s); must specify integers only")
     r = make_inaturalist_api_get_call("taxa", resources=taxon_id, user_agent=user_agent)
-    r.raise_for_status()
-    return r.json()
-
-
-@document_request_params(get_taxa_params)
-def get_taxa(user_agent: str = None, **kwargs) -> JsonResponse:
-    """Given zero to many of following parameters, returns taxa matching the search criteria.
-
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
-
-    Returns:
-        A list of dicts containing taxa results
-    """
-    kwargs = translate_rank_range(kwargs)
-    r = make_inaturalist_api_get_call("taxa", params=kwargs, user_agent=user_agent)
     r.raise_for_status()
     return r.json()
 
@@ -338,7 +396,7 @@ def get_taxa_autocomplete(user_agent: str = None, **kwargs) -> JsonResponse:
     any effect.
 
     Returns:
-        A list of dicts containing taxa results
+        JSON response containing taxon records
     """
     kwargs = translate_rank_range(kwargs)
     r = make_inaturalist_api_get_call("taxa/autocomplete", params=kwargs, user_agent=user_agent)

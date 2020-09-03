@@ -15,6 +15,10 @@ from pyinaturalist.constants import (
 from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
 
 
+# Observations
+# --------------------
+
+
 # Params that are in most observation-related endpoints in both Node and REST APIs
 def _observation_params_common(
     q: str = None,
@@ -281,6 +285,60 @@ def _update_observation_params(
     """
 
 
+# Projects
+# --------------------
+
+
+# TODO: validate multiple-choice params
+# TODO: it's not documented, but does this accept `page` and `order` params?
+def _projects_params(
+    q: str = None,
+    id: MultiInt = None,
+    not_id: MultiInt = None,
+    lat: float = None,
+    lng: float = None,
+    radius: int = 500,
+    featured: bool = None,
+    noteworthy: bool = None,
+    site_id: int = None,
+    rule_details: bool = None,
+    type: MultiStr = None,
+    member_id: int = None,
+    has_params: bool = None,
+    has_posts: bool = None,
+    per_page: int = None,
+    order_by: str = None,
+):
+    """
+    q: Project name must begin with this value
+    id: Must have this ID
+    not_id: Must not have this ID
+    lat: Must be within a ``radius`` kilometer circle around this lat/lng
+    lng: Must be within a ``radius`` kilometer circle around this lat/lng
+    radius: Distance from center (``(lat, lng)``) to search, in kilometers. Defaults to 500km.
+    featured:  Must be marked featured for the relevant site
+    noteworthy: Must be marked noteworthy for the relevant site
+    site_id: Site ID that applies to ``featured`` and ``noteworthy``.
+        Defaults to the site of the authenticated user, or to the main iNaturalist site
+    rule_details: Return more information about project rules, for example return a full taxon
+        object instead of simply an ID
+    type: Projects must be of this type
+        Allowed values: collection, umbrella
+    member_id: Project must have member with this user ID
+    has_params: Must have search parameter requirements
+    has_posts: Must have posts
+    per_page: Number of results to return in a page. The maximum value is generally 200 unless otherwise noted
+    order_by: Sort order.
+        ``distance`` only applies if lat and lng are specified.
+        ``featured`` only applies if ``featured`` or ``noteworthy`` are true.
+        Allowed Values: recent_posts, created, updated, distance, featured
+    """
+
+
+# Taxa
+# --------------------
+
+
 def _taxon_params(
     q: str = None,
     is_active: bool = None,
@@ -440,6 +498,7 @@ get_all_observations_params = _get_observations + [_only_id]
 get_observation_species_counts_params = _get_observations
 get_geojson_observations_params = _get_observations + [_geojson_properties]
 get_places_nearby_params = [_bounding_box, _name]
+get_projects_params = [_projects_params]
 get_taxa_params = [_taxon_params, _taxon_id_params]
 get_taxa_autocomplete_params = [_taxon_params, _minify]
 
