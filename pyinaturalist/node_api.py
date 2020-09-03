@@ -1,6 +1,8 @@
 """
 Code to access the (read-only, but fast) Node based public iNaturalist API
 See: http://api.inaturalist.org/v1/docs/
+
+Most recent API version tested: 1.3.0
 """
 from logging import getLogger
 from time import sleep
