@@ -5,7 +5,6 @@ See: http://api.inaturalist.org/v1/docs/
 from logging import getLogger
 from time import sleep
 from typing import Dict, List
-from warnings import warn
 
 import requests
 from urllib.parse import urljoin
@@ -116,10 +115,6 @@ def get_all_observations(
         Combined list of observation records
     """
     kwargs = check_deprecated_params(params, **kwargs)
-    if "page" in kwargs:
-        warn("Cannot specify `page` parameter for this function; see API documentation")
-        del kwargs["page"]
-
     results = []  # type: List[JsonResponse]
     id_above = 0
     pagination_params = {
@@ -320,7 +315,11 @@ def get_projects(user_agent: str = None, **kwargs) -> JsonResponse:
     validate_multiple_choice_param(kwargs, "order_by", PROJECT_ORDER_BY_PROPERTIES)
     r = make_inaturalist_api_get_call("projects", params=kwargs, user_agent=user_agent)
     r.raise_for_status()
-    return r.json()
+
+    # Convert coordinates to floats
+    response = r.json()
+    response["results"] = convert_location_to_float(response["results"])
+    return response
 
 
 def get_projects_by_id(
@@ -328,7 +327,7 @@ def get_projects_by_id(
 ) -> JsonResponse:
     """Get one or more projects by ID.
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_id
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Projects/get_projects_id
 
     Args:
         project_id: Get projects with this ID. Multiple values are allowed.
@@ -345,7 +344,11 @@ def get_projects_by_id(
         user_agent=user_agent,
     )
     r.raise_for_status()
-    return r.json()
+
+    # Convert coordinates to floats
+    response = r.json()
+    response["results"] = convert_location_to_float(response["results"])
+    return response
 
 
 # Taxa
