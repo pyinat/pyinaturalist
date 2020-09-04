@@ -6,11 +6,15 @@ import pyinaturalist
 from pyinaturalist.constants import INAT_NODE_API_BASE_URL
 from pyinaturalist.node_api import (
     get_observation,
+    get_observations,
+    get_all_observations,
     get_observation_species_counts,
     get_geojson_observations,
     get_places_by_id,
     get_places_nearby,
     get_places_autocomplete,
+    get_projects,
+    get_projects_by_id,
     get_taxa,
     get_taxa_by_id,
     get_taxa_autocomplete,
@@ -21,6 +25,10 @@ from test.conftest import load_sample_data
 
 PAGE_1_JSON_RESPONSE = load_sample_data("get_observation_fields_page1.json")
 PAGE_2_JSON_RESPONSE = load_sample_data("get_observation_fields_page2.json")
+
+
+# Observations
+# --------------------
 
 
 def test_get_observation(requests_mock):
@@ -35,6 +43,17 @@ def test_get_observation(requests_mock):
     assert obs_data["id"] == 16227955
     assert obs_data["user"]["login"] == "niconoe"
     assert len(obs_data["photos"]) == 2
+
+
+# TODO
+def test_get_observations():
+    pass
+
+
+# TODO
+@patch("pyinaturalist.node_api.sleep")
+def test_get_all_observations(sleep):
+    pass
 
 
 def test_get_geojson_observations(requests_mock):
@@ -93,6 +112,10 @@ def test_get_observation_species_counts(requests_mock):
 def test_get_observation_species_counts__invalid_multiple_choice_params():
     with pytest.raises(ValueError):
         get_observation_species_counts(quality_grade="None", iconic_taxa="slime molds")
+
+
+# Places
+# --------------------
 
 
 def test_get_places_by_id(requests_mock):
@@ -158,6 +181,51 @@ def test_get_places_autocomplete(requests_mock):
     assert len(result["ancestor_place_ids"]) == 4
 
 
+# Projects
+# --------------------
+
+
+def test_get_projects(requests_mock):
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, "projects"),
+        json=load_sample_data("get_projects.json"),
+        status_code=200,
+    )
+
+    response = get_projects(q="invasive", lat=49.27, lng=-123.08, radius=400, order_by="distance")
+    first_result = response["results"][0]
+
+    assert response["total_results"] == len(response["results"]) == 5
+    assert first_result["id"] == 8291
+    assert first_result["title"] == "PNW Invasive Plant EDDR"
+    assert first_result["is_umbrella"] is False
+    assert len(first_result["user_ids"]) == 33
+
+
+def test_get_projects_by_id(requests_mock):
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, "projects/8348,6432"),
+        json=load_sample_data("get_projects_by_id.json"),
+        status_code=200,
+    )
+    response = get_projects_by_id([8348, 6432])
+    first_result = response["results"][0]
+
+    assert response["total_results"] == len(response["results"]) == 2
+    assert first_result["id"] == 8348
+    assert first_result["title"] == "Tucson High Native and Invasive Species Inventory"
+    assert first_result["place_id"] == 96103
+    assert first_result["location"] == [32.2264416406, -110.9617278383]
+
+
+# Taxa
+# --------------------
+
+CLASS_AND_HIGHER = ["class", "superclass", "subphylum", "phylum", "kingdom"]
+SPECIES_AND_LOWER = ["form", "variety", "subspecies", "hybrid", "species"]
+CLASS_THOUGH_PHYLUM = ["class", "superclass", "subphylum", "phylum"]
+
+
 def test_get_taxa(requests_mock):
     params = urlencode({"q": "vespi", "rank": "genus,subgenus,species"})
     requests_mock.get(
@@ -176,11 +244,6 @@ def test_get_taxa(requests_mock):
     assert first_result["rank"] == "species"
     assert first_result["is_active"] is True
     assert len(first_result["ancestor_ids"]) == 14
-
-
-CLASS_AND_HIGHER = ["class", "superclass", "subphylum", "phylum", "kingdom"]
-SPECIES_AND_LOWER = ["form", "variety", "subspecies", "hybrid", "species"]
-CLASS_THOUGH_PHYLUM = ["class", "superclass", "subphylum", "phylum"]
 
 
 @pytest.mark.parametrize(
