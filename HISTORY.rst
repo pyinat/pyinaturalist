@@ -32,14 +32,18 @@ Modified Endpoints
 * Using the ``search_query`` argument for ``rest_api.get_observation_fields()`` and ``rest_api.get_all_observation_fields()``
   will raise a ``DeprecationWarning``, but will otherwise still be functional until ``0.12``
 
+Documentation & Usability
+~~~~~~~~~~~~~~~~~~~~~~~~~
+* Added example response data to docs all endpoints
+* Added links to official API reference to docs for all endpoints
+* Added full API request parameters to all API functions, in the form of keyword arguments with type annotations and docstrings
+* Numerous other documentation improvements
+* Made all API function signatures consistent by taking request params as keyword arguments
+
 Other Changes
 ~~~~~~~~~~~~~~~~~~~~
 * Dropped support for python 3.4
 * Added parameter validation for multiple-choice request parameters
-* Added full API request parameters to all API functions, in the form of keyword arguments with type annotations and docstrings
-* Added links to official API docs for each endpoint
-* Numerous other documentation improvements
-* Made all API function signatures consistent by taking request params as keyword arguments
 
 0.10.0 (2020-06-16)
 ^^^^^^^^^^^^^^^^^^^

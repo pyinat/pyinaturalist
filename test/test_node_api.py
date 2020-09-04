@@ -312,7 +312,7 @@ def test_get_taxa_autocomplete(requests_mock):
     first_result = response["results"][0]
 
     assert len(response["results"]) == 10
-    assert response["total_results"] == 44
+    assert response["total_results"] == 47
     assert first_result["matched_term"] == "Vespidae"
     assert first_result["id"] == 52747
     assert first_result["name"] == "Vespidae"
@@ -333,16 +333,17 @@ def test_get_taxa_autocomplete_minified(requests_mock):
         "   52747:       Family Vespidae (Hornets, Paper Wasps, Potter Wasps, and Allies)",
         "   84738:    Subfamily Vespinae (Hornets and Yellowjackets)",
         "  131878:      Species Nicrophorus vespillo (Vespillo Burying Beetle)",
+        "  621585:      Species Vespicula trachinoides (Vespicula Waspfish)",
         "  495392:      Species Vespidae st1",
         "   70118:      Species Nicrophorus vespilloides (Lesser Vespillo Burying Beetle)",
-        "   84737:        Genus Vespina",
+        "   92786:        Genus Vespicula",
+        "  646195:        Genus Vespiodes",
         "  621584:      Species Vespicula cypho",
-        "  621585:      Species Vespicula trachinoides",
         "  621586:      Species Vespicula zollingeri",
-        "  299443:      Species Vespita woolleyi",
     ]
 
     response = get_taxa_autocomplete(q="vespi", minify=True)
+    print(response["results"])
     assert response["results"] == expected_results
 
 
