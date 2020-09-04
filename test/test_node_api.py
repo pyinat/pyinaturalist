@@ -192,15 +192,14 @@ def test_get_projects(requests_mock):
         status_code=200,
     )
 
-    response = get_projects(q="invasive")
+    response = get_projects(q="invasive", lat=49.27, lng=-123.08, radius=400, order_by="distance")
     first_result = response["results"][0]
 
-    assert len(response["results"]) == 10
-    assert response["total_results"] == 306
-    assert first_result["id"] == 64187
-    assert first_result["title"] == "Invasive species of British Columbia: Prevent list"
+    assert response["total_results"] == len(response["results"]) == 5
+    assert first_result["id"] == 8291
+    assert first_result["title"] == "PNW Invasive Plant EDDR"
     assert first_result["is_umbrella"] is False
-    assert len(first_result["user_ids"]) == 4
+    assert len(first_result["user_ids"]) == 33
 
 
 def test_get_projects_by_id(requests_mock):

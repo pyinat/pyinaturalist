@@ -311,6 +311,28 @@ def get_projects(user_agent: str = None, **kwargs) -> JsonResponse:
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Projects/get_projects
 
+    Example:
+
+        Search for projects about invasive species within 400km of Vancouver, BC:
+
+        >>> response = get_projects(
+        >>>     q='invasive',
+        >>>     lat=49.27,
+        >>>     lng=-123.08,
+        >>>     radius=400,
+        >>>     order_by='distance',
+        >>> )
+
+        Show basic info for projects in response:
+
+        >>> project_info = {p["id"]: p["title"] for p in response["results"]}
+        >>> print('\\n'.join([f'{k}:\\t{v}' for k, v in project_info.items()]))
+        8291:    PNW Invasive Plant EDDR
+        19200:   King County (WA) Noxious and Invasive Weeds
+        8527:    WA Invasives
+        2344:    Invasive & Huntable Animals
+        6432:    CBWN Invasive Plants
+
     Returns:
         JSON response containing project records
     """
@@ -330,6 +352,10 @@ def get_projects_by_id(
     """Get one or more projects by ID.
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Projects/get_projects_id
+
+    Example:
+
+        >>> get_projects_by_id([8348, 6432])
 
     Args:
         project_id: Get projects with this ID. Multiple values are allowed.
