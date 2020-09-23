@@ -3,7 +3,7 @@ from urllib.parse import urlencode, urljoin
 from unittest.mock import patch
 
 import pyinaturalist
-from pyinaturalist.constants import INAT_NODE_API_BASE_URL
+from pyinaturalist.constants import INAT_NODE_API_BASE_URL, PER_PAGE_RESULTS
 from pyinaturalist.node_api import (
     get_observation,
     get_observations,
@@ -24,9 +24,6 @@ from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.rest_api import get_access_token
 from test.conftest import load_sample_data
 
-PAGE_1_JSON_RESPONSE = load_sample_data("get_observation_fields_page1.json")
-PAGE_2_JSON_RESPONSE = load_sample_data("get_observation_fields_page2.json")
-
 
 # Observations
 # --------------------
@@ -39,22 +36,57 @@ def test_get_observation(requests_mock):
         status_code=200,
     )
 
-    obs_data = get_observation(16227955)
-    assert obs_data["quality_grade"] == "research"
-    assert obs_data["id"] == 16227955
-    assert obs_data["user"]["login"] == "niconoe"
-    assert len(obs_data["photos"]) == 2
+    observation = get_observation(16227955)
+    assert observation["quality_grade"] == "research"
+    assert observation["id"] == 16227955
+    assert observation["user"]["login"] == "niconoe"
+    assert len(observation["photos"]) == 2
 
 
-# TODO
-def test_get_observations():
-    pass
+def test_get_observations(requests_mock):
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, "observations"),
+        json=load_sample_data("get_observations_node_page1.json"),
+        status_code=200,
+    )
+
+    observations = get_observations(
+        taxon_name="Danaus plexippus",
+        created_on="2020-08-27",
+        photos=True,
+        geo=True,
+        geoprivacy="open",
+        place_id=7953,
+    )
+    first_result = observations["results"][0]
+
+    assert observations["total_results"] == 2
+    assert len(observations["results"]) == 1
+    assert first_result["taxon_geoprivacy"] == "open"
+    assert first_result["observed_on"] == "2020-08-27"
+    assert first_result["taxon"]["id"] == 48662
+    assert len(first_result["place_ids"]) == 13
 
 
-# TODO
 @patch("pyinaturalist.node_api.sleep")
-def test_get_all_observations(sleep):
-    pass
+def test_get_all_observations(sleep, requests_mock):
+    # Make response appear as though there are more pages
+    page_1 = load_sample_data("get_observations_node_page1.json")
+    page_1["total_results"] = PER_PAGE_RESULTS + 1
+    page_2 = load_sample_data("get_observations_node_page2.json")
+
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, "observations"),
+        [
+            {"json": page_1, "status_code": 200},
+            {"json": page_2, "status_code": 200},
+        ],
+    )
+
+    observations = get_all_observations(id=[57754375, 57707611])
+
+    assert type(observations) is list
+    assert len(observations) == 2
 
 
 def test_get_geojson_observations(requests_mock):

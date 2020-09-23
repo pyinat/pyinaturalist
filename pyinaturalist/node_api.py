@@ -97,12 +97,30 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
     raise ObservationNotFound()
 
 
-# TODO: Example + sample response
 @document_request_params(get_observations_params)
 def get_observations(params: Dict = None, user_agent: str = None, **kwargs) -> JsonResponse:
     """Search observations.
 
     **API reference:** http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
+
+    Example:
+
+        >>> # Get observations of Monarch butterflies with photos + public location info,
+        >>> # on a specific date in the provice of Saskatchewan, CA
+        >>> observations = get_observations(
+        >>>     taxon_name='Danaus plexippus',
+        >>>     created_on='2020-08-27',
+        >>>     photos=True,
+        >>>     geo=True,
+        >>>     geoprivacy='open',
+        >>>     place_id=7953,
+        >>> )
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observations_node_page_1.json
+                :language: JSON
 
     Returns:
         JSON response containing observation records
@@ -113,7 +131,6 @@ def get_observations(params: Dict = None, user_agent: str = None, **kwargs) -> J
     return r.json()
 
 
-# TODO: Example + sample response
 @document_request_params(get_all_observations_params)
 def get_all_observations(
     params: Dict = None, user_agent: str = None, **kwargs
@@ -126,8 +143,16 @@ def get_all_observations(
     retrieving records from large result sets. If you need to retrieve large numbers of records,
     use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead."
 
+    Example:
+
+        >>> observations = get_all_observations(
+        >>>     taxon_name='Danaus plexippus',
+        >>>     created_on='2020-08-27',
+        >>> )
+
     Returns:
-        Combined list of observation records
+        Combined list of observation records. Response format is the same as the inner "results"
+        object returned by :py:func:`.get_observations()`.
     """
     kwargs = check_deprecated_params(params, **kwargs)
     results = []  # type: List[JsonResponse]
