@@ -68,6 +68,16 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_id
 
+    Example:
+
+        >>> get_observation(16227955)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation.json
+                :language: JSON
+
     Args:
         observation_id: Observation ID
         user_agent: a user-agent string that will be passed to iNaturalist.
@@ -76,7 +86,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
         A dict with details on the observation
 
     Raises:
-        ObservationNotFound
+        :py:exc:`.ObservationNotFound`
     """
 
     r = get_observations(id=observation_id, user_agent=user_agent)
@@ -86,6 +96,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
     raise ObservationNotFound()
 
 
+# TODO: Example + sample response
 @document_request_params(get_observations_params)
 def get_observations(params: Dict = None, user_agent: str = None, **kwargs) -> JsonResponse:
     """Search observations.
@@ -101,6 +112,7 @@ def get_observations(params: Dict = None, user_agent: str = None, **kwargs) -> J
     return r.json()
 
 
+# TODO: Example + sample response
 @document_request_params(get_all_observations_params)
 def get_all_observations(
     params: Dict = None, user_agent: str = None, **kwargs
@@ -151,15 +163,15 @@ def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResp
 
     Example:
         >>> get_observation_species_counts(user_login='my_username', quality_grade='research')
-        {
-            'total_results': 214,
-            'page': 1,
-            'per_page': 500,
-            'results': [
-                {'count': 12, 'taxon': {'...'}},
-            ]
-        }
 
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_species_counts.json
+                :language: JSON
+
+    Returns:
+        JSON response containing taxon records with counts
     """
     r = make_inaturalist_api_get_call(
         "observations/species_counts",
@@ -178,16 +190,12 @@ def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResp
 
     Example:
         >>> get_geojson_observations(observation_id=16227955, properties=["photo_url"])
-        {"type": "FeatureCollection",
-            "features": [{
-                    "type": "Feature",
-                    "geometry": {"type": "Point", "coordinates": [4.360086, 50.646894]},
-                    "properties": {
-                        "photo_url": "https://static.inaturalist.org/photos/24355315/square.jpeg?1536150659"
-                    }
-                }
-            ]
-        }
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observations.geojson
+                :language: JSON
 
     Returns:
         A ``FeatureCollection`` containing observation results as ``Feature`` dicts.
@@ -203,6 +211,17 @@ def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResp
 # Places
 # --------------------
 
+# TODO: Use updated sample responses with converted coords
+
+
+def _convert_all_locations_to_float(response):
+    """ Convert locations for both standard (curated) and community-contributed places to floats """
+    response["results"] = {
+        "standard": convert_location_to_float(response["results"].get("standard")),
+        "community": convert_location_to_float(response["results"].get("community")),
+    }
+    return response
+
 
 def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse:
     """
@@ -211,13 +230,13 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Places/get_places_id
 
     Example:
-        >>> get_places_by_id(93735)
-        {
-            "total_results": 1,
-            "page": 1,
-            "per_page": 2,
-            "results": ['...']
-        }
+        >>> get_places_by_id([93735, 89191])
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_places_by_id.json
+                :language: JSON
 
     Args:
         place_id: Get a place with this ID. Multiple values are allowed.
@@ -245,15 +264,12 @@ def get_places_nearby(user_agent: str = None, **kwargs) -> JsonResponse:
     Example:
         >>> bounding_box = (150.0, -50.0, -149.999, -49.999)
         >>> get_places_nearby(*bounding_box)
-        {
-            "total_results": 20,
-            "page": 1,
-            "per_page": 20,
-            "results": {
-                "standard": ['...'],
-                "community": ['...']
-            }
-        }
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_places_nearby.json
+                :language: JSON
 
     Returns:
         JSON response containing place records
@@ -263,15 +279,6 @@ def get_places_nearby(user_agent: str = None, **kwargs) -> JsonResponse:
     return _convert_all_locations_to_float(r.json())
 
 
-def _convert_all_locations_to_float(response):
-    """ Convert locations for both standard (curated) and community-contributed places to floats """
-    response["results"] = {
-        "standard": convert_location_to_float(response["results"].get("standard")),
-        "community": convert_location_to_float(response["results"].get("community")),
-    }
-    return response
-
-
 def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
     """Given a query string, get places with names starting with the search term
 
@@ -279,12 +286,12 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
 
     Example:
         >>> get_places_autocomplete('Irkutsk')
-        {
-            'total_results': 8,
-            'page': 1,
-            'per_page': 8,
-            'results': ['...']
-        }
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_places_autocomplete.json
+                :language: JSON
 
     Args:
         q: Name must begin with this value
@@ -333,6 +340,12 @@ def get_projects(user_agent: str = None, **kwargs) -> JsonResponse:
         2344:    Invasive & Huntable Animals
         6432:    CBWN Invasive Plants
 
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_projects.json
+                :language: JSON
+
     Returns:
         JSON response containing project records
     """
@@ -356,6 +369,12 @@ def get_projects_by_id(
     Example:
 
         >>> get_projects_by_id([8348, 6432])
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_projects_by_id.json
+                :language: JSON
 
     Args:
         project_id: Get projects with this ID. Multiple values are allowed.
@@ -389,6 +408,18 @@ def get_taxa(user_agent: str = None, **kwargs) -> JsonResponse:
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
 
+    Example:
+
+        >>> response = get_taxa(q="vespi", rank=["genus", "family"])
+        >>> print({taxon["id"]: taxon["name"] for taxon in response["results"]})
+        {52747: "Vespidae", 84737: "Vespina", 92786: "Vespicula", 646195: "Vespiodes", ...}
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_taxa.json
+                :language: JSON
+
     Returns:
         JSON response containing taxon records
     """
@@ -402,6 +433,24 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     """Get one or more taxa by ID.
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_id
+
+    Example:
+
+        >>> response = get_taxa_by_id(343248)
+        >>> basic_fields = ["preferred_common_name", "observations_count", "wikipedia_url", "wikipedia_summary"]
+        >>> print({f: response["results"][0][f] for f in basic_fields})
+        {
+            "preferred_common_name": "Paper Wasps",
+            "observations_count": 69728,
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Polistinae",
+            "wikipedia_summary": "The Polistinae are eusocial wasps closely related to the more familiar yellow jackets...",
+        }
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_taxa_by_id.json
+                :language: JSON
 
     Args:
         taxon_id: Get taxa with this ID. Multiple values are allowed.
@@ -422,6 +471,25 @@ def get_taxa_autocomplete(user_agent: str = None, **kwargs) -> JsonResponse:
 
     **Note:** There appears to currently be a bug in the API that causes ``per_page`` to not have
     any effect.
+
+    Example:
+
+        >>> response = get_taxa_autocomplete(q='vespi')
+        >>> first_result = response['results'][0]
+        >>> print(first_result['rank'], first_result['name'])
+        'family Vespidae'
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_taxa_autocomplete.json
+                :language: JSON
+
+        .. admonition:: Example Response (with **minify=True**)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_taxa_autocomplete_minified.json
+                :language: JSON
 
     Returns:
         JSON response containing taxon records

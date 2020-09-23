@@ -76,7 +76,42 @@ def get_observations(user_agent: str = None, **kwargs) -> Union[List, str]:
 
     Example:
 
-        get_observations(id=45414404, format="dwc")
+        >>> get_observations(id=45414404, format="atom")
+
+        .. admonition:: Example Response (atom)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observations.atom
+                :language: xml
+
+        .. admonition:: Example Response (csv)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observations.csv
+
+        .. admonition:: Example Response (dwc)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observations.dwc
+                :language: xml
+
+        .. admonition:: Example Response (json)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observations.json
+                :language: json
+
+        .. admonition:: Example Response (kml)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observations.kml
+                :language: xml
+
+        .. admonition:: Example Response (widget)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observations.js
+                :language: javascript
 
     Returns:
         Return type will be ``dict`` for the ``json`` response format, and ``str`` for all
@@ -107,6 +142,16 @@ def get_observation_fields(user_agent: str = None, **kwargs) -> List[Dict[str, A
     users can attach to observation.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#get-observation_fields
+
+    Example:
+
+        >>> get_observation_fields(q='sex')
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_fields_page1.json
+                :language: javascript
 
     Returns:
         Observation fields as a list of dicts
@@ -168,17 +213,12 @@ def put_observation_field_values(
             >>>     value=250,
             >>>     access_token=token,
             >>> )
-            {'id': 31,
-             'observation_id': 18166477,
-             'observation_field_id': 31,
-             'value': 'fouraging',
-             'created_at': '2012-09-29T11:05:44.935+02:00',
-             'updated_at': '2018-11-13T10:49:47.985+01:00',
-             'user_id': 1,
-             'updater_id': 1263313,
-             'uuid': 'b404b654-1bf0-4299-9288-52eeda7ac0db',
-             'created_at_utc': '2012-09-29T09:05:44.935Z',
-             'updated_at_utc': '2018-11-13T09:49:47.985Z'}
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/put_observation_field_value_result.json
+                :language: javascript
 
     Args:
         observation_id: ID of the observation receiving this observation field value
@@ -212,39 +252,8 @@ def put_observation_field_values(
     return response.json()
 
 
-# TODO: Support either local file path(s) or object(s)
-def add_photo_to_observation(
-    observation_id: int,
-    file_object: BinaryIO,
-    access_token: str,
-    user_agent: str = None,
-):
-    """Upload a picture and assign it to an existing observation.
-
-    **API reference:** https://www.inaturalist.org/pages/api+reference#post-observation_photos
-
-    Args:
-        observation_id: the ID of the observation
-        file_object: a file-like object for the picture. Example: open('/Users/nicolasnoe/vespa.jpg', 'rb')
-        access_token: the access token, as returned by :func:`get_access_token()`
-        user_agent: a user-agent string that will be passed to iNaturalist.
-    """
-    data = {"observation_photo[observation_id]": observation_id}
-    file_data = {"file": file_object}
-
-    response = post(
-        url="{base_url}/observation_photos".format(base_url=INAT_BASE_URL),
-        access_token=access_token,
-        user_agent=user_agent,
-        data=data,
-        files=file_data,
-    )
-
-    return response.json()
-
-
 # TODO: Implement `observation_field_values_attributes`, and simplify nested data structures
-# TODO: implement `local_photos` and support either local file path(s) or object(s)
+# TODO: implement `local_photos` and support both local file path(s) and object(s)
 @document_request_params(create_observations_params)
 def create_observations(
     params: Dict[str, Dict[str, Any]], access_token: str, user_agent: str = None, **kwargs
@@ -254,12 +263,26 @@ def create_observations(
     **API reference:** https://www.inaturalist.org/pages/api+reference#post-observations
 
     Example:
-        >>> params = {'observation': {'species_guess': 'Pieris rapae'}}
         >>> token = get_access_token('...')
-        >>> create_observations(params=params, access_token=token)
+        >>> create_observations(
+        >>>     access_token=token,
+        >>>     species_guess='Pieris rapae',
+        >>> )
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/create_observation_result.json
+                :language: javascript
+
+        .. admonition:: Example Response (failure)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/create_observation_fail.json
+                :language: javascript
 
     Returns:
-         The newly created observation(s) in JSON format
+        JSON response containing the newly created observation(s)
 
     Raises:
         :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an
@@ -273,6 +296,9 @@ def create_observations(
     # This is the one Boolean parameter that's specified as an int, for some reason
     if "ignore_photos" in kwargs:
         kwargs["ignore_photos"] = int(kwargs["ignore_photos"])
+    kwargs = check_deprecated_params(kwargs)
+    if "observation" not in kwargs:
+        kwargs = {"observation": kwargs}
 
     response = post(
         url="{base_url}/observations.json".format(base_url=INAT_BASE_URL),
@@ -293,8 +319,24 @@ def update_observation(
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#put-observations-id
 
+    Example:
+
+        >>> token = get_access_token('...')
+        >>> update_observation(
+        >>>     17932425,
+        >>>     access_token=token,
+        >>>     ignore_photos=1,
+        >>>     description="updated description!",
+        >>> )
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/update_observation_result.json
+                :language: javascript
+
     Returns:
-        iNaturalist's JSON response, as a Python object
+        JSON response containing the newly updated observation(s)
 
     Raises:
         :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an
@@ -302,6 +344,9 @@ def update_observation(
     """
     if "ignore_photos" in kwargs:
         kwargs["ignore_photos"] = int(kwargs["ignore_photos"])
+    kwargs = check_deprecated_params(kwargs)
+    if "observation" not in kwargs:
+        kwargs = {"observation": kwargs}
 
     response = put(
         url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
@@ -313,14 +358,57 @@ def update_observation(
     return response.json()
 
 
+# TODO: Example + sample response
+# TODO: Support both local file path(s) and object(s)
+def add_photo_to_observation(
+    observation_id: int,
+    file_object: BinaryIO,
+    access_token: str,
+    user_agent: str = None,
+):
+    """Upload a picture and assign it to an existing observation.
+
+    **API reference:** https://www.inaturalist.org/pages/api+reference#post-observation_photos
+
+    Example:
+
+
+        >>> token = get_access_token('...')
+        >>> with open('~/observation_photos/2020_09_01_14003156.jpg', 'rb') as f:
+        >>>     add_photo_to_observation(1234, f, access_token=token)
+
+    Args:
+        observation_id: the ID of the observation
+        file_object: a file-like object for the picture
+        access_token: the access token, as returned by :func:`get_access_token()`
+        user_agent: a user-agent string that will be passed to iNaturalist.
+    """
+    data = {"observation_photo[observation_id]": observation_id}
+    file_data = {"file": file_object}
+
+    response = post(
+        url="{base_url}/observation_photos".format(base_url=INAT_BASE_URL),
+        access_token=access_token,
+        user_agent=user_agent,
+        data=data,
+        files=file_data,
+    )
+
+    return response.json()
+
+
 # TODO: test this (success case, wrong_user/403 case)
-# TODO: document example in readme
 @document_request_params(delete_observation_params)
 def delete_observation(observation_id: int, access_token: str = None, user_agent: str = None):
     """
     Delete an observation.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#delete-observations-id
+
+    Example:
+
+        >>> token = get_access_token('...')
+        >>> delete_observation(17932425, access_token=token)
 
     Returns:
         If successful, no response is returned from this endpoint

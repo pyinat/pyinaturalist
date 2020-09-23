@@ -50,7 +50,7 @@ Pyinaturalist is under active development. Currently, a handful of the most rele
 are implemented, including:
 
 * Searching, creating, and updating observations and observation fields
-* Searching for places, species, and species counts
+* Searching for places, projects, species, and species counts
 * Text search autocompletion for species and places
 
 See below for some examples,
@@ -273,6 +273,3 @@ info. For example:
     "Schlumbergera truncata"
     >>> first_result["matched_term"]
     "Zygocactus truncatus"  # An older synonym for Schlumbergera
-
-
-

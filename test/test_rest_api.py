@@ -11,9 +11,10 @@ from pyinaturalist.rest_api import (
     get_all_observation_fields,
     get_observations,
     get_observation_fields,
-    update_observation,
-    create_observations,
     put_observation_field_values,
+    create_observations,
+    update_observation,
+    add_photo_to_observation,
     delete_observation,
 )
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
@@ -103,6 +104,26 @@ def test_get_all_observation_fields_noparam(requests_mock):
     )
 
     get_all_observation_fields()
+
+
+def test_put_observation_field_values(requests_mock):
+    requests_mock.put(
+        "https://www.inaturalist.org/observation_field_values/31",
+        json=load_sample_data("put_observation_field_value_result.json"),
+        status_code=200,
+    )
+
+    r = put_observation_field_values(
+        observation_id=18166477,
+        observation_field_id=31,  # Animal behavior
+        value="fouraging",
+        access_token="valid token",
+    )
+
+    assert r["id"] == 31
+    assert r["observation_field_id"] == 31
+    assert r["observation_id"] == 18166477
+    assert r["value"] == "fouraging"
 
 
 def test_get_access_token_fail(requests_mock):
@@ -247,24 +268,9 @@ def test_create_observation_fail(requests_mock):
     assert "errors" in excinfo.value.response.json()  # iNat also give details about the errors
 
 
-def test_put_observation_field_values(requests_mock):
-    requests_mock.put(
-        "https://www.inaturalist.org/observation_field_values/31",
-        json=load_sample_data("put_observation_field_value_result.json"),
-        status_code=200,
-    )
-
-    r = put_observation_field_values(
-        observation_id=18166477,
-        observation_field_id=31,  # Animal behavior
-        value="fouraging",
-        access_token="valid token",
-    )
-
-    assert r["id"] == 31
-    assert r["observation_field_id"] == 31
-    assert r["observation_id"] == 18166477
-    assert r["value"] == "fouraging"
+# TODO
+def test_add_photo_to_observation():
+    pass
 
 
 def test_delete_observation():
