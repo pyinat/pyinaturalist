@@ -31,6 +31,7 @@ from pyinaturalist.request_params import (
     OBSERVATION_FORMATS,
     REST_OBS_ORDER_BY_PROPERTIES,
     check_deprecated_params,
+    convert_observation_fields,
     ensure_file_obj,
     ensure_file_objs,
     validate_multiple_choice_param,
@@ -281,7 +282,6 @@ def put_observation_field_values(
     return response.json()
 
 
-# TODO: Implement `observation_field_values_attributes`, and simplify nested data structures
 # TODO: more thorough usage example
 @document_request_params([docs._legacy_params, docs._access_token, docs._create_observation])
 def create_observations(
@@ -297,6 +297,7 @@ def create_observations(
         >>>     access_token=token,
         >>>     species_guess='Pieris rapae',
         >>>     local_photos='~/observation_photos/2020_09_01_14003156.jpg',
+        >>>     observation_fields={297: 1},  # 297 is the obs. field ID for 'Number of individuals'
         >>> )
 
         .. admonition:: Example Response
@@ -318,16 +319,17 @@ def create_observations(
         :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an
         error 422 (unprocessable entity) if it rejects the observation data (for example an
         observation date in the future or a latitude > 90. In that case the exception's
-        `response` attribute give details about the errors.
+        ``response`` attribute gives more details about the errors.
 
     TODO investigate: according to the doc, we should be able to pass multiple observations (in an array, and in
     renaming observation to observations, but as far as I saw they are not created (while a status of 200 is returned)
     """
     # Accept either top-level params (like most other endpoints)
-    # or nested params (like the iNat API actually accepts)
+    # or nested {"observation": params} (like the iNat API accepts directly)
     if "observation" in kwargs:
         kwargs.update(kwargs.pop("observation"))
     kwargs = check_deprecated_params(params, **kwargs)
+    kwargs = convert_observation_fields(kwargs)
     if "local_photos" in kwargs:
         kwargs["local_photos"] = ensure_file_objs(kwargs["local_photos"])
 
@@ -396,6 +398,7 @@ def update_observation(
     if "observation" in kwargs:
         kwargs.update(kwargs.pop("observation"))
     kwargs = check_deprecated_params(params, **kwargs)
+    kwargs = convert_observation_fields(kwargs)
     if "local_photos" in kwargs:
         kwargs["local_photos"] = ensure_file_objs(kwargs["local_photos"])
 

@@ -247,6 +247,18 @@ def convert_list_params(params: RequestParams) -> RequestParams:
     return {k: convert_list(v) for k, v in params.items()}
 
 
+def convert_observation_fields(params: RequestParams) -> RequestParams:
+    """Translate simplified format of observation field values into API-compatible format"""
+    if "observation_fields" in params:
+        params["observation_field_values_attributes"] = params.pop("observation_fields")
+    obs_fields = params.get("observation_field_values_attributes")
+    if isinstance(obs_fields, dict):
+        params["observation_field_values_attributes"] = [
+            {"observation_field_id": k, "value": v} for k, v in obs_fields.items()
+        ]
+    return params
+
+
 def strip_empty_params(params: RequestParams) -> RequestParams:
     """Remove any request parameters with empty or ``None`` values."""
     return {k: v for k, v in params.items() if v or v is False}

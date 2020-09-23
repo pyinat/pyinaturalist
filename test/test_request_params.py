@@ -10,6 +10,7 @@ from pyinaturalist.request_params import (
     convert_bool_params,
     convert_datetime_params,
     convert_list_params,
+    convert_observation_fields,
     ensure_file_obj,
     strip_empty_params,
     validate_ids,
@@ -29,6 +30,7 @@ TEST_PARAMS = {
     "q": "",
     "locale": None,
     "parent_id": 1,
+    "observation_fields": {1: "value"},
 }
 
 
@@ -65,6 +67,13 @@ def test_convert_list_params():
     assert params["rank"] == "phylum,class"
 
 
+def test_convert_observation_fields():
+    params = convert_observation_fields(TEST_PARAMS)
+    assert params["observation_field_values_attributes"] == [
+        {"observation_field_id": 1, "value": "value"}
+    ]
+
+
 def test_ensure_file_obj__file_path():
     with NamedTemporaryFile() as temp:
         temp.write(b"test content")
@@ -81,7 +90,7 @@ def test_ensure_file_obj__file_obj():
 
 def test_strip_empty_params():
     params = strip_empty_params(TEST_PARAMS)
-    assert len(params) == 5
+    assert len(params) == 6
     assert "q" not in params and "locale" not in params
     assert "is_active" in params and "only_id" in params
 

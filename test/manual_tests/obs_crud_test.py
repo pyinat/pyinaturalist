@@ -55,9 +55,7 @@ def create_test_obs(token):
         positional_accuracy=50,
         geoprivacy="open",
         access_token=token,
-        observation_field_values_attributes=[
-            {"observation_field_id": 2903, "value": 1},
-        ],
+        observation_fields={297: 1},
     )
     test_obs_id = response[0]["id"]
     print("Created new observation: {}".format(test_obs_id))
@@ -92,8 +90,8 @@ def update_test_obs(test_obs_id, token):
 
     response = put_observation_field_values(
         observation_id=test_obs_id,
-        observation_field_id=2903,
-        value=0,
+        observation_field_id=297,
+        value=2,
         access_token=token,
     )
     print("Added observation field value:")

@@ -90,29 +90,30 @@ token = get_access_token(
 #### Create a new observation
 ```python
 from pyinaturalist.rest_api import create_observations
-params = {
-    'taxon_id': 54327,  # Vespa Crabro
-        'observed_on_string': datetime.datetime.now().isoformat(),
-        'time_zone': 'Brussels',
-        'description': 'This is a free text comment for the observation',
-        'tag_list': 'wasp, Belgium',
-        'latitude': 50.647143,
-        'longitude': 4.360216,
-        'positional_accuracy': 50, # meters,
+from datetime import datetime
 
-        # sets vespawatch_id (an observation field whose ID is 9613) to the value '100'.
-        'observation_field_values_attributes':
-        [{'observation_field_id': 9613,'value': 100}],
-        },
-}
-
-r = create_observations(access_token=token, **params)
-new_observation_id = r[0]['id']
+response = create_observations(
+    taxon_id=54327,  # Vespa Crabro
+    observed_on_string=datetime.now().isoformat(),
+    time_zone='Brussels',
+    description='This is a free text comment for the observation',
+    tag_list='wasp, Belgium',
+    latitude=50.647143,
+    longitude=4.360216,
+    positional_accuracy=50, # meters,
+    # sets vespawatch_id (an observation field whose ID is 9613) to the value '100'.
+    observation_field_values_attributes=[
+        {'observation_field_id': 9613,'value': 100},
+    ],
+    access_token=token,
+)
+new_observation_id = response[0]['id']
 ```
 
 #### Upload a picture for this observation
 ```python
 from pyinaturalist.rest_api import add_photo_to_observation
+
 r = add_photo_to_observation(
     new_observation_id,
     access_token=token,
@@ -123,6 +124,7 @@ r = add_photo_to_observation(
 #### Update an existing observation of yours
 ```python
 from pyinaturalist.rest_api import update_observation
+
 r = update_observation(
     17932425,
     access_token=token,
@@ -139,6 +141,7 @@ r = get_all_observation_fields(search_query="DNA")
 #### Set an observation field value on an existing observation
 ```python
 from pyinaturalist.rest_api import put_observation_field_values
+
 put_observation_field_values(
     observation_id=7345179,
     observation_field_id=9613,
@@ -174,6 +177,7 @@ Let's say you partially remember either a genus or family name that started with
 
 ```python
 >>> from pyinaturalist.node_api import get_taxa
+>>>
 >>> response = get_taxa(q="vespi", rank=["genus", "family"])
 >>> print({taxon["id"]: taxon["name"] for taxon in response["results"]})
 {52747: "Vespidae", 84737: "Vespina", 92786: "Vespicula", 646195: "Vespiodes", ...}
