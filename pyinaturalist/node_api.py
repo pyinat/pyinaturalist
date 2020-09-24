@@ -15,6 +15,7 @@ from pyinaturalist.api_docs import (
     get_observations_params,
     get_all_observations_params,
     get_observation_species_counts_params,
+    get_all_observation_species_counts_params,
     get_geojson_observations_params,
     get_places_nearby_params,
     get_projects_params,
@@ -180,6 +181,42 @@ def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResp
     )
     r.raise_for_status()
     return r.json()
+
+
+@document_request_params(get_all_observation_species_counts_params)
+def get_all_observation_species_counts(user_agent: str = None, **kwargs) -> List[JsonResponse]:
+    """Like :py:func:`get_observation_species_counts()`, but handles pagination and returns all
+    results in one call. Explicit pagination parameters will be ignored.
+
+    Notes:
+    While the `page` parameter is undocumented for observations/species_counts, it appears to be supported.
+    `id_above` and `id_below` are not helpful in the context.
+
+    Returns:
+        Combined list of taxon records with counts
+    """
+    kwargs = check_deprecated_params(**kwargs)
+    results = []  # type: List[JsonResponse]
+    page = 1
+
+    pagination_params = {
+        **kwargs,
+        **{
+            "per_page": PER_PAGE_RESULTS,
+            # "user_agent": user_agent,
+        },
+    }
+
+    while True:
+        pagination_params["page"] = page
+        page_obs = get_observation_species_counts(**pagination_params)
+        results = results + page_obs.get("results", [])
+
+        if len(results) == page_obs["total_results"]:
+            return results
+
+        sleep(THROTTLING_DELAY)
+        page += 1
 
 
 @document_request_params(get_geojson_observations_params)
