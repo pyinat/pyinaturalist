@@ -114,13 +114,19 @@ def test_get_all_observation_species_counts(requests_mock):
     requests_mock.get(
         urljoin(INAT_NODE_API_BASE_URL, "observations/species_counts"),
         [
-            {'json': load_sample_data("get_all_observation_species_counts_page1.json"),
-            'status_code': 200},
-            {'json': load_sample_data("get_all_observation_species_counts_page2.json"),
-            'status_code': 200}
-        ]
+            {
+                "json": load_sample_data("get_all_observation_species_counts_page1.json"),
+                "status_code": 200,
+            },
+            {
+                "json": load_sample_data("get_all_observation_species_counts_page2.json"),
+                "status_code": 200,
+            },
+        ],
     )
-    response = get_all_observation_species_counts(user_login="my_username", quality_grade="research")
+    response = get_all_observation_species_counts(
+        user_login="my_username", quality_grade="research"
+    )
     first_result = response[0]
     last_result = response[-1]
 
