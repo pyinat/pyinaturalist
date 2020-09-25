@@ -3,7 +3,7 @@ Reusable template functions used for API documentation.
 Each template function contains a portion of an endpoint's request parameters, with corresponding
 type annotations and docstrings.
 """
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Iterable
 
 from pyinaturalist.constants import (
     MultiInt,
@@ -11,6 +11,7 @@ from pyinaturalist.constants import (
     Date,
     DateTime,
     IntOrStr,
+    FileOrPath,
 )
 from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
 
@@ -242,7 +243,7 @@ def _create_observations_params(
     flickr_photos: MultiInt = None,
     picasa_photos: MultiStr = None,
     facebook_photos: MultiStr = None,
-    local_photos: MultiStr = None,
+    local_photos: Iterable[FileOrPath] = None,
 ):
     """
     species_guess: Equivalent to the "What did you see?" field on the observation form.
@@ -268,19 +269,17 @@ def _create_observations_params(
         their Picasa and iNat accounts connected, and the user must own the photo(s) on Picasa.
     facebook_photos: Facebook photo IDs to add as photos for this observation. User must have
         their Facebook and iNat accounts connected, and the user must own the photo on Facebook.
-    local_photos: [NOT IMPLEMENTED] Fields containing uploaded photo data. Request must have a ``Content-Type``
-        of ``"multipart"``. We recommend that you use the ``POST /observation_photos`` endpoint
-        instead.
+    local_photos: Image files, file-like objects, and/or paths for local photos to upload
     """
 
 
 def _update_observation_params(
     # _method: str = None,  # Exposed as a client-specific workaround; not needed w/ `requests`
-    ignore_photos: bool = False,
+    ignore_photos: bool = True,
 ):
     """
     ignore_photos
-        If photos exist on the observation but are missing in the request, simpy ignore them
+        If photos exist on the observation but are missing in the request, simply ignore them
         instead of deleting the missing observation photos
     """
 

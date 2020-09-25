@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Any, Callable, Dict, List, Union
+from typing import Any, BinaryIO, Callable, Dict, List, Union
 
 INAT_NODE_API_BASE_URL = "https://api.inaturalist.org/v1/"
 INAT_BASE_URL = "https://www.inaturalist.org"
@@ -15,8 +15,10 @@ WRITE_HTTP_METHODS = ["PATCH", "POST", "PUT", "DELETE"]
 # Type aliases
 Date = Union[date, datetime, str]
 DateTime = Union[date, datetime, str]
+FileOrPath = Union[BinaryIO, str]
 IntOrStr = Union[int, str]
 JsonResponse = Dict[str, Any]
+ListResponse = List[Dict[str, Any]]
 RequestParams = Dict[str, Any]
 MultiInt = Union[int, List[int]]
 MultiStr = Union[str, List[str]]
