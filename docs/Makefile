@@ -19,3 +19,4 @@ clean-apidoc:
 # Catch-all target: route all unknown targets to Sphinx builder
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	# E.g: sphinx-build -M html . _build

@@ -170,8 +170,13 @@ def get_all_observation_fields(**kwargs) -> List[Dict[str, Any]]:
     """
     Like :py:func:`.get_observation_fields()`, but handles pagination for you.
 
+    Example:
+
+        >>> get_all_observation_fields(q='number of')
+
     Returns:
-        Observation fields as a list of dicts
+        Observation fields as a list of dicts. Response format is the same as the inner
+        "results" object returned by :py:func:`.get_observation_fields`.
     """
     results = []  # type: List[Dict[str, Any]]
     page = 1
@@ -358,7 +363,6 @@ def update_observation(
     return response.json()
 
 
-# TODO: Example + sample response
 # TODO: Support both local file path(s) and object(s)
 def add_photo_to_observation(
     observation_id: int,
@@ -372,16 +376,24 @@ def add_photo_to_observation(
 
     Example:
 
-
         >>> token = get_access_token('...')
         >>> with open('~/observation_photos/2020_09_01_14003156.jpg', 'rb') as f:
         >>>     add_photo_to_observation(1234, f, access_token=token)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/add_photo_to_observation.json
+                :language: javascript
 
     Args:
         observation_id: the ID of the observation
         file_object: a file-like object for the picture
         access_token: the access token, as returned by :func:`get_access_token()`
         user_agent: a user-agent string that will be passed to iNaturalist.
+
+    Returns:
+        Information about the newly created photo
     """
     data = {"observation_photo[observation_id]": observation_id}
     file_data = {"file": file_object}

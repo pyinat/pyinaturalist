@@ -120,7 +120,7 @@ MULTIPLE_CHOICE_PARAMS = {
     "geoprivacy": GEOPRIVACY_LEVELS,
     "has": HAS_PROPERTIES,
     "hrank": RANKS,
-    "iconic_taxa": ICONIC_TAXA.values(),
+    "iconic_taxa": list(ICONIC_TAXA.values()),
     "identifications": COMMUNITY_ID_STATUSES,
     "license": CC_LICENSES,
     "lrank": RANKS,

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from io import BytesIO
 
 import pytest
 from requests import HTTPError
@@ -60,7 +61,7 @@ def test_get_observation_fields(requests_mock):
     """ get_observation_fields() work as expected (basic use)"""
 
     requests_mock.get(
-        "https://www.inaturalist.org/observation_fields.json?q=sex&page=2",
+        urljoin(INAT_BASE_URL, "observation_fields.json?q=sex&page=2"),
         json=PAGE_2_JSON_RESPONSE,
         status_code=200,
     )
@@ -73,20 +74,20 @@ def test_get_all_observation_fields(requests_mock):
     """get_all_observation_fields() is able to paginate, accepts a search query and return correct results"""
 
     requests_mock.get(
-        "https://www.inaturalist.org/observation_fields.json?q=sex&page=1",
+        urljoin(INAT_BASE_URL, "observation_fields.json?q=sex&page=1"),
         json=PAGE_1_JSON_RESPONSE,
         status_code=200,
     )
 
     requests_mock.get(
-        "https://www.inaturalist.org/observation_fields.json?q=sex&page=2",
+        urljoin(INAT_BASE_URL, "observation_fields.json?q=sex&page=2"),
         json=PAGE_2_JSON_RESPONSE,
         status_code=200,
     )
 
     page_3_json_response = []
     requests_mock.get(
-        "https://www.inaturalist.org/observation_fields.json?q=sex&page=3",
+        urljoin(INAT_BASE_URL, "observation_fields.json?q=sex&page=3"),
         json=page_3_json_response,
         status_code=200,
     )
@@ -98,7 +99,7 @@ def test_get_all_observation_fields(requests_mock):
 def test_get_all_observation_fields_noparam(requests_mock):
     """get_all_observation_fields() can also be called without a search query without errors"""
     requests_mock.get(
-        "https://www.inaturalist.org/observation_fields.json?page=1",
+        urljoin(INAT_BASE_URL, "observation_fields.json?page=1"),
         json=[],
         status_code=200,
     )
@@ -108,7 +109,7 @@ def test_get_all_observation_fields_noparam(requests_mock):
 
 def test_put_observation_field_values(requests_mock):
     requests_mock.put(
-        "https://www.inaturalist.org/observation_field_values/31",
+        urljoin(INAT_BASE_URL, "observation_field_values/31"),
         json=load_sample_data("put_observation_field_value_result.json"),
         status_code=200,
     )
@@ -137,7 +138,7 @@ def test_get_access_token_fail(requests_mock):
         "method.",
     }
     requests_mock.post(
-        "https://www.inaturalist.org/oauth/token",
+        urljoin(INAT_BASE_URL, "oauth/token"),
         json=rejection_json,
         status_code=401,
     )
@@ -156,7 +157,7 @@ def test_get_access_token(requests_mock):
         "created_at": 1539352135,
     }
     requests_mock.post(
-        "https://www.inaturalist.org/oauth/token",
+        urljoin(INAT_BASE_URL, "oauth/token"),
         json=accepted_json,
         status_code=200,
     )
@@ -168,7 +169,7 @@ def test_get_access_token(requests_mock):
 
 def test_update_observation(requests_mock):
     requests_mock.put(
-        "https://www.inaturalist.org/observations/17932425.json",
+        urljoin(INAT_BASE_URL, "observations/17932425.json"),
         json=load_sample_data("update_observation_result.json"),
         status_code=200,
     )
@@ -188,7 +189,7 @@ def test_update_observation(requests_mock):
 def test_update_nonexistent_observation(requests_mock):
     """When we try to update a non-existent observation, iNat returns an error 410 with "obs does not longer exists". """
     requests_mock.put(
-        "https://www.inaturalist.org/observations/999999999.json",
+        urljoin(INAT_BASE_URL, "observations/999999999.json"),
         json={"error": "Cette observation n’existe plus."},
         status_code=410,
     )
@@ -207,7 +208,7 @@ def test_update_nonexistent_observation(requests_mock):
 def test_update_observation_not_mine(requests_mock):
     """When we try to update the obs of another user, iNat returns an error 410 with "obs does not longer exists"."""
     requests_mock.put(
-        "https://www.inaturalist.org/observations/16227955.json",
+        urljoin(INAT_BASE_URL, "observations/16227955.json"),
         json={"error": "Cette observation n’existe plus."},
         status_code=410,
     )
@@ -229,7 +230,7 @@ def test_update_observation_not_mine(requests_mock):
 
 def test_create_observation(requests_mock):
     requests_mock.post(
-        "https://www.inaturalist.org/observations.json",
+        urljoin(INAT_BASE_URL, "observations.json"),
         json=load_sample_data("create_observation_result.json"),
         status_code=200,
     )
@@ -257,7 +258,7 @@ def test_create_observation_fail(requests_mock):
     }
 
     requests_mock.post(
-        "https://www.inaturalist.org/observations.json",
+        urljoin(INAT_BASE_URL, "observations.json"),
         json=load_sample_data("create_observation_fail.json"),
         status_code=422,
     )
@@ -268,9 +269,17 @@ def test_create_observation_fail(requests_mock):
     assert "errors" in excinfo.value.response.json()  # iNat also give details about the errors
 
 
-# TODO
-def test_add_photo_to_observation():
-    pass
+def test_add_photo_to_observation(requests_mock):
+    requests_mock.post(
+        urljoin(INAT_BASE_URL, "observation_photos"),
+        json=load_sample_data("add_photo_to_observation.json"),
+        status_code=200,
+    )
+
+    response = add_photo_to_observation(1234, BytesIO(), access_token="token")
+    assert response["id"] == 1234
+    assert response["created_at"] == "2020-09-24T21:06:16.964-05:00"
+    assert response["photo"]["native_username"] == "username"
 
 
 def test_delete_observation():
@@ -281,7 +290,7 @@ def test_delete_observation():
 
 def test_delete_unexisting_observation(requests_mock):
     """ObservationNotFound is raised if the observation doesn't exists"""
-    requests_mock.delete("https://www.inaturalist.org/observations/24774619.json", status_code=404)
+    requests_mock.delete(urljoin(INAT_BASE_URL, "observations/24774619.json"), status_code=404)
 
     with pytest.raises(ObservationNotFound):
         delete_observation(observation_id=24774619, access_token="valid token")
