@@ -1,0 +1,432 @@
+[
+  {
+    "count": 15,
+    "taxon": {
+      "observations_count": 19592,
+      "taxon_schemes_count": 5,
+      "ancestry": "48460/1/2/355675/26036/26172/85553/26504/532896/29299",
+      "is_active": true,
+      "flag_counts": {
+        "unresolved": 0,
+        "resolved": 1
+      },
+      "wikipedia_url": "http://en.wikipedia.org/wiki/Northern_water_snake",
+      "current_synonymous_taxon_ids": null,
+      "iconic_taxon_id": 26036,
+      "rank_level": 10,
+      "taxon_changes_count": 0,
+      "atlas_id": 214,
+      "complete_species_count": null,
+      "parent_id": 29299,
+      "complete_rank": "subspecies",
+      "name": "Nerodia sipedon",
+      "rank": "species",
+      "extinct": false,
+      "id": 29305,
+      "default_photo": {
+        "square_url": "https://static.inaturalist.org/photos/71155458/square.jpg?1588607979",
+        "attribution": "(c) rosalie-rick, all rights reserved",
+        "flags": [],
+        "medium_url": "https://static.inaturalist.org/photos/71155458/medium.jpg?1588607979",
+        "id": 71155458,
+        "license_code": null,
+        "original_dimensions": {
+          "width": 2048,
+          "height": 1365
+        },
+        "url": "https://static.inaturalist.org/photos/71155458/square.jpg?1588607979"
+      },
+      "ancestor_ids": [
+        48460,
+        1,
+        2,
+        355675,
+        26036,
+        26172,
+        85553,
+        26504,
+        532896,
+        29299,
+        29305
+      ],
+      "iconic_taxon_name": "Reptilia",
+      "preferred_common_name": "Common Watersnake"
+    }
+  },
+  {
+    "count": 6,
+    "taxon": {
+      "observations_count": 26586,
+      "taxon_schemes_count": 7,
+      "ancestry": "48460/1/2/355675/26036/39532/39680/39681",
+      "is_active": true,
+      "flag_counts": {
+        "unresolved": 0,
+        "resolved": 6
+      },
+      "wikipedia_url": "http://en.wikipedia.org/wiki/Common_snapping_turtle",
+      "current_synonymous_taxon_ids": null,
+      "iconic_taxon_id": 26036,
+      "rank_level": 10,
+      "taxon_changes_count": 1,
+      "atlas_id": 638,
+      "complete_species_count": null,
+      "parent_id": 39681,
+      "complete_rank": "subspecies",
+      "name": "Chelydra serpentina",
+      "rank": "species",
+      "extinct": false,
+      "id": 39682,
+      "default_photo": {
+        "square_url": "https://static.inaturalist.org/photos/493231/square.jpg?1378868682",
+        "attribution": "(c) Keegan Smith, all rights reserved",
+        "flags": [],
+        "medium_url": "https://static.inaturalist.org/photos/493231/medium.jpg?1378868682",
+        "id": 493231,
+        "license_code": null,
+        "original_dimensions": {
+          "width": 720,
+          "height": 481
+        },
+        "url": "https://static.inaturalist.org/photos/493231/square.jpg?1378868682"
+      },
+      "ancestor_ids": [
+        48460,
+        1,
+        2,
+        355675,
+        26036,
+        39532,
+        39680,
+        39681,
+        39682
+      ],
+      "iconic_taxon_name": "Reptilia",
+      "preferred_common_name": "Snapping Turtle"
+    }
+  },
+  {
+    "count": 4,
+    "taxon": {
+      "observations_count": 2353,
+      "taxon_schemes_count": 5,
+      "ancestry": "48460/1/2/355675/26036/26172/85553/26504/797518/27383",
+      "is_active": true,
+      "flag_counts": {
+        "unresolved": 0,
+        "resolved": 0
+      },
+      "wikipedia_url": "http://en.wikipedia.org/wiki/Carphophis_amoenus",
+      "current_synonymous_taxon_ids": null,
+      "iconic_taxon_id": 26036,
+      "rank_level": 10,
+      "taxon_changes_count": 0,
+      "atlas_id": 177,
+      "complete_species_count": null,
+      "parent_id": 27383,
+      "complete_rank": "subspecies",
+      "name": "Carphophis amoenus",
+      "rank": "species",
+      "extinct": false,
+      "id": 27388,
+      "default_photo": {
+        "square_url": "https://static.inaturalist.org/photos/13472008/square.jpg?1518459786",
+        "attribution": "(c) Zach Lim, some rights reserved (CC BY-NC)",
+        "flags": [],
+        "medium_url": "https://static.inaturalist.org/photos/13472008/medium.jpg?1518459786",
+        "id": 13472008,
+        "license_code": "cc-by-nc",
+        "original_dimensions": {
+          "width": 2048,
+          "height": 1366
+        },
+        "url": "https://static.inaturalist.org/photos/13472008/square.jpg?1518459786"
+      },
+      "ancestor_ids": [
+        48460,
+        1,
+        2,
+        355675,
+        26036,
+        26172,
+        85553,
+        26504,
+        797518,
+        27383,
+        27388
+      ],
+      "iconic_taxon_name": "Reptilia",
+      "preferred_common_name": "Eastern Worm Snake"
+    }
+  },
+  {
+    "count": 4,
+    "taxon": {
+      "observations_count": 789,
+      "taxon_schemes_count": 2,
+      "ancestry": "48460/1/2/355675/26036/26172/85553/26504/797520/29768",
+      "is_active": true,
+      "flag_counts": {
+        "unresolved": 0,
+        "resolved": 0
+      },
+      "wikipedia_url": "http://en.wikipedia.org/wiki/Lampropeltis_nigra",
+      "current_synonymous_taxon_ids": null,
+      "iconic_taxon_id": 26036,
+      "rank_level": 10,
+      "taxon_changes_count": 2,
+      "atlas_id": 701,
+      "complete_species_count": null,
+      "parent_id": 29768,
+      "complete_rank": "subspecies",
+      "name": "Lampropeltis nigra",
+      "rank": "species",
+      "extinct": false,
+      "id": 60348,
+      "default_photo": {
+        "square_url": "https://static.inaturalist.org/photos/12050719/square.jpeg?1511726087",
+        "attribution": "(c) Tristan Clark, some rights reserved (CC BY-NC)",
+        "flags": [],
+        "medium_url": "https://static.inaturalist.org/photos/12050719/medium.jpeg?1511726087",
+        "id": 12050719,
+        "license_code": "cc-by-nc",
+        "original_dimensions": {
+          "width": 2048,
+          "height": 1282
+        },
+        "url": "https://static.inaturalist.org/photos/12050719/square.jpeg?1511726087"
+      },
+      "ancestor_ids": [
+        48460,
+        1,
+        2,
+        355675,
+        26036,
+        26172,
+        85553,
+        26504,
+        797520,
+        29768,
+        60348
+      ],
+      "iconic_taxon_name": "Reptilia",
+      "preferred_common_name": "Black Kingsnake"
+    }
+  },
+  {
+    "count": 2,
+    "taxon": {
+      "observations_count": 5053,
+      "taxon_schemes_count": 3,
+      "ancestry": "48460/1/2/355675/26036/26172/85553/26504/797520/59649/857190",
+      "is_active": true,
+      "flag_counts": {
+        "unresolved": 0,
+        "resolved": 2
+      },
+      "wikipedia_url": "http://en.wikipedia.org/wiki/Gray_ratsnake",
+      "current_synonymous_taxon_ids": null,
+      "iconic_taxon_id": 26036,
+      "rank_level": 10,
+      "taxon_changes_count": 2,
+      "atlas_id": 695,
+      "complete_species_count": null,
+      "parent_id": 857190,
+      "complete_rank": "subspecies",
+      "name": "Pantherophis spiloides",
+      "rank": "species",
+      "extinct": false,
+      "id": 67642,
+      "default_photo": {
+        "square_url": "https://static.inaturalist.org/photos/3067893/square.jpg?1456535053",
+        "attribution": "(c) Diana-Terry Hibbitts, some rights reserved (CC BY-NC)",
+        "flags": [],
+        "medium_url": "https://static.inaturalist.org/photos/3067893/medium.jpg?1456535053",
+        "id": 3067893,
+        "license_code": "cc-by-nc",
+        "original_dimensions": {
+          "width": 800,
+          "height": 533
+        },
+        "url": "https://static.inaturalist.org/photos/3067893/square.jpg?1456535053"
+      },
+      "ancestor_ids": [
+        48460,
+        1,
+        2,
+        355675,
+        26036,
+        26172,
+        85553,
+        26504,
+        797520,
+        59649,
+        857190,
+        67642
+      ],
+      "iconic_taxon_name": "Reptilia",
+      "preferred_common_name": "Gray Ratsnake"
+    }
+  },
+  {
+    "count": 1,
+    "taxon": {
+      "observations_count": 6479,
+      "taxon_schemes_count": 3,
+      "ancestry": "48460/1/2/355675/26036/26172/85552/36074/797562/36141",
+      "is_active": true,
+      "flag_counts": {
+        "unresolved": 0,
+        "resolved": 1
+      },
+      "wikipedia_url": "http://en.wikipedia.org/wiki/Eastern_fence_lizard",
+      "current_synonymous_taxon_ids": null,
+      "iconic_taxon_id": 26036,
+      "rank_level": 10,
+      "taxon_changes_count": 1,
+      "atlas_id": 694,
+      "complete_species_count": null,
+      "parent_id": 36141,
+      "complete_rank": "subspecies",
+      "name": "Sceloporus undulatus",
+      "rank": "species",
+      "extinct": false,
+      "id": 36142,
+      "default_photo": {
+        "square_url": "https://static.inaturalist.org/photos/4753638/square.jpeg?1472877457",
+        "attribution": "(c) Matt Muir, some rights reserved (CC BY-SA)",
+        "flags": [],
+        "medium_url": "https://static.inaturalist.org/photos/4753638/medium.jpeg?1472877457",
+        "id": 4753638,
+        "license_code": "cc-by-sa",
+        "original_dimensions": {
+          "width": 2048,
+          "height": 1538
+        },
+        "url": "https://static.inaturalist.org/photos/4753638/square.jpeg?1472877457"
+      },
+      "ancestor_ids": [
+        48460,
+        1,
+        2,
+        355675,
+        26036,
+        26172,
+        85552,
+        36074,
+        797562,
+        36141,
+        36142
+      ],
+      "iconic_taxon_name": "Reptilia",
+      "preferred_common_name": "Eastern Fence Lizard"
+    }
+  },
+  {
+    "count": 1,
+    "taxon": {
+      "observations_count": 46630,
+      "taxon_schemes_count": 8,
+      "ancestry": "48460/1/2/355675/26036/39532/39760/797544/39776",
+      "is_active": true,
+      "flag_counts": {
+        "unresolved": 0,
+        "resolved": 0
+      },
+      "wikipedia_url": "http://en.wikipedia.org/wiki/Pond_slider",
+      "current_synonymous_taxon_ids": null,
+      "iconic_taxon_id": 26036,
+      "rank_level": 10,
+      "taxon_changes_count": 0,
+      "atlas_id": 829,
+      "complete_species_count": null,
+      "parent_id": 39776,
+      "complete_rank": "subspecies",
+      "name": "Trachemys scripta",
+      "rank": "species",
+      "extinct": false,
+      "id": 39782,
+      "default_photo": {
+        "square_url": "https://static.inaturalist.org/photos/27092877/square.jpg?1545342047",
+        "attribution": "(c) Linda De Volder, some rights reserved (CC BY-NC-ND)",
+        "flags": [],
+        "medium_url": "https://static.inaturalist.org/photos/27092877/medium.jpg?1545342047",
+        "id": 27092877,
+        "license_code": "cc-by-nc-nd",
+        "original_dimensions": {
+          "width": 2048,
+          "height": 1354
+        },
+        "url": "https://static.inaturalist.org/photos/27092877/square.jpg?1545342047"
+      },
+      "ancestor_ids": [
+        48460,
+        1,
+        2,
+        355675,
+        26036,
+        39532,
+        39760,
+        797544,
+        39776,
+        39782
+      ],
+      "iconic_taxon_name": "Reptilia",
+      "preferred_common_name": "Common Slider"
+    }
+  },
+  {
+    "count": 1,
+    "taxon": {
+      "observations_count": 11525,
+      "taxon_schemes_count": 5,
+      "ancestry": "48460/1/2/355675/26036/26172/85552/36982/787700/37763",
+      "is_active": true,
+      "flag_counts": {
+        "unresolved": 0,
+        "resolved": 0
+      },
+      "wikipedia_url": "http://en.wikipedia.org/wiki/Plestiodon_fasciatus",
+      "current_synonymous_taxon_ids": null,
+      "iconic_taxon_id": 26036,
+      "rank_level": 10,
+      "taxon_changes_count": 0,
+      "atlas_id": 223,
+      "complete_species_count": null,
+      "parent_id": 37763,
+      "complete_rank": "subspecies",
+      "name": "Plestiodon fasciatus",
+      "rank": "species",
+      "extinct": false,
+      "id": 73788,
+      "default_photo": {
+        "square_url": "https://static.inaturalist.org/photos/6973322/square.jpg?1491829047",
+        "attribution": "(c) Tracey Fandre, some rights reserved (CC BY-NC-ND)",
+        "flags": [],
+        "medium_url": "https://static.inaturalist.org/photos/6973322/medium.jpg?1491829047",
+        "id": 6973322,
+        "license_code": "cc-by-nc-nd",
+        "original_dimensions": {
+          "width": 1638,
+          "height": 2048
+        },
+        "url": "https://static.inaturalist.org/photos/6973322/square.jpg?1491829047"
+      },
+      "ancestor_ids": [
+        48460,
+        1,
+        2,
+        355675,
+        26036,
+        26172,
+        85552,
+        36982,
+        787700,
+        37763,
+        73788
+      ],
+      "iconic_taxon_name": "Reptilia",
+      "preferred_common_name": "Common Five-lined Skink"
+    }
+  }
+]

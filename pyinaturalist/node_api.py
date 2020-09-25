@@ -154,7 +154,7 @@ def get_all_observations(
         id_above = results[-1]["id"]
 
 
-@document_request_params(get_observation_species_counts_params)
+# @document_request_params(get_observation_species_counts_params)
 def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResponse:
     """Get all species (or other "leaf taxa") associated with observations matching the search
     criteria, and the count of observations they are associated with.
@@ -183,14 +183,28 @@ def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResp
     return r.json()
 
 
-@document_request_params(get_all_observation_species_counts_params)
+# @document_request_params(get_all_observation_species_counts_params)
 def get_all_observation_species_counts(user_agent: str = None, **kwargs) -> List[JsonResponse]:
     """Like :py:func:`get_observation_species_counts()`, but handles pagination and returns all
     results in one call. Explicit pagination parameters will be ignored.
 
     Notes:
-    While the `page` parameter is undocumented for observations/species_counts, it appears to be supported.
-    `id_above` and `id_below` are not helpful in the context.
+    While the ``page`` parameter is undocumented for observations/species_counts, it appears to be supported.
+    ``id_above`` and ``id_below`` are not helpful in the context.
+
+    Example:
+        >>> get_all_observation_species_counts(
+        ...     user_agent=None,
+        ...     quality_grade='research',
+        ...     place_id=154695,
+        ...     iconic_taxa='Reptilia',
+        ... )
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_all_observation_species_counts_ex_results.json
+                :language: JSON
 
     Returns:
         Combined list of taxon records with counts
@@ -203,7 +217,7 @@ def get_all_observation_species_counts(user_agent: str = None, **kwargs) -> List
         **kwargs,
         **{
             "per_page": PER_PAGE_RESULTS,
-            # "user_agent": user_agent,
+            "user_agent": user_agent,
         },
     }
 
