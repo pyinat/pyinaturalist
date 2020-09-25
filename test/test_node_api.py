@@ -9,6 +9,7 @@ from pyinaturalist.node_api import (
     get_observations,
     get_all_observations,
     get_observation_species_counts,
+    get_all_observation_species_counts,
     get_geojson_observations,
     get_places_by_id,
     get_places_nearby,
@@ -107,6 +108,34 @@ def test_get_observation_species_counts(requests_mock):
     assert first_result["count"] == 31
     assert first_result["taxon"]["id"] == 48484
     assert first_result["taxon"]["name"] == "Harmonia axyridis"
+
+
+def test_get_all_observation_species_counts(requests_mock):
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, "observations/species_counts"),
+        [
+            {
+                "json": load_sample_data("get_all_observation_species_counts_page1.json"),
+                "status_code": 200,
+            },
+            {
+                "json": load_sample_data("get_all_observation_species_counts_page2.json"),
+                "status_code": 200,
+            },
+        ],
+    )
+    response = get_all_observation_species_counts(
+        user_login="my_username", quality_grade="research"
+    )
+    first_result = response[0]
+    last_result = response[-1]
+
+    assert first_result["count"] == 19
+    assert first_result["taxon"]["id"] == 27805
+    assert first_result["taxon"]["name"] == "Notophthalmus viridescens"
+    assert last_result["count"] == 1
+    assert last_result["taxon"]["id"] == 39556
+    assert last_result["taxon"]["name"] == "Apalone spinifera"
 
 
 def test_get_observation_species_counts__invalid_multiple_choice_params():

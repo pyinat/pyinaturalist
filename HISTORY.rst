@@ -19,6 +19,7 @@ New Endpoints
 * Added new function for an additional Node API **Observation** endpoint:
 
     * ``get_observation_species_counts()``
+    * ``get_all_observation_species_counts()``
 
 Modified Endpoints
 ~~~~~~~~~~~~~~~~~~~~
