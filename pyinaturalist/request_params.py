@@ -1,11 +1,15 @@
 """Helper functions for processing and validating request parameters"""
 from datetime import date, datetime
-from typing import Any, Dict, Iterable, List, Optional
+from io import BytesIO
+from logging import getLogger
+from os.path import abspath, expanduser
+from typing import Any, BinaryIO, Dict, Iterable, Optional
 import warnings
 
 from dateutil.parser import parse as parse_timestamp
 from dateutil.tz import tzlocal
-from pyinaturalist.constants import RequestParams
+from pyinaturalist.constants import FileOrPath, RequestParams
+
 
 # Basic observation attributes to include by default in geojson responses
 DEFAULT_OBSERVATION_ATTRS = [
@@ -140,6 +144,8 @@ MULTIPLE_CHOICE_ERROR_MSG = (
     "Parameter '{}' must have one of the following values: {}\n\tValue provided: {}"
 )
 
+logger = getLogger(__name__)
+
 
 def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     """ Perform type conversions, sanity checks, etc. on request parameters """
@@ -187,7 +193,8 @@ def convert_datetime_params(params: RequestParams) -> RequestParams:
     API behavior note: params that take date but not time info will accept a full timestamp and
     just ignore the time, so it's safe to parse both date and datetime strings into timestamps
 
-    :raises: :py:exc:`dateutil.parser._parser.ParserError` if a date/datetime format is invalid
+    Raises:
+        :py:exc:`dateutil.parser._parser.ParserError` if a date/datetime format is invalid
     """
     for k, v in params.items():
         if isinstance(v, datetime) or isinstance(v, date):
@@ -198,11 +205,26 @@ def convert_datetime_params(params: RequestParams) -> RequestParams:
     return params
 
 
-def ensure_list(values):
+def ensure_file_obj(photo: FileOrPath) -> BinaryIO:
+    """Given a file objects or path, read it into a file-like object if it's a path"""
+    if isinstance(photo, str):
+        file_path = abspath(expanduser(photo))
+        logger.info("Reading from file: {}".format(file_path))
+        with open(file_path, "rb") as f:
+            return BytesIO(f.read())
+    return photo
+
+
+def ensure_file_objs(photos: Iterable[FileOrPath]) -> Iterable[BinaryIO]:
+    """Given one or more file objects and/or paths, read any paths into a file-like object"""
+    return [ensure_file_obj(photo) for photo in ensure_list(photos)]
+
+
+def ensure_list(values: Any):
     """If the value is a string or comma-separated list of values, convert it into a list"""
     if not values:
-        return []
-    if isinstance(values, str) and "," in values:
+        values = []
+    elif isinstance(values, str) and "," in values:
         values = values.split(",")
     elif not isinstance(values, list):
         values = [values]

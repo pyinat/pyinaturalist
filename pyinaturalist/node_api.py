@@ -28,6 +28,7 @@ from pyinaturalist.constants import (
     THROTTLING_DELAY,
     MultiInt,
     JsonResponse,
+    RequestParams,
 )
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.forge_utils import document_request_params
@@ -98,7 +99,9 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
 
 
 @document_request_params(get_observations_params)
-def get_observations(params: Dict = None, user_agent: str = None, **kwargs) -> JsonResponse:
+def get_observations(
+    params: RequestParams = None, user_agent: str = None, **kwargs
+) -> JsonResponse:
     """Search observations.
 
     **API reference:** http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
@@ -133,7 +136,7 @@ def get_observations(params: Dict = None, user_agent: str = None, **kwargs) -> J
 
 @document_request_params(get_all_observations_params)
 def get_all_observations(
-    params: Dict = None, user_agent: str = None, **kwargs
+    params: RequestParams = None, user_agent: str = None, **kwargs
 ) -> List[JsonResponse]:
     """Like :py:func:`get_observations()`, but handles pagination and returns all results in one
     call. Explicit pagination parameters will be ignored.
