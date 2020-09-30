@@ -11,17 +11,7 @@ from typing import List
 import requests
 from urllib.parse import urljoin
 
-from pyinaturalist.api_docs import (
-    get_observations_params,
-    get_all_observations_params,
-    get_observation_species_counts_params,
-    get_all_observation_species_counts_params,
-    get_geojson_observations_params,
-    get_places_nearby_params,
-    get_projects_params,
-    get_taxa_params,
-    get_taxa_autocomplete_params,
-)
+from pyinaturalist import api_docs as docs
 from pyinaturalist.constants import (
     INAT_NODE_API_BASE_URL,
     PER_PAGE_RESULTS,
@@ -98,7 +88,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
     raise ObservationNotFound()
 
 
-@document_request_params(get_observations_params)
+@document_request_params([*docs._get_observations, docs._pagination, docs._only_id])
 def get_observations(
     params: RequestParams = None, user_agent: str = None, **kwargs
 ) -> JsonResponse:
@@ -134,7 +124,7 @@ def get_observations(
     return r.json()
 
 
-@document_request_params(get_all_observations_params)
+@document_request_params([*docs._get_observations, docs._only_id])
 def get_all_observations(
     params: RequestParams = None, user_agent: str = None, **kwargs
 ) -> List[JsonResponse]:
@@ -182,7 +172,7 @@ def get_all_observations(
         id_above = results[-1]["id"]
 
 
-@document_request_params(get_observation_species_counts_params)
+@document_request_params([*docs._get_observations, docs._pagination])
 def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResponse:
     """Get all species (or other "leaf taxa") associated with observations matching the search
     criteria, and the count of observations they are associated with.
@@ -211,7 +201,7 @@ def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResp
     return r.json()
 
 
-@document_request_params(get_all_observation_species_counts_params)
+@document_request_params(docs._get_observations)
 def get_all_observation_species_counts(user_agent: str = None, **kwargs) -> List[JsonResponse]:
     """Like :py:func:`get_observation_species_counts()`, but handles pagination and returns all
     results in one call. Explicit pagination parameters will be ignored.
@@ -261,7 +251,7 @@ def get_all_observation_species_counts(user_agent: str = None, **kwargs) -> List
         page += 1
 
 
-@document_request_params(get_geojson_observations_params)
+@document_request_params([*docs._get_observations, docs._geojson_properties])
 def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResponse:
     """Get all observation results combined into a GeoJSON ``FeatureCollection``.
     By default this includes some basic observation properties as GeoJSON ``Feature`` properties.
@@ -332,7 +322,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
     return response
 
 
-@document_request_params(get_places_nearby_params)
+@document_request_params([docs._bounding_box, docs._name])
 def get_places_nearby(user_agent: str = None, **kwargs) -> JsonResponse:
     """
     Given an bounding box, and an optional name query, return standard iNaturalist curator approved
@@ -391,7 +381,7 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
 # --------------------
 
 
-@document_request_params(get_projects_params)
+@document_request_params([docs._projects_params, docs._pagination])
 def get_projects(user_agent: str = None, **kwargs) -> JsonResponse:
     """Given zero to many of following parameters, get projects matching the search criteria.
 
@@ -481,7 +471,7 @@ def get_projects_by_id(
 # --------------------
 
 
-@document_request_params(get_taxa_params)
+@document_request_params([docs._taxon_params, docs._taxon_id_params])
 def get_taxa(user_agent: str = None, **kwargs) -> JsonResponse:
     """Given zero to many of following parameters, get taxa matching the search criteria.
 
@@ -542,7 +532,7 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     return r.json()
 
 
-@document_request_params(get_taxa_autocomplete_params)
+@document_request_params([docs._taxon_params, docs._minify])
 def get_taxa_autocomplete(user_agent: str = None, **kwargs) -> JsonResponse:
     """Given a query string, returns taxa with names starting with the search term
 

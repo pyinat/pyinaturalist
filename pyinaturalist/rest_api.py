@@ -7,14 +7,7 @@ from typing import Dict, Any, List, Union
 
 from urllib.parse import urljoin
 
-from pyinaturalist.api_docs import (
-    get_observations_params_rest as get_observations_params,
-    get_observation_fields_params,
-    get_all_observation_fields_params,
-    create_observations_params,
-    update_observation_params,
-    delete_observation_params,
-)
+from pyinaturalist import api_docs as docs
 from pyinaturalist.constants import (
     THROTTLING_DELAY,
     INAT_BASE_URL,
@@ -75,7 +68,14 @@ def get_access_token(
         raise AuthenticationError("Authentication error, please check credentials.")
 
 
-@document_request_params(get_observations_params)
+@document_request_params(
+    [
+        docs._observation_common,
+        docs._observation_rest_only,
+        docs._bounding_box,
+        docs._pagination,
+    ]
+)
 def get_observations(user_agent: str = None, **kwargs) -> Union[List, str]:
     """Get observation data, optionally in an alternative format. Also see
     :py:func:`.get_geojson_observations` for GeoJSON format (not included here because it wraps
@@ -145,7 +145,7 @@ def get_observations(user_agent: str = None, **kwargs) -> Union[List, str]:
         return response.text
 
 
-@document_request_params(get_observation_fields_params)
+@document_request_params([docs._search_query, docs._page])
 def get_observation_fields(user_agent: str = None, **kwargs) -> ListResponse:
     """Search observation fields. Observation fields are basically typed data fields that
     users can attach to observation.
@@ -174,7 +174,7 @@ def get_observation_fields(user_agent: str = None, **kwargs) -> ListResponse:
     return response.json()
 
 
-@document_request_params(get_all_observation_fields_params)
+@document_request_params([docs._search_query])
 def get_all_observation_fields(**kwargs) -> ListResponse:
     """
     Like :py:func:`.get_observation_fields()`, but handles pagination for you.
@@ -268,7 +268,7 @@ def put_observation_field_values(
 
 # TODO: Implement `observation_field_values_attributes`, and simplify nested data structures
 # TODO: more thorough usage example
-@document_request_params(create_observations_params)
+@document_request_params([docs._legacy_params, docs._access_token, docs._create_observation])
 def create_observations(
     params: RequestParams = None, access_token: str = None, user_agent: str = None, **kwargs
 ) -> ListResponse:
@@ -326,7 +326,15 @@ def create_observations(
     return response.json()
 
 
-@document_request_params(update_observation_params)
+@document_request_params(
+    [
+        docs._observation_id,
+        docs._legacy_params,
+        docs._access_token,
+        docs._create_observation,
+        docs._update_observation,
+    ]
+)
 def update_observation(
     observation_id: int,
     params: RequestParams = None,
@@ -439,7 +447,7 @@ def add_photo_to_observation(
 
 
 # TODO: test this (success case, wrong_user/403 case)
-@document_request_params(delete_observation_params)
+@document_request_params([docs._observation_id, docs._access_token])
 def delete_observation(observation_id: int, access_token: str = None, user_agent: str = None):
     """
     Delete an observation.

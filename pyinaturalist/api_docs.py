@@ -21,7 +21,7 @@ from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
 
 
 # Params that are in most observation-related endpoints in both Node and REST APIs
-def _observation_params_common(
+def _observation_common(
     q: str = None,
     d1: Date = None,
     d2: Date = None,
@@ -58,7 +58,7 @@ def _observation_params_common(
 
 
 # Observation params that are only in the Node API
-def _observation_params_node_only(
+def _observation_node_only(
     acc: bool = None,
     captive: bool = None,
     endemic: bool = None,
@@ -198,7 +198,7 @@ def _observation_params_node_only(
 
 
 # Observation params that are only in the REST API
-def _observation_params_rest_only(
+def _observation_rest_only(
     has: MultiStr = None,
     on: Date = None,
     m1: Date = None,
@@ -225,8 +225,7 @@ def _observation_params_rest_only(
     """
 
 
-# TODO: Are array params (e.g. `flickr_photos[]`) required to have "[]" in the param name?
-def _create_observations_params(
+def _create_observation(
     species_guess: str = None,
     taxon_id: int = None,
     observed_on_string: Date = None,
@@ -273,7 +272,7 @@ def _create_observations_params(
     """
 
 
-def _update_observation_params(
+def _update_observation(
     # _method: str = None,  # Exposed as a client-specific workaround; not needed w/ `requests`
     ignore_photos: bool = True,
 ):
@@ -417,7 +416,7 @@ def _legacy_params(params: Dict[str, Any] = None):
 
 def _minify(minify: str = None):
     """
-    minify: Condense each match into a single string containg taxon ID, rank, and name
+    minify: Condense each match into a single string containing taxon ID, rank, and name
     """
 
 
@@ -460,6 +459,14 @@ def _pagination(
     """
 
 
+_get_observations = [
+    _legacy_params,
+    _observation_common,
+    _observation_node_only,
+    _bounding_box,
+]
+
+
 # TODO: Remove deprecated `search_query` kwarg in 0.12
 def _search_query(q: str = None, search_query: str = None):
     """
@@ -474,47 +481,3 @@ def _format_param_choices():
 
 
 MULTIPLE_CHOICE_PARAM_DOCS = "**Multiple-Choice Parameters:**\n" + _format_param_choices()
-
-
-# Request param combinations for Node API endpoints
-# Note: user_agent param is added to all functions by default
-# ------------------------------------------------------------
-
-_get_observations = [
-    _legacy_params,
-    _observation_params_common,
-    _observation_params_node_only,
-    _bounding_box,
-]
-
-get_observations_params = [*_get_observations, _pagination, _only_id]
-get_all_observations_params = _get_observations + [_only_id]
-get_observation_species_counts_params = _get_observations + [_pagination]
-get_all_observation_species_counts_params = _get_observations
-get_geojson_observations_params = _get_observations + [_geojson_properties]
-get_places_nearby_params = [_bounding_box, _name]
-get_projects_params = [_projects_params, _pagination]
-get_taxa_params = [_taxon_params, _taxon_id_params]
-get_taxa_autocomplete_params = [_taxon_params, _minify]
-
-
-# Request param combinations for REST API endpoints
-# ------------------------------------------------------------
-
-get_observations_params_rest = [
-    _observation_params_common,
-    _observation_params_rest_only,
-    _bounding_box,
-    _pagination,
-]
-get_observation_fields_params = [_search_query, _page]
-get_all_observation_fields_params = [_search_query]
-create_observations_params = [_legacy_params, _access_token, _create_observations_params]
-update_observation_params = [
-    _observation_id,
-    _legacy_params,
-    _access_token,
-    _create_observations_params,
-    _update_observation_params,
-]
-delete_observation_params = [_observation_id, _access_token]
