@@ -1,6 +1,8 @@
 import pytest
 from datetime import date, datetime
 from dateutil.tz import gettz
+from io import BytesIO
+from tempfile import NamedTemporaryFile
 from unittest.mock import patch
 
 from pyinaturalist.request_params import (
@@ -8,6 +10,7 @@ from pyinaturalist.request_params import (
     convert_bool_params,
     convert_datetime_params,
     convert_list_params,
+    ensure_file_obj,
     strip_empty_params,
     validate_ids,
     validate_multiple_choice_param,
@@ -60,6 +63,20 @@ def test_convert_list_params():
     params = convert_list_params(TEST_PARAMS)
     assert params["preferred_place_id"] == "1,2"
     assert params["rank"] == "phylum,class"
+
+
+def test_ensure_file_obj__file_path():
+    with NamedTemporaryFile() as temp:
+        temp.write(b"test content")
+        temp.seek(0)
+
+        file_obj = ensure_file_obj(temp.name)
+        assert file_obj.read() == b"test content"
+
+
+def test_ensure_file_obj__file_obj():
+    file_obj = BytesIO(b"test content")
+    assert ensure_file_obj(file_obj) == file_obj
 
 
 def test_strip_empty_params():

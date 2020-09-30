@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from io import BytesIO
+from unittest.mock import patch
 
 import pytest
 from requests import HTTPError
@@ -176,14 +177,24 @@ def test_update_observation(requests_mock):
 
     params = {
         "ignore_photos": 1,
-        "observation": {"description": "updated description v2 !"},
+        "description": "updated description v2 !",
     }
-    r = update_observation(observation_id=17932425, access_token="valid token", params=params)
+    r = update_observation(17932425, access_token="valid token", **params)
 
     # If all goes well we got a single element representing the updated observation, enclosed in a list.
     assert len(r) == 1
     assert r[0]["id"] == 17932425
     assert r[0]["description"] == "updated description v2 !"
+
+
+@patch("pyinaturalist.rest_api.ensure_file_objs")
+@patch("pyinaturalist.rest_api.put")
+def test_update_observation__local_photo(put, ensure_file_objs):
+    update_observation(1234, access_token="token", local_photos="photo.jpg")
+
+    # Make sure local_photos is replaced with the output of ensure_file_objs
+    called_params = put.call_args[1]["json"]["observation"]
+    assert called_params["local_photos"] == ensure_file_objs.return_value
 
 
 def test_update_nonexistent_observation(requests_mock):
@@ -196,11 +207,11 @@ def test_update_nonexistent_observation(requests_mock):
 
     params = {
         "ignore_photos": 1,
-        "observation": {"description": "updated description v2 !"},
+        "description": "updated description v2 !",
     }
 
     with pytest.raises(HTTPError) as excinfo:
-        update_observation(observation_id=999999999, access_token="valid token", params=params)
+        update_observation(999999999, access_token="valid token", **params)
     assert excinfo.value.response.status_code == 410
     assert excinfo.value.response.json() == {"error": "Cette observation n’existe plus."}
 
@@ -215,15 +226,11 @@ def test_update_observation_not_mine(requests_mock):
 
     params = {
         "ignore_photos": 1,
-        "observation": {"description": "updated description v2 !"},
+        "description": "updated description v2 !",
     }
 
     with pytest.raises(HTTPError) as excinfo:
-        update_observation(
-            observation_id=16227955,
-            access_token="valid token for another user",
-            params=params,
-        )
+        update_observation(16227955, access_token="valid token for another user", **params)
     assert excinfo.value.response.status_code == 410
     assert excinfo.value.response.json() == {"error": "Cette observation n’existe plus."}
 
@@ -235,26 +242,28 @@ def test_create_observation(requests_mock):
         status_code=200,
     )
 
-    params = {
-        "observation": {"species_guess": "Pieris rapae"},
-    }
-
-    r = create_observations(params=params, access_token="valid token")
+    r = create_observations(species_guess="Pieris rapae", access_token="valid token")
     assert len(r) == 1  # We added a single one
-    assert (
-        r[0]["latitude"] is None
-    )  # We have the field, but it's none since we didn't submitted anything
+    assert r[0]["latitude"] is None
     assert r[0]["taxon_id"] == 55626  # Pieris Rapae @ iNaturalist
+
+
+@patch("pyinaturalist.rest_api.ensure_file_objs")
+@patch("pyinaturalist.rest_api.post")
+def test_create_observation__local_photo(post, ensure_file_objs):
+    create_observations(access_token="token", local_photos="photo.jpg")
+
+    # Make sure local_photos is replaced with the output of ensure_file_objs
+    called_params = post.call_args[1]["json"]["observation"]
+    assert called_params["local_photos"] == ensure_file_objs.return_value
 
 
 def test_create_observation_fail(requests_mock):
     params = {
-        "observation": {
-            "species_guess": "Pieris rapae",
-            # Some invalid data so the observation is rejected...
-            "observed_on_string": (datetime.now() + timedelta(days=1)).isoformat(),
-            "latitude": 200,
-        }
+        "species_guess": "Pieris rapae",
+        # Some invalid data so the observation is rejected...
+        "observed_on_string": (datetime.now() + timedelta(days=1)).isoformat(),
+        "latitude": 200,
     }
 
     requests_mock.post(
@@ -264,7 +273,7 @@ def test_create_observation_fail(requests_mock):
     )
 
     with pytest.raises(HTTPError) as excinfo:
-        create_observations(params=params, access_token="valid token")
+        create_observations(access_token="valid token", **params)
     assert excinfo.value.response.status_code == 422
     assert "errors" in excinfo.value.response.json()  # iNat also give details about the errors
 
