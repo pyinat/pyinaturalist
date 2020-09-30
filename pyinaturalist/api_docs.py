@@ -487,9 +487,9 @@ _get_observations = [
     _bounding_box,
 ]
 
-get_observations_params = _get_observations + [_pagination, _only_id]
+get_observations_params = [*_get_observations, _pagination, _only_id]
 get_all_observations_params = _get_observations + [_only_id]
-get_observation_species_counts_params = _get_observations
+get_observation_species_counts_params = _get_observations + [_pagination]
 get_all_observation_species_counts_params = _get_observations
 get_geojson_observations_params = _get_observations + [_geojson_properties]
 get_places_nearby_params = [_bounding_box, _name]

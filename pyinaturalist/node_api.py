@@ -6,7 +6,7 @@ Most recent API version tested: 1.3.0
 """
 from logging import getLogger
 from time import sleep
-from typing import Dict, List
+from typing import List
 
 import requests
 from urllib.parse import urljoin
@@ -182,7 +182,7 @@ def get_all_observations(
         id_above = results[-1]["id"]
 
 
-# @document_request_params(get_observation_species_counts_params)
+@document_request_params(get_observation_species_counts_params)
 def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResponse:
     """Get all species (or other "leaf taxa") associated with observations matching the search
     criteria, and the count of observations they are associated with.
@@ -211,7 +211,7 @@ def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResp
     return r.json()
 
 
-# @document_request_params(get_all_observation_species_counts_params)
+@document_request_params(get_all_observation_species_counts_params)
 def get_all_observation_species_counts(user_agent: str = None, **kwargs) -> List[JsonResponse]:
     """Like :py:func:`get_observation_species_counts()`, but handles pagination and returns all
     results in one call. Explicit pagination parameters will be ignored.
