@@ -3,7 +3,7 @@ Reusable template functions used for API documentation.
 Each template function contains a portion of an endpoint's request parameters, with corresponding
 type annotations and docstrings.
 """
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Iterable
 
 from pyinaturalist.constants import (
     MultiInt,
@@ -11,6 +11,7 @@ from pyinaturalist.constants import (
     Date,
     DateTime,
     IntOrStr,
+    FileOrPath,
 )
 from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
 
@@ -20,7 +21,7 @@ from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
 
 
 # Params that are in most observation-related endpoints in both Node and REST APIs
-def _observation_params_common(
+def _observation_common(
     q: str = None,
     d1: Date = None,
     d2: Date = None,
@@ -57,7 +58,7 @@ def _observation_params_common(
 
 
 # Observation params that are only in the Node API
-def _observation_params_node_only(
+def _observation_node_only(
     acc: bool = None,
     captive: bool = None,
     endemic: bool = None,
@@ -197,7 +198,7 @@ def _observation_params_node_only(
 
 
 # Observation params that are only in the REST API
-def _observation_params_rest_only(
+def _observation_rest_only(
     has: MultiStr = None,
     on: Date = None,
     m1: Date = None,
@@ -224,8 +225,7 @@ def _observation_params_rest_only(
     """
 
 
-# TODO: Are array params (e.g. `flickr_photos[]`) required to have "[]" in the param name?
-def _create_observations_params(
+def _create_observation(
     species_guess: str = None,
     taxon_id: int = None,
     observed_on_string: Date = None,
@@ -242,7 +242,7 @@ def _create_observations_params(
     flickr_photos: MultiInt = None,
     picasa_photos: MultiStr = None,
     facebook_photos: MultiStr = None,
-    local_photos: MultiStr = None,
+    local_photos: Iterable[FileOrPath] = None,
 ):
     """
     species_guess: Equivalent to the "What did you see?" field on the observation form.
@@ -268,19 +268,17 @@ def _create_observations_params(
         their Picasa and iNat accounts connected, and the user must own the photo(s) on Picasa.
     facebook_photos: Facebook photo IDs to add as photos for this observation. User must have
         their Facebook and iNat accounts connected, and the user must own the photo on Facebook.
-    local_photos: [NOT IMPLEMENTED] Fields containing uploaded photo data. Request must have a ``Content-Type``
-        of ``"multipart"``. We recommend that you use the ``POST /observation_photos`` endpoint
-        instead.
+    local_photos: Image files, file-like objects, and/or paths for local photos to upload
     """
 
 
-def _update_observation_params(
+def _update_observation(
     # _method: str = None,  # Exposed as a client-specific workaround; not needed w/ `requests`
-    ignore_photos: bool = False,
+    ignore_photos: bool = True,
 ):
     """
     ignore_photos
-        If photos exist on the observation but are missing in the request, simpy ignore them
+        If photos exist on the observation but are missing in the request, simply ignore them
         instead of deleting the missing observation photos
     """
 
@@ -418,7 +416,7 @@ def _legacy_params(params: Dict[str, Any] = None):
 
 def _minify(minify: str = None):
     """
-    minify: Condense each match into a single string containg taxon ID, rank, and name
+    minify: Condense each match into a single string containing taxon ID, rank, and name
     """
 
 
@@ -461,6 +459,14 @@ def _pagination(
     """
 
 
+_get_observations = [
+    _legacy_params,
+    _observation_common,
+    _observation_node_only,
+    _bounding_box,
+]
+
+
 # TODO: Remove deprecated `search_query` kwarg in 0.12
 def _search_query(q: str = None, search_query: str = None):
     """
@@ -475,47 +481,3 @@ def _format_param_choices():
 
 
 MULTIPLE_CHOICE_PARAM_DOCS = "**Multiple-Choice Parameters:**\n" + _format_param_choices()
-
-
-# Request param combinations for Node API endpoints
-# Note: user_agent param is added to all functions by default
-# ------------------------------------------------------------
-
-_get_observations = [
-    _legacy_params,
-    _observation_params_common,
-    _observation_params_node_only,
-    _bounding_box,
-]
-
-get_observations_params = _get_observations + [_pagination, _only_id]
-get_all_observations_params = _get_observations + [_only_id]
-get_observation_species_counts_params = _get_observations
-get_all_observation_species_counts_params = _get_observations
-get_geojson_observations_params = _get_observations + [_geojson_properties]
-get_places_nearby_params = [_bounding_box, _name]
-get_projects_params = [_projects_params, _pagination]
-get_taxa_params = [_taxon_params, _taxon_id_params]
-get_taxa_autocomplete_params = [_taxon_params, _minify]
-
-
-# Request param combinations for REST API endpoints
-# ------------------------------------------------------------
-
-get_observations_params_rest = [
-    _observation_params_common,
-    _observation_params_rest_only,
-    _bounding_box,
-    _pagination,
-]
-get_observation_fields_params = [_search_query, _page]
-get_all_observation_fields_params = [_search_query]
-create_observations_params = [_legacy_params, _access_token, _create_observations_params]
-update_observation_params = [
-    _observation_id,
-    _legacy_params,
-    _access_token,
-    _create_observations_params,
-    _update_observation_params,
-]
-delete_observation_params = [_observation_id, _access_token]

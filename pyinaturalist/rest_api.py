@@ -3,19 +3,19 @@ Code used to access the (read/write, but slow) Rails based API of iNaturalist
 See: https://www.inaturalist.org/pages/api+reference
 """
 from time import sleep
-from typing import Dict, Any, List, BinaryIO, Union
+from typing import Dict, Any, List, Union
 
 from urllib.parse import urljoin
 
-from pyinaturalist.api_docs import (
-    get_observations_params_rest as get_observations_params,
-    get_observation_fields_params,
-    get_all_observation_fields_params,
-    create_observations_params,
-    update_observation_params,
-    delete_observation_params,
+from pyinaturalist import api_docs as docs
+from pyinaturalist.constants import (
+    THROTTLING_DELAY,
+    INAT_BASE_URL,
+    FileOrPath,
+    JsonResponse,
+    ListResponse,
+    RequestParams,
 )
-from pyinaturalist.constants import THROTTLING_DELAY, INAT_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
 from pyinaturalist.api_requests import delete, get, post, put
 from pyinaturalist.forge_utils import document_request_params
@@ -23,6 +23,8 @@ from pyinaturalist.request_params import (
     OBSERVATION_FORMATS,
     REST_OBS_ORDER_BY_PROPERTIES,
     check_deprecated_params,
+    ensure_file_obj,
+    ensure_file_objs,
     validate_multiple_choice_param,
 )
 from pyinaturalist.response_format import convert_lat_long_to_float
@@ -66,7 +68,14 @@ def get_access_token(
         raise AuthenticationError("Authentication error, please check credentials.")
 
 
-@document_request_params(get_observations_params)
+@document_request_params(
+    [
+        docs._observation_common,
+        docs._observation_rest_only,
+        docs._bounding_box,
+        docs._pagination,
+    ]
+)
 def get_observations(user_agent: str = None, **kwargs) -> Union[List, str]:
     """Get observation data, optionally in an alternative format. Also see
     :py:func:`.get_geojson_observations` for GeoJSON format (not included here because it wraps
@@ -136,8 +145,8 @@ def get_observations(user_agent: str = None, **kwargs) -> Union[List, str]:
         return response.text
 
 
-@document_request_params(get_observation_fields_params)
-def get_observation_fields(user_agent: str = None, **kwargs) -> List[Dict[str, Any]]:
+@document_request_params([docs._search_query, docs._page])
+def get_observation_fields(user_agent: str = None, **kwargs) -> ListResponse:
     """Search observation fields. Observation fields are basically typed data fields that
     users can attach to observation.
 
@@ -156,7 +165,7 @@ def get_observation_fields(user_agent: str = None, **kwargs) -> List[Dict[str, A
     Returns:
         Observation fields as a list of dicts
     """
-    kwargs = check_deprecated_params(kwargs)
+    kwargs = check_deprecated_params(**kwargs)
     response = get(
         "{base_url}/observation_fields.json".format(base_url=INAT_BASE_URL),
         params=kwargs,
@@ -165,8 +174,8 @@ def get_observation_fields(user_agent: str = None, **kwargs) -> List[Dict[str, A
     return response.json()
 
 
-@document_request_params(get_all_observation_fields_params)
-def get_all_observation_fields(**kwargs) -> List[Dict[str, Any]]:
+@document_request_params([docs._search_query])
+def get_all_observation_fields(**kwargs) -> ListResponse:
     """
     Like :py:func:`.get_observation_fields()`, but handles pagination for you.
 
@@ -198,7 +207,7 @@ def put_observation_field_values(
     value: Any,
     access_token: str,
     user_agent: str = None,
-) -> Dict[str, Any]:
+) -> JsonResponse:
     # TODO: Also implement a put_or_update_observation_field_values() that deletes then recreates the field_value?
     # TODO: Write example use in docstring.
     # TODO: Return some meaningful exception if it fails because the field is already set.
@@ -258,11 +267,11 @@ def put_observation_field_values(
 
 
 # TODO: Implement `observation_field_values_attributes`, and simplify nested data structures
-# TODO: implement `local_photos` and support both local file path(s) and object(s)
-@document_request_params(create_observations_params)
+# TODO: more thorough usage example
+@document_request_params([docs._legacy_params, docs._access_token, docs._create_observation])
 def create_observations(
-    params: Dict[str, Dict[str, Any]], access_token: str, user_agent: str = None, **kwargs
-) -> List[Dict[str, Any]]:
+    params: RequestParams = None, access_token: str = None, user_agent: str = None, **kwargs
+) -> ListResponse:
     """Create one or more observations.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#post-observations
@@ -272,6 +281,7 @@ def create_observations(
         >>> create_observations(
         >>>     access_token=token,
         >>>     species_guess='Pieris rapae',
+        >>>     local_photos='~/observation_photos/2020_09_01_14003156.jpg',
         >>> )
 
         .. admonition:: Example Response
@@ -298,16 +308,17 @@ def create_observations(
     TODO investigate: according to the doc, we should be able to pass multiple observations (in an array, and in
     renaming observation to observations, but as far as I saw they are not created (while a status of 200 is returned)
     """
-    # This is the one Boolean parameter that's specified as an int, for some reason
-    if "ignore_photos" in kwargs:
-        kwargs["ignore_photos"] = int(kwargs["ignore_photos"])
-    kwargs = check_deprecated_params(kwargs)
-    if "observation" not in kwargs:
-        kwargs = {"observation": kwargs}
+    # Accept either top-level params (like most other endpoints)
+    # or nested params (like the iNat API actually accepts)
+    if "observation" in kwargs:
+        kwargs.update(kwargs.pop("observation"))
+    kwargs = check_deprecated_params(params, **kwargs)
+    if "local_photos" in kwargs:
+        kwargs["local_photos"] = ensure_file_objs(kwargs["local_photos"])
 
     response = post(
         url="{base_url}/observations.json".format(base_url=INAT_BASE_URL),
-        json=params,
+        json={"observation": kwargs},
         access_token=access_token,
         user_agent=user_agent,
     )
@@ -315,14 +326,33 @@ def create_observations(
     return response.json()
 
 
-@document_request_params(update_observation_params)
+@document_request_params(
+    [
+        docs._observation_id,
+        docs._legacy_params,
+        docs._access_token,
+        docs._create_observation,
+        docs._update_observation,
+    ]
+)
 def update_observation(
-    observation_id: int, params: Dict[str, Any], access_token: str, user_agent: str = None, **kwargs
-) -> List[Dict[str, Any]]:
+    observation_id: int,
+    params: RequestParams = None,
+    access_token: str = None,
+    user_agent: str = None,
+    **kwargs
+) -> ListResponse:
     """
     Update a single observation.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#put-observations-id
+
+    .. note::
+
+        Unlike the underlying REST API endpoint, this function will **not** delete any existing
+        photos from your observation if not specified in ``local_photos``. If you want this to
+        behave the same as the REST API and you do want to delete photos, call with
+        ``ignore_photos=False``.
 
     Example:
 
@@ -330,7 +360,6 @@ def update_observation(
         >>> update_observation(
         >>>     17932425,
         >>>     access_token=token,
-        >>>     ignore_photos=1,
         >>>     description="updated description!",
         >>> )
 
@@ -347,15 +376,24 @@ def update_observation(
         :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an
             error 410 if the observation doesn't exists or belongs to another user.
     """
+    # Accept either top-level params (like most other endpoints)
+    # or nested params (like the iNat API actually accepts)
+    if "observation" in kwargs:
+        kwargs.update(kwargs.pop("observation"))
+    kwargs = check_deprecated_params(params, **kwargs)
+    if "local_photos" in kwargs:
+        kwargs["local_photos"] = ensure_file_objs(kwargs["local_photos"])
+
+    # This is the one Boolean parameter that's specified as an int, for some reason.
+    # Also, set it to True if not specified, which seems like much saner default behavior.
     if "ignore_photos" in kwargs:
         kwargs["ignore_photos"] = int(kwargs["ignore_photos"])
-    kwargs = check_deprecated_params(kwargs)
-    if "observation" not in kwargs:
-        kwargs = {"observation": kwargs}
+    else:
+        kwargs["ignore_photos"] = 1
 
     response = put(
         url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
-        json=params,
+        json={"observation": kwargs},
         access_token=access_token,
         user_agent=user_agent,
     )
@@ -363,22 +401,24 @@ def update_observation(
     return response.json()
 
 
-# TODO: Support both local file path(s) and object(s)
 def add_photo_to_observation(
     observation_id: int,
-    file_object: BinaryIO,
+    photo: FileOrPath,
     access_token: str,
     user_agent: str = None,
 ):
-    """Upload a picture and assign it to an existing observation.
+    """Upload a local photo and assign it to an existing observation.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#post-observation_photos
 
     Example:
 
         >>> token = get_access_token('...')
-        >>> with open('~/observation_photos/2020_09_01_14003156.jpg', 'rb') as f:
-        >>>     add_photo_to_observation(1234, f, access_token=token)
+        >>> add_photo_to_observation(
+        >>>     1234,
+        >>>     '~/observation_photos/2020_09_01_14003156.jpg',
+        >>>     access_token=token,
+        >>> )
 
         .. admonition:: Example Response
             :class: toggle
@@ -388,29 +428,26 @@ def add_photo_to_observation(
 
     Args:
         observation_id: the ID of the observation
-        file_object: a file-like object for the picture
+        photo: An image file, file-like object, or path
         access_token: the access token, as returned by :func:`get_access_token()`
         user_agent: a user-agent string that will be passed to iNaturalist.
 
     Returns:
         Information about the newly created photo
     """
-    data = {"observation_photo[observation_id]": observation_id}
-    file_data = {"file": file_object}
-
     response = post(
         url="{base_url}/observation_photos".format(base_url=INAT_BASE_URL),
         access_token=access_token,
+        data={"observation_photo[observation_id]": observation_id},
+        files={"file": ensure_file_obj(photo)},
         user_agent=user_agent,
-        data=data,
-        files=file_data,
     )
 
     return response.json()
 
 
 # TODO: test this (success case, wrong_user/403 case)
-@document_request_params(delete_observation_params)
+@document_request_params([docs._observation_id, docs._access_token])
 def delete_observation(observation_id: int, access_token: str = None, user_agent: str = None):
     """
     Delete an observation.
@@ -420,7 +457,7 @@ def delete_observation(observation_id: int, access_token: str = None, user_agent
     Example:
 
         >>> token = get_access_token('...')
-        >>> delete_observation(17932425, access_token=token)
+        >>> delete_observation(17932425, token)
 
     Returns:
         If successful, no response is returned from this endpoint

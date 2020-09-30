@@ -48,7 +48,7 @@ def document_request_params(template_functions: List[TemplateFunction]):
         template_functions: Template functions containing docstrings and params to apply to the
             wrapped function
     """
-    template_functions += [_user_agent]
+    template_functions = [*template_functions, _user_agent]
 
     def f(func):
         # Modify docstring
