@@ -22,7 +22,7 @@ project = "pyinaturalist"
 copyright = "2020, Nicolas Noé"
 needs_sphinx = "3.0"
 master_doc = "index"
-source_suffix = ".rst"
+source_suffix = [".md", ".rst"]
 version = release = __version__
 html_static_path = ["_static"]
 templates_path = ["_templates"]
@@ -39,6 +39,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_autodoc_typehints",
     "sphinxcontrib.apidoc",
+    "m2r2",
 ]
 
 # Enable automatic links to other projects' Sphinx docs

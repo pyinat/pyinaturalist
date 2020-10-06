@@ -5,9 +5,6 @@ sphinx:
   builder: html
   configuration: docs/conf.py
 
-formats:
-  - pdf
-
 python:
   version: 3.7
   system_packages: True

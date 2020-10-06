@@ -14,6 +14,7 @@ extras_require = {
         "sphinx-rtd-theme",
         "sphinx-autodoc-typehints",
         "sphinxcontrib-apidoc",
+        "m2r2",
     ],
     # Packages used for testing both locally and in CI jobs
     "test": [
