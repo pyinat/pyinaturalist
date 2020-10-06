@@ -1,11 +1,11 @@
 .. _index-page:
 
 .. Omit README link to ReadTheDocs, since we're already on ReadTheDocs!
-.. include:: ../README.rst
-    :end-line: 23
+.. mdinclude:: ../README.md
+    :end-line: 11
 
-.. include:: ../README.rst
-    :start-line: 25
+.. mdinclude:: ../README.md
+    :start-line: 13
 
 
 Contents

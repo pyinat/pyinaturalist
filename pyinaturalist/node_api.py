@@ -112,7 +112,7 @@ def get_observations(
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_observations_node_page_1.json
+            .. literalinclude:: ../sample_data/get_observations_node_page1.json
                 :language: JSON
 
     Returns:
