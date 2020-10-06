@@ -9,12 +9,13 @@ extras_require = {
     "build": ["coveralls", "tox-travis"],
     # Packages used for documentation builds
     "docs": [
+        "m2r2",
         "python-forge",
         "Sphinx>=3.0",
-        "sphinx-rtd-theme",
         "sphinx-autodoc-typehints",
+        "sphinx-automodapi",
+        "sphinx-rtd-theme",
         "sphinxcontrib-apidoc",
-        "m2r2",
     ],
     # Packages used for testing both locally and in CI jobs
     "test": [
