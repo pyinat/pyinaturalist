@@ -15,6 +15,7 @@ Contents
    :maxdepth: 2
 
    general_usage
+   endpoints
    reference
    contributing
    authors

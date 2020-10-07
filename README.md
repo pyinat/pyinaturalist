@@ -48,16 +48,18 @@ are implemented, including:
 * Text search autocompletion for species and places
 
 See below for some examples,
-see [Reference](https://pyinaturalist.readthedocs.io/en/latest/reference.html) for a complete list, and
+see [Endpoints](https://pyinaturalist.readthedocs.io/en/latest/endpoints.html) for a complete list of implemented endpoints, and
 see [Issues](https://github.com/niconoe/pyinaturalist/issues) for planned & proposed features.
+
 More endpoints will continue to be added as they are needed.
 Please **create an issue** if there is an endpoint you would like to have added, and **PRs are welcome!**
 
 **Note:**
 
-The two iNaturalist APIs expose a combined total of 103 endpoints\*. Many of these are primarily for
-internal use by the iNaturalist web application and mobile apps, and are unlikely to be added unless
-there are specific use cases for them.
+The two iNaturalist APIs expose a combined total of 103 endpoints\*. Some of these are generally
+useful and could potentially be added to pyinaturalist, but many others are primarily for
+internal use by the iNaturalist web application and mobile apps, and are unlikely to be added
+unless there are specific use cases for them.
 
 \*As of 2020-10-01: 37 in REST API, 65 in Node API, and 1 undocumented 
 

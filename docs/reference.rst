@@ -18,6 +18,7 @@ Pyinaturalist provides functions to use both of those APIs.
 .. toctree::
     :caption: API Documentation
     :glob:
+    :titlesonly:
 
     modules/*_api
 
