@@ -126,4 +126,5 @@ def patch_automodapi(app):
     """
     from sphinx_automodapi import automodsumm
     from sphinx_automodapi.utils import find_mod_objs
+
     automodsumm.find_mod_objs = lambda *args: find_mod_objs(args[0], onlylocals=True)

@@ -29,16 +29,3 @@ Pyinaturalist provides functions to use both of those APIs.
     :glob:
 
     modules/*[!i]
-
-
-All Node API functions
-----------------------
-
-.. automodsumm:: pyinaturalist.node_api
-    :functions-only:
-
-All REST API functions
-----------------------
-
-.. automodsumm:: pyinaturalist.node_api
-    :functions-only:

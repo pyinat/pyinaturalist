@@ -1,6 +1,14 @@
 """
 Code used to access the (read/write, but slow) Rails based API of iNaturalist
 See: https://www.inaturalist.org/pages/api+reference
+
+Functions
+---------
+
+.. automodsumm:: pyinaturalist.node_api
+    :functions-only:
+    :nosignatures:
+
 """
 from time import sleep
 from typing import Dict, Any, List, Union

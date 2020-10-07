@@ -1,8 +1,9 @@
-# Implemented Endpoints
-Here is a complete list of iNaturalist endpoints, and the subset of them that have been implemented
-in pyinaturalist.
+## Implemented Endpoints
+Below is a complete list of iNaturalist API endpoints, and the subset of them that have been
+implemented in pyinaturalist.
 
-## Node-based API
+### Node-based API
+For full documentation, see: http://api.inaturalist.org/v1/docs/
 
 Method            | Endpoint                                    | Implemented
 ------            | ------                                      | ------
@@ -111,7 +112,8 @@ GET               | /points/{zoom}/{x}/{y}.grid.json            |
 POST              | /photos                                     |
                   
 
-## Rails-Based API
+### Rails-Based API
+For full documentation, see: https://www.inaturalist.org/pages/api+reference
 
 Method            | Endpoint                                    | Implemented
 ------            | ------                                      | ------
