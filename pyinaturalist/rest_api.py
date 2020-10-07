@@ -5,7 +5,7 @@ See: https://www.inaturalist.org/pages/api+reference
 Functions
 ---------
 
-.. automodsumm:: pyinaturalist.node_api
+.. automodsumm:: pyinaturalist.rest_api
     :functions-only:
     :nosignatures:
 
