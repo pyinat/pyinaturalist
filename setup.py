@@ -10,7 +10,6 @@ extras_require = {
     # Packages used for documentation builds
     "docs": [
         "m2r2",
-        "python-forge",
         "Sphinx>=3.0",
         "sphinx-autodoc-typehints",
         "sphinx-automodapi",
@@ -31,9 +30,6 @@ extras_require = {
 # All development/testing packages combined
 extras_require["dev"] = list(chain.from_iterable(extras_require.values()))
 
-# Optional non-dev dependencies
-extras_require["extras"] = ["python-forge"]
-
 
 setup(
     name="pyinaturalist",
@@ -43,7 +39,7 @@ setup(
     url="https://github.com/niconoe/pyinaturalist",
     packages=find_packages(),
     include_package_data=True,
-    install_requires=["python-dateutil>=2.0", "requests>=2.21.0"],
+    install_requires=["python-dateutil>=2.0", "python-forge", "requests>=2.24.0"],
     extras_require=extras_require,
     zip_safe=False,
 )

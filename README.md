@@ -17,18 +17,14 @@ See full documentation at https://pyinaturalist.readthedocs.io.
 Install the latest stable version with pip:
 
 ```bash
-$ pip install pyinaturalist["extras"]
+$ pip install pyinaturalist
 ```
 
 Or, if you would like to use the latest development (non-stable) version:
 
 ```bash
-$ pip install --pre pyinaturalist["extras"]
+$ pip install --pre pyinaturalist
 ```
-
-Note that `["extras"]` will include dependencies that are recommended but not required for usage.
-pyinaturalist will function just fine without them, but will lack certain conveniences,
-such as full API documentation and type checking within an IDE.
 
 To set up for local development (preferably in a new virtualenv):
 
