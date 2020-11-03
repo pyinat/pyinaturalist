@@ -162,7 +162,10 @@ def get_observation_fields(user_agent: str = None, **kwargs) -> ListResponse:
 
     Example:
 
-        >>> get_observation_fields(q='sex')
+        >>> get_observation_fields(q='number of individuals')
+        >>> # Show just observation field IDs and names
+        >>> from pprint import pprint
+        >>> pprint({r['id']: r['name'] for r in response})
 
         .. admonition:: Example Response
             :class: toggle
@@ -217,21 +220,25 @@ def put_observation_field_values(
     user_agent: str = None,
 ) -> JsonResponse:
     # TODO: Also implement a put_or_update_observation_field_values() that deletes then recreates the field_value?
-    # TODO: Write example use in docstring.
     # TODO: Return some meaningful exception if it fails because the field is already set.
-    # TODO: Also show in example  to obtain the observation_field_id?
-    # TODO: What happens when parameters are invalid
     # TODO: It appears pushing the same value/pair twice in a row (but deleting it meanwhile via the UI)...
     # TODO: ...triggers an error 404 the second time (report to iNaturalist?)
     """Set an observation field (value) on an observation.
-    Will fail if this observation_field is already set for this observation.
+    Will fail if this observation field is already set for this observation.
+
+    To find an `observation_field_id`, either user :py:func:`.get_observation_fields` or search
+    on iNaturalist: https://www.inaturalist.org/observation_fields
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#put-observation_field_values-id
 
     Example:
+            >>> # First find an observation field by name, if the ID is unknown
+            >>> response = get_observation_fields('vespawatch_id')
+            >>> observation_field_id = response[0]['id']
+            >>>
             >>> put_observation_field_values(
             >>>     observation_id=7345179,
-            >>>     observation_field_id=9613,
+            >>>     observation_field_id=observation_field_id,
             >>>     value=250,
             >>>     access_token=token,
             >>> )
