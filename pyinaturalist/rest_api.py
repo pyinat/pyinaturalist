@@ -35,6 +35,7 @@ from pyinaturalist.request_params import (
     ensure_file_obj,
     ensure_file_objs,
     validate_multiple_choice_param,
+    warn,
 )
 from pyinaturalist.response_format import convert_lat_long_to_float
 
@@ -282,18 +283,30 @@ def put_observation_field_values(
     return response.json()
 
 
+def create_observations(params: RequestParams = None, **kwargs):
+    """Create a new observation.
+    Note: Creating multiple observations sould be possible according to the docs, but it does not
+    appear to work.
+    """
+    warn(
+        "create_observations() has been deprecated, as creating multiple observations is not "
+        "currently functional. Please use create_observation() instead."
+    )
+    create_observation(params, **kwargs)
+
+
 # TODO: more thorough usage example
 @document_request_params([docs._legacy_params, docs._access_token, docs._create_observation])
-def create_observations(
+def create_observation(
     params: RequestParams = None, access_token: str = None, user_agent: str = None, **kwargs
 ) -> ListResponse:
-    """Create one or more observations.
+    """Create a new observation.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#post-observations
 
     Example:
         >>> token = get_access_token('...')
-        >>> create_observations(
+        >>> create_observation(
         >>>     access_token=token,
         >>>     species_guess='Pieris rapae',
         >>>     local_photos='~/observation_photos/2020_09_01_14003156.jpg',
@@ -320,9 +333,6 @@ def create_observations(
         error 422 (unprocessable entity) if it rejects the observation data (for example an
         observation date in the future or a latitude > 90. In that case the exception's
         ``response`` attribute gives more details about the errors.
-
-    TODO investigate: according to the doc, we should be able to pass multiple observations (in an array, and in
-    renaming observation to observations, but as far as I saw they are not created (while a status of 200 is returned)
     """
     # Accept either top-level params (like most other endpoints)
     # or nested {"observation": params} (like the iNat API accepts directly)
@@ -464,7 +474,6 @@ def add_photo_to_observation(
     return response.json()
 
 
-# TODO: test this (success case, wrong_user/403 case)
 @document_request_params([docs._observation_id, docs._access_token])
 def delete_observation(observation_id: int, access_token: str = None, user_agent: str = None):
     """

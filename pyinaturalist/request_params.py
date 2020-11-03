@@ -165,10 +165,6 @@ def check_deprecated_params(params=None, **kwargs) -> Dict[str, Any]:
     """Check for usage of request parameters that are deprecated but still supported for
     backwards-compatibility
     """
-
-    def warn(msg):
-        warnings.warn(DeprecationWarning(msg))
-
     if params:
         warn("The 'params' argument is deprecated; please use keyword arguments instead")
         kwargs.update(params)
@@ -354,3 +350,7 @@ def translate_rank_range(params: RequestParams) -> RequestParams:
         max_rank_index = _get_rank_index(max_rank) + 1 if max_rank else len(RANKS)
         params["rank"] = RANKS[min_rank_index:max_rank_index]
     return params
+
+
+def warn(msg):
+    warnings.warn(DeprecationWarning(msg))

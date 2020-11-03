@@ -14,7 +14,7 @@ from pyinaturalist.rest_api import (
     get_observations,
     get_observation_fields,
     put_observation_field_values,
-    create_observations,
+    create_observation,
     update_observation,
     add_photo_to_observation,
     delete_observation,
@@ -242,7 +242,7 @@ def test_create_observation(requests_mock):
         status_code=200,
     )
 
-    r = create_observations(species_guess="Pieris rapae", access_token="valid token")
+    r = create_observation(species_guess="Pieris rapae", access_token="valid token")
     assert len(r) == 1  # We added a single one
     assert r[0]["latitude"] is None
     assert r[0]["taxon_id"] == 55626  # Pieris Rapae @ iNaturalist
@@ -251,7 +251,7 @@ def test_create_observation(requests_mock):
 @patch("pyinaturalist.rest_api.ensure_file_objs")
 @patch("pyinaturalist.rest_api.post")
 def test_create_observation__local_photo(post, ensure_file_objs):
-    create_observations(access_token="token", local_photos="photo.jpg")
+    create_observation(access_token="token", local_photos="photo.jpg")
 
     # Make sure local_photos is replaced with the output of ensure_file_objs
     called_params = post.call_args[1]["json"]["observation"]
@@ -273,7 +273,7 @@ def test_create_observation_fail(requests_mock):
     )
 
     with pytest.raises(HTTPError) as excinfo:
-        create_observations(access_token="valid token", **params)
+        create_observation(access_token="valid token", **params)
     assert excinfo.value.response.status_code == 422
     assert "errors" in excinfo.value.response.json()  # iNat also give details about the errors
 
@@ -291,10 +291,10 @@ def test_add_photo_to_observation(requests_mock):
     assert response["photo"]["native_username"] == "username"
 
 
-def test_delete_observation():
-    # Blocked because the expected behaviour is still unclear because of
-    # https://github.com/inaturalist/inaturalist/issues/2252
-    pass
+def test_delete_observation(requests_mock):
+    requests_mock.delete(urljoin(INAT_BASE_URL, "observations/24774619.json"), status_code=200)
+    response = delete_observation(observation_id=24774619, access_token="valid token")
+    assert response is None
 
 
 def test_delete_unexisting_observation(requests_mock):

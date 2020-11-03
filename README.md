@@ -89,10 +89,10 @@ token = get_access_token(
 
 #### Create a new observation
 ```python
-from pyinaturalist.rest_api import create_observations
+from pyinaturalist.rest_api import create_observation
 from datetime import datetime
 
-response = create_observations(
+response = create_observation(
     taxon_id=54327,  # Vespa Crabro
     observed_on_string=datetime.now().isoformat(),
     time_zone='Brussels',

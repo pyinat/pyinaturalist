@@ -16,7 +16,7 @@ from pprint import pprint
 
 from pyinaturalist.rest_api import (
     add_photo_to_observation,
-    create_observations,
+    create_observation,
     delete_observation,
     get_access_token,
     put_observation_field_values,
@@ -45,7 +45,7 @@ def run_observation_crud_test():
 
 
 def create_test_obs(token):
-    response = create_observations(
+    response = create_observation(
         taxon_id=54327,
         observed_on_string=datetime.now().isoformat(),
         description="This is a test observation used by pyinaturalist, and will be deleted shortly.",
