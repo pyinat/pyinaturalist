@@ -31,9 +31,11 @@ from pyinaturalist.request_params import (
     OBSERVATION_FORMATS,
     REST_OBS_ORDER_BY_PROPERTIES,
     check_deprecated_params,
+    convert_observation_fields,
     ensure_file_obj,
     ensure_file_objs,
     validate_multiple_choice_param,
+    warn,
 )
 from pyinaturalist.response_format import convert_lat_long_to_float
 
@@ -162,7 +164,10 @@ def get_observation_fields(user_agent: str = None, **kwargs) -> ListResponse:
 
     Example:
 
-        >>> get_observation_fields(q='sex')
+        >>> get_observation_fields(q='number of individuals')
+        >>> # Show just observation field IDs and names
+        >>> from pprint import pprint
+        >>> pprint({r['id']: r['name'] for r in response})
 
         .. admonition:: Example Response
             :class: toggle
@@ -217,21 +222,25 @@ def put_observation_field_values(
     user_agent: str = None,
 ) -> JsonResponse:
     # TODO: Also implement a put_or_update_observation_field_values() that deletes then recreates the field_value?
-    # TODO: Write example use in docstring.
     # TODO: Return some meaningful exception if it fails because the field is already set.
-    # TODO: Also show in example  to obtain the observation_field_id?
-    # TODO: What happens when parameters are invalid
     # TODO: It appears pushing the same value/pair twice in a row (but deleting it meanwhile via the UI)...
     # TODO: ...triggers an error 404 the second time (report to iNaturalist?)
     """Set an observation field (value) on an observation.
-    Will fail if this observation_field is already set for this observation.
+    Will fail if this observation field is already set for this observation.
+
+    To find an `observation_field_id`, either user :py:func:`.get_observation_fields` or search
+    on iNaturalist: https://www.inaturalist.org/observation_fields
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#put-observation_field_values-id
 
     Example:
+            >>> # First find an observation field by name, if the ID is unknown
+            >>> response = get_observation_fields('vespawatch_id')
+            >>> observation_field_id = response[0]['id']
+            >>>
             >>> put_observation_field_values(
             >>>     observation_id=7345179,
-            >>>     observation_field_id=9613,
+            >>>     observation_field_id=observation_field_id,
             >>>     value=250,
             >>>     access_token=token,
             >>> )
@@ -274,22 +283,34 @@ def put_observation_field_values(
     return response.json()
 
 
-# TODO: Implement `observation_field_values_attributes`, and simplify nested data structures
+def create_observations(params: RequestParams = None, **kwargs):
+    """Create a new observation.
+    Note: Creating multiple observations sould be possible according to the docs, but it does not
+    appear to work.
+    """
+    warn(
+        "create_observations() has been deprecated, as creating multiple observations is not "
+        "currently functional. Please use create_observation() instead."
+    )
+    create_observation(params, **kwargs)
+
+
 # TODO: more thorough usage example
 @document_request_params([docs._legacy_params, docs._access_token, docs._create_observation])
-def create_observations(
+def create_observation(
     params: RequestParams = None, access_token: str = None, user_agent: str = None, **kwargs
 ) -> ListResponse:
-    """Create one or more observations.
+    """Create a new observation.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#post-observations
 
     Example:
         >>> token = get_access_token('...')
-        >>> create_observations(
+        >>> create_observation(
         >>>     access_token=token,
         >>>     species_guess='Pieris rapae',
         >>>     local_photos='~/observation_photos/2020_09_01_14003156.jpg',
+        >>>     observation_fields={297: 1},  # 297 is the obs. field ID for 'Number of individuals'
         >>> )
 
         .. admonition:: Example Response
@@ -311,16 +332,14 @@ def create_observations(
         :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an
         error 422 (unprocessable entity) if it rejects the observation data (for example an
         observation date in the future or a latitude > 90. In that case the exception's
-        `response` attribute give details about the errors.
-
-    TODO investigate: according to the doc, we should be able to pass multiple observations (in an array, and in
-    renaming observation to observations, but as far as I saw they are not created (while a status of 200 is returned)
+        ``response`` attribute gives more details about the errors.
     """
     # Accept either top-level params (like most other endpoints)
-    # or nested params (like the iNat API actually accepts)
+    # or nested {"observation": params} (like the iNat API accepts directly)
     if "observation" in kwargs:
         kwargs.update(kwargs.pop("observation"))
     kwargs = check_deprecated_params(params, **kwargs)
+    kwargs = convert_observation_fields(kwargs)
     if "local_photos" in kwargs:
         kwargs["local_photos"] = ensure_file_objs(kwargs["local_photos"])
 
@@ -389,6 +408,7 @@ def update_observation(
     if "observation" in kwargs:
         kwargs.update(kwargs.pop("observation"))
     kwargs = check_deprecated_params(params, **kwargs)
+    kwargs = convert_observation_fields(kwargs)
     if "local_photos" in kwargs:
         kwargs["local_photos"] = ensure_file_objs(kwargs["local_photos"])
 
@@ -454,7 +474,6 @@ def add_photo_to_observation(
     return response.json()
 
 
-# TODO: test this (success case, wrong_user/403 case)
 @document_request_params([docs._observation_id, docs._access_token])
 def delete_observation(observation_id: int, access_token: str = None, user_agent: str = None):
     """

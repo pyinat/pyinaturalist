@@ -165,10 +165,6 @@ def check_deprecated_params(params=None, **kwargs) -> Dict[str, Any]:
     """Check for usage of request parameters that are deprecated but still supported for
     backwards-compatibility
     """
-
-    def warn(msg):
-        warnings.warn(DeprecationWarning(msg))
-
     if params:
         warn("The 'params' argument is deprecated; please use keyword arguments instead")
         kwargs.update(params)
@@ -245,6 +241,18 @@ def convert_list_params(params: RequestParams) -> RequestParams:
     Will be url-encoded by requests. For example: `['k1', 'k2', 'k3'] -> k1%2Ck2%2Ck3`
     """
     return {k: convert_list(v) for k, v in params.items()}
+
+
+def convert_observation_fields(params: RequestParams) -> RequestParams:
+    """Translate simplified format of observation field values into API-compatible format"""
+    if "observation_fields" in params:
+        params["observation_field_values_attributes"] = params.pop("observation_fields")
+    obs_fields = params.get("observation_field_values_attributes")
+    if isinstance(obs_fields, dict):
+        params["observation_field_values_attributes"] = [
+            {"observation_field_id": k, "value": v} for k, v in obs_fields.items()
+        ]
+    return params
 
 
 def strip_empty_params(params: RequestParams) -> RequestParams:
@@ -342,3 +350,7 @@ def translate_rank_range(params: RequestParams) -> RequestParams:
         max_rank_index = _get_rank_index(max_rank) + 1 if max_rank else len(RANKS)
         params["rank"] = RANKS[min_rank_index:max_rank_index]
     return params
+
+
+def warn(msg):
+    warnings.warn(DeprecationWarning(msg))

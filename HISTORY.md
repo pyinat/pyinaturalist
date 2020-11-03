@@ -15,6 +15,8 @@
     * `get_all_observation_species_counts()`
 
 ### Modified Endpoints
+* Added support for simplified observation field syntax (`observation_fields={id: value}`)
+  for `create_observations()` and `update_observation()`
 * Updated `node_api.get_taxa_by_id()` to accept multiple IDs
 * Updated `rest_api.get_observations()` with type conversion from strings to floats for response lat/long coordinates.
   Only applies to JSON response format.
@@ -24,16 +26,21 @@
 * Renamed `search_query` argument to `q` to be consistent with API request parameters
 * Using the `search_query` argument for `rest_api.get_observation_fields()` and `rest_api.get_all_observation_fields()`
   will raise a `DeprecationWarning`, but will otherwise still be functional until `0.12`
+* Renamed `create_observations()` to `create_observation()`, as this only supports creating a single observation per
+  call. This is aliased to `create_observations()` for backwards-compatibility, but will raise a `DeprecationWarning`.
 
 ### Documentation & Usability
 * Added example response data to docs all endpoints
 * Added links to official API reference to docs for all endpoints
 * Added full API request parameters to all API functions, in the form of keyword arguments with type annotations and docstrings
+* Added complete table of iNaturalist API endpoints and endpoints implemented by pyinaturalist
+* Added and improved usage examples
 * Numerous other documentation improvements
 * Made all API function signatures consistent by taking request params as keyword arguments
 
 ### Other Changes
-* Dropped support for python 3.4
+* Dropped testing & support for python 3.4
+* Added testing & support for python 3.9
 * Added parameter validation for multiple-choice request parameters
 
 ## 0.10.0 (2020-06-16)

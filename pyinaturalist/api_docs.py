@@ -12,6 +12,7 @@ from pyinaturalist.constants import (
     DateTime,
     IntOrStr,
     FileOrPath,
+    ObsFieldValues,
 )
 from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
 
@@ -238,7 +239,8 @@ def _create_observation(
     map_scale: int = None,
     positional_accuracy: int = None,
     geoprivacy: str = None,
-    observation_field_values_attributes: str = None,
+    observation_fields: ObsFieldValues = None,
+    observation_field_values_attributes: ObsFieldValues = None,
     flickr_photos: MultiInt = None,
     picasa_photos: MultiStr = None,
     facebook_photos: MultiStr = None,
@@ -260,8 +262,8 @@ def _create_observation(
     map_scale: Google Maps zoom level (from **0 to 19**) at which to show this observation's map marker.
     positional_accuracy: Positional accuracy of the observation coordinates, in meters
     geoprivacy: Geoprivacy for the observation
-    observation_field_values_attributes[order]: [NOT IMPLEMENTED] Nested fields for observation field values.
-        ``order`` is just an integer starting with zero specifying the order of entry.
+    observation_fields: Dict of observation fields in the format ``{id: value}``.
+        Alias for ``observation_field_values_attributes``.
     flickr_photos: Flickr photo ID(s) to add as photos for this observation. User must have
         their Flickr and iNat accounts connected, and the user must own the photo(s) on Flickr.
     picasa_photos: Picasa photo ID(s) to add as photos for this observation. User must have
