@@ -4,12 +4,13 @@ Pytest will also automatically pick up any fixtures defined here.
 """
 import json
 import logging
-import os
 import re
 from inspect import getmembers, isfunction, signature, Parameter
+from os.path import abspath, dirname, join
 from unittest.mock import MagicMock
 
 HTTP_FUNC_PATTERN = re.compile(r"(get|put|post|delete)_.+")
+SAMPLE_DATA_DIR = abspath(join(dirname(__file__), "sample_data"))
 # Enable logging for urllib and other external loggers
 logging.basicConfig(level="INFO")
 
@@ -47,7 +48,7 @@ def get_mock_args_for_signature(func):
 
 
 def _sample_data_path(filename):
-    return os.path.join(os.path.dirname(__file__), "sample_data", filename)
+    return join(SAMPLE_DATA_DIR, filename)
 
 
 def load_sample_data(filename):
