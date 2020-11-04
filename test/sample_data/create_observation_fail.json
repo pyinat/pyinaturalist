@@ -1,1 +1,8 @@
-{"errors": [["Observed on can't be in the future", "Latitude doit être inférieur ou égal à 90"]]}
+{
+  "errors": [
+    [
+      "Observed on can't be in the future",
+      "Latitude doit être inférieur ou égal à 90"
+    ]
+  ]
+}

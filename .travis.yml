@@ -6,7 +6,7 @@ dist: xenial
 
 matrix:
   include:
-  - python: "3.4"
+  # Note: Python 3.5 will reach EOL in September 2020
   - python: "3.5"
   - python: "3.6"
   - python: "3.7"
@@ -17,6 +17,7 @@ matrix:
   - python: "3.8"
     env:
       - secure: QFRSBbtAPfFxO2GONfI2KCrq7gdSI6zj4wI5QEunjz8xVjvb60TD2Q4ULmoMPBqgFkqV6NZr6bB49MpNcpfw9aeBkUqjYmWWkLfZZsFWvJeRnkPV4EcfmMKJ9pph9QUYQ1BUcqWPZbPYk0VQdDxMVwDKETW2nzVNgRFaJm4O9kM6qV462/3dN53Q0NNTBfSju80nV8YQycP7onEQQILFityDOThKqR3FctDiwrfMo3ALWSfghkyvCgvrvpf6uAWncM1hwDwga+1Luo3vDG6reDE+M3AitFwo5XsPXy8hER8BwuUh8MRrr/HbakH66e83vvBX593DoGZr7UMqwEg+Xzpa2yUvSszW2U9ksh9BaYPbZG3nzsJJlTg61k6Sh7OU4AXglsDBPVX5aoLVz6XSAL97p+Ec85yo8dzpxzBc31ow8rI6JS9yycRnHXGATKqTIQ7Z3QiVaNKrIJVKhMdqvng1zb8RFR49MbPFT5QQuxOJLe/S1qkzOjclp2scZV17TPa6hkfTuDz01+rPXKh3US0WbR689TtNCBB/UwuoX5vnFqcvmqi0sZtl0G4eqXPvik4r7JnuX3d81LIGzF6e45FyO8sSvicZxCu8KmQQ7xI0hXjP6+vfEOnnz4xpAKmHmf2xTIStpuaCm7xqdt3M070P/A4kC0xBGcbcNCq1xU4=
+  - python: "3.9"
 
 # Install dependencies, run tests, and run coveralls after 'coverage' job
 install: pip install ".[build]"

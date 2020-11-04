@@ -1,20 +1,31 @@
 #!/usr/bin/env python
 from itertools import chain
-from sys import version_info
 from setuptools import setup, find_packages
 from pyinaturalist import __version__
-
-# Only install the typing backport if we're on python < 3.5
-backports = ["typing>=3.7.4"] if version_info < (3, 5) else []
 
 # These package categories allow tox and build environments to install only what they need
 extras_require = {
     # Packages used for CI jobs
     "build": ["coveralls", "tox-travis"],
     # Packages used for documentation builds
-    "docs": ["Sphinx>=3.0", "sphinx-rtd-theme", "sphinxcontrib-apidoc"],
+    "docs": [
+        "m2r2",
+        "Sphinx~=3.2.1",
+        "sphinx-autodoc-typehints",
+        "sphinx-automodapi",
+        "sphinx-rtd-theme",
+        "sphinxcontrib-apidoc",
+    ],
     # Packages used for testing both locally and in CI jobs
-    "test": ["black", "flake8", "mypy", "pytest", "pytest-cov", "requests-mock>=1.7", "tox"],
+    "test": [
+        "black==20.8b1",
+        "flake8",
+        "mypy",
+        "pytest>=5.0",
+        "pytest-cov",
+        "requests-mock>=1.7",
+        "tox>=3.15",
+    ],
 }
 # All development/testing packages combined
 extras_require["dev"] = list(chain.from_iterable(extras_require.values()))
@@ -28,7 +39,7 @@ setup(
     url="https://github.com/niconoe/pyinaturalist",
     packages=find_packages(),
     include_package_data=True,
-    install_requires=["python-dateutil>=2.0", "requests>=2.21.0"] + backports,
+    install_requires=["python-dateutil>=2.0", "python-forge", "requests>=2.24.0"],
     extras_require=extras_require,
     zip_safe=False,
 )

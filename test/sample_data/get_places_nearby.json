@@ -1,0 +1,880 @@
+{
+    "total_results": 20,
+    "page": 1,
+    "per_page": 20,
+    "results": {
+        "standard": [
+            {
+                "ancestor_place_ids": null,
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                0.0132,
+                                5.4508
+                            ],
+                            [
+                                0.0132,
+                                83.7083
+                            ],
+                            [
+                                -0.0033,
+                                83.7083
+                            ],
+                            [
+                                -0.0033,
+                                5.4508
+                            ],
+                            [
+                                0.0132,
+                                5.4508
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 28171.40875125,
+                "admin_level": -1,
+                "place_type": 29,
+                "name": "North America",
+                "location": "56.7732555574,-179.68825",
+                "id": 97394,
+                "display_name": "North America",
+                "slug": "north-america",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            },
+            {
+                "ancestor_place_ids": null,
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                25.4463,
+                                -59.6453102112
+                            ],
+                            [
+                                25.4463,
+                                81.3229
+                            ],
+                            [
+                                -169.6026,
+                                81.3229
+                            ],
+                            [
+                                -169.6026,
+                                -59.6453102112
+                            ],
+                            [
+                                25.4463,
+                                -59.6453102112
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 23252.8613393656,
+                "admin_level": -1,
+                "place_type": 29,
+                "name": "Asia",
+                "location": "45.3155418506,95.5511605393",
+                "id": 97395,
+                "display_name": "Asia",
+                "slug": "asia-8acc1481-cd81-431c-9af0-7b5478872cbf",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            },
+            {
+                "ancestor_place_ids": null,
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                112.8701,
+                                -55.1667
+                            ],
+                            [
+                                112.8701,
+                                28.4516
+                            ],
+                            [
+                                -105.3132000961,
+                                28.4516
+                            ],
+                            [
+                                -105.3132000961,
+                                -55.1667
+                            ],
+                            [
+                                112.8701,
+                                -55.1667
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 11858.4713575743,
+                "admin_level": -1,
+                "place_type": 29,
+                "name": "Oceania",
+                "location": "-23.5282222513,180.0",
+                "id": 97393,
+                "display_name": "Oceania",
+                "slug": "oceania-cb486869-ce0e-4382-b1a7-ba8d9b98dabc",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            },
+            {
+                "ancestor_place_ids": null,
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                -25.4115,
+                                -40.4211
+                            ],
+                            [
+                                -25.4115,
+                                37.6096
+                            ],
+                            [
+                                63.5515,
+                                37.6096
+                            ],
+                            [
+                                63.5515,
+                                -40.4211
+                            ],
+                            [
+                                -25.4115,
+                                -40.4211
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 6941.8451641,
+                "admin_level": -1,
+                "place_type": 29,
+                "name": "Africa",
+                "location": "6.350216504,18.2786013727",
+                "id": 97392,
+                "display_name": "Africa",
+                "slug": "africa-d6e73131-50b2-458c-bf7c-837f48f7844a",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            },
+            {
+                "ancestor_place_ids": null,
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                -31.3175,
+                                34.7569
+                            ],
+                            [
+                                -31.3175,
+                                82.587
+                            ],
+                            [
+                                69.1226,
+                                82.587
+                            ],
+                            [
+                                69.1226,
+                                34.7569
+                            ],
+                            [
+                                -31.3175,
+                                34.7569
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 4804.06002701,
+                "admin_level": -1,
+                "place_type": 29,
+                "name": "Europe",
+                "location": "56.1183662556,27.7243100391",
+                "id": 97391,
+                "display_name": "Europe",
+                "slug": "europe-84d7a1a6-93a4-4b07-a566-1d4215b0dfe2",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            },
+            {
+                "ancestor_place_ids": null,
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                -92.0576,
+                                -56.0340278625
+                            ],
+                            [
+                                -92.0576,
+                                12.6730171721
+                            ],
+                            [
+                                -28.7993,
+                                12.6730171721
+                            ],
+                            [
+                                -28.7993,
+                                -56.0340278625
+                            ],
+                            [
+                                -92.0576,
+                                -56.0340278625
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 4346.29086691326,
+                "admin_level": -1,
+                "place_type": 29,
+                "name": "South America",
+                "location": "-15.4657521796,-60.8985018712",
+                "id": 97389,
+                "display_name": "South America",
+                "slug": "south-america-09114de6-1fe9-4bd3-9d64-07ae85685ef1",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            },
+            {
+                "ancestor_place_ids": [
+                    97395,
+                    7161
+                ],
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                19.617,
+                                41.1889
+                            ],
+                            [
+                                19.617,
+                                81.9042
+                            ],
+                            [
+                                -169.6026,
+                                81.9042
+                            ],
+                            [
+                                -169.6026,
+                                41.1889
+                            ],
+                            [
+                                19.617,
+                                41.1889
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 6953.37522012,
+                "admin_level": 0,
+                "place_type": 12,
+                "name": "Russia",
+                "location": "62.1477901548,179.99895",
+                "id": 7161,
+                "display_name": "Russia",
+                "slug": "russia",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            },
+            {
+                "ancestor_place_ids": [
+                    97394,
+                    1
+                ],
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                172.347846,
+                                18.86546
+                            ],
+                            [
+                                172.347846,
+                                71.441059
+                            ],
+                            [
+                                -66.885444,
+                                71.441059
+                            ],
+                            [
+                                -66.885444,
+                                18.86546
+                            ],
+                            [
+                                172.347846,
+                                18.86546
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 6349.38211750929,
+                "admin_level": 0,
+                "place_type": 12,
+                "name": "United States",
+                "location": "45.9643322098,-113.2690112346",
+                "id": 1,
+                "display_name": "United States",
+                "slug": "united-states",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            },
+            {
+                "ancestor_place_ids": [
+                    97394,
+                    6712
+                ],
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                -141.0027,
+                                41.6763
+                            ],
+                            [
+                                -141.0027,
+                                83.1586
+                            ],
+                            [
+                                -52.5689,
+                                83.1586
+                            ],
+                            [
+                                -52.5689,
+                                41.6763
+                            ],
+                            [
+                                -141.0027,
+                                41.6763
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 3668.43742174,
+                "admin_level": 0,
+                "place_type": 12,
+                "name": "Canada",
+                "location": "61.786135123,-97.6582829209",
+                "id": 6712,
+                "display_name": "Canada",
+                "slug": "canada",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            },
+            {
+                "ancestor_place_ids": [
+                    97393,
+                    10316
+                ],
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                166.5477,
+                                -0.4382
+                            ],
+                            [
+                                166.5477,
+                                28.2689
+                            ],
+                            [
+                                -74.9519,
+                                28.2689
+                            ],
+                            [
+                                -74.9519,
+                                -0.4382
+                            ],
+                            [
+                                166.5477,
+                                -0.4382
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 3401.80283284,
+                "admin_level": 0,
+                "place_type": 12,
+                "name": "United States Minor Outlying Islands",
+                "location": "12.1761919793,174.63035",
+                "id": 10316,
+                "display_name": "United States Minor Outlying Islands",
+                "slug": "united-states-minor-outlying-islands",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            }
+        ],
+        "community": [
+            {
+                "ancestor_place_ids": [
+                    97391,
+                    8858,
+                    11770
+                ],
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                22.004324,
+                                44.104093
+                            ],
+                            [
+                                22.004324,
+                                45.119544
+                            ],
+                            [
+                                23.481443,
+                                45.119544
+                            ],
+                            [
+                                23.481443,
+                                44.104093
+                            ],
+                            [
+                                22.004324,
+                                44.104093
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 1.49994196566895,
+                "admin_level": null,
+                "place_type": 8,
+                "name": "Mehedinti",
+                "location": "44.6118185,22.7428835",
+                "id": 11770,
+                "display_name": "Mehedinti, RO",
+                "slug": "mehedinti",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "Polygon"
+                }
+            },
+            {
+                "ancestor_place_ids": [
+                    97393,
+                    6803,
+                    8345,
+                    119755
+                ],
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                -185.3471767902374,
+                                -36.40698885244839
+                            ],
+                            [
+                                -185.3471767902374,
+                                -36.402822451222875
+                            ],
+                            [
+                                -185.34240245819092,
+                                -36.402822451222875
+                            ],
+                            [
+                                -185.34240245819092,
+                                -36.40698885244839
+                            ],
+                            [
+                                -185.3471767902374,
+                                -36.40698885244839
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 1.49992432378257,
+                "admin_level": null,
+                "place_type": null,
+                "name": "Mahurangi College",
+                "location": null,
+                "id": 119755,
+                "display_name": "Mahurangi College, AU, NZ",
+                "slug": "mahurangi-college",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "Polygon"
+                }
+            },
+            {
+                "ancestor_place_ids": [
+                    97394,
+                    6712,
+                    6853,
+                    150981
+                ],
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                -61.6019143495,
+                                45.6058779419
+                            ],
+                            [
+                                -61.6019143495,
+                                47.0419557986
+                            ],
+                            [
+                                -60.5577340737,
+                                47.0419557986
+                            ],
+                            [
+                                -60.5577340737,
+                                45.6058779419
+                            ],
+                            [
+                                -61.6019143495,
+                                45.6058779419
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 1.49952417247928,
+                "admin_level": null,
+                "place_type": null,
+                "name": "Ceap Breatainn",
+                "location": "46.2252596491,-61.0992457912",
+                "id": 150981,
+                "display_name": "Ceap Breatainn, NS, CA",
+                "slug": "ceap-breatainn",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            },
+            {
+                "ancestor_place_ids": [
+                    65818,
+                    136758
+                ],
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                -123.8148460784,
+                                45.6563183679
+                            ],
+                            [
+                                -123.8148460784,
+                                47.202296372
+                            ],
+                            [
+                                -122.8454285775,
+                                47.202296372
+                            ],
+                            [
+                                -122.8454285775,
+                                45.6563183679
+                            ],
+                            [
+                                -123.8148460784,
+                                45.6563183679
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 1.49869813318099,
+                "admin_level": null,
+                "place_type": 16,
+                "name": "Willapa Hills (US EPA Level IV Ecoregion)",
+                "location": "46.4319722706,-123.3631258754",
+                "id": 136758,
+                "display_name": "Willapa Hills",
+                "slug": "willapa-hills",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            },
+            {
+                "ancestor_place_ids": null,
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                -142.8837270846,
+                                62.4222377534
+                            ],
+                            [
+                                -142.8837270846,
+                                63.2173484375
+                            ],
+                            [
+                                -141.000115638,
+                                63.2173484375
+                            ],
+                            [
+                                -141.000115638,
+                                62.4222377534
+                            ],
+                            [
+                                -142.8837270846,
+                                62.4222377534
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 1.49767958588472,
+                "admin_level": null,
+                "place_type": 100,
+                "name": "Tetlin National Wildlife Refuge",
+                "location": "62.6721837582,-141.847282354",
+                "id": 119694,
+                "display_name": "Tetlin National Wildlife Refuge",
+                "slug": "tetlin-national-wildlife-refuge",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            },
+            {
+                "ancestor_place_ids": null,
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                140.962551036,
+                                -35.097841208
+                            ],
+                            [
+                                140.962551036,
+                                -33.981281042
+                            ],
+                            [
+                                142.302577442,
+                                -33.981281042
+                            ],
+                            [
+                                142.302577442,
+                                -35.097841208
+                            ],
+                            [
+                                140.962551036,
+                                -35.097841208
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 1.49622010632774,
+                "admin_level": null,
+                "place_type": 100,
+                "name": "Murray - Sunset",
+                "location": "-34.539561125,141.632564239",
+                "id": 70630,
+                "display_name": "Murray - Sunset",
+                "slug": "murray-sunset",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "MultiPolygon"
+                }
+            },
+            {
+                "ancestor_place_ids": null,
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                -65.8399659209,
+                                45.2996206915
+                            ],
+                            [
+                                -65.8399659209,
+                                46.2041670855
+                            ],
+                            [
+                                -64.187622238,
+                                46.2041670855
+                            ],
+                            [
+                                -64.187622238,
+                                45.2996206915
+                            ],
+                            [
+                                -65.8399659209,
+                                45.2996206915
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 1.49462152001587,
+                "admin_level": null,
+                "place_type": 21,
+                "name": "Fundy Pollinator Trail",
+                "location": "45.7532579389,-65.0489713883",
+                "id": 141915,
+                "display_name": "Fundy Pollinator Trail",
+                "slug": "fundy-pollinator-trail",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "Polygon"
+                }
+            },
+            {
+                "ancestor_place_ids": null,
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                -59.64553999999988,
+                                -8.804219999999928
+                            ],
+                            [
+                                -59.64553999999988,
+                                -7.7018099999999095
+                            ],
+                            [
+                                -58.29006999999989,
+                                -7.7018099999999095
+                            ],
+                            [
+                                -58.29006999999989,
+                                -8.804219999999928
+                            ],
+                            [
+                                -59.64553999999988,
+                                -8.804219999999928
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 1.49428368270001,
+                "admin_level": null,
+                "place_type": 100,
+                "name": "Sucunduri",
+                "location": "-8.253015,-58.967805",
+                "id": 72346,
+                "display_name": "Sucunduri",
+                "slug": "sucunduri",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "Polygon"
+                }
+            },
+            {
+                "ancestor_place_ids": null,
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                -113.1811523438,
+                                40.6327144966
+                            ],
+                            [
+                                -113.1811523438,
+                                41.8040781443
+                            ],
+                            [
+                                -111.9067382813,
+                                41.8040781443
+                            ],
+                            [
+                                -111.9067382813,
+                                40.6327144966
+                            ],
+                            [
+                                -113.1811523438,
+                                40.6327144966
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 1.49280230495783,
+                "admin_level": null,
+                "place_type": null,
+                "name": "Great Salt Lake",
+                "location": "41.2183963204,-112.5439453125",
+                "id": 50505,
+                "display_name": "Great Salt Lake",
+                "slug": "great-salt-lake",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "Polygon"
+                }
+            },
+            {
+                "ancestor_place_ids": null,
+                "bounding_box_geojson": {
+                    "coordinates": [
+                        [
+                            [
+                                -57.11539996699989,
+                                -8.276698823999938
+                            ],
+                            [
+                                -57.11539996699989,
+                                -7.206842790999929
+                            ],
+                            [
+                                -55.72024028099989,
+                                -7.206842790999929
+                            ],
+                            [
+                                -55.72024028099989,
+                                -8.276698823999938
+                            ],
+                            [
+                                -57.11539996699989,
+                                -8.276698823999938
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                },
+                "bbox_area": 1.4926200070655,
+                "admin_level": null,
+                "place_type": 100,
+                "name": "Rio Novo",
+                "location": "-7.7417708075,-56.417820124",
+                "id": 72230,
+                "display_name": "Rio Novo",
+                "slug": "rio-novo--2",
+                "geometry_geojson": {
+                    "coordinates": [],
+                    "type": "Polygon"
+                }
+            }
+        ]
+    }
+}
