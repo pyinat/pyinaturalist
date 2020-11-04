@@ -58,7 +58,7 @@ def create_test_obs(token):
         observation_fields={297: 1},
     )
     test_obs_id = response[0]["id"]
-    print("Created new observation: {}".format(test_obs_id))
+    print(f"Created new observation: {test_obs_id}")
 
     obs = get_observation(test_obs_id)
     print("Fetched new observation:")
@@ -74,7 +74,7 @@ def update_test_obs(test_obs_id, token):
     )
     photo_id = response.get("photo").get("id")
     assert photo_id
-    print("Added photo to observation: {}".format(photo_id))
+    print(f"Added photo to observation: {photo_id}")
     # pprint(response, indent=2)
 
     response = update_observation(

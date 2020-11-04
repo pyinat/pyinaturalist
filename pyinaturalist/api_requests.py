@@ -47,7 +47,7 @@ def request(
     ids: Union[str, List] = None,
     params: Dict = None,
     headers: Dict = None,
-    **kwargs
+    **kwargs,
 ) -> requests.Response:
     """Wrapper around :py:func:`requests.request` that supports dry-run mode and
     adds appropriate headers.
@@ -109,5 +109,5 @@ def env_to_bool(environment_variable: str) -> bool:
 
 def log_request(*args, **kwargs):
     """ Log all relevant information about an HTTP request """
-    kwargs_strs = ["{}={}".format(k, v) for k, v in kwargs.items()]
+    kwargs_strs = [f"{k}={v}" for k, v in kwargs.items()]
     logger.info("Request: {}".format(", ".join(list(args) + kwargs_strs)))

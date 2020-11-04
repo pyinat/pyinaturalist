@@ -8,7 +8,7 @@ __version__ = "0.12.0"
 # These are imported here so they can be set with pyinaturalist.<variable>
 from pyinaturalist.constants import DRY_RUN_ENABLED, DRY_RUN_WRITE_ONLY
 
-DEFAULT_USER_AGENT = "Pyinaturalist/{version}".format(version=__version__)
+DEFAULT_USER_AGENT = f"pyinaturalist/{__version__}"
 user_agent = DEFAULT_USER_AGENT
 
 
@@ -20,8 +20,9 @@ def get_prerelease_version(version: str) -> str:
     """
     if not (getenv("TRAVIS") == "true" and getenv("TRAVIS_BRANCH") == "dev"):
         return version
-    new_version = "{}-dev.{}".format(version, getenv("TRAVIS_BUILD_NUMBER", "0"))
-    getLogger(__name__).info("Using pre-release version: {}".format(new_version))
+    build_number = getenv("TRAVIS_BUILD_NUMBER", "0")
+    new_version = f"{version}-dev.{build_number}"
+    getLogger(__name__).info(f"Using pre-release version: {new_version}")
     return new_version
 
 

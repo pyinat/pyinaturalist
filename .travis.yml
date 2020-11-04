@@ -6,8 +6,6 @@ dist: xenial
 
 matrix:
   include:
-  # Note: Python 3.5 will reach EOL in September 2020
-  - python: "3.5"
   - python: "3.6"
   - python: "3.7"
   # Run a separate job for combined code quality checks & build tests
