@@ -1,6 +1,7 @@
 # History
 
-## 0.11.0 (2020-TBD)
+## 0.11.0 (2020-11-04)
+[See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/2?closed=1)
 
 ### New Endpoints
 * Added new functions for Node API **Places** endpoints:
@@ -44,6 +45,7 @@
 * Added parameter validation for multiple-choice request parameters
 
 ## 0.10.0 (2020-06-16)
+[See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/1?closed=1)
 
 ### New Endpoints
 * Added new **Observation** endpoint: `rest_api.get_observations()`, with 6 additional observation response formats, including GeoJSON, Darwin Core, and others
