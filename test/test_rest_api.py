@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from io import BytesIO
 from unittest.mock import patch
+import os
 
 import pytest
 from requests import HTTPError
@@ -19,7 +20,7 @@ from pyinaturalist.rest_api import (
     delete_observation,
 )
 from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
-from test.conftest import load_sample_data
+from test.conftest import MOCK_CREDS, load_sample_data
 
 PAGE_1_JSON_RESPONSE = load_sample_data("get_observation_fields_page1.json")
 PAGE_2_JSON_RESPONSE = load_sample_data("get_observation_fields_page2.json")
@@ -127,7 +128,62 @@ def test_put_observation_field_values(requests_mock):
     assert r["value"] == "fouraging"
 
 
-def test_get_access_token_fail(requests_mock):
+accepted_json = {
+    "access_token": "604e5df329b98eecd22bb0a84f88b68",
+    "token_type": "Bearer",
+    "scope": "write",
+}
+
+
+@patch.dict(os.environ, {}, clear=True)
+def test_get_access_token(requests_mock):
+    requests_mock.post(
+        f"{INAT_BASE_URL}/oauth/token",
+        json=accepted_json,
+        status_code=200,
+    )
+
+    token = get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
+    assert token == "604e5df329b98eecd22bb0a84f88b68"
+
+
+@patch.dict(os.environ, MOCK_CREDS)
+def test_get_access_token__envars(requests_mock):
+    requests_mock.post(
+        f"{INAT_BASE_URL}/oauth/token",
+        json=accepted_json,
+        status_code=200,
+    )
+
+    token = get_access_token()
+    assert token == "604e5df329b98eecd22bb0a84f88b68"
+
+
+@patch.dict(
+    os.environ,
+    {
+        "INAT_USERNAME": "valid_username",
+        "INAT_PASSWORD": "valid_password",
+    },
+)
+def test_get_access_token__mixed_args_and_envars(requests_mock):
+    requests_mock.post(
+        f"{INAT_BASE_URL}/oauth/token",
+        json=accepted_json,
+        status_code=200,
+    )
+
+    token = get_access_token(app_id="valid_app_id", app_secret="valid_app_secret")
+    assert token == "604e5df329b98eecd22bb0a84f88b68"
+
+
+@patch.dict(os.environ, {}, clear=True)
+def test_get_access_token__missing_creds():
+    with pytest.raises(AuthenticationError):
+        get_access_token("username")
+
+
+def test_get_access_token__invalid_creds(requests_mock):
     """ If we provide incorrect credentials to get_access_token(), an AuthenticationError is raised"""
 
     rejection_json = {
@@ -145,26 +201,6 @@ def test_get_access_token_fail(requests_mock):
 
     with pytest.raises(AuthenticationError):
         get_access_token("username", "password", "app_id", "app_secret")
-
-
-def test_get_access_token(requests_mock):
-    """ Test a successful call to get_access_token() """
-
-    accepted_json = {
-        "access_token": "604e5df329b98eecd22bb0a84f88b68a075a023ac437f2317b02f3a9ba414a08",
-        "token_type": "Bearer",
-        "scope": "write",
-        "created_at": 1539352135,
-    }
-    requests_mock.post(
-        f"{INAT_BASE_URL}/oauth/token",
-        json=accepted_json,
-        status_code=200,
-    )
-
-    token = get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
-
-    assert token == "604e5df329b98eecd22bb0a84f88b68a075a023ac437f2317b02f3a9ba414a08"
 
 
 def test_update_observation(requests_mock):

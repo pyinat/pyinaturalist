@@ -10,6 +10,7 @@ Functions
     :nosignatures:
 
 """
+from os import getenv
 from time import sleep
 from typing import Dict, Any, List, Union
 
@@ -39,16 +40,89 @@ from pyinaturalist.response_format import convert_lat_long_to_float
 
 
 def get_access_token(
-    username: str, password: str, app_id: str, app_secret: str, user_agent: str = None
+    username: str = None,
+    password: str = None,
+    app_id: str = None,
+    app_secret: str = None,
+    user_agent: str = None,
 ) -> str:
     """Get an access token using the user's iNaturalist username and password.
     You still need an iNaturalist app to do this.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#auth
 
-    Example:
-        >>> access_token = get_access_token('...')
-        >>> headers = {"Authorization": f"Bearer {access_token}"}
+    **Environment Variables**
+
+    Alternatively, you may provide credentials via environment variables instead. The
+    environment variable names are the keyword arguments in uppercase, prefixed with ``INAT_``:
+
+    * ``INAT_USERNAME``
+    * ``INAT_PASSWORD``
+    * ``INAT_APP_ID``
+    * ``INAT_APP_SECRET``
+
+    .. admonition:: Set environment variables in python:
+        :class: toggle
+
+        >>> import os
+        >>> os.environ['INAT_USERNAME'] = 'my_username'
+        >>> os.environ['INAT_PASSWORD'] = 'my_password'
+        >>> os.environ['INAT_APP_ID'] = '33f27dc63bdf27f4ca6cd95dd9dcd5df'
+        >>> os.environ['INAT_APP_SECRET'] = 'bbce628be722bfe2abd5fc566ba83de4'
+
+    .. admonition:: Set environment variables in a POSIX shell (bash, etc.):
+        :class: toggle
+
+        .. code-block:: bash
+
+            export INAT_USERNAME="my_username"
+            export INAT_PASSWORD="my_password"
+            export INAT_APP_ID="33f27dc63bdf27f4ca6cd95dd9dcd5df"
+            export INAT_APP_SECRET="bbce628be722bfe2abd5fc566ba83de4"
+
+    .. admonition:: Set environment variables in a Windows shell:
+        :class: toggle
+
+        .. code-block:: bat
+
+            set INAT_USERNAME="my_username"
+            set INAT_PASSWORD="my_password"
+            set INAT_APP_ID="33f27dc63bdf27f4ca6cd95dd9dcd5df"
+            set INAT_APP_SECRET="bbce628be722bfe2abd5fc566ba83de4"
+
+    .. admonition:: Set environment variables in PowerShell:
+        :class: toggle
+
+        .. code-block:: powershell
+
+            $Env:INAT_USERNAME="my_username"
+            $Env:INAT_PASSWORD="my_password"
+            $Env:INAT_APP_ID="33f27dc63bdf27f4ca6cd95dd9dcd5df"
+            $Env:INAT_APP_SECRET="bbce628be722bfe2abd5fc566ba83de4"
+
+    Examples:
+
+        With keyword arguments:
+
+        >>> access_token = get_access_token(
+        >>>     username='my_username',
+        >>>     password='my_password',
+        >>>     app_id='33f27dc63bdf27f4ca6cd95dd9dcd5df',
+        >>>     app_secret='bbce628be722bfe2abd5fc566ba83de4',
+        >>> )
+
+        With environment variables set:
+
+        >>> access_token = get_access_token()
+
+        If you would like to run custom requests for endpoints not yet implemented in pyinaturalist,
+        you can authenticate these requests by putting the token in your HTTP headers as follows:
+
+        >>> import requests
+        >>> requests.get(
+        >>>     'https://www.inaturalist.org/observations/1234',
+        >>>      headers={'Authorization': f'Bearer {access_token}'},
+        >>> )
 
     Args:
         username: iNaturalist username
@@ -58,12 +132,14 @@ def get_access_token(
         user_agent: a user-agent string that will be passed to iNaturalist.
     """
     payload = {
-        "client_id": app_id,
-        "client_secret": app_secret,
+        "username": username or getenv("INAT_USERNAME"),
+        "password": password or getenv("INAT_PASSWORD"),
+        "client_id": app_id or getenv("INAT_APP_ID"),
+        "client_secret": app_secret or getenv("INAT_APP_SECRET"),
         "grant_type": "password",
-        "username": username,
-        "password": password,
     }
+    if not all(payload.values()):
+        raise AuthenticationError("Not all authentication parameters were provided")
 
     response = post(
         f"{INAT_BASE_URL}/oauth/token",
