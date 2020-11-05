@@ -156,7 +156,7 @@ def get_all_observations(
         object returned by :py:func:`.get_observations()`.
     """
     kwargs = check_deprecated_params(params, **kwargs)
-    results = []  # type: List[JsonResponse]
+    results: List[JsonResponse] = []
     id_above = 0
     pagination_params = {
         **kwargs,

@@ -13,8 +13,6 @@ Functions
 from time import sleep
 from typing import Dict, Any, List, Union
 
-from urllib.parse import urljoin
-
 from pyinaturalist import api_docs as docs
 from pyinaturalist.constants import (
     THROTTLING_DELAY,
@@ -68,7 +66,7 @@ def get_access_token(
     }
 
     response = post(
-        "{base_url}/oauth/token".format(base_url=INAT_BASE_URL),
+        f"{INAT_BASE_URL}/oauth/token",
         json=payload,
         user_agent=user_agent,
     )
@@ -144,7 +142,7 @@ def get_observations(user_agent: str = None, **kwargs) -> Union[List, str]:
     validate_multiple_choice_param(kwargs, "order_by", REST_OBS_ORDER_BY_PROPERTIES)
 
     response = get(
-        urljoin(INAT_BASE_URL, "observations.{}".format(response_format)),
+        f"{INAT_BASE_URL}/observations.{response_format}",
         params=kwargs,
         user_agent=user_agent,
     )
@@ -180,7 +178,7 @@ def get_observation_fields(user_agent: str = None, **kwargs) -> ListResponse:
     """
     kwargs = check_deprecated_params(**kwargs)
     response = get(
-        "{base_url}/observation_fields.json".format(base_url=INAT_BASE_URL),
+        f"{INAT_BASE_URL}/observation_fields.json",
         params=kwargs,
         user_agent=user_agent,
     )
@@ -271,9 +269,7 @@ def put_observation_field_values(
     }
 
     response = put(
-        "{base_url}/observation_field_values/{id}".format(
-            base_url=INAT_BASE_URL, id=observation_field_id
-        ),
+        f"{INAT_BASE_URL}/observation_field_values/{observation_field_id}",
         access_token=access_token,
         user_agent=user_agent,
         json=payload,
@@ -344,7 +340,7 @@ def create_observation(
         kwargs["local_photos"] = ensure_file_objs(kwargs["local_photos"])
 
     response = post(
-        url="{base_url}/observations.json".format(base_url=INAT_BASE_URL),
+        url=f"{INAT_BASE_URL}/observations.json",
         json={"observation": kwargs},
         access_token=access_token,
         user_agent=user_agent,
@@ -367,7 +363,7 @@ def update_observation(
     params: RequestParams = None,
     access_token: str = None,
     user_agent: str = None,
-    **kwargs
+    **kwargs,
 ) -> ListResponse:
     """
     Update a single observation.
@@ -420,7 +416,7 @@ def update_observation(
         kwargs["ignore_photos"] = 1
 
     response = put(
-        url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
+        url=f"{INAT_BASE_URL}/observations/{observation_id}.json",
         json={"observation": kwargs},
         access_token=access_token,
         user_agent=user_agent,
@@ -464,7 +460,7 @@ def add_photo_to_observation(
         Information about the newly created photo
     """
     response = post(
-        url="{base_url}/observation_photos".format(base_url=INAT_BASE_URL),
+        url=f"{INAT_BASE_URL}/observation_photos",
         access_token=access_token,
         data={"observation_photo[observation_id]": observation_id},
         files={"file": ensure_file_obj(photo)},
@@ -494,7 +490,7 @@ def delete_observation(observation_id: int, access_token: str = None, user_agent
         :py:exc:`requests.HTTPError` (403) if the observation belongs to another user
     """
     response = delete(
-        url="{base_url}/observations/{id}.json".format(base_url=INAT_BASE_URL, id=observation_id),
+        url=f"{INAT_BASE_URL}/observations/{observation_id}.json",
         access_token=access_token,
         user_agent=user_agent,
         headers={"Content-type": "application/json"},

@@ -427,7 +427,7 @@ def test_user_agent(requests_mock):
         status_code=200,
     )
 
-    default_ua = "Pyinaturalist/{v}".format(v=pyinaturalist.__version__)
+    default_ua = f"pyinaturalist/{pyinaturalist.__version__}"
 
     # By default, we have a 'Pyinaturalist' user agent:
     get_observation(16227955)

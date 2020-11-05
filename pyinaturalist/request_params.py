@@ -205,7 +205,7 @@ def ensure_file_obj(photo: FileOrPath) -> BinaryIO:
     """Given a file objects or path, read it into a file-like object if it's a path"""
     if isinstance(photo, str):
         file_path = abspath(expanduser(photo))
-        logger.info("Reading from file: {}".format(file_path))
+        logger.info(f"Reading from file: {file_path}")
         with open(file_path, "rb") as f:
             return BytesIO(f.read())
     return photo
@@ -281,7 +281,7 @@ def validate_ids(ids: Any) -> str:
         :py:exc:`ValueError` if any values are not valid integers
     """
     if not is_int_list(ids):
-        raise ValueError("Invalid ID(s): {}; must specify integers only".format(ids))
+        raise ValueError(f"Invalid ID(s): {ids}; must specify integers only")
     return convert_list([int(id) for id in ensure_list(ids)])
 
 

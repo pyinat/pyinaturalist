@@ -478,7 +478,7 @@ def _search_query(q: str = None, search_query: str = None):
 
 def _format_param_choices():
     return "\n".join(
-        ["  * {}: {}".format(param, choices) for param, choices in MULTIPLE_CHOICE_PARAMS.items()]
+        [f"  * {param}: {choices}" for param, choices in MULTIPLE_CHOICE_PARAMS.items()]
     )
 
 
