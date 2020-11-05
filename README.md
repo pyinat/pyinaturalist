@@ -34,6 +34,13 @@ $ cd pyinaturalist
 $ pip install -Ue ".[dev]"
 ```
 
+To install with minimal dependencies (disables optional features):
+
+```bash
+$ pip install --no-deps pyinaturalist
+$ pip install python-dateutil requests
+```
+
 ## Development Status
 
 Pyinaturalist is under active development. Currently, a handful of the most relevant API endpoints
@@ -78,7 +85,7 @@ For authenticated API calls (creating/updating/deleting data), you first need to
 This requires creating an [iNaturalist app](https://www.inaturalist.org/oauth/applications/new).
 
 ```python
-from pyinaturalist.rest_api import get_access_token
+from pyinaturalist.auth import get_access_token
 token = get_access_token(
     username='my_username',
     password='my_password',
@@ -87,7 +94,7 @@ token = get_access_token(
 )
 ```
 See [get_access_token()](https://pyinaturalist.readthedocs.io/en/latest/modules/pyinaturalist.rest_api.html#pyinaturalist.rest_api.get_access_token)
-for additional authentication options.
+for additional authentication options, including environment variables and keyring services.
 
 #### Create a new observation
 ```python

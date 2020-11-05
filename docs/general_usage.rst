@@ -4,12 +4,11 @@ Following is some general usage information that applies to most or all pyinatur
 
 Authentication
 --------------
-For any endpoints that create, update, or delete data, you will need to authenticate using credentials for an
-`iNaturalist Application <https://www.inaturalist.org/oauth/applications/new>`_,
+See :py:func:`.get_access_token` for pyinaturalist usage info and examples.
 
-See `iNaturalist documentation <https://www.inaturalist.org/pages/api+reference#au>`_
+For any endpoints that create, update, or delete data, you will need to authenticate using credentials for an
+`iNaturalist Application <https://www.inaturalist.org/oauth/applications/new>`_. See `iNaturalist documentation <https://www.inaturalist.org/pages/api+reference#au>`_
 for more details on authentication,
-and see :py:func:`.get_access_token` for pyinaturalist usage info.
 
 .. note::
 

@@ -10,11 +10,11 @@ Functions
     :nosignatures:
 
 """
-from os import getenv
 from time import sleep
 from typing import Dict, Any, List, Union
 
 from pyinaturalist import api_docs as docs
+from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import (
     THROTTLING_DELAY,
     INAT_BASE_URL,
@@ -23,7 +23,7 @@ from pyinaturalist.constants import (
     ListResponse,
     RequestParams,
 )
-from pyinaturalist.exceptions import AuthenticationError, ObservationNotFound
+from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.api_requests import delete, get, post, put
 from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.request_params import (
@@ -37,119 +37,6 @@ from pyinaturalist.request_params import (
     warn,
 )
 from pyinaturalist.response_format import convert_lat_long_to_float
-
-
-def get_access_token(
-    username: str = None,
-    password: str = None,
-    app_id: str = None,
-    app_secret: str = None,
-    user_agent: str = None,
-) -> str:
-    """Get an access token using the user's iNaturalist username and password.
-    You still need an iNaturalist app to do this.
-
-    **API reference:** https://www.inaturalist.org/pages/api+reference#auth
-
-    **Environment Variables**
-
-    Alternatively, you may provide credentials via environment variables instead. The
-    environment variable names are the keyword arguments in uppercase, prefixed with ``INAT_``:
-
-    * ``INAT_USERNAME``
-    * ``INAT_PASSWORD``
-    * ``INAT_APP_ID``
-    * ``INAT_APP_SECRET``
-
-    .. admonition:: Set environment variables in python:
-        :class: toggle
-
-        >>> import os
-        >>> os.environ['INAT_USERNAME'] = 'my_username'
-        >>> os.environ['INAT_PASSWORD'] = 'my_password'
-        >>> os.environ['INAT_APP_ID'] = '33f27dc63bdf27f4ca6cd95dd9dcd5df'
-        >>> os.environ['INAT_APP_SECRET'] = 'bbce628be722bfe2abd5fc566ba83de4'
-
-    .. admonition:: Set environment variables in a POSIX shell (bash, etc.):
-        :class: toggle
-
-        .. code-block:: bash
-
-            export INAT_USERNAME="my_username"
-            export INAT_PASSWORD="my_password"
-            export INAT_APP_ID="33f27dc63bdf27f4ca6cd95dd9dcd5df"
-            export INAT_APP_SECRET="bbce628be722bfe2abd5fc566ba83de4"
-
-    .. admonition:: Set environment variables in a Windows shell:
-        :class: toggle
-
-        .. code-block:: bat
-
-            set INAT_USERNAME="my_username"
-            set INAT_PASSWORD="my_password"
-            set INAT_APP_ID="33f27dc63bdf27f4ca6cd95dd9dcd5df"
-            set INAT_APP_SECRET="bbce628be722bfe2abd5fc566ba83de4"
-
-    .. admonition:: Set environment variables in PowerShell:
-        :class: toggle
-
-        .. code-block:: powershell
-
-            $Env:INAT_USERNAME="my_username"
-            $Env:INAT_PASSWORD="my_password"
-            $Env:INAT_APP_ID="33f27dc63bdf27f4ca6cd95dd9dcd5df"
-            $Env:INAT_APP_SECRET="bbce628be722bfe2abd5fc566ba83de4"
-
-    Examples:
-
-        With keyword arguments:
-
-        >>> access_token = get_access_token(
-        >>>     username='my_username',
-        >>>     password='my_password',
-        >>>     app_id='33f27dc63bdf27f4ca6cd95dd9dcd5df',
-        >>>     app_secret='bbce628be722bfe2abd5fc566ba83de4',
-        >>> )
-
-        With environment variables set:
-
-        >>> access_token = get_access_token()
-
-        If you would like to run custom requests for endpoints not yet implemented in pyinaturalist,
-        you can authenticate these requests by putting the token in your HTTP headers as follows:
-
-        >>> import requests
-        >>> requests.get(
-        >>>     'https://www.inaturalist.org/observations/1234',
-        >>>      headers={'Authorization': f'Bearer {access_token}'},
-        >>> )
-
-    Args:
-        username: iNaturalist username
-        password: iNaturalist password
-        app_id: iNaturalist application ID
-        app_secret: iNaturalist application secret
-        user_agent: a user-agent string that will be passed to iNaturalist.
-    """
-    payload = {
-        "username": username or getenv("INAT_USERNAME"),
-        "password": password or getenv("INAT_PASSWORD"),
-        "client_id": app_id or getenv("INAT_APP_ID"),
-        "client_secret": app_secret or getenv("INAT_APP_SECRET"),
-        "grant_type": "password",
-    }
-    if not all(payload.values()):
-        raise AuthenticationError("Not all authentication parameters were provided")
-
-    response = post(
-        f"{INAT_BASE_URL}/oauth/token",
-        json=payload,
-        user_agent=user_agent,
-    )
-    try:
-        return response.json()["access_token"]
-    except KeyError:
-        raise AuthenticationError("Authentication error, please check credentials.")
 
 
 @document_request_params(
@@ -377,7 +264,7 @@ def create_observation(
     **API reference:** https://www.inaturalist.org/pages/api+reference#post-observations
 
     Example:
-        >>> token = get_access_token('...')
+        >>> token = get_access_token()
         >>> create_observation(
         >>>     access_token=token,
         >>>     species_guess='Pieris rapae',
@@ -455,7 +342,7 @@ def update_observation(
 
     Example:
 
-        >>> token = get_access_token('...')
+        >>> token = get_access_token()
         >>> update_observation(
         >>>     17932425,
         >>>     access_token=token,
@@ -513,7 +400,7 @@ def add_photo_to_observation(
 
     Example:
 
-        >>> token = get_access_token('...')
+        >>> token = get_access_token()
         >>> add_photo_to_observation(
         >>>     1234,
         >>>     '~/observation_photos/2020_09_01_14003156.jpg',
@@ -555,7 +442,7 @@ def delete_observation(observation_id: int, access_token: str = None, user_agent
 
     Example:
 
-        >>> token = get_access_token('...')
+        >>> token = get_access_token()
         >>> delete_observation(17932425, token)
 
     Returns:

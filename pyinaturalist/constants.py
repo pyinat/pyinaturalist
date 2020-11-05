@@ -3,6 +3,7 @@ from typing import Any, BinaryIO, Dict, List, Union
 
 INAT_NODE_API_BASE_URL = "https://api.inaturalist.org/v1/"
 INAT_BASE_URL = "https://www.inaturalist.org"
+INAT_KEYRING_KEY = "/inaturalist"
 
 PER_PAGE_RESULTS = 30  # Number of records per page for paginated queries
 THROTTLING_DELAY = 1  # In seconds, support <1 floats such as 0.1
