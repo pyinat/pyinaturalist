@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-"""A semi-automated script used to test all observation CRUD endpoints.
-Must provide iNat credentials via environment variables. Usage example:
+"""A semi-automated script used to test all observation CRUD endpoints. Must provide iNat
+credentials via environment variables. See :py:func:`.get_access_token` for details.
+Usage example:
 ```
 export INAT_USERNAME=""
 export INAT_PASSWORD=""
@@ -29,13 +30,7 @@ SAMPLE_PHOTO = join(SAMPLE_DATA_DIR, "obs_image.jpg")
 
 
 def run_observation_crud_test():
-    # TODO: Built-in support for using envars for auth instead of function args might be useful
-    token = get_access_token(
-        username=getenv("INAT_USERNAME"),
-        password=getenv("INAT_PASSWORD"),
-        app_id=getenv("INAT_APP_ID"),
-        app_secret=getenv("INAT_APP_SECRET"),
-    )
+    token = get_access_token()
     print("Received access token")
 
     test_obs_id = create_test_obs(token)
@@ -79,6 +74,7 @@ def update_test_obs(test_obs_id, token):
 
     response = update_observation(
         test_obs_id,
+        taxon_id=54327,
         geoprivacy="obscured",
         ignore_photos=True,
         access_token=token,
@@ -88,14 +84,14 @@ def update_test_obs(test_obs_id, token):
     print("Updated observation")
     # pprint(response, indent=2)
 
-    response = put_observation_field_values(
-        observation_id=test_obs_id,
-        observation_field_id=297,
-        value=2,
-        access_token=token,
-    )
-    print("Added observation field value:")
-    pprint(response, indent=2)
+    # response = put_observation_field_values(
+    #     observation_id=test_obs_id,
+    #     observation_field_id=297,
+    #     value=2,
+    #     access_token=token,
+    # )
+    # print("Added observation field value:")
+    # pprint(response, indent=2)
 
 
 def delete_test_obs(test_obs_id, token):

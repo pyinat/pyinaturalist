@@ -1,3 +1,4 @@
+import os
 import pytest
 from datetime import date, datetime
 from dateutil.tz import gettz
@@ -19,8 +20,7 @@ from pyinaturalist.request_params import (
 )
 import pyinaturalist.rest_api
 import pyinaturalist.node_api
-from test.conftest import get_module_http_functions, get_mock_args_for_signature
-
+from test.conftest import MOCK_CREDS, get_module_http_functions, get_mock_args_for_signature
 
 TEST_PARAMS = {
     "is_active": False,
@@ -155,6 +155,7 @@ def test_all_node_requests_use_param_conversion(
 @pytest.mark.parametrize(
     "http_function", get_module_http_functions(pyinaturalist.rest_api).values()
 )
+@patch.dict(os.environ, MOCK_CREDS)
 @patch("pyinaturalist.rest_api.convert_lat_long_to_float")
 @patch("pyinaturalist.rest_api.sleep")
 @patch("pyinaturalist.api_requests.preprocess_request_params")

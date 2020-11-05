@@ -80,12 +80,14 @@ This requires creating an [iNaturalist app](https://www.inaturalist.org/oauth/ap
 ```python
 from pyinaturalist.rest_api import get_access_token
 token = get_access_token(
-    username='<your_inaturalist_username>',
-    password='<your_inaturalist_password>',
-    app_id='<your_inaturalist_app_id>',
-    app_secret='<your_inaturalist_app_secret>',
+    username='my_username',
+    password='my_password',
+    app_id='my_app_id',
+    app_secret='my_app_secret',
 )
 ```
+See [get_access_token()](https://pyinaturalist.readthedocs.io/en/latest/modules/pyinaturalist.rest_api.html#pyinaturalist.rest_api.get_access_token)
+for additional authentication options.
 
 #### Create a new observation
 ```python
@@ -102,9 +104,7 @@ response = create_observation(
     longitude=4.360216,
     positional_accuracy=50, # meters,
     # sets vespawatch_id (an observation field whose ID is 9613) to the value '100'.
-    observation_field_values_attributes=[
-        {'observation_field_id': 9613,'value': 100},
-    ],
+    observation_fields={9613: 100},
     access_token=token,
 )
 new_observation_id = response[0]['id']
