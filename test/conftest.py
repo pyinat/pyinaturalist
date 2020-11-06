@@ -12,11 +12,17 @@ from unittest.mock import MagicMock
 HTTP_FUNC_PATTERN = re.compile(r"(get|put|post|delete)_.+")
 SAMPLE_DATA_DIR = abspath(join(dirname(__file__), "sample_data"))
 
-MOCK_CREDS = {
+MOCK_CREDS_ENV = {
     "INAT_USERNAME": "valid_username",
     "INAT_PASSWORD": "valid_password",
     "INAT_APP_ID": "valid_app_id",
     "INAT_APP_SECRET": "valid_app_secret",
+}
+MOCK_CREDS_OAUTH = {
+    "username": "valid_username",
+    "password": "valid_password",
+    "client_id": "valid_app_id",
+    "client_secret": "valid_app_secret",
 }
 
 # Enable logging for urllib and other external loggers
