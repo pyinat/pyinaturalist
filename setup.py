@@ -39,7 +39,12 @@ setup(
     url="https://github.com/niconoe/pyinaturalist",
     packages=find_packages(),
     include_package_data=True,
-    install_requires=["python-dateutil>=2.0", "python-forge", "requests>=2.24.0"],
+    install_requires=[
+        "keyring~=21.4.0",
+        "python-dateutil>=2.0",
+        "python-forge",
+        "requests>=2.24.0",
+    ],
     extras_require=extras_require,
     zip_safe=False,
 )

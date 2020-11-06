@@ -2,7 +2,9 @@
 
 ## 0.12.0 (TBD)
 
-* Dropped support for python 3.4
+* Added support for providing credentials via environment variables
+* Added integration with system keyring for credentials storage
+* Dropped support for python 3.5
 
 ## 0.11.0 (2020-11-04)
 [See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/2?closed=1)
