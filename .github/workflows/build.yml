@@ -1,0 +1,64 @@
+name: Build & test python package
+
+on:
+  push:
+    branches: [master, dev]
+    tags: ['v*']
+  pull_request:
+    branches: [master, dev]
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          # TLDR: Reuse cache as long as setup.py hasn't changed
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('setup.py') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+      - name: Install dependencies
+        run: pip install ".[test]"
+
+      - name: Run unit tests
+        run: tox -e py
+      - name: Run code quality checks
+        if: matrix.python-version == '3.8'
+        run: tox -e coverage,mypy,style
+      - name: Run build tests
+        if: matrix.python-version == '3.8'
+        run: tox -e docs,dist-test
+
+  # Deploy pre-release builds from dev branch, and stable builds on tags only
+  release:
+    needs: test
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Build wheel
+        run: |
+          pip install -U setuptools twine wheel
+          python setup.py sdist bdist_wheel
+      - name: Deploy to pypi
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: twine upload dist/*
