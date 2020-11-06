@@ -160,21 +160,6 @@ def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any
     return params
 
 
-# TODO: Remove in 0.12
-def check_deprecated_params(params=None, **kwargs) -> Dict[str, Any]:
-    """Check for usage of request parameters that are deprecated but still supported for
-    backwards-compatibility
-    """
-    if params:
-        warn("The 'params' argument is deprecated; please use keyword arguments instead")
-        kwargs.update(params)
-    if kwargs.get("search_query"):
-        warn("The 'search_query' argument is deprecated; use 'q' instead")
-        kwargs["q"] = kwargs.pop("search_query")
-
-    return kwargs
-
-
 def convert_bool_params(params: RequestParams) -> RequestParams:
     """ Convert any boolean request parameters to javascript-style boolean strings """
     for k, v in params.items():

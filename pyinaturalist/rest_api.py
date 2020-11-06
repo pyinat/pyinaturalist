@@ -21,7 +21,6 @@ from pyinaturalist.constants import (
     FileOrPath,
     JsonResponse,
     ListResponse,
-    RequestParams,
 )
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.api_requests import delete, get, post, put
@@ -29,12 +28,10 @@ from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.request_params import (
     OBSERVATION_FORMATS,
     REST_OBS_ORDER_BY_PROPERTIES,
-    check_deprecated_params,
     convert_observation_fields,
     ensure_file_obj,
     ensure_file_objs,
     validate_multiple_choice_param,
-    warn,
 )
 from pyinaturalist.response_format import convert_lat_long_to_float
 
@@ -47,7 +44,7 @@ from pyinaturalist.response_format import convert_lat_long_to_float
         docs._pagination,
     ]
 )
-def get_observations(user_agent: str = None, **kwargs) -> Union[List, str]:
+def get_observations(user_agent: str = None, **params) -> Union[List, str]:
     """Get observation data, optionally in an alternative format. Also see
     :py:func:`.get_geojson_observations` for GeoJSON format (not included here because it wraps
     a separate API endpoint).
@@ -97,16 +94,16 @@ def get_observations(user_agent: str = None, **kwargs) -> Union[List, str]:
         Return type will be ``dict`` for the ``json`` response format, and ``str`` for all
         others.
     """
-    response_format = kwargs.pop("response_format", "json")
+    response_format = params.pop("response_format", "json")
     if response_format == "geojson":
         raise ValueError("For geojson format, use pyinaturalist.node_api.get_geojson_observations")
     if response_format not in OBSERVATION_FORMATS:
         raise ValueError("Invalid response format")
-    validate_multiple_choice_param(kwargs, "order_by", REST_OBS_ORDER_BY_PROPERTIES)
+    validate_multiple_choice_param(params, "order_by", REST_OBS_ORDER_BY_PROPERTIES)
 
     response = get(
         f"{INAT_BASE_URL}/observations.{response_format}",
-        params=kwargs,
+        params=params,
         user_agent=user_agent,
     )
 
@@ -117,7 +114,7 @@ def get_observations(user_agent: str = None, **kwargs) -> Union[List, str]:
 
 
 @document_request_params([docs._search_query, docs._page])
-def get_observation_fields(user_agent: str = None, **kwargs) -> ListResponse:
+def get_observation_fields(user_agent: str = None, **params) -> ListResponse:
     """Search observation fields. Observation fields are basically typed data fields that
     users can attach to observation.
 
@@ -139,17 +136,16 @@ def get_observation_fields(user_agent: str = None, **kwargs) -> ListResponse:
     Returns:
         Observation fields as a list of dicts
     """
-    kwargs = check_deprecated_params(**kwargs)
     response = get(
         f"{INAT_BASE_URL}/observation_fields.json",
-        params=kwargs,
+        params=params,
         user_agent=user_agent,
     )
     return response.json()
 
 
 @document_request_params([docs._search_query])
-def get_all_observation_fields(**kwargs) -> ListResponse:
+def get_all_observation_fields(**params) -> ListResponse:
     """
     Like :py:func:`.get_observation_fields()`, but handles pagination for you.
 
@@ -165,7 +161,7 @@ def get_all_observation_fields(**kwargs) -> ListResponse:
     page = 1
 
     while True:
-        r = get_observation_fields(page=page, **kwargs)
+        r = get_observation_fields(page=page, **params)
 
         if not r:
             return results
@@ -242,23 +238,9 @@ def put_observation_field_values(
     return response.json()
 
 
-def create_observations(params: RequestParams = None, **kwargs):
-    """Create a new observation.
-    Note: Creating multiple observations sould be possible according to the docs, but it does not
-    appear to work.
-    """
-    warn(
-        "create_observations() has been deprecated, as creating multiple observations is not "
-        "currently functional. Please use create_observation() instead."
-    )
-    create_observation(params, **kwargs)
-
-
 # TODO: more thorough usage example
-@document_request_params([docs._legacy_params, docs._access_token, docs._create_observation])
-def create_observation(
-    params: RequestParams = None, access_token: str = None, user_agent: str = None, **kwargs
-) -> ListResponse:
+@document_request_params([docs._access_token, docs._create_observation])
+def create_observation(access_token: str = None, user_agent: str = None, **params) -> ListResponse:
     """Create a new observation.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#post-observations
@@ -295,16 +277,15 @@ def create_observation(
     """
     # Accept either top-level params (like most other endpoints)
     # or nested {"observation": params} (like the iNat API accepts directly)
-    if "observation" in kwargs:
-        kwargs.update(kwargs.pop("observation"))
-    kwargs = check_deprecated_params(params, **kwargs)
-    kwargs = convert_observation_fields(kwargs)
-    if "local_photos" in kwargs:
-        kwargs["local_photos"] = ensure_file_objs(kwargs["local_photos"])
+    if "observation" in params:
+        params.update(params.pop("observation"))
+    params = convert_observation_fields(params)
+    if "local_photos" in params:
+        params["local_photos"] = ensure_file_objs(params["local_photos"])
 
     response = post(
         url=f"{INAT_BASE_URL}/observations.json",
-        json={"observation": kwargs},
+        json={"observation": params},
         access_token=access_token,
         user_agent=user_agent,
     )
@@ -315,7 +296,6 @@ def create_observation(
 @document_request_params(
     [
         docs._observation_id,
-        docs._legacy_params,
         docs._access_token,
         docs._create_observation,
         docs._update_observation,
@@ -323,10 +303,9 @@ def create_observation(
 )
 def update_observation(
     observation_id: int,
-    params: RequestParams = None,
     access_token: str = None,
     user_agent: str = None,
-    **kwargs,
+    **params,
 ) -> ListResponse:
     """
     Update a single observation.
@@ -364,23 +343,22 @@ def update_observation(
     """
     # Accept either top-level params (like most other endpoints)
     # or nested params (like the iNat API actually accepts)
-    if "observation" in kwargs:
-        kwargs.update(kwargs.pop("observation"))
-    kwargs = check_deprecated_params(params, **kwargs)
-    kwargs = convert_observation_fields(kwargs)
-    if "local_photos" in kwargs:
-        kwargs["local_photos"] = ensure_file_objs(kwargs["local_photos"])
+    if "observation" in params:
+        params.update(params.pop("observation"))
+    params = convert_observation_fields(params)
+    if "local_photos" in params:
+        params["local_photos"] = ensure_file_objs(params["local_photos"])
 
     # This is the one Boolean parameter that's specified as an int, for some reason.
     # Also, set it to True if not specified, which seems like much saner default behavior.
-    if "ignore_photos" in kwargs:
-        kwargs["ignore_photos"] = int(kwargs["ignore_photos"])
+    if "ignore_photos" in params:
+        params["ignore_photos"] = int(params["ignore_photos"])
     else:
-        kwargs["ignore_photos"] = 1
+        params["ignore_photos"] = 1
 
     response = put(
         url=f"{INAT_BASE_URL}/observations/{observation_id}.json",
-        json={"observation": kwargs},
+        json={"observation": params},
         access_token=access_token,
         user_agent=user_agent,
     )

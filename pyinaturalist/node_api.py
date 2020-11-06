@@ -26,7 +26,6 @@ from pyinaturalist.constants import (
     THROTTLING_DELAY,
     MultiInt,
     JsonResponse,
-    RequestParams,
 )
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.forge_utils import document_request_params
@@ -34,7 +33,6 @@ from pyinaturalist.request_params import (
     DEFAULT_OBSERVATION_ATTRS,
     NODE_OBS_ORDER_BY_PROPERTIES,
     PROJECT_ORDER_BY_PROPERTIES,
-    check_deprecated_params,
     translate_rank_range,
     validate_multiple_choice_param,
 )
@@ -97,9 +95,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
 
 
 @document_request_params([*docs._get_observations, docs._pagination, docs._only_id])
-def get_observations(
-    params: RequestParams = None, user_agent: str = None, **kwargs
-) -> JsonResponse:
+def get_observations(user_agent: str = None, **params) -> JsonResponse:
     """Search observations.
 
     **API reference:** http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
@@ -126,16 +122,13 @@ def get_observations(
     Returns:
         JSON response containing observation records
     """
-    kwargs = check_deprecated_params(params, **kwargs)
-    validate_multiple_choice_param(kwargs, "order_by", NODE_OBS_ORDER_BY_PROPERTIES)
-    r = make_inaturalist_api_get_call("observations", params=kwargs, user_agent=user_agent)
+    validate_multiple_choice_param(params, "order_by", NODE_OBS_ORDER_BY_PROPERTIES)
+    r = make_inaturalist_api_get_call("observations", params=params, user_agent=user_agent)
     return r.json()
 
 
 @document_request_params([*docs._get_observations, docs._only_id])
-def get_all_observations(
-    params: RequestParams = None, user_agent: str = None, **kwargs
-) -> List[JsonResponse]:
+def get_all_observations(user_agent: str = None, **params) -> List[JsonResponse]:
     """Like :py:func:`get_observations()`, but handles pagination and returns all results in one
     call. Explicit pagination parameters will be ignored.
 
@@ -155,11 +148,10 @@ def get_all_observations(
         Combined list of observation records. Response format is the same as the inner "results"
         object returned by :py:func:`.get_observations()`.
     """
-    kwargs = check_deprecated_params(params, **kwargs)
     results: List[JsonResponse] = []
     id_above = 0
     pagination_params = {
-        **kwargs,
+        **params,
         **{
             "order_by": "id",
             "order": "asc",
@@ -181,7 +173,7 @@ def get_all_observations(
 
 
 @document_request_params([*docs._get_observations, docs._pagination])
-def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResponse:
+def get_observation_species_counts(user_agent: str = None, **params) -> JsonResponse:
     """Get all species (or other "leaf taxa") associated with observations matching the search
     criteria, and the count of observations they are associated with.
     **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
@@ -202,7 +194,7 @@ def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResp
     """
     r = make_inaturalist_api_get_call(
         "observations/species_counts",
-        params=kwargs,
+        params=params,
         user_agent=user_agent,
     )
     r.raise_for_status()
@@ -210,7 +202,7 @@ def get_observation_species_counts(user_agent: str = None, **kwargs) -> JsonResp
 
 
 @document_request_params(docs._get_observations)
-def get_all_observation_species_counts(user_agent: str = None, **kwargs) -> List[JsonResponse]:
+def get_all_observation_species_counts(user_agent: str = None, **params) -> List[JsonResponse]:
     """Like :py:func:`get_observation_species_counts()`, but handles pagination and returns all
     results in one call. Explicit pagination parameters will be ignored.
 
@@ -235,12 +227,11 @@ def get_all_observation_species_counts(user_agent: str = None, **kwargs) -> List
     Returns:
         Combined list of taxon records with counts
     """
-    kwargs = check_deprecated_params(**kwargs)
     results = []  # type: List[JsonResponse]
     page = 1
 
     pagination_params = {
-        **kwargs,
+        **params,
         **{
             "per_page": PER_PAGE_RESULTS,
             "user_agent": user_agent,
@@ -260,7 +251,7 @@ def get_all_observation_species_counts(user_agent: str = None, **kwargs) -> List
 
 
 @document_request_params([*docs._get_observations, docs._geojson_properties])
-def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResponse:
+def get_geojson_observations(properties: List[str] = None, **params) -> JsonResponse:
     """Get all observation results combined into a GeoJSON ``FeatureCollection``.
     By default this includes some basic observation properties as GeoJSON ``Feature`` properties.
     The ``properties`` argument can be used to override these defaults.
@@ -277,8 +268,8 @@ def get_geojson_observations(properties: List[str] = None, **kwargs) -> JsonResp
     Returns:
         A ``FeatureCollection`` containing observation results as ``Feature`` dicts.
     """
-    kwargs["mappable"] = True
-    observations = get_all_observations(**kwargs)
+    params["mappable"] = True
+    observations = get_all_observations(**params)
     return as_geojson_feature_collection(
         (flatten_nested_params(obs) for obs in observations),
         properties=properties if properties is not None else DEFAULT_OBSERVATION_ATTRS,
@@ -331,7 +322,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
 
 
 @document_request_params([docs._bounding_box, docs._name])
-def get_places_nearby(user_agent: str = None, **kwargs) -> JsonResponse:
+def get_places_nearby(user_agent: str = None, **params) -> JsonResponse:
     """
     Given an bounding box, and an optional name query, return standard iNaturalist curator approved
     and community non-curated places nearby
@@ -351,7 +342,7 @@ def get_places_nearby(user_agent: str = None, **kwargs) -> JsonResponse:
     Returns:
         JSON response containing place records
     """
-    r = make_inaturalist_api_get_call("places/nearby", params=kwargs, user_agent=user_agent)
+    r = make_inaturalist_api_get_call("places/nearby", params=params, user_agent=user_agent)
     r.raise_for_status()
     return _convert_all_locations_to_float(r.json())
 
@@ -390,7 +381,7 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
 
 
 @document_request_params([docs._projects_params, docs._pagination])
-def get_projects(user_agent: str = None, **kwargs) -> JsonResponse:
+def get_projects(user_agent: str = None, **params) -> JsonResponse:
     """Given zero to many of following parameters, get projects matching the search criteria.
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Projects/get_projects
@@ -426,8 +417,8 @@ def get_projects(user_agent: str = None, **kwargs) -> JsonResponse:
     Returns:
         JSON response containing project records
     """
-    validate_multiple_choice_param(kwargs, "order_by", PROJECT_ORDER_BY_PROPERTIES)
-    r = make_inaturalist_api_get_call("projects", params=kwargs, user_agent=user_agent)
+    validate_multiple_choice_param(params, "order_by", PROJECT_ORDER_BY_PROPERTIES)
+    r = make_inaturalist_api_get_call("projects", params=params, user_agent=user_agent)
     r.raise_for_status()
 
     # Convert coordinates to floats
@@ -480,7 +471,7 @@ def get_projects_by_id(
 
 
 @document_request_params([docs._taxon_params, docs._taxon_id_params])
-def get_taxa(user_agent: str = None, **kwargs) -> JsonResponse:
+def get_taxa(user_agent: str = None, **params) -> JsonResponse:
     """Given zero to many of following parameters, get taxa matching the search criteria.
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
@@ -500,8 +491,8 @@ def get_taxa(user_agent: str = None, **kwargs) -> JsonResponse:
     Returns:
         JSON response containing taxon records
     """
-    kwargs = translate_rank_range(kwargs)
-    r = make_inaturalist_api_get_call("taxa", params=kwargs, user_agent=user_agent)
+    params = translate_rank_range(params)
+    r = make_inaturalist_api_get_call("taxa", params=params, user_agent=user_agent)
     r.raise_for_status()
     return r.json()
 
@@ -541,7 +532,7 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
 
 
 @document_request_params([docs._taxon_params, docs._minify])
-def get_taxa_autocomplete(user_agent: str = None, **kwargs) -> JsonResponse:
+def get_taxa_autocomplete(user_agent: str = None, **params) -> JsonResponse:
     """Given a query string, returns taxa with names starting with the search term
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_autocomplete
@@ -571,11 +562,11 @@ def get_taxa_autocomplete(user_agent: str = None, **kwargs) -> JsonResponse:
     Returns:
         JSON response containing taxon records
     """
-    kwargs = translate_rank_range(kwargs)
-    r = make_inaturalist_api_get_call("taxa/autocomplete", params=kwargs, user_agent=user_agent)
+    params = translate_rank_range(params)
+    r = make_inaturalist_api_get_call("taxa/autocomplete", params=params, user_agent=user_agent)
     r.raise_for_status()
     json_response = r.json()
 
-    if kwargs.get("minify"):
+    if params.get("minify"):
         json_response["results"] = [format_taxon(t) for t in json_response["results"]]
     return json_response
