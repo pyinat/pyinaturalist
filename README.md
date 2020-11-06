@@ -93,7 +93,7 @@ token = get_access_token(
     app_secret='my_app_secret',
 )
 ```
-See [get_access_token()](https://pyinaturalist.readthedocs.io/en/latest/modules/pyinaturalist.rest_api.html#pyinaturalist.rest_api.get_access_token)
+See [Authentication](https://pyinaturalist.readthedocs.io/en/latest/general_usage.html#authentication)
 for additional authentication options, including environment variables and keyring services.
 
 #### Create a new observation
