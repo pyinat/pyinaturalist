@@ -3,7 +3,7 @@ Reusable template functions used for API documentation.
 Each template function contains a portion of an endpoint's request parameters, with corresponding
 type annotations and docstrings.
 """
-from typing import Any, Dict, List, Iterable
+from typing import List, Iterable
 
 from pyinaturalist.constants import (
     MultiInt,
@@ -409,13 +409,6 @@ def _geojson_properties(properties: List[str] = None):
     """
 
 
-# TODO: Remove deprecated `params` arg in 0.12
-def _legacy_params(params: Dict[str, Any] = None):
-    """
-    params: [DEPRECATED] Request parameters as a dict instead of keyword arguments
-    """
-
-
 def _minify(minify: str = None):
     """
     minify: Condense each match into a single string containing taxon ID, rank, and name
@@ -462,15 +455,13 @@ def _pagination(
 
 
 _get_observations = [
-    _legacy_params,
     _observation_common,
     _observation_node_only,
     _bounding_box,
 ]
 
 
-# TODO: Remove deprecated `search_query` kwarg in 0.12
-def _search_query(q: str = None, search_query: str = None):
+def _search_query(q: str = None):
     """
     q: Search query
     """
