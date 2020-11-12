@@ -6,7 +6,7 @@ from pyinaturalist import __version__
 # These package categories allow tox and build environments to install only what they need
 extras_require = {
     # Packages used for CI jobs
-    "build": ["coveralls", "tox-travis"],
+    "build": ["coveralls", "twine", "wheel"],
     # Packages used for documentation builds
     "docs": [
         "m2r2",

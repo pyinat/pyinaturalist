@@ -1,0 +1,88 @@
+name: Build & test python package
+
+on:
+  push:
+    branches: [master, dev]
+    tags: ['v*']
+  pull_request:
+    branches: [master, dev]
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Cache packages per python version, and reuse until setup.py changes
+      - name: Cache pip packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('setup.py') }}
+          restore-keys: ${{ runner.os }}-pip-${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: pip install ".[dev]"
+      - name: Run unit tests
+        run: pytest
+
+  analyze:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Cache pip packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-3.8-${{ hashFiles('setup.py') }}
+          restore-keys: ${{ runner.os }}-pip-3.8
+
+      - name: Install dependencies
+        run: pip install ".[dev]"
+      - name: Run style checks
+        run: black --check .
+      - name: Run type checks
+        run: mypy .
+      - name: Generate code coverage report
+        run: pytest --cov --cov-report=term --cov-report=html
+      - name: Send code coverage report to Coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: coveralls
+      - name: Test Sphinx documentation build
+        run: make -C docs all
+      - name: Test package build
+        run: |
+          python setup.py sdist bdist_wheel
+          twine check dist/*
+
+  # Deploy pre-release builds from dev branch, and stable builds on tags only
+  release:
+    needs: [test, analyze]
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: pip install -U ".[build]"
+      - name: Build wheel
+        run: python setup.py sdist bdist_wheel
+      - name: Deploy to pypi
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: twine upload dist/*
