@@ -18,7 +18,7 @@ def get_prerelease_version(version: str) -> str:
     """
     if getenv("GITHUB_REF") == "refs/heads/dev":
         build_number = getenv("GITHUB_RUN_NUMBER", "0")
-        version = f"{version}-dev.{build_number}"
+        version = f"{version}.dev{build_number}"
         getLogger(__name__).info(f"Using pre-release version: {version}")
     return version
 

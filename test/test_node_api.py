@@ -1,3 +1,4 @@
+import os
 import pytest
 from urllib.parse import urlencode, urljoin
 from unittest.mock import patch
@@ -408,73 +409,37 @@ def test_get_taxa_autocomplete_minified(requests_mock):
     assert response["results"] == expected_results
 
 
+@patch.dict(os.environ, {"GITHUB_REF": "refs/heads/master"}, clear=True)
 def test_user_agent(requests_mock):
-    # TODO: test for all functions that access the inaturalist API?
     requests_mock.get(
         urljoin(INAT_NODE_API_BASE_URL, "observations"),
         json=load_sample_data("get_observation.json"),
         status_code=200,
     )
-    accepted_json = {
-        "access_token": "604e5df329b98eecd22bb0a84f88b68a075a023ac437f2317b02f3a9ba414a08",
-        "token_type": "Bearer",
-        "scope": "write",
-        "created_at": 1539352135,
-    }
-    requests_mock.post(
-        "https://www.inaturalist.org/oauth/token",
-        json=accepted_json,
-        status_code=200,
-    )
-
-    default_ua = f"pyinaturalist/{pyinaturalist.__version__}"
+    default_ua = pyinaturalist.DEFAULT_USER_AGENT
 
     # By default, we have a 'Pyinaturalist' user agent:
     get_observation(16227955)
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua
-    get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
-    assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua
 
     # But if the user sets a custom one, it is indeed used:
     get_observation(16227955, user_agent="CustomUA")
-    assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA"
-    get_access_token(
-        "valid_username",
-        "valid_password",
-        "valid_app_id",
-        "valid_app_secret",
-        user_agent="CustomUA",
-    )
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA"
 
     # We can also set it globally:
     pyinaturalist.user_agent = "GlobalUA"
     get_observation(16227955)
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
-    get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
-    assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
 
     # And it persists across requests:
     get_observation(16227955)
-    assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
-    get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "GlobalUA"
 
     # But if we have a global and local one, the local has priority
     get_observation(16227955, user_agent="CustomUA 2")
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA 2"
-    get_access_token(
-        "valid_username",
-        "valid_password",
-        "valid_app_id",
-        "valid_app_secret",
-        user_agent="CustomUA 2",
-    )
-    assert requests_mock._adapter.last_request._request.headers["User-Agent"] == "CustomUA 2"
 
     # We can reset the global settings to the default:
     pyinaturalist.user_agent = pyinaturalist.DEFAULT_USER_AGENT
     get_observation(16227955)
-    assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua
-    get_access_token("valid_username", "valid_password", "valid_app_id", "valid_app_secret")
     assert requests_mock._adapter.last_request._request.headers["User-Agent"] == default_ua
