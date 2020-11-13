@@ -1,7 +1,7 @@
 # pyinaturalist
 
 
-[![Build Status](https://img.shields.io/travis/niconoe/pyinaturalist)](https://travis-ci.org/github/niconoe/pyinaturalist)
+[![Build status](https://github.com/niconoe/pyinaturalist/workflows/Build/badge.svg)](https://github.com/niconoe/pyinaturalist/actions)
 [![Documentation Status (stable)](https://img.shields.io/readthedocs/pyinaturalist/stable?label=docs%20%28master%29)](https://pyinaturalist.readthedocs.io/en/stable/)
 [![Documentation Status (latest)](https://img.shields.io/readthedocs/pyinaturalist/latest?label=docs%20%28dev%29)](https://pyinaturalist.readthedocs.io/en/latest/)
 [![Coverage Status](https://coveralls.io/repos/github/niconoe/pyinaturalist/badge.svg?branch=master)](https://coveralls.io/github/niconoe/pyinaturalist?branch=master)

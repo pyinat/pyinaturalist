@@ -1,4 +1,4 @@
-name: Build & test python package
+name: Build
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
     tags: ['v*']
   pull_request:
     branches: [master, dev]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -84,5 +85,5 @@ jobs:
       - name: Deploy to pypi
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: twine upload dist/*
