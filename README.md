@@ -32,6 +32,8 @@ To set up for local development (preferably in a new virtualenv):
 $ git clone https://github.com/niconoe/pyinaturalist.git
 $ cd pyinaturalist
 $ pip install -Ue ".[dev]"
+$ # Optional but recommended:
+$ pre-commit install --config .github/pre-commit.yml
 ```
 
 To install with minimal dependencies (disables optional features):

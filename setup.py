@@ -23,6 +23,7 @@ extras_require = {
         "flake8",
         "isort",
         "mypy",
+        "pre-commit",
         "pytest>=5.0",
         "pytest-cov",
         "requests-mock>=1.7",
