@@ -54,6 +54,8 @@ jobs:
         run: |
           black --check --diff .
           isort --check --diff .
+      - name: Run linter
+        run: flake8 .
       - name: Run type checks
         run: mypy .
       - name: Generate code coverage report

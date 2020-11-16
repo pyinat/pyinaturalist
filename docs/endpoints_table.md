@@ -110,7 +110,7 @@ GET               | /grid/{zoom}/{x}/{y}.grid.json              |
 GET               | /heatmap/{zoom}/{x}/{y}.grid.json           |
 GET               | /points/{zoom}/{x}/{y}.grid.json            |
 POST              | /photos                                     |
-                  
+
 
 ### Rails-Based API
 For full documentation, see: https://www.inaturalist.org/pages/api+reference

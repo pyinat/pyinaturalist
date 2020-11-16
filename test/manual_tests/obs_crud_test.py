@@ -11,7 +11,6 @@ python test/manual_tests/obs_crud_test.py
 ```
 """
 from datetime import datetime
-from os import getenv
 from os.path import join
 from pprint import pprint
 

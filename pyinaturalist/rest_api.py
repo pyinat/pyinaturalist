@@ -15,7 +15,7 @@ from typing import Any, Dict, List, Union
 
 from pyinaturalist import api_docs as docs
 from pyinaturalist.api_requests import delete, get, post, put
-from pyinaturalist.auth import get_access_token
+from pyinaturalist.auth import get_access_token  # noqa
 from pyinaturalist.constants import (
     INAT_BASE_URL,
     THROTTLING_DELAY,

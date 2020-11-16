@@ -15,7 +15,7 @@ SYMLINK_DATA_DIR = join(DOCS_DIR, "sample_data")
 
 # Add project path so we can import our package
 sys.path.insert(0, PROJECT_DIR)
-from pyinaturalist import __version__
+from pyinaturalist import __version__  # noqa
 
 # General information about the project.
 project = "pyinaturalist"

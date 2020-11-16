@@ -511,7 +511,7 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
             "preferred_common_name": "Paper Wasps",
             "observations_count": 69728,
             "wikipedia_url": "http://en.wikipedia.org/wiki/Polistinae",
-            "wikipedia_summary": "The Polistinae are eusocial wasps closely related to the more familiar yellow jackets...",
+            "wikipedia_summary": "The Polistinae are eusocial wasps closely related to yellow jackets...",
         }
 
         .. admonition:: Example Response
