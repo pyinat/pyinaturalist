@@ -3,13 +3,12 @@ from logging import getLogger
 from os import getenv
 from typing import Dict, List, Union
 from unittest.mock import Mock
-from urllib.parse import urljoin
 
 import requests
 
 import pyinaturalist
 from pyinaturalist.constants import WRITE_HTTP_METHODS
-from pyinaturalist.request_params import preprocess_request_params, convert_list, validate_ids
+from pyinaturalist.request_params import preprocess_request_params, validate_ids
 
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=requests.Response)

@@ -11,10 +11,10 @@ python test/manual_tests/obs_crud_test.py
 ```
 """
 from datetime import datetime
-from os import getenv
 from os.path import join
 from pprint import pprint
 
+from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import (
     add_photo_to_observation,
     create_observation,
@@ -23,7 +23,6 @@ from pyinaturalist.rest_api import (
     put_observation_field_values,
     update_observation,
 )
-from pyinaturalist.node_api import get_observation
 from test.conftest import SAMPLE_DATA_DIR
 
 SAMPLE_PHOTO = join(SAMPLE_DATA_DIR, "obs_image.jpg")

@@ -32,6 +32,8 @@ To set up for local development (preferably in a new virtualenv):
 $ git clone https://github.com/niconoe/pyinaturalist.git
 $ cd pyinaturalist
 $ pip install -Ue ".[dev]"
+$ # Optional but recommended:
+$ pre-commit install --config .github/pre-commit.yml
 ```
 
 To install with minimal dependencies (disables optional features):
@@ -64,7 +66,7 @@ useful and could potentially be added to pyinaturalist, but many others are prim
 internal use by the iNaturalist web application and mobile apps, and are unlikely to be added
 unless there are specific use cases for them.
 
-\*As of 2020-10-01: 37 in REST API, 65 in Node API, and 1 undocumented 
+\*As of 2020-10-01: 37 in REST API, 65 in Node API, and 1 undocumented
 
 ## Examples
 

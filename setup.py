@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from itertools import chain
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
+
 from pyinaturalist import __version__
 
 # These package categories allow tox and build environments to install only what they need
@@ -20,7 +21,9 @@ extras_require = {
     "test": [
         "black==20.8b1",
         "flake8",
+        "isort",
         "mypy",
+        "pre-commit",
         "pytest>=5.0",
         "pytest-cov",
         "requests-mock>=1.7",

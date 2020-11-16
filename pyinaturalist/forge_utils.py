@@ -2,9 +2,9 @@
 Utilities built on top of ``python-forge`` used to simplify usage for API docs, mainly by
 combining function signature modification with docstring modification.
 """
+from functools import wraps
 from inspect import cleandoc
 from itertools import chain
-from functools import wraps
 from logging import getLogger
 from typing import Callable, List
 
