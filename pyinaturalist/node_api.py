@@ -15,17 +15,18 @@ Functions
 from logging import getLogger
 from time import sleep
 from typing import List
-
-import requests
 from urllib.parse import urljoin
 
+import requests
+
 from pyinaturalist import api_docs as docs
+from pyinaturalist.api_requests import get
 from pyinaturalist.constants import (
     INAT_NODE_API_BASE_URL,
     PER_PAGE_RESULTS,
     THROTTLING_DELAY,
-    MultiInt,
     JsonResponse,
+    MultiInt,
 )
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.forge_utils import document_request_params
@@ -37,12 +38,11 @@ from pyinaturalist.request_params import (
     validate_multiple_choice_param,
 )
 from pyinaturalist.response_format import (
-    format_taxon,
     as_geojson_feature_collection,
-    flatten_nested_params,
     convert_location_to_float,
+    flatten_nested_params,
+    format_taxon,
 )
-from pyinaturalist.api_requests import get
 
 logger = getLogger(__name__)
 

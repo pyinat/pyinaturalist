@@ -1,7 +1,7 @@
 # A couple tests to make sure that versioning works as expected within GitHub Actions
 # So, for example, the build would fail before accidentally publishing a bad version
-from unittest.mock import patch
 import os
+from unittest.mock import patch
 
 
 @patch.dict(os.environ, {"GITHUB_REF": "refs/heads/master"})

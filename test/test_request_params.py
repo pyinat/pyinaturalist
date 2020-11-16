@@ -6,21 +6,21 @@ from io import BytesIO
 from tempfile import NamedTemporaryFile
 from unittest.mock import patch
 
+import pyinaturalist.node_api
+import pyinaturalist.rest_api
 from pyinaturalist.request_params import (
-    preprocess_request_params,
     convert_bool_params,
     convert_datetime_params,
     convert_list_params,
     convert_observation_fields,
     ensure_file_obj,
+    preprocess_request_params,
     strip_empty_params,
     validate_ids,
     validate_multiple_choice_param,
     validate_multiple_choice_params,
 )
-import pyinaturalist.rest_api
-import pyinaturalist.node_api
-from test.conftest import MOCK_CREDS_ENV, get_module_http_functions, get_mock_args_for_signature
+from test.conftest import MOCK_CREDS_ENV, get_mock_args_for_signature, get_module_http_functions
 
 TEST_PARAMS = {
     "is_active": False,

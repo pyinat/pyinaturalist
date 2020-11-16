@@ -1,5 +1,5 @@
 """ Helper functions for formatting API responses """
-from typing import Any, Dict, List, Iterable, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 
 def as_geojson_feature_collection(

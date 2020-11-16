@@ -5,7 +5,7 @@ Pytest will also automatically pick up any fixtures defined here.
 import json
 import logging
 import re
-from inspect import getmembers, isfunction, signature, Parameter
+from inspect import Parameter, getmembers, isfunction, signature
 from os.path import abspath, dirname, join
 from unittest.mock import MagicMock
 

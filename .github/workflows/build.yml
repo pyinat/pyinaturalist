@@ -51,7 +51,9 @@ jobs:
       - name: Install dependencies
         run: pip install ".[dev]"
       - name: Run style checks
-        run: black --check .
+        run: |
+          black --check --diff .
+          isort --check --diff .
       - name: Run type checks
         run: mypy .
       - name: Generate code coverage report

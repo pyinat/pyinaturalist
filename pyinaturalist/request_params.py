@@ -1,15 +1,14 @@
 """Helper functions for processing and validating request parameters"""
+import warnings
 from datetime import date, datetime
+from dateutil.parser import parse as parse_timestamp
+from dateutil.tz import tzlocal
 from io import BytesIO
 from logging import getLogger
 from os.path import abspath, expanduser
 from typing import Any, BinaryIO, Dict, Iterable, Optional
-import warnings
 
-from dateutil.parser import parse as parse_timestamp
-from dateutil.tz import tzlocal
 from pyinaturalist.constants import FileOrPath, RequestParams
-
 
 # Basic observation attributes to include by default in geojson responses
 DEFAULT_OBSERVATION_ATTRS = [

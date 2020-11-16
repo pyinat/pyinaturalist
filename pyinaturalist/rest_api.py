@@ -11,19 +11,19 @@ Functions
 
 """
 from time import sleep
-from typing import Dict, Any, List, Union
+from typing import Any, Dict, List, Union
 
 from pyinaturalist import api_docs as docs
+from pyinaturalist.api_requests import delete, get, post, put
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import (
-    THROTTLING_DELAY,
     INAT_BASE_URL,
+    THROTTLING_DELAY,
     FileOrPath,
     JsonResponse,
     ListResponse,
 )
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.api_requests import delete, get, post, put
 from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.request_params import (
     OBSERVATION_FORMATS,

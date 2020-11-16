@@ -2,9 +2,9 @@ from logging import getLogger
 from os import getenv
 from typing import Dict
 
-from pyinaturalist.exceptions import AuthenticationError
 from pyinaturalist.api_requests import post
-from pyinaturalist.constants import INAT_KEYRING_KEY, INAT_BASE_URL
+from pyinaturalist.constants import INAT_BASE_URL, INAT_KEYRING_KEY
+from pyinaturalist.exceptions import AuthenticationError
 
 logger = getLogger(__name__)
 

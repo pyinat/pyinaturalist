@@ -9,7 +9,7 @@ import requests
 
 import pyinaturalist
 from pyinaturalist.constants import WRITE_HTTP_METHODS
-from pyinaturalist.request_params import preprocess_request_params, convert_list, validate_ids
+from pyinaturalist.request_params import convert_list, preprocess_request_params, validate_ids
 
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=requests.Response)

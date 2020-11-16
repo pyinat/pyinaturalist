@@ -1,4 +1,4 @@
-from pyinaturalist.forge_utils import document_request_params, copy_docstrings, copy_signatures
+from pyinaturalist.forge_utils import copy_docstrings, copy_signatures, document_request_params
 
 
 def test_document_request_params():

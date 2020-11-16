@@ -1,23 +1,23 @@
+import pytest
 from datetime import datetime, timedelta
 from io import BytesIO
 from unittest.mock import patch
 
-import pytest
 from requests import HTTPError
 
 from pyinaturalist.constants import INAT_BASE_URL
+from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.rest_api import (
     OBSERVATION_FORMATS,
-    get_all_observation_fields,
-    get_observations,
-    get_observation_fields,
-    put_observation_field_values,
-    create_observation,
-    update_observation,
     add_photo_to_observation,
+    create_observation,
     delete_observation,
+    get_all_observation_fields,
+    get_observation_fields,
+    get_observations,
+    put_observation_field_values,
+    update_observation,
 )
-from pyinaturalist.exceptions import ObservationNotFound
 from test.conftest import load_sample_data
 
 PAGE_1_JSON_RESPONSE = load_sample_data("get_observation_fields_page1.json")

@@ -1,30 +1,29 @@
 import os
 import pytest
-from urllib.parse import urlencode, urljoin
 from unittest.mock import patch
+from urllib.parse import urlencode, urljoin
 
 import pyinaturalist
 from pyinaturalist.constants import INAT_NODE_API_BASE_URL, PER_PAGE_RESULTS
+from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.node_api import (
-    get_observation,
-    get_observations,
-    get_all_observations,
-    get_observation_species_counts,
     get_all_observation_species_counts,
+    get_all_observations,
     get_geojson_observations,
+    get_observation,
+    get_observation_species_counts,
+    get_observations,
+    get_places_autocomplete,
     get_places_by_id,
     get_places_nearby,
-    get_places_autocomplete,
     get_projects,
     get_projects_by_id,
     get_taxa,
-    get_taxa_by_id,
     get_taxa_autocomplete,
+    get_taxa_by_id,
 )
-from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.rest_api import get_access_token
 from test.conftest import load_sample_data
-
 
 # Observations
 # --------------------

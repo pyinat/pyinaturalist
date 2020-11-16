@@ -3,19 +3,18 @@ Reusable template functions used for API documentation.
 Each template function contains a portion of an endpoint's request parameters, with corresponding
 type annotations and docstrings.
 """
-from typing import List, Iterable
+from typing import Iterable, List
 
 from pyinaturalist.constants import (
-    MultiInt,
-    MultiStr,
     Date,
     DateTime,
-    IntOrStr,
     FileOrPath,
+    IntOrStr,
+    MultiInt,
+    MultiStr,
     ObsFieldValues,
 )
 from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
-
 
 # Observations
 # --------------------
