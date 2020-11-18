@@ -20,12 +20,3 @@ Contents
    contributing
    authors
    history
-
-Feedback
-========
-
-If you have any suggestions or questions about **pyinaturalist** feel free to email me
-at nicolas@niconoe.eu.
-
-If you encounter any errors or problems with **pyinaturalist**, please let me know!
-Open an Issue at the GitHub http://github.com/niconoe/pyinaturalist main repository.

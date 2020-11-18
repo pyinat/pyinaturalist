@@ -45,30 +45,34 @@ $ pip install python-dateutil requests
 
 ## Development Status
 
-Pyinaturalist is under active development. Currently, a handful of the most relevant API endpoints
+Pyinaturalist is under active development. Currently, several of the most relevant API endpoints
 are implemented, including:
 
-* Searching, creating, and updating observations and observation fields
-* Searching for places, projects, species, and species counts
-* Text search autocompletion for species and places
+* **Creating and updating:**
+    * observations
+    * observation fields
+    * observation photos
+* **Searching for:**
+    * controlled terms
+    * observations
+    * observation fields
+    * observation species counts
+    * places
+    * projects
+    * species
+* **Text search autocompletion for:**
+    * places
+    * species
 
 See below for some examples,
 see [Endpoints](https://pyinaturalist.readthedocs.io/en/latest/endpoints.html) for a complete list of implemented endpoints, and
 see [Issues](https://github.com/niconoe/pyinaturalist/issues) for planned & proposed features.
 
-More endpoints will continue to be added as they are needed.
-Please **create an issue** if there is an endpoint you would like to have added, and **PRs are welcome!**
+More endpoints will continue to be added as they are needed or requested.
+Please [create an issue](https://github.com/niconoe/pyinaturalist/issues/new/choose) if there is an endpoint you
+would like to have added, and **PRs are welcome!**
 
-**Note:**
-
-The two iNaturalist APIs expose a combined total of 103 endpoints\*. Some of these are generally
-useful and could potentially be added to pyinaturalist, but many others are primarily for
-internal use by the iNaturalist web application and mobile apps, and are unlikely to be added
-unless there are specific use cases for them.
-
-\*As of 2020-10-01: 37 in REST API, 65 in Node API, and 1 undocumented
-
-## Examples
+## Usage Examples
 
 ### Observations
 
@@ -269,3 +273,7 @@ info. For example:
 >>> first_result["matched_term"]
 "Zygocactus truncatus"  # An older synonym for Schlumbergera
 ```
+
+## Feedback
+If you have any problems, suggestions, or questions about pyinaturalist, please let us know!
+Just [create an issue here](https://github.com/niconoe/pyinaturalist/issues/new/choose).
