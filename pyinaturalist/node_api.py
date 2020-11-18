@@ -28,7 +28,7 @@ from pyinaturalist.constants import (
     JsonResponse,
     MultiInt,
 )
-from pyinaturalist.exceptions import ObservationNotFound
+from pyinaturalist.exceptions import ObservationNotFound, TaxonNotFound
 from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.request_params import (
     DEFAULT_OBSERVATION_ATTRS,
@@ -55,6 +55,84 @@ def make_inaturalist_api_get_call(endpoint: str, **kwargs) -> requests.Response:
         kwargs: Arguments for :py:func:`.api_requests.request`
     """
     return get(urljoin(INAT_NODE_API_BASE_URL, endpoint), **kwargs)
+
+
+# Controlled Terms
+# --------------------
+
+
+def get_controlled_terms(taxon_id: int = None, user_agent: str = None) -> JsonResponse:
+    """List controlled terms and their possible values.
+    A taxon ID can optionally be provided to show only terms that are valid for that taxon.
+    Otherwise, all controlled terms will be returned.
+
+    **API reference:**
+
+    * https://api.inaturalist.org/v1/docs/#!/Controlled_Terms/get_controlled_terms
+    * https://api.inaturalist.org/v1/docs/#!/Controlled_Terms/get_controlled_terms_for_taxon
+
+    Example:
+
+        >>> response = get_controlled_terms()
+        >>> # Show a condensed list of terms and values
+        >>> for term in response['results']:
+        >>>     values = [f'    {value["id"]}: {value["label"]}' for value in term['values']]
+        >>>     print(f'{term["id"]}: {term["label"]}' + '\\n'.join(values))
+        1: Life Stage
+            2: Adult
+            3: Teneral
+            4: Pupa
+            5: Nymph
+            6: Larva
+            7: Egg
+            8: Juvenile
+            16: Subimago
+        9: Sex
+            10: Female
+            11: Male
+            20: Cannot Be Determined
+        12: Plant Phenology
+            13: Flowering
+            14: Fruiting
+            15: Flower Budding
+            21: No Evidence of Flowering
+        17: Alive or Dead
+            18: Alive
+            19: Dead
+            20: Cannot Be Determined
+
+        .. admonition:: Example Response (all terms)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_controlled_terms.json
+                :language: JSON
+
+        .. admonition:: Example Response (for a specific taxon)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_controlled_terms_for_taxon.json
+                :language: JSON
+    Args:
+        taxon_id: ID of taxon to get controlled terms for
+        user_agent: a user-agent string that will be passed to iNaturalist.
+
+    Returns:
+        A dict containing details on controlled terms and their values
+
+    Raises:
+        :py:exc:`.TaxonNotFound` If an invalid taxon_id is specified
+    """
+    # This is actually two endpoints, but they are so similar it seems best to combine them
+    endpoint = "controlled_terms/for_taxon" if taxon_id else "controlled_terms"
+    response = make_inaturalist_api_get_call(
+        endpoint, params={"taxon_id": taxon_id}, user_agent=user_agent
+    )
+
+    # controlled_terms/for_taxon returns a 422 if the specified taxon does not exist
+    if response.status_code in (404, 422):
+        raise TaxonNotFound
+    response.raise_for_status()
+    return response.json()
 
 
 # Observations
@@ -84,7 +162,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
         A dict with details on the observation
 
     Raises:
-        :py:exc:`.ObservationNotFound`
+        :py:exc:`.ObservationNotFound` If an invalid observation is specified
     """
 
     r = get_observations(id=observation_id, user_agent=user_agent)
