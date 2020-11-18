@@ -1,6 +1,5 @@
 # pyinaturalist
 
-
 [![Build status](https://github.com/niconoe/pyinaturalist/workflows/Build/badge.svg)](https://github.com/niconoe/pyinaturalist/actions)
 [![Documentation Status (stable)](https://img.shields.io/readthedocs/pyinaturalist/stable?label=docs%20%28master%29)](https://pyinaturalist.readthedocs.io/en/stable/)
 [![Documentation Status (latest)](https://img.shields.io/readthedocs/pyinaturalist/latest?label=docs%20%28dev%29)](https://pyinaturalist.readthedocs.io/en/latest/)
@@ -9,8 +8,55 @@
 [![PyPI - Python Versions](https://img.shields.io/pypi/pyversions/pyinaturalist)](https://pypi.org/project/pyinaturalist)
 [![PyPI - Format](https://img.shields.io/pypi/format/pyinaturalist?color=blue)](https://pypi.org/project/pyinaturalist)
 
-Python client for the [iNaturalist APIs](https://www.inaturalist.org/pages/api+reference).
-See full documentation at https://pyinaturalist.readthedocs.io.
+Pyinaturalist is an iNaturalist API client for python.
+See full project documentation at https://pyinaturalist.readthedocs.io.
+
+* [Summary](#pyinaturalist)
+    + [Features](#features)
+    + [Installation](#installation)
+    + [Development Status](#development-status)
+* [Usage Examples](#usage-examples)
+    + [Observations](#observations)
+    + [Species](#species)
+* [Feedback](#feedback)
+
+## Features
+
+[iNaturalist](https://www.inaturalist.org) is a rich source of biodiversity data, and offers an
+extensive API to interact with nearly every aspect of its platform. 
+
+If you want to explore or analyze these data using python, then pyinaturalist can help.
+It adds a number of python-specific conveniences, including:
+
+* **Requests:** Simplified usage with python types and data structures rather than raw request parameter strings   
+* **Responses:** Type conversions from JSON primitives to things you would expect in python
+* **Typing:** Complete parameter definitions with type annotations, which significantly enhances
+  usability within an IDE, Jupyter notebook, or any other environment with type checking & autocompletion
+* **Messages:** Improved error handling, which means less time spent figuring out why an API call failed
+* **Docs:** Thorough documentation with example requests and responses
+* **Security:** Keyring integration for secure credential storage
+* **Testing:** A dry-run mode to preview your requests before potentially modifying data
+
+Many of the most relevant API endpoints are implemented, including:
+* **Searching for:**
+    * controlled terms
+    * observations
+    * observation fields
+    * observation species counts
+    * places
+    * projects
+    * species
+* **Text search autocompletion for:**
+    * places
+    * species
+* **Creating and updating:**
+    * observations
+    * observation fields
+    * observation photos
+
+See [Endpoints](https://pyinaturalist.readthedocs.io/en/latest/endpoints.html) for a complete list of
+implemented endpoints, and see [Reference](https://pyinaturalist.readthedocs.io/en/latest/reference.html)
+to skip straight to the API docs.
 
 ## Installation
 
@@ -44,52 +90,31 @@ $ pip install python-dateutil requests
 ```
 
 ## Development Status
+Pyinaturalist is under active development. More endpoints and features will continue to be added as
+they are needed or requested.
 
-Pyinaturalist is under active development. Currently, several of the most relevant API endpoints
-are implemented, including:
-
-* **Creating and updating:**
-    * observations
-    * observation fields
-    * observation photos
-* **Searching for:**
-    * controlled terms
-    * observations
-    * observation fields
-    * observation species counts
-    * places
-    * projects
-    * species
-* **Text search autocompletion for:**
-    * places
-    * species
-
-See below for some examples,
-see [Endpoints](https://pyinaturalist.readthedocs.io/en/latest/endpoints.html) for a complete list of implemented endpoints, and
-see [Issues](https://github.com/niconoe/pyinaturalist/issues) for planned & proposed features.
-
-More endpoints will continue to be added as they are needed or requested.
-Please [create an issue](https://github.com/niconoe/pyinaturalist/issues/new/choose) if there is an endpoint you
-would like to have added, and **PRs are welcome!**
+* See [History](https://github.com/niconoe/pyinaturalist/blob/dev/HISTORY.md) for details on past and current releases
+* See [Issues](https://github.com/niconoe/pyinaturalist/issues) for planned & proposed features
+* [Create an issue](https://github.com/niconoe/pyinaturalist/issues/new/choose) if there is an endpoint
+  or feature you would like to have added
+* **PRs are welcome!**
 
 ## Usage Examples
+Following are usage examples for some of the most commonly used basic features.
 
 ### Observations
 
 #### Search observations
-
+There are [numerous fields you can search on](https://pyinaturalist.readthedocs.io/en/latest/modules/pyinaturalist.node_api.html#pyinaturalist.node_api.get_observations).
+An obvious search to start with would be getting all of your own observations:
 ```python
 from pyinaturalist.node_api import get_all_observations
 obs = get_all_observations(user_id='my_username')
 ```
 
-See [available parameters](https://api.inaturalist.org/v1/docs/#!/Observations/get_observations/)
-
 #### Get an access token
-
 For authenticated API calls (creating/updating/deleting data), you first need to obtain an access token.
 This requires creating an [iNaturalist app](https://www.inaturalist.org/oauth/applications/new).
-
 ```python
 from pyinaturalist.auth import get_access_token
 token = get_access_token(
@@ -127,18 +152,18 @@ new_observation_id = response[0]['id']
 ```python
 from pyinaturalist.rest_api import add_photo_to_observation
 
-r = add_photo_to_observation(
+add_photo_to_observation(
     new_observation_id,
     access_token=token,
     photo='/Users/nicolasnoe/vespa.jpg',
 )
 ```
 
-#### Update an existing observation of yours
+#### Update an existing observation
 ```python
 from pyinaturalist.rest_api import update_observation
 
-r = update_observation(
+update_observation(
     17932425,
     access_token=token,
     description='updated description !',
@@ -148,42 +173,45 @@ r = update_observation(
 #### Get a list of all (globally available) observation fields
 ```python
 from pyinaturalist.rest_api import get_all_observation_fields
-r = get_all_observation_fields(search_query="DNA")
+response = get_all_observation_fields(search_query="DNA")
 ```
 
-#### Set an observation field value on an existing observation
+#### Set an observation field on an existing observation
+[Observation Fields](https://www.inaturalist.org/pages/extra_fields_nz) are a way to add extra information
+to your observations. They are similar to tags, but with a typed value.
 ```python
-from pyinaturalist.rest_api import put_observation_field_values
+from pyinaturalist.rest_api import get_observation_fields, put_observation_field_values
+
+# First find an observation field by name, if the ID is unknown
+response = get_observation_fields('vespawatch_id')
+observation_field_id = response[0]['id']
 
 put_observation_field_values(
     observation_id=7345179,
-    observation_field_id=9613,
+    observation_field_id=observation_field_id,
     value=250,
     access_token=token,
 )
 ```
 
 #### Get observation data in alternative formats
-A separate endpoint can provide other data formats, including Darwin Core, KML, and CSV:
-
+A [separate endpoint](https://pyinaturalist.readthedocs.io/en/latest/modules/pyinaturalist.rest_api.html#pyinaturalist.rest_api.get_observations)
+can provide other data formats, including Darwin Core, KML, and CSV:
 ```python
 from pyinaturalist.rest_api import get_observations
 obs = get_observations(user_id='niconoe', response_format='dwc')
 ```
 
-See [available parameters and formats](https://www.inaturalist.org/pages/api+reference#get-observations)
-
 #### Get observation species counts
-There is an additional endpoint to get counts of observations by species.
-On the iNaturalist web UI, this information can be found on the 'Species' tab of search results.
+You can also get counts of observations by species. On the iNaturalist web UI,
+this information can be found on the 'Species' tab of search results.
 For example, to get the counts of all your own research-grade observations:
-
 ```python
 from pyinaturalist.node_api import get_observation_species_counts
 obs_counts = get_observation_species_counts(user_id='my_username', quality_grade='research')
 ```
 
-### Taxonomy
+### Species
 
 #### Search species and other taxa
 Let's say you partially remember either a genus or family name that started with **'vespi'**-something:
@@ -205,7 +233,7 @@ from the results above:
 {343248: "Polistinae", 84738: "Vespinae", 119344: "Eumeninae", 121511: "Masarinae", ...}
 ```
 
-### Get a species by ID
+#### Get a species by ID
 Let's find out more about this 'Polistinae' genus. We could search for it by name or by ID,
 but since we already know the ID from the previous search, let's use that:
 
@@ -274,6 +302,14 @@ info. For example:
 "Zygocactus truncatus"  # An older synonym for Schlumbergera
 ```
 
+### ...And much more!
+Check out the [Reference](https://pyinaturalist.readthedocs.io/en/latest/reference.html) section to
+see what else you can do with pyinaturalist.
+
 ## Feedback
 If you have any problems, suggestions, or questions about pyinaturalist, please let us know!
 Just [create an issue here](https://github.com/niconoe/pyinaturalist/issues/new/choose).
+ 
+**Note:** pyinaturalist is not directly affiliated with iNaturalist.org or the
+California Academy of Sciences. If you have non-python-specific questions about iNaturalist, the
+[iNaturalist Community Forum](https://forum.inaturalist.org/) is going to be your best resource.

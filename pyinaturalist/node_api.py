@@ -205,6 +205,7 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
     return r.json()
 
 
+# TODO: Should use a requests Session here for several subsequent requests
 @document_request_params([*docs._get_observations, docs._only_id])
 def get_all_observations(user_agent: str = None, **params) -> List[JsonResponse]:
     """Like :py:func:`get_observations()`, but handles pagination and returns all results in one
