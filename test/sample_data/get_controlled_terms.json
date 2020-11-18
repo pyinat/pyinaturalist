@@ -1,0 +1,292 @@
+{
+  "total_results": 4,
+  "page": 1,
+  "per_page": 30,
+  "results": [
+    {
+      "id": 12,
+      "ontology_uri": "",
+      "uri": "",
+      "is_value": false,
+      "multivalued": true,
+      "uuid": "e997f5f1-1e22-4f1e-bb51-425d70d07b1a",
+      "values": [
+        {
+          "id": 21,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": true,
+          "uuid": "943f8dac-764a-4736-86b5-2f419bbd368b",
+          "taxon_ids": [
+            47125
+          ],
+          "label": "No Evidence of Flowering"
+        },
+        {
+          "id": 13,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "84aa676e-2921-42cf-ae01-034a98425b5c",
+          "taxon_ids": [
+            47125
+          ],
+          "label": "Flowering"
+        },
+        {
+          "id": 14,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "503cef8b-770b-4c2d-a0b0-e0ea9f7df465",
+          "taxon_ids": [
+            47125
+          ],
+          "label": "Fruiting"
+        },
+        {
+          "id": 15,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "9c9d28a1-4ad3-408e-9f2b-30af803f5eb9",
+          "taxon_ids": [
+            47125
+          ],
+          "label": "Flower Budding"
+        }
+      ],
+      "taxon_ids": [
+        47126
+      ],
+      "label": "Plant Phenology"
+    },
+    {
+      "id": 9,
+      "ontology_uri": "",
+      "uri": "",
+      "is_value": false,
+      "multivalued": false,
+      "uuid": "6a659546-c3aa-45ff-8f6c-0706f2361cfe",
+      "values": [
+        {
+          "id": 10,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "3288a7bd-6ca7-413e-9890-5c4c541331de",
+          "label": "Female"
+        },
+        {
+          "id": 11,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "207a8f33-ee23-44c9-88a5-e6a036a7d950",
+          "label": "Male"
+        },
+        {
+          "id": 20,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "1e75ade7-f1c2-4ef7-994b-c5b07d52713e",
+          "label": "Cannot Be Determined"
+        }
+      ],
+      "excepted_taxon_ids": [
+        47170,
+        333586,
+        63081,
+        47113
+      ],
+      "label": "Sex"
+    },
+    {
+      "id": 17,
+      "ontology_uri": "",
+      "uri": "",
+      "is_value": false,
+      "multivalued": false,
+      "values": [
+        {
+          "id": 18,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "label": "Alive"
+        },
+        {
+          "id": 19,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "label": "Dead"
+        },
+        {
+          "id": 20,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "label": "Cannot Be Determined"
+        }
+      ],
+      "taxon_ids": [
+        1
+      ],
+      "label": "Alive or Dead"
+    },
+    {
+      "id": 1,
+      "ontology_uri": "",
+      "uri": "",
+      "is_value": false,
+      "multivalued": false,
+      "uuid": "f895e9ce-fb2d-4a63-a486-ac424f497e02",
+      "values": [
+        {
+          "id": 2,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "48722062-360d-4b6e-b72c-129c7066b3fa",
+          "taxon_ids": [
+            1
+          ],
+          "label": "Adult"
+        },
+        {
+          "id": 3,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "b3b6e6d0-cbce-4886-bb2b-55bd99d44586",
+          "taxon_ids": [
+            47792,
+            50190
+          ],
+          "label": "Teneral"
+        },
+        {
+          "id": 4,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "c883d7b5-4eb5-4ad1-8cbc-56f5e2555869",
+          "taxon_ids": [
+            47208,
+            48763,
+            49369,
+            47157,
+            47822,
+            47201,
+            62164,
+            47864,
+            83204,
+            83202,
+            47794
+          ],
+          "label": "Pupa"
+        },
+        {
+          "id": 5,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "0f0c03c2-4741-46db-a19a-7cac8a96d667",
+          "taxon_ids": [
+            47793,
+            81769,
+            56834,
+            47744,
+            47792,
+            47651,
+            47504,
+            48011,
+            48112,
+            53795,
+            47198,
+            83187,
+            83201,
+            83200
+          ],
+          "label": "Nymph"
+        },
+        {
+          "id": 6,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "8ff477bd-0949-4a7a-9c67-64a8e3786876",
+          "taxon_ids": [
+            20978,
+            47208,
+            47822,
+            47201,
+            47157,
+            49369,
+            47864,
+            48763,
+            47794,
+            83204,
+            83202,
+            62164
+          ],
+          "label": "Larva"
+        },
+        {
+          "id": 7,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "fe58aedb-4375-4096-a61f-1cd718cf319f",
+          "taxon_ids": [
+            43233,
+            47120,
+            47114,
+            47459,
+            85497,
+            47178,
+            20978,
+            3,
+            49231,
+            47273,
+            60450,
+            49099,
+            26036
+          ],
+          "label": "Egg"
+        },
+        {
+          "id": 8,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "3245d167-ffff-44ce-a366-cfc8f711d73f",
+          "taxon_ids": [
+            1
+          ],
+          "excepted_taxon_ids": [
+            184884
+          ],
+          "label": "Juvenile"
+        },
+        {
+          "id": 16,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "6ff4f9f8-7bc0-4d50-bee5-7072d11a04ef",
+          "taxon_ids": [
+            48011
+          ],
+          "label": "Subimago"
+        }
+      ],
+      "taxon_ids": [
+        1
+      ],
+      "label": "Life Stage"
+    }
+  ]
+}
