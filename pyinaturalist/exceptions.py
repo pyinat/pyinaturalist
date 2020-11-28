@@ -7,3 +7,7 @@ class AuthenticationError(HTTPError):
 
 class ObservationNotFound(HTTPError):
     pass
+
+
+class TaxonNotFound(HTTPError):
+    pass

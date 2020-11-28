@@ -205,3 +205,9 @@ In the rare cases where you want to use multiple user agents in your script, you
     get_observation(observation_id=16227955, user_agent='AnotherUserAgent')
 
 All functions that communicate with the API accept the `user_agent` optional parameter. If you don't configure the user agent, `Pyinaturalist/<VERSION>` will be used.
+
+
+API Recommended Practices
+-------------------------
+See `API Recommended Practices <https://www.inaturalist.org/pages/api+recommended+practices>`_
+on iNaturalist for more general usage information and notes.

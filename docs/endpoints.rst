@@ -1,3 +1,5 @@
+.. _endpoints:
+
 Implemented Endpoints
 =====================
 
@@ -23,6 +25,15 @@ Rails-based API
 All iNaturalist endpoints
 ----------------------------------------
 .. Writing the table in markdown because markdown table syntax is much more sane than rst
+
+.. note::
+
+    The two iNaturalist APIs expose a combined total of 103 endpoints\*. Some of these are generally
+    useful and could potentially be added to pyinaturalist, but many others are primarily for
+    internal use by the iNaturalist web application and mobile apps, and are unlikely to be added
+    unless there are specific use cases for them.
+
+    \*As of 2020-10-01: 37 in REST API, 65 in Node API, and 1 undocumented
 
 .. mdinclude:: endpoints_table.md
     :start-line: 1

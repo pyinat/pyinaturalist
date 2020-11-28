@@ -14,8 +14,8 @@ DELETE            | /votes/unvote/annotation/{id}               |
 POST              | /comments                                   |
 DELETE            | /comments/{id}                              |
 PUT               | /comments/{id}                              |
-GET               | /controlled_terms                           |
-GET               | /controlled_terms/for_taxon                 |
+GET               | /controlled_terms                           | yes
+GET               | /controlled_terms/for_taxon                 | yes
 POST              | /flags                                      |
 DELETE            | /flags/{id}                                 |
 PUT               | /flags/{id}                                 |
