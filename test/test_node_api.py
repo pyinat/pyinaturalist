@@ -446,7 +446,6 @@ def test_get_taxa_autocomplete_minified(requests_mock):
         '  621586:      Species Vespicula zollingeri',
     ]
 
-
     response = get_taxa_autocomplete(q='vespi', minify=True)
     pprint(response['results'])
     assert response['results'] == expected_results
