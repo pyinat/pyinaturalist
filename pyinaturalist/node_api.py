@@ -647,5 +647,5 @@ def get_taxa_autocomplete(user_agent: str = None, **params) -> JsonResponse:
     json_response = r.json()
 
     if params.get('minify'):
-        json_response['results'] = [format_taxon(t) for t in json_response['results']]
+        json_response['results'] = [format_taxon(t, align=True) for t in json_response['results']]
     return json_response
