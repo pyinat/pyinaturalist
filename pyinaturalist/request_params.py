@@ -12,135 +12,135 @@ from pyinaturalist.constants import FileOrPath, RequestParams
 
 # Basic observation attributes to include by default in geojson responses
 DEFAULT_OBSERVATION_ATTRS = [
-    "id",
-    "photo_url",
-    "positional_accuracy",
-    "preferred_common_name",
-    "quality_grade",
-    "taxon_id",
-    "taxon_name",
-    "time_observed_at",
-    "uri",
+    'id',
+    'photo_url',
+    'positional_accuracy',
+    'quality_grade',
+    'taxon_id',
+    'taxon_name',
+    'taxon_common_name',
+    'time_observed_at',
+    'uri',
 ]
 
 # All request parameters from both Node API and REST (Rails) API that accept date or datetime strings
 DATETIME_PARAMS = [
-    "created_after",
-    "created_d1",
-    "created_d2",
-    "created_on",
-    "d1",
-    "d2",
-    "newer_than",
-    "observation_created_d1",
-    "observation_created_d2",
-    "observed_d1",
-    "observed_d2",
-    "observed_on",
-    "older_than",
-    "on",
-    "since",
-    "updated_since",  # TODO: test if this one behaves differently in Node API vs REST API
+    'created_after',
+    'created_d1',
+    'created_d2',
+    'created_on',
+    'd1',
+    'd2',
+    'newer_than',
+    'observation_created_d1',
+    'observation_created_d2',
+    'observed_d1',
+    'observed_d2',
+    'observed_on',
+    'older_than',
+    'on',
+    'since',
+    'updated_since',  # TODO: test if this one behaves differently in Node API vs REST API
 ]
 
 # Reponse formats supported by GET /observations endpoint
-OBSERVATION_FORMATS = ["atom", "csv", "dwc", "json", "kml", "widget"]
+OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
 
 # Creative Commons license codes
-CC_LICENSES = ["CC-BY", "CC-BY-NC", "CC-BY-ND", "CC-BY-SA", "CC-BY-NC-ND", "CC-BY-NC-SA", "CC0"]
+CC_LICENSES = ['CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0']
 
 # IUCN Conservation status codes; for more info, see: https://www.iucnredlist.org
-CONSERVATION_STATUSES = ["LC", "NT", "VU", "EN", "CR", "EW", "EX"]
+CONSERVATION_STATUSES = ['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX']
 
-# Taxon ID and name of main taxa "categories" that can be filtered on
+# Taxon ID and name of main taxa 'categories' that can be filtered on
 ICONIC_TAXA = {
-    0: "Unknown",
-    1: "Animalia",
-    3: "Aves",
-    20978: "Amphibia",
-    26036: "Reptilia",
-    40151: "Mammalia",
-    47178: "Actinopterygii",
-    47115: "Mollusca",
-    47119: "Arachnida",
-    47158: "Insecta",
-    47126: "Plantae",
-    47170: "Fungi",
-    48222: "Chromista",
-    47686: "Protozoa",
+    0: 'Unknown',
+    1: 'Animalia',
+    3: 'Aves',
+    20978: 'Amphibia',
+    26036: 'Reptilia',
+    40151: 'Mammalia',
+    47178: 'Actinopterygii',
+    47115: 'Mollusca',
+    47119: 'Arachnida',
+    47158: 'Insecta',
+    47126: 'Plantae',
+    47170: 'Fungi',
+    48222: 'Chromista',
+    47686: 'Protozoa',
 }
 
 # Taxonomic ranks that can be filtered on
 RANKS = [
-    "form",
-    "variety",
-    "subspecies",
-    "hybrid",
-    "species",
-    "genushybrid",
-    "subgenus",
-    "genus",
-    "subtribe",
-    "tribe",
-    "supertribe",
-    "subfamily",
-    "family",
-    "epifamily",
-    "superfamily",
-    "infraorder",
-    "suborder",
-    "order",
-    "superorder",
-    "infraclass",
-    "subclass",
-    "class",
-    "superclass",
-    "subphylum",
-    "phylum",
-    "kingdom",
+    'form',
+    'variety',
+    'subspecies',
+    'hybrid',
+    'species',
+    'genushybrid',
+    'subgenus',
+    'genus',
+    'subtribe',
+    'tribe',
+    'supertribe',
+    'subfamily',
+    'family',
+    'epifamily',
+    'superfamily',
+    'infraorder',
+    'suborder',
+    'order',
+    'superorder',
+    'infraclass',
+    'subclass',
+    'class',
+    'superclass',
+    'subphylum',
+    'phylum',
+    'kingdom',
 ]
 
 # Endpoint-specific options for multiple choice parameters
-NODE_OBS_ORDER_BY_PROPERTIES = ["created_at", "id", "observed_on", "species_guess", "votes"]
-REST_OBS_ORDER_BY_PROPERTIES = ["date_added", "observed_on"]
-PROJECT_ORDER_BY_PROPERTIES = ["created", "distance", "featured", "recent_posts", "updated"]
+NODE_OBS_ORDER_BY_PROPERTIES = ['created_at', 'id', 'observed_on', 'species_guess', 'votes']
+REST_OBS_ORDER_BY_PROPERTIES = ['date_added', 'observed_on']
+PROJECT_ORDER_BY_PROPERTIES = ['created', 'distance', 'featured', 'recent_posts', 'updated']
 
 # Options for multiple choice parameters (non-endpoint-specific)
-COMMUNITY_ID_STATUSES = ["most_agree", "most_disagree", "some_agree"]
-EXTRA_PROPERTIES = ["fields", "identifications", "projects"]
-GEOPRIVACY_LEVELS = ["obscured", "obscured_private", "open", "private"]
-HAS_PROPERTIES = ["photo", "geo"]
-ORDER_DIRECTIONS = ["asc", "desc"]
-PROJECT_TYPES = ["collection", "umbrella"]
-QUALITY_GRADES = ["casual", "needs_id", "research"]
-SEARCH_PROPERTIES = ["names", "tags", "description", "place"]
+COMMUNITY_ID_STATUSES = ['most_agree', 'most_disagree', 'some_agree']
+EXTRA_PROPERTIES = ['fields', 'identifications', 'projects']
+GEOPRIVACY_LEVELS = ['obscured', 'obscured_private', 'open', 'private']
+HAS_PROPERTIES = ['photo', 'geo']
+ORDER_DIRECTIONS = ['asc', 'desc']
+PROJECT_TYPES = ['collection', 'umbrella']
+QUALITY_GRADES = ['casual', 'needs_id', 'research']
+SEARCH_PROPERTIES = ['names', 'tags', 'description', 'place']
 
 
 # Multiple-choice request parameters, with keys mapped to their possible choices (non-endpoint-specific)
 MULTIPLE_CHOICE_PARAMS = {
-    "csi": CONSERVATION_STATUSES,
-    "extra": EXTRA_PROPERTIES,
-    "geoprivacy": GEOPRIVACY_LEVELS,
-    "has": HAS_PROPERTIES,
-    "hrank": RANKS,
-    "iconic_taxa": list(ICONIC_TAXA.values()),
-    "identifications": COMMUNITY_ID_STATUSES,
-    "license": CC_LICENSES,
-    "lrank": RANKS,
-    "max_rank": RANKS,
-    "min_rank": RANKS,
-    "order": ORDER_DIRECTIONS,
-    "photo_license": CC_LICENSES,
-    "quality_grade": QUALITY_GRADES,
-    "rank": RANKS,
-    "search_on": SEARCH_PROPERTIES,
-    "sound_license": CC_LICENSES,
-    "taxon_geoprivacy": GEOPRIVACY_LEVELS,
-    "type": PROJECT_TYPES,
+    'csi': CONSERVATION_STATUSES,
+    'extra': EXTRA_PROPERTIES,
+    'geoprivacy': GEOPRIVACY_LEVELS,
+    'has': HAS_PROPERTIES,
+    'hrank': RANKS,
+    'iconic_taxa': list(ICONIC_TAXA.values()),
+    'identifications': COMMUNITY_ID_STATUSES,
+    'license': CC_LICENSES,
+    'lrank': RANKS,
+    'max_rank': RANKS,
+    'min_rank': RANKS,
+    'order': ORDER_DIRECTIONS,
+    'photo_license': CC_LICENSES,
+    'quality_grade': QUALITY_GRADES,
+    'rank': RANKS,
+    'search_on': SEARCH_PROPERTIES,
+    'sound_license': CC_LICENSES,
+    'taxon_geoprivacy': GEOPRIVACY_LEVELS,
+    'type': PROJECT_TYPES,
 }
 
 MULTIPLE_CHOICE_ERROR_MSG = (
-    "Parameter '{}' must have one of the following values: {}\n\tValue provided: {}"
+    'Parameter "{}" must have one of the following values: {}\n\tValue provided: {}'
 )
 
 logger = getLogger(__name__)
@@ -189,8 +189,8 @@ def ensure_file_obj(photo: FileOrPath) -> BinaryIO:
     """Given a file objects or path, read it into a file-like object if it's a path"""
     if isinstance(photo, str):
         file_path = abspath(expanduser(photo))
-        logger.info(f"Reading from file: {file_path}")
-        with open(file_path, "rb") as f:
+        logger.info(f'Reading from file: {file_path}')
+        with open(file_path, 'rb') as f:
             return BytesIO(f.read())
     return photo
 
@@ -204,8 +204,8 @@ def ensure_list(values: Any):
     """If the value is a string or comma-separated list of values, convert it into a list"""
     if not values:
         values = []
-    elif isinstance(values, str) and "," in values:
-        values = values.split(",")
+    elif isinstance(values, str) and ',' in values:
+        values = values.split(',')
     elif not isinstance(values, list):
         values = [values]
     return values
@@ -214,9 +214,9 @@ def ensure_list(values: Any):
 def convert_list(obj: Any) -> str:
     """Convert list parameters into an API-compatible (comma-delimited) string"""
     if not obj:
-        return ""
+        return ''
     if isinstance(obj, list):
-        return ",".join(map(str, obj))
+        return ','.join(map(str, obj))
     return str(obj)
 
 
@@ -229,12 +229,12 @@ def convert_list_params(params: RequestParams) -> RequestParams:
 
 def convert_observation_fields(params: RequestParams) -> RequestParams:
     """Translate simplified format of observation field values into API-compatible format"""
-    if "observation_fields" in params:
-        params["observation_field_values_attributes"] = params.pop("observation_fields")
-    obs_fields = params.get("observation_field_values_attributes")
+    if 'observation_fields' in params:
+        params['observation_field_values_attributes'] = params.pop('observation_fields')
+    obs_fields = params.get('observation_field_values_attributes')
     if isinstance(obs_fields, dict):
-        params["observation_field_values_attributes"] = [
-            {"observation_field_id": k, "value": v} for k, v in obs_fields.items()
+        params['observation_field_values_attributes'] = [
+            {'observation_field_id': k, 'value': v} for k, v in obs_fields.items()
         ]
     return params
 
@@ -265,7 +265,7 @@ def validate_ids(ids: Any) -> str:
         :py:exc:`ValueError` if any values are not valid integers
     """
     if not is_int_list(ids):
-        raise ValueError(f"Invalid ID(s): {ids}; must specify integers only")
+        raise ValueError(f'Invalid ID(s): {ids}; must specify integers only')
     return convert_list([int(id) for id in ensure_list(ids)])
 
 
@@ -307,7 +307,7 @@ def validate_multiple_choice_params(params: RequestParams):
 
     # Combine all messages (if multiple) into one error message
     if errors:
-        raise ValueError("\n".join(errors))
+        raise ValueError('\n'.join(errors))
 
 
 def _isoformat(d):
@@ -324,15 +324,15 @@ def translate_rank_range(params: RequestParams) -> RequestParams:
 
     def _get_rank_index(rank: str) -> int:
         if rank not in RANKS:
-            raise ValueError("Invalid rank")
+            raise ValueError('Invalid rank')
         return RANKS.index(rank)
 
-    min_rank, max_rank = params.pop("min_rank", None), params.pop("max_rank", None)
+    min_rank, max_rank = params.pop('min_rank', None), params.pop('max_rank', None)
     if min_rank or max_rank:
         # Use indices in RANKS list to determine range of ranks to include
         min_rank_index = _get_rank_index(min_rank) if min_rank else 0
         max_rank_index = _get_rank_index(max_rank) + 1 if max_rank else len(RANKS)
-        params["rank"] = RANKS[min_rank_index:max_rank_index]
+        params['rank'] = RANKS[min_rank_index:max_rank_index]
     return params
 
 

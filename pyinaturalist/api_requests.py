@@ -12,7 +12,7 @@ from pyinaturalist.request_params import preprocess_request_params, validate_ids
 
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=requests.Response)
-MOCK_RESPONSE.json.return_value = {"results": [], "total_results": 0}
+MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0}
 
 logger = getLogger(__name__)
 
@@ -20,22 +20,22 @@ logger = getLogger(__name__)
 # TODO: Copy function signature of request(), add `url`, and apply to these 4 wrapper functions
 def delete(url: str, **kwargs) -> requests.Response:
     """ Wrapper around :py:func:`requests.delete` that supports dry-run mode """
-    return request("DELETE", url, **kwargs)
+    return request('DELETE', url, **kwargs)
 
 
 def get(url: str, **kwargs) -> requests.Response:
     """ Wrapper around :py:func:`requests.get` that supports dry-run mode """
-    return request("GET", url, **kwargs)
+    return request('GET', url, **kwargs)
 
 
 def post(url: str, **kwargs) -> requests.Response:
     """ Wrapper around :py:func:`requests.post` that supports dry-run mode """
-    return request("POST", url, **kwargs)
+    return request('POST', url, **kwargs)
 
 
 def put(url: str, **kwargs) -> requests.Response:
     """ Wrapper around :py:func:`requests.put` that supports dry-run mode """
-    return request("PUT", url, **kwargs)
+    return request('PUT', url, **kwargs)
 
 
 def request(
@@ -65,20 +65,20 @@ def request(
     """
     # Set user agent and authentication headers, if specified
     headers = headers or {}
-    headers["Accept"] = "application/json"
-    headers["User-Agent"] = user_agent or pyinaturalist.user_agent
+    headers['Accept'] = 'application/json'
+    headers['User-Agent'] = user_agent or pyinaturalist.user_agent
     if access_token:
-        headers["Authorization"] = "Bearer %s" % access_token
+        headers['Authorization'] = 'Bearer %s' % access_token
 
     params = preprocess_request_params(params)
 
     # If one or more REST resources are requested, update the request URL accordignly
     if ids:
-        url = url.rstrip("/") + "/" + validate_ids(ids)
+        url = url.rstrip('/') + '/' + validate_ids(ids)
 
     # Run either real request or mock request depending on settings
     if is_dry_run_enabled(method):
-        logger.debug("Dry-run mode enabled; mocking request")
+        logger.debug('Dry-run mode enabled; mocking request')
         log_request(method, url, params=params, headers=headers, **kwargs)
         return MOCK_RESPONSE
     else:
@@ -90,10 +90,10 @@ def is_dry_run_enabled(method: str) -> bool:
     a constant or an environment variable. Dry-run mode may be enabled for either write
     requests, or all requests.
     """
-    dry_run_enabled = pyinaturalist.DRY_RUN_ENABLED or env_to_bool("DRY_RUN_ENABLED")
+    dry_run_enabled = pyinaturalist.DRY_RUN_ENABLED or env_to_bool('DRY_RUN_ENABLED')
     if method in WRITE_HTTP_METHODS:
         return (
-            dry_run_enabled or pyinaturalist.DRY_RUN_WRITE_ONLY or env_to_bool("DRY_RUN_WRITE_ONLY")
+            dry_run_enabled or pyinaturalist.DRY_RUN_WRITE_ONLY or env_to_bool('DRY_RUN_WRITE_ONLY')
         )
     return dry_run_enabled
 
@@ -103,10 +103,10 @@ def env_to_bool(environment_variable: str) -> bool:
     variations (case, None vs. False, etc.)
     """
     env_value = getenv(environment_variable)
-    return bool(env_value) and str(env_value).lower() not in ["false", "none"]
+    return bool(env_value) and str(env_value).lower() not in ['false', 'none']
 
 
 def log_request(*args, **kwargs):
     """ Log all relevant information about an HTTP request """
-    kwargs_strs = [f"{k}={v}" for k, v in kwargs.items()]
-    logger.info("Request: {}".format(", ".join(list(args) + kwargs_strs)))
+    kwargs_strs = [f'{k}={v}' for k, v in kwargs.items()]
+    logger.info('Request: {}'.format(', '.join(list(args) + kwargs_strs)))

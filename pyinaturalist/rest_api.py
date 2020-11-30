@@ -53,7 +53,7 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
 
     Example:
 
-        >>> get_observations(id=45414404, format="atom")
+        >>> get_observations(id=45414404, format='atom')
 
         .. admonition:: Example Response (atom)
             :class: toggle
@@ -94,20 +94,20 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
         Return type will be ``dict`` for the ``json`` response format, and ``str`` for all
         others.
     """
-    response_format = params.pop("response_format", "json")
-    if response_format == "geojson":
-        raise ValueError("For geojson format, use pyinaturalist.node_api.get_geojson_observations")
+    response_format = params.pop('response_format', 'json')
+    if response_format == 'geojson':
+        raise ValueError('For geojson format, use pyinaturalist.node_api.get_geojson_observations')
     if response_format not in OBSERVATION_FORMATS:
-        raise ValueError("Invalid response format")
-    validate_multiple_choice_param(params, "order_by", REST_OBS_ORDER_BY_PROPERTIES)
+        raise ValueError('Invalid response format')
+    validate_multiple_choice_param(params, 'order_by', REST_OBS_ORDER_BY_PROPERTIES)
 
     response = get(
-        f"{INAT_BASE_URL}/observations.{response_format}",
+        f'{INAT_BASE_URL}/observations.{response_format}',
         params=params,
         user_agent=user_agent,
     )
 
-    if response_format == "json":
+    if response_format == 'json':
         return convert_lat_long_to_float(response.json())
     else:
         return response.text
@@ -137,7 +137,7 @@ def get_observation_fields(user_agent: str = None, **params) -> ListResponse:
         Observation fields as a list of dicts
     """
     response = get(
-        f"{INAT_BASE_URL}/observation_fields.json",
+        f'{INAT_BASE_URL}/observation_fields.json',
         params=params,
         user_agent=user_agent,
     )
@@ -155,7 +155,7 @@ def get_all_observation_fields(**params) -> ListResponse:
 
     Returns:
         Observation fields as a list of dicts. Response format is the same as the inner
-        "results" object returned by :py:func:`.get_observation_fields`.
+        'results' object returned by :py:func:`.get_observation_fields`.
     """
     results = []  # type: List[Dict[str, Any]]
     page = 1
@@ -220,15 +220,15 @@ def put_observation_field_values(
     """
 
     payload = {
-        "observation_field_value": {
-            "observation_id": observation_id,
-            "observation_field_id": observation_field_id,
-            "value": value,
+        'observation_field_value': {
+            'observation_id': observation_id,
+            'observation_field_id': observation_field_id,
+            'value': value,
         }
     }
 
     response = put(
-        f"{INAT_BASE_URL}/observation_field_values/{observation_field_id}",
+        f'{INAT_BASE_URL}/observation_field_values/{observation_field_id}',
         access_token=access_token,
         user_agent=user_agent,
         json=payload,
@@ -276,16 +276,16 @@ def create_observation(access_token: str = None, user_agent: str = None, **param
         ``response`` attribute gives more details about the errors.
     """
     # Accept either top-level params (like most other endpoints)
-    # or nested {"observation": params} (like the iNat API accepts directly)
-    if "observation" in params:
-        params.update(params.pop("observation"))
+    # or nested {'observation': params} (like the iNat API accepts directly)
+    if 'observation' in params:
+        params.update(params.pop('observation'))
     params = convert_observation_fields(params)
-    if "local_photos" in params:
-        params["local_photos"] = ensure_file_objs(params["local_photos"])
+    if 'local_photos' in params:
+        params['local_photos'] = ensure_file_objs(params['local_photos'])
 
     response = post(
-        url=f"{INAT_BASE_URL}/observations.json",
-        json={"observation": params},
+        url=f'{INAT_BASE_URL}/observations.json',
+        json={'observation': params},
         access_token=access_token,
         user_agent=user_agent,
     )
@@ -325,7 +325,7 @@ def update_observation(
         >>> update_observation(
         >>>     17932425,
         >>>     access_token=token,
-        >>>     description="updated description!",
+        >>>     description='updated description!',
         >>> )
 
         .. admonition:: Example Response
@@ -343,22 +343,22 @@ def update_observation(
     """
     # Accept either top-level params (like most other endpoints)
     # or nested params (like the iNat API actually accepts)
-    if "observation" in params:
-        params.update(params.pop("observation"))
+    if 'observation' in params:
+        params.update(params.pop('observation'))
     params = convert_observation_fields(params)
-    if "local_photos" in params:
-        params["local_photos"] = ensure_file_objs(params["local_photos"])
+    if 'local_photos' in params:
+        params['local_photos'] = ensure_file_objs(params['local_photos'])
 
     # This is the one Boolean parameter that's specified as an int, for some reason.
     # Also, set it to True if not specified, which seems like much saner default behavior.
-    if "ignore_photos" in params:
-        params["ignore_photos"] = int(params["ignore_photos"])
+    if 'ignore_photos' in params:
+        params['ignore_photos'] = int(params['ignore_photos'])
     else:
-        params["ignore_photos"] = 1
+        params['ignore_photos'] = 1
 
     response = put(
-        url=f"{INAT_BASE_URL}/observations/{observation_id}.json",
-        json={"observation": params},
+        url=f'{INAT_BASE_URL}/observations/{observation_id}.json',
+        json={'observation': params},
         access_token=access_token,
         user_agent=user_agent,
     )
@@ -401,10 +401,10 @@ def add_photo_to_observation(
         Information about the newly created photo
     """
     response = post(
-        url=f"{INAT_BASE_URL}/observation_photos",
+        url=f'{INAT_BASE_URL}/observation_photos',
         access_token=access_token,
-        data={"observation_photo[observation_id]": observation_id},
-        files={"file": ensure_file_obj(photo)},
+        data={'observation_photo[observation_id]': observation_id},
+        files={'file': ensure_file_obj(photo)},
         user_agent=user_agent,
     )
 
@@ -431,10 +431,10 @@ def delete_observation(observation_id: int, access_token: str = None, user_agent
         :py:exc:`requests.HTTPError` (403) if the observation belongs to another user
     """
     response = delete(
-        url=f"{INAT_BASE_URL}/observations/{observation_id}.json",
+        url=f'{INAT_BASE_URL}/observations/{observation_id}.json',
         access_token=access_token,
         user_agent=user_agent,
-        headers={"Content-type": "application/json"},
+        headers={'Content-type': 'application/json'},
     )
     if response.status_code == 404:
         raise ObservationNotFound

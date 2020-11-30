@@ -58,7 +58,7 @@ def document_request_params(template_functions: List[TemplateFunction]):
         try:
             func = copy_signatures(func, template_functions)
         except ImportError:
-            logger.debug("Forge not installed; skipping runtime API documentation")
+            logger.debug('Forge not installed; skipping runtime API documentation')
 
         # Call modified function
         @wraps(func)
@@ -81,17 +81,17 @@ def copy_docstrings(
         template_functions: Functions containing docstrings to apply to ``target_function``
     """
     # Start with initial function description only
-    docstring, return_value_desc = _split_docstring(target_function.__doc__ or "")
+    docstring, return_value_desc = _split_docstring(target_function.__doc__ or '')
 
     # Insert 'Args' section
-    docstring += "\n\nArgs:"
+    docstring += '\n\nArgs:'
     for template_function in template_functions:
-        docstring += template_function.__doc__ or ""
+        docstring += template_function.__doc__ or ''
         docstring = docstring.rstrip()
 
     # Insert 'Returns' section, if present
     if return_value_desc:
-        docstring += "\n\nReturns:\n    " + return_value_desc
+        docstring += '\n\nReturns:\n    ' + return_value_desc
 
     target_function.__doc__ = docstring
     return target_function
@@ -99,11 +99,11 @@ def copy_docstrings(
 
 def _split_docstring(docstring):
     """ Split a docstring into a function description + return value description, if present. """
-    if "Returns:" in docstring:
-        function_desc, return_value_desc = docstring.split("Returns:")
+    if 'Returns:' in docstring:
+        function_desc, return_value_desc = docstring.split('Returns:')
     else:
         function_desc = docstring
-        return_value_desc = ""
+        return_value_desc = ''
 
     return cleandoc(function_desc.strip()), cleandoc(return_value_desc.strip())
 

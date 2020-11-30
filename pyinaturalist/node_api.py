@@ -123,9 +123,9 @@ def get_controlled_terms(taxon_id: int = None, user_agent: str = None) -> JsonRe
         :py:exc:`.TaxonNotFound` If an invalid taxon_id is specified
     """
     # This is actually two endpoints, but they are so similar it seems best to combine them
-    endpoint = "controlled_terms/for_taxon" if taxon_id else "controlled_terms"
+    endpoint = 'controlled_terms/for_taxon' if taxon_id else 'controlled_terms'
     response = make_inaturalist_api_get_call(
-        endpoint, params={"taxon_id": taxon_id}, user_agent=user_agent
+        endpoint, params={'taxon_id': taxon_id}, user_agent=user_agent
     )
 
     # controlled_terms/for_taxon returns a 422 if the specified taxon does not exist
@@ -166,8 +166,8 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
     """
 
     r = get_observations(id=observation_id, user_agent=user_agent)
-    if r["results"]:
-        return r["results"][0]
+    if r['results']:
+        return r['results'][0]
 
     raise ObservationNotFound()
 
@@ -200,8 +200,8 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
     Returns:
         JSON response containing observation records
     """
-    validate_multiple_choice_param(params, "order_by", NODE_OBS_ORDER_BY_PROPERTIES)
-    r = make_inaturalist_api_get_call("observations", params=params, user_agent=user_agent)
+    validate_multiple_choice_param(params, 'order_by', NODE_OBS_ORDER_BY_PROPERTIES)
+    r = make_inaturalist_api_get_call('observations', params=params, user_agent=user_agent)
     return r.json()
 
 
@@ -212,9 +212,9 @@ def get_all_observations(user_agent: str = None, **params) -> List[JsonResponse]
     call. Explicit pagination parameters will be ignored.
 
     Notes on pagination from the iNaturalist documentation:
-    "The large size of the observations index prevents us from supporting the page parameter when
+    'The large size of the observations index prevents us from supporting the page parameter when
     retrieving records from large result sets. If you need to retrieve large numbers of records,
-    use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead."
+    use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead.'
 
     Example:
 
@@ -224,7 +224,7 @@ def get_all_observations(user_agent: str = None, **params) -> List[JsonResponse]
         >>> )
 
     Returns:
-        Combined list of observation records. Response format is the same as the inner "results"
+        Combined list of observation records. Response format is the same as the inner 'results'
         object returned by :py:func:`.get_observations()`.
     """
     results: List[JsonResponse] = []
@@ -232,28 +232,28 @@ def get_all_observations(user_agent: str = None, **params) -> List[JsonResponse]
     pagination_params = {
         **params,
         **{
-            "order_by": "id",
-            "order": "asc",
-            "per_page": PER_PAGE_RESULTS,
-            "user_agent": user_agent,
+            'order_by': 'id',
+            'order': 'asc',
+            'per_page': PER_PAGE_RESULTS,
+            'user_agent': user_agent,
         },
     }
 
     while True:
-        pagination_params["id_above"] = id_above
+        pagination_params['id_above'] = id_above
         page_obs = get_observations(**pagination_params)
-        results = results + page_obs.get("results", [])
+        results = results + page_obs.get('results', [])
 
-        if page_obs["total_results"] <= PER_PAGE_RESULTS:
+        if page_obs['total_results'] <= PER_PAGE_RESULTS:
             return results
 
         sleep(THROTTLING_DELAY)
-        id_above = results[-1]["id"]
+        id_above = results[-1]['id']
 
 
 @document_request_params([*docs._get_observations, docs._pagination])
 def get_observation_species_counts(user_agent: str = None, **params) -> JsonResponse:
-    """Get all species (or other "leaf taxa") associated with observations matching the search
+    """Get all species (or other 'leaf taxa') associated with observations matching the search
     criteria, and the count of observations they are associated with.
     **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
 
@@ -272,7 +272,7 @@ def get_observation_species_counts(user_agent: str = None, **params) -> JsonResp
         JSON response containing taxon records with counts
     """
     r = make_inaturalist_api_get_call(
-        "observations/species_counts",
+        'observations/species_counts',
         params=params,
         user_agent=user_agent,
     )
@@ -312,17 +312,17 @@ def get_all_observation_species_counts(user_agent: str = None, **params) -> List
     pagination_params = {
         **params,
         **{
-            "per_page": PER_PAGE_RESULTS,
-            "user_agent": user_agent,
+            'per_page': PER_PAGE_RESULTS,
+            'user_agent': user_agent,
         },
     }
 
     while True:
-        pagination_params["page"] = page
+        pagination_params['page'] = page
         page_obs = get_observation_species_counts(**pagination_params)
-        results = results + page_obs.get("results", [])
+        results = results + page_obs.get('results', [])
 
-        if len(results) == page_obs["total_results"]:
+        if len(results) == page_obs['total_results']:
             return results
 
         sleep(THROTTLING_DELAY)
@@ -336,7 +336,7 @@ def get_geojson_observations(properties: List[str] = None, **params) -> JsonResp
     The ``properties`` argument can be used to override these defaults.
 
     Example:
-        >>> get_geojson_observations(observation_id=16227955, properties=["photo_url"])
+        >>> get_geojson_observations(observation_id=16227955, properties=['photo_url'])
 
         .. admonition:: Example Response
             :class: toggle
@@ -347,7 +347,7 @@ def get_geojson_observations(properties: List[str] = None, **params) -> JsonResp
     Returns:
         A ``FeatureCollection`` containing observation results as ``Feature`` dicts.
     """
-    params["mappable"] = True
+    params['mappable'] = True
     observations = get_all_observations(**params)
     return as_geojson_feature_collection(
         (flatten_nested_params(obs) for obs in observations),
@@ -363,9 +363,9 @@ def get_geojson_observations(properties: List[str] = None, **params) -> JsonResp
 
 def _convert_all_locations_to_float(response):
     """ Convert locations for both standard (curated) and community-contributed places to floats """
-    response["results"] = {
-        "standard": convert_location_to_float(response["results"].get("standard")),
-        "community": convert_location_to_float(response["results"].get("community")),
+    response['results'] = {
+        'standard': convert_location_to_float(response['results'].get('standard')),
+        'community': convert_location_to_float(response['results'].get('community')),
     }
     return response
 
@@ -391,12 +391,12 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
     Returns:
         JSON response containing place records
     """
-    r = make_inaturalist_api_get_call("places", ids=place_id, user_agent=user_agent)
+    r = make_inaturalist_api_get_call('places', ids=place_id, user_agent=user_agent)
     r.raise_for_status()
 
     # Convert coordinates to floats
     response = r.json()
-    response["results"] = convert_location_to_float(response["results"])
+    response['results'] = convert_location_to_float(response['results'])
     return response
 
 
@@ -421,7 +421,7 @@ def get_places_nearby(user_agent: str = None, **params) -> JsonResponse:
     Returns:
         JSON response containing place records
     """
-    r = make_inaturalist_api_get_call("places/nearby", params=params, user_agent=user_agent)
+    r = make_inaturalist_api_get_call('places/nearby', params=params, user_agent=user_agent)
     r.raise_for_status()
     return _convert_all_locations_to_float(r.json())
 
@@ -446,12 +446,12 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
     Returns:
         JSON response containing place records
     """
-    r = make_inaturalist_api_get_call("places/autocomplete", params={"q": q}, user_agent=user_agent)
+    r = make_inaturalist_api_get_call('places/autocomplete', params={'q': q}, user_agent=user_agent)
     r.raise_for_status()
 
     # Convert coordinates to floats
     response = r.json()
-    response["results"] = convert_location_to_float(response["results"])
+    response['results'] = convert_location_to_float(response['results'])
     return response
 
 
@@ -479,7 +479,7 @@ def get_projects(user_agent: str = None, **params) -> JsonResponse:
 
         Show basic info for projects in response:
 
-        >>> project_info = {p["id"]: p["title"] for p in response["results"]}
+        >>> project_info = {p['id']: p['title'] for p in response['results']}
         >>> print('\\n'.join([f'{k}:\\t{v}' for k, v in project_info.items()]))
         8291:    PNW Invasive Plant EDDR
         19200:   King County (WA) Noxious and Invasive Weeds
@@ -496,13 +496,13 @@ def get_projects(user_agent: str = None, **params) -> JsonResponse:
     Returns:
         JSON response containing project records
     """
-    validate_multiple_choice_param(params, "order_by", PROJECT_ORDER_BY_PROPERTIES)
-    r = make_inaturalist_api_get_call("projects", params=params, user_agent=user_agent)
+    validate_multiple_choice_param(params, 'order_by', PROJECT_ORDER_BY_PROPERTIES)
+    r = make_inaturalist_api_get_call('projects', params=params, user_agent=user_agent)
     r.raise_for_status()
 
     # Convert coordinates to floats
     response = r.json()
-    response["results"] = convert_location_to_float(response["results"])
+    response['results'] = convert_location_to_float(response['results'])
     return response
 
 
@@ -532,16 +532,16 @@ def get_projects_by_id(
         JSON response containing project records
     """
     r = make_inaturalist_api_get_call(
-        "projects",
+        'projects',
         ids=project_id,
-        params={"rule_details": rule_details},
+        params={'rule_details': rule_details},
         user_agent=user_agent,
     )
     r.raise_for_status()
 
     # Convert coordinates to floats
     response = r.json()
-    response["results"] = convert_location_to_float(response["results"])
+    response['results'] = convert_location_to_float(response['results'])
     return response
 
 
@@ -557,9 +557,9 @@ def get_taxa(user_agent: str = None, **params) -> JsonResponse:
 
     Example:
 
-        >>> response = get_taxa(q="vespi", rank=["genus", "family"])
-        >>> print({taxon["id"]: taxon["name"] for taxon in response["results"]})
-        {52747: "Vespidae", 84737: "Vespina", 92786: "Vespicula", 646195: "Vespiodes", ...}
+        >>> response = get_taxa(q='vespi', rank=['genus', 'family'])
+        >>> print({taxon['id']: taxon['name'] for taxon in response['results']})
+        {52747: 'Vespidae', 84737: 'Vespina', 92786: 'Vespicula', 646195: 'Vespiodes', ...}
 
         .. admonition:: Example Response
             :class: toggle
@@ -571,7 +571,7 @@ def get_taxa(user_agent: str = None, **params) -> JsonResponse:
         JSON response containing taxon records
     """
     params = translate_rank_range(params)
-    r = make_inaturalist_api_get_call("taxa", params=params, user_agent=user_agent)
+    r = make_inaturalist_api_get_call('taxa', params=params, user_agent=user_agent)
     r.raise_for_status()
     return r.json()
 
@@ -584,13 +584,13 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     Example:
 
         >>> response = get_taxa_by_id(343248)
-        >>> basic_fields = ["preferred_common_name", "observations_count", "wikipedia_url", "wikipedia_summary"]
-        >>> print({f: response["results"][0][f] for f in basic_fields})
+        >>> basic_fields = ['preferred_common_name', 'observations_count', 'wikipedia_url', 'wikipedia_summary']
+        >>> print({f: response['results'][0][f] for f in basic_fields})
         {
-            "preferred_common_name": "Paper Wasps",
-            "observations_count": 69728,
-            "wikipedia_url": "http://en.wikipedia.org/wiki/Polistinae",
-            "wikipedia_summary": "The Polistinae are eusocial wasps closely related to yellow jackets...",
+            'preferred_common_name': 'Paper Wasps',
+            'observations_count': 69728,
+            'wikipedia_url': 'http://en.wikipedia.org/wiki/Polistinae',
+            'wikipedia_summary': 'The Polistinae are eusocial wasps closely related to yellow jackets...',
         }
 
         .. admonition:: Example Response
@@ -605,7 +605,7 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     Returns:
         JSON response containing taxon records
     """
-    r = make_inaturalist_api_get_call("taxa", ids=taxon_id, user_agent=user_agent)
+    r = make_inaturalist_api_get_call('taxa', ids=taxon_id, user_agent=user_agent)
     r.raise_for_status()
     return r.json()
 
@@ -642,10 +642,10 @@ def get_taxa_autocomplete(user_agent: str = None, **params) -> JsonResponse:
         JSON response containing taxon records
     """
     params = translate_rank_range(params)
-    r = make_inaturalist_api_get_call("taxa/autocomplete", params=params, user_agent=user_agent)
+    r = make_inaturalist_api_get_call('taxa/autocomplete', params=params, user_agent=user_agent)
     r.raise_for_status()
     json_response = r.json()
 
-    if params.get("minify"):
-        json_response["results"] = [format_taxon(t) for t in json_response["results"]]
+    if params.get('minify'):
+        json_response['results'] = [format_taxon(t) for t in json_response['results']]
     return json_response

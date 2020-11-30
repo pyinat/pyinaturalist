@@ -126,7 +126,7 @@ def _observation_node_only(
     captive: Captive or cultivated observations
     endemic: Observations whose taxa are endemic to their location
     geo: Observations that are georeferenced
-    id_please: Observations with the **deprecated** "ID, Please!" flag.
+    id_please: Observations with the **deprecated** 'ID, Please!' flag.
         Note that this will return observations, but that this attribute is no longer used.
     identified: Observations that have community identifications
     introduced: Observations whose taxa are introduced in their location
@@ -206,7 +206,7 @@ def _observation_rest_only(
     h1: Date = None,
     h2: Date = None,
     extra: str = None,
-    response_format: str = "json",
+    response_format: str = 'json',
 ):
     """
     has: Catch-all for some boolean selectors. This can be used multiple times, e.g.
@@ -246,7 +246,7 @@ def _create_observation(
     local_photos: Iterable[FileOrPath] = None,
 ):
     """
-    species_guess: Equivalent to the "What did you see?" field on the observation form.
+    species_guess: Equivalent to the 'What did you see?' field on the observation form.
         iNat will try to choose a single taxon based on this, but it may fail if it's ambuguous
     taxon_id: ID of the taxon to associate with this observation
     observed_on_string: Date/time of the observation. Time zone will default to the user's
@@ -467,9 +467,9 @@ def _search_query(q: str = None):
 
 
 def _format_param_choices():
-    return "\n".join(
-        [f"  * {param}: {choices}" for param, choices in MULTIPLE_CHOICE_PARAMS.items()]
+    return '\n'.join(
+        [f'  * {param}: {choices}' for param, choices in MULTIPLE_CHOICE_PARAMS.items()]
     )
 
 
-MULTIPLE_CHOICE_PARAM_DOCS = "**Multiple-Choice Parameters:**\n" + _format_param_choices()
+MULTIPLE_CHOICE_PARAM_DOCS = '**Multiple-Choice Parameters:**\n' + _format_param_choices()
