@@ -298,6 +298,7 @@ def _projects_params(
     radius: int = 500,
     featured: bool = None,
     noteworthy: bool = None,
+    place_id: MultiInt = None,
     site_id: int = None,
     rule_details: bool = None,
     type: MultiStr = None,
@@ -314,6 +315,7 @@ def _projects_params(
     radius: Distance from center (``(lat, lng)``) to search, in kilometers. Defaults to 500km.
     featured:  Must be marked featured for the relevant site
     noteworthy: Must be marked noteworthy for the relevant site
+    place_id: Must be in the place with this ID
     site_id: Site ID that applies to ``featured`` and ``noteworthy``.
         Defaults to the site of the authenticated user, or to the main iNaturalist site
     rule_details: Return more information about project rules, for example return a full taxon
