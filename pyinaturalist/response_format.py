@@ -123,7 +123,7 @@ def format_taxon(taxon: Dict, align: bool = False) -> str:
         # return "{:>8}: {:>12} {}".format(taxon["id"], rank, name)
         return f'{taxon["id"]:>8}: {rank:>12} {name}'
     else:
-        return f"{rank}: {name})"
+        return f"{rank}: {name}"
 
 
 def parse_observation_timestamp(observation: Dict) -> Optional[datetime]:
@@ -139,7 +139,7 @@ def parse_observation_timestamp(observation: Dict) -> Optional[datetime]:
     try:
         offset = parse_offset(observation["time_zone_offset"])
         return observed_on.replace(tzinfo=offset)
-    except (AttributeError, TypeError) as e:
+    except (AttributeError, TypeError, ValueError) as e:
         logger.warning(f'Could not parse offset: {observation["time_zone_offset"]}: {str(e)}')
         return None
 
@@ -187,6 +187,6 @@ def _try_parse_date(timestamp: str, **kwargs) -> Optional[datetime]:
         with catch_warnings():
             simplefilter("ignore", category=UnknownTimezoneWarning)
             return parse_date(timestamp, **kwargs)
-    except (AttributeError, TypeError) as e:
+    except (AttributeError, TypeError, ValueError) as e:
         logger.warning(f"Could not parse timestamp: {timestamp}: {str(e)}")
         return None
