@@ -33,7 +33,7 @@ from pyinaturalist.request_params import (
     ensure_file_objs,
     validate_multiple_choice_param,
 )
-from pyinaturalist.response_format import convert_lat_long_to_float
+from pyinaturalist.response_format import convert_all_coordinates
 
 
 @document_request_params(
@@ -108,7 +108,7 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
     )
 
     if response_format == 'json':
-        return convert_lat_long_to_float(response.json())
+        return convert_all_coordinates(response.json())
     else:
         return response.text
 

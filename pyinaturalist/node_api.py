@@ -39,7 +39,9 @@ from pyinaturalist.request_params import (
 )
 from pyinaturalist.response_format import (
     as_geojson_feature_collection,
-    convert_location_to_float,
+    convert_all_coordinates,
+    convert_all_place_coordinates,
+    convert_all_timestamps,
     convert_observation_timestamps,
     flatten_nested_params,
     format_taxon,
@@ -184,7 +186,7 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
         Get observations of Monarch butterflies with photos + public location info,
         on a specific date in the provice of Saskatchewan, CA:
 
-        >>> observations = get_observations(
+        >>> response = get_observations(
         >>>     taxon_name='Danaus plexippus',
         >>>     created_on='2020-08-27',
         >>>     photos=True,
@@ -196,10 +198,10 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
         Get basic info for observations in response:
 
         >>> from pyinaturalist.response_format import format_observation
-        >>> for obs in observations['results']:
+        >>> for obs in response['results']:
         >>>     print(format_observation(obs))
-        '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK, CA'
-        '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK, CA'
+        '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK'
+        '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK'
 
         .. admonition:: Example Response
             :class: toggle
@@ -213,11 +215,12 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
     validate_multiple_choice_param(params, 'order_by', NODE_OBS_ORDER_BY_PROPERTIES)
     r = make_inaturalist_api_get_call('observations', params=params, user_agent=user_agent)
     r.raise_for_status()
+
     observations = r.json()
-    observations['results'] = [
-        convert_observation_timestamps(obs) for obs in observations['results']
-    ]
-    return r.json()
+    observations['results'] = convert_all_coordinates(observations['results'])
+    observations['results'] = convert_all_timestamps(observations['results'])
+
+    return observations
 
 
 # TODO: Should use a requests Session here for several subsequent requests
@@ -373,17 +376,6 @@ def get_geojson_observations(properties: List[str] = None, **params) -> JsonResp
 # Places
 # --------------------
 
-# TODO: Use updated sample responses with converted coords
-
-
-def _convert_all_locations_to_float(response):
-    """ Convert locations for both standard (curated) and community-contributed places to floats """
-    response['results'] = {
-        'standard': convert_location_to_float(response['results'].get('standard')),
-        'community': convert_location_to_float(response['results'].get('community')),
-    }
-    return response
-
 
 def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse:
     """
@@ -416,7 +408,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
 
     # Convert coordinates to floats
     response = r.json()
-    response['results'] = convert_location_to_float(response['results'])
+    response['results'] = convert_all_coordinates(response['results'])
     return response
 
 
@@ -432,7 +424,7 @@ def get_places_nearby(user_agent: str = None, **params) -> JsonResponse:
         >>> bounding_box = (150.0, -50.0, -149.999, -49.999)
         >>> response = get_places_nearby(*bounding_box)
 
-        Show basic info for 'standard' places in response:
+        Show basic info for standard (curated) places in response:
 
         >>> print({p['id']: p['name'] for p in  response['results']['standard']})
         {
@@ -448,7 +440,7 @@ def get_places_nearby(user_agent: str = None, **params) -> JsonResponse:
             10316: 'United States Minor Outlying Islands',
         }
 
-        Show basic info for 'community' places in response:
+        Show basic info for community-contributed places in response:
 
         >>> print({p['id']: p['name'] for p in  response['results']['community']})
         {
@@ -475,7 +467,7 @@ def get_places_nearby(user_agent: str = None, **params) -> JsonResponse:
     """
     r = make_inaturalist_api_get_call('places/nearby', params=params, user_agent=user_agent)
     r.raise_for_status()
-    return _convert_all_locations_to_float(r.json())
+    return convert_all_place_coordinates(r.json())
 
 
 def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
@@ -510,7 +502,7 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
 
     # Convert coordinates to floats
     response = r.json()
-    response['results'] = convert_location_to_float(response['results'])
+    response['results'] = convert_all_coordinates(response['results'])
     return response
 
 
@@ -560,9 +552,8 @@ def get_projects(user_agent: str = None, **params) -> JsonResponse:
     r = make_inaturalist_api_get_call('projects', params=params, user_agent=user_agent)
     r.raise_for_status()
 
-    # Convert coordinates to floats
     response = r.json()
-    response['results'] = convert_location_to_float(response['results'])
+    response['results'] = convert_all_coordinates(response['results'])
     return response
 
 
@@ -599,9 +590,8 @@ def get_projects_by_id(
     )
     r.raise_for_status()
 
-    # Convert coordinates to floats
     response = r.json()
-    response['results'] = convert_location_to_float(response['results'])
+    response['results'] = convert_all_coordinates(response['results'])
     return response
 
 

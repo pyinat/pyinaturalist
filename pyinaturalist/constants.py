@@ -22,6 +22,7 @@ JsonResponse = Dict[str, Any]
 ListResponse = List[Dict[str, Any]]
 ObsFieldValues = Union[Dict, List[Dict]]
 RequestParams = Dict[str, Any]
+ResponseObject = Dict[str, Any]
 MultiInt = Union[int, List[int]]
 MultiStr = Union[str, List[str]]
 TemplateFunction = Any  # Cannot use Callable/Protocol, as they will not allow a mix of signatures
