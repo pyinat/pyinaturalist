@@ -2,11 +2,33 @@
 
 ## 0.12 (TBD)
 
+### New Endpoints
+* Added new function for Node API **Controlled Terms** endpoints: `get_controlled_terms()`
+    * Wraps both `GET /controlled_terms` and `/controlled_terms/for_taxon` endpoints
+    
+### Modified Endpoints
+* Added conversion from date/time strings to timezone-aware python `datetime` objects.
+  This applies to the following functions:
+    * `node_api.get_observation()`
+    * `node_api.get_observations()`
+    * `node_api.get_all_observation()`
+    * `node_api.get_projects()`
+    * `node_api.get_projects_by_id()`
+    * `node_api.get_taxa()`
+    * `node_api.get_taxa_by_id()`
+    * `rest_api.get_observation()`
+    * `rest_api.get_observation_fields()`
+    * `rest_api.get_all_observation_fields()`
+* Added conversion for an additional `location` field in observation responses
+
+### Authentication
 * Added support for providing credentials via environment variables
 * Added integration with system keyring for credentials storage
-* Added documentation & examplse for authentication options
-* Removed request parameters deprecated in 0.11
+* Added documentation & examples for authentication options
+
+### Other Changes
 * Dropped support for python 3.5
+* Removed request parameters deprecated in 0.11
 
 ## 0.11 (2020-11-04)
 [See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/2?closed=1)
