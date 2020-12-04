@@ -377,7 +377,12 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Places/get_places_id
 
     Example:
-        >>> get_places_by_id([93735, 89191])
+        >>> response = get_places_by_id([67591, 89191])
+        >>> print({p['id']: p['name'] for p in  response['results']})
+        {
+            67591: 'Riversdale Beach',
+            89191: 'Conservation Area Riversdale',
+        }
 
         .. admonition:: Example Response
             :class: toggle
@@ -410,7 +415,39 @@ def get_places_nearby(user_agent: str = None, **params) -> JsonResponse:
 
     Example:
         >>> bounding_box = (150.0, -50.0, -149.999, -49.999)
-        >>> get_places_nearby(*bounding_box)
+        >>> response = get_places_nearby(*bounding_box)
+
+        Show basic info for 'standard' places in response:
+
+        >>> print({p['id']: p['name'] for p in  response['results']['standard']})
+        {
+            97394: 'North America',
+            97395: 'Asia',
+            97393: 'Oceania',
+            97392: 'Africa',
+            97391: 'Europe',
+            97389: 'South America',
+            7161:  'Russia',
+            1:     'United States',
+            6712:  'Canada',
+            10316: 'United States Minor Outlying Islands',
+        }
+
+        Show basic info for 'community' places in response:
+
+        >>> print({p['id']: p['name'] for p in  response['results']['community']})
+        {
+            11770:  'Mehedinti',
+            119755: 'Mahurangi College',
+            150981: 'Ceap Breatainn',
+            136758: 'Willapa Hills (US EPA Level IV Ecoregion)',
+            119694: 'Tetlin National Wildlife Refuge',
+            70630:  'Murray - Sunset',
+            141915: 'Fundy Pollinator Trail',
+            72346:  'Sucunduri',
+            50505:  'Great Salt Lake',
+            72230:  'Rio Novo',
+         }
 
         .. admonition:: Example Response
             :class: toggle
@@ -419,7 +456,7 @@ def get_places_nearby(user_agent: str = None, **params) -> JsonResponse:
                 :language: JSON
 
     Returns:
-        JSON response containing place records
+        JSON response containing place records, divided into 'standard' and 'community' places.
     """
     r = make_inaturalist_api_get_call('places/nearby', params=params, user_agent=user_agent)
     r.raise_for_status()
@@ -432,7 +469,14 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Places/get_places_autocomplete
 
     Example:
-        >>> get_places_autocomplete('Irkutsk')
+        >>> response = get_places_autocomplete('Irkutsk')
+        >>> print({p['id']: p['name'] for p in  response['results']})
+        {
+            11803:  'Irkutsk',
+            41853:  'Irkutsk',
+            41854:  'Irkutskiy rayon',
+            163077: 'Irkutsk agglomeration',
+        }
 
         .. admonition:: Example Response
             :class: toggle
@@ -479,13 +523,14 @@ def get_projects(user_agent: str = None, **params) -> JsonResponse:
 
         Show basic info for projects in response:
 
-        >>> project_info = {p['id']: p['title'] for p in response['results']}
-        >>> print('\\n'.join([f'{k}:\\t{v}' for k, v in project_info.items()]))
-        8291:    PNW Invasive Plant EDDR
-        19200:   King County (WA) Noxious and Invasive Weeds
-        8527:    WA Invasives
-        2344:    Invasive & Huntable Animals
-        6432:    CBWN Invasive Plants
+        >>> print({p['id']: p['title'] for p in response['results']})
+        {
+            8291:  'PNW Invasive Plant EDDR',
+            19200: 'King County (WA) Noxious and Invasive Weeds',
+            8527:  'WA Invasives',
+            2344:  'Invasive & Huntable Animals',
+            6432:  'CBWN Invasive Plants',
+        }
 
         .. admonition:: Example Response
             :class: toggle
