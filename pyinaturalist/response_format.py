@@ -129,13 +129,9 @@ def format_taxon(taxon: Dict, align: bool = False) -> str:
 def parse_observation_timestamp(observation: Dict) -> Optional[datetime]:
     """Parse a timestamp string, accounting for variations in timezone information"""
     # Attempt a straightforward parse from any dateutil-supported format
+    # Ignore timezone in timestamp; offset field is more reliable
     timestamp = observation["observed_on_string"]
-    observed_on = _try_parse(timestamp)
-    if observed_on and observed_on.tzinfo:
-        return observed_on
-
-    # If timezone info couldn't by parsed, try to parse again without tz
-    observed_on = _try_parse(timestamp, ignoretz=True)
+    observed_on = _try_parse_date(timestamp, ignoretz=True)
     if not observed_on:
         return None
 
@@ -172,7 +168,7 @@ def parse_offset(offset_str: str) -> tzoffset:
         return text
 
     # Parse hours, minutes, and sign from offset string; account for either `hh:mm` or `hhmm` format
-    offset_str = remove_prefixes(offset_str, ["GMT", "UTC"])
+    offset_str = remove_prefixes(offset_str, ["GMT", "UTC"]).strip()
     multiplier = -1 if offset_str.startswith("-") else 1
     offset_str = offset_str.lstrip("+-")
     if ":" in offset_str:
@@ -185,7 +181,7 @@ def parse_offset(offset_str: str) -> tzoffset:
     return tzoffset(None, delta.total_seconds() * multiplier)
 
 
-def _try_parse(timestamp: str, **kwargs) -> Optional[datetime]:
+def _try_parse_date(timestamp: str, **kwargs) -> Optional[datetime]:
     try:
         # Suppress UnknownTimezoneWarning
         with catch_warnings():
