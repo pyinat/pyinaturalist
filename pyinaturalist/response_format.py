@@ -7,6 +7,15 @@ from logging import getLogger
 from typing import Any, Dict, Iterable, List, Optional
 from warnings import catch_warnings, simplefilter
 
+OBSERVATION_TIME_FIELDS = [
+    'created_at_details',
+    'created_time_zone',
+    'observed_on',
+    'observed_on_details',
+    'observed_on_string',
+    'observed_time_zone',
+    'time_zone_offset',
+]
 logger = getLogger(__name__)
 
 
@@ -24,8 +33,8 @@ def as_geojson_feature_collection(
         properties: Whitelist of specific properties to include
     """
     return {
-        "type": "FeatureCollection",
-        "features": [as_geojson_feature(record, properties) for record in results],
+        'type': 'FeatureCollection',
+        'features': [as_geojson_feature(record, properties) for record in results],
     }
 
 
@@ -38,31 +47,23 @@ def as_geojson_feature(result: Dict[str, Any], properties: List[str] = None) -> 
         result: A single response item
         properties: Whitelist of specific properties to include
     """
-    result["geojson"]["coordinates"] = [float(i) for i in result["geojson"]["coordinates"]]
+    result['geojson']['coordinates'] = [float(i) for i in result['geojson']['coordinates']]
     return {
-        "type": "Feature",
-        "geometry": result["geojson"],
-        "properties": {k: result.get(k) for k in properties or []},
+        'type': 'Feature',
+        'geometry': result['geojson'],
+        'properties': {k: result.get(k) for k in properties or []},
     }
-
-
-def convert_float(value: Any) -> Optional[float]:
-    """ Convert a value to a float, if valid; return ``None`` otherwise """
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
 
 
 def convert_lat_long_to_float(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Convert coordinate pairs in response items from strings to floats, if valid
 
     Args:
-        results: Results from API response; expects coordinates in "latitude" and "longitude" keys
+        results: Results from API response; expects coordinates in 'latitude' and 'longitude' keys
     """
     for result in results:
-        result["latitude"] = convert_float(result["latitude"])
-        result["longitude"] = convert_float(result["longitude"])
+        result['latitude'] = try_float(result['latitude'])
+        result['longitude'] = try_float(result['longitude'])
     return results
 
 
@@ -70,11 +71,11 @@ def convert_location_to_float(results: List[Dict[str, Any]]) -> List[Dict[str, A
     """Convert coordinate pairs in response items from strings to floats, if valid.
 
     Args:
-        results: Results from API response; expects coordinates in the "location" key
+        results: Results from API response; expects coordinates in the 'location' key
     """
     for result in results or []:
-        if "," in (result["location"] or ""):
-            result["location"] = [convert_float(coord) for coord in result["location"].split(",")]
+        if ',' in (result['location'] or ''):
+            result['location'] = [try_float(coord) for coord in result['location'].split(',')]
     return results
 
 
@@ -86,25 +87,25 @@ def flatten_nested_params(observation: Dict[str, Any]) -> Dict[str, Any]:
     Args:
         observation: A single observation result
     """
-    taxon = observation.get("taxon", {})
-    photos = observation.get("photos", [{}])
-    observation["taxon_id"] = taxon.get("id")
-    observation["taxon_name"] = taxon.get("name")
-    observation["taxon_rank"] = taxon.get("rank")
-    observation["taxon_common_name"] = taxon.get("preferred_common_name")
-    observation["photo_url"] = photos[0].get("url")
+    taxon = observation.get('taxon', {})
+    photos = observation.get('photos', [{}])
+    observation['taxon_id'] = taxon.get('id')
+    observation['taxon_name'] = taxon.get('name')
+    observation['taxon_rank'] = taxon.get('rank')
+    observation['taxon_common_name'] = taxon.get('preferred_common_name')
+    observation['photo_url'] = photos[0].get('url')
     return observation
 
 
 def format_observation(observation: Dict) -> str:
     """Make a condensed summary from basic observation details: what, who, when, where"""
-    taxon_str = format_taxon(observation.get("taxon") or {})
-    location = observation.get("place_guess") or observation.get("location")
+    taxon_str = format_taxon(observation.get('taxon') or {})
+    location = observation.get('place_guess') or observation.get('location')
     return (
-        f'[{observation["id"]}] {taxon_str} '
-        f'observed by {observation["user"]["login"]} '
-        f'on {observation["observed_on"]} '
-        f"at {location}"
+        f"[{observation['id']}] {taxon_str} "
+        f"observed by {observation['user']['login']} "
+        f"on {observation['observed_on']} "
+        f'at {location}'
     )
 
 
@@ -113,45 +114,64 @@ def format_taxon(taxon: Dict, align: bool = False) -> str:
     (including common name, if available).
     """
     if not taxon:
-        return "unknown taxon"
-    common_name = taxon.get("preferred_common_name")
-    name = f'{taxon["name"]}' + (f" ({common_name})" if common_name else "")
-    rank = taxon["rank"].title()
+        return 'unknown taxon'
+    common_name = taxon.get('preferred_common_name')
+    name = f"{taxon['name']}" + (f' ({common_name})' if common_name else '')
+    rank = taxon['rank'].title()
 
     # Visually align taxon IDs (< 7 chars) and ranks (< 11 chars)
     if align:
-        # return "{:>8}: {:>12} {}".format(taxon["id"], rank, name)
-        return f'{taxon["id"]:>8}: {rank:>12} {name}'
+        # return '{:>8}: {:>12} {}'.format(taxon['id'], rank, name)
+        return f"{taxon['id']:>8}: {rank:>12} {name}"
     else:
-        return f"{rank}: {name}"
+        return f'{rank}: {name}'
 
 
-def parse_observation_timestamp(observation: Dict) -> Optional[datetime]:
-    """Parse a timestamp string, accounting for variations in timezone information"""
-    # Attempt a straightforward parse from any dateutil-supported format
-    # Ignore timezone in timestamp; offset field is more reliable
-    timestamp = observation["observed_on_string"]
-    observed_on = _try_parse_date(timestamp, ignoretz=True)
-    if not observed_on:
+def convert_observation_timestamps(observation: Dict) -> Dict:
+    """Replace observation date/time info with datetime objects"""
+    observation = observation.copy()
+    tz_offset, tz_name = observation['time_zone_offset'], observation.get('observed_time_zone')
+
+    created_datetime = try_datetime(observation['created_at_details'].get('date'))
+    created_datetime = convert_offset(created_datetime, tz_offset, tz_name)
+
+    # Ignore any timezone info in observed_on timestamp; offset field is more reliable
+    observed_datetime = try_datetime(observation['observed_on_string'], ignoretz=True)
+    observed_datetime = convert_offset(observed_datetime, tz_offset, tz_name)
+
+    # If valid, add the datetime objects and remove all other redundant date/time fields
+    if created_datetime and observed_datetime:
+        for field in OBSERVATION_TIME_FIELDS:
+            observation.pop(field, None)
+    observation['created_at'] = created_datetime
+    observation['observed_on'] = observed_datetime
+
+    return observation
+
+
+def convert_offset(
+    datetime_obj: Optional[datetime], tz_offset: str, tz_name: str = None
+) -> Optional[datetime]:
+    """Use timezone offset info to replace a datetime's tzinfo"""
+    if not datetime_obj:
         return None
 
-    # Attempt to get timezone info from separate offset field
     try:
-        offset = parse_offset(observation["time_zone_offset"])
-        return observed_on.replace(tzinfo=offset)
+        offset = parse_offset(tz_offset, tz_name)
+        return datetime_obj.replace(tzinfo=offset)
     except (AttributeError, TypeError, ValueError) as e:
-        logger.warning(f'Could not parse offset: {observation["time_zone_offset"]}: {str(e)}')
+        logger.warning(f'Could not parse offset: {tz_offset}: {str(e)}')
         return None
 
 
-def parse_offset(offset_str: str) -> tzoffset:
+def parse_offset(tz_offset: str, tz_name: str = None) -> tzoffset:
     """Convert a timezone offset string to a tzoffset object, accounting for some common variations
     in format
 
     Examples:
 
-        >>> parse_offset('GMT-08:00')
-        tzoffset(None, -28800)
+        >>> parse_offset('GMT-08:00', 'PST')
+        tzoffset('PST', -28800)
         >>> parse_offset('-06:00')
         tzoffset(None, -21600)
         >>> parse_offset('+05:30')
@@ -168,25 +188,34 @@ def parse_offset(offset_str: str) -> tzoffset:
         return text
 
     # Parse hours, minutes, and sign from offset string; account for either `hh:mm` or `hhmm` format
-    offset_str = remove_prefixes(offset_str, ["GMT", "UTC"]).strip()
-    multiplier = -1 if offset_str.startswith("-") else 1
-    offset_str = offset_str.lstrip("+-")
-    if ":" in offset_str:
-        hours, minutes = offset_str.split(":")
+    tz_offset = remove_prefixes(tz_offset, ['GMT', 'UTC']).strip()
+    multiplier = -1 if tz_offset.startswith('-') else 1
+    tz_offset = tz_offset.lstrip('+-')
+    if ':' in tz_offset:
+        hours, minutes = tz_offset.split(':')
     else:
-        hours, minutes = offset_str[:2], offset_str[2:]
+        hours, minutes = tz_offset[:2], tz_offset[2:]
 
     # Convert to a timezone offset in +/- seconds
     delta = timedelta(hours=int(hours), minutes=int(minutes))
-    return tzoffset(None, delta.total_seconds() * multiplier)
+    return tzoffset(tz_name, delta.total_seconds() * multiplier)
 
 
-def _try_parse_date(timestamp: str, **kwargs) -> Optional[datetime]:
+def try_datetime(timestamp: str, **kwargs) -> Optional[datetime]:
+    """ Parse a timestamp string into a datetime, if valid; return ``None`` otherwise """
     try:
         # Suppress UnknownTimezoneWarning
         with catch_warnings():
-            simplefilter("ignore", category=UnknownTimezoneWarning)
+            simplefilter('ignore', category=UnknownTimezoneWarning)
             return parse_date(timestamp, **kwargs)
     except (AttributeError, TypeError, ValueError) as e:
-        logger.warning(f"Could not parse timestamp: {timestamp}: {str(e)}")
+        logger.warning(f'Could not parse timestamp: {timestamp}: {str(e)}')
+        return None
+
+
+def try_float(value: Any) -> Optional[float]:
+    """ Convert a value to a float, if valid; return ``None`` otherwise """
+    try:
+        return float(value)
+    except (TypeError, ValueError):
         return None

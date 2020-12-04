@@ -40,6 +40,7 @@ from pyinaturalist.request_params import (
 from pyinaturalist.response_format import (
     as_geojson_feature_collection,
     convert_location_to_float,
+    convert_observation_timestamps,
     flatten_nested_params,
     format_taxon,
 )
@@ -167,7 +168,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
 
     r = get_observations(id=observation_id, user_agent=user_agent)
     if r['results']:
-        return r['results'][0]
+        return convert_observation_timestamps(r['results'][0])
 
     raise ObservationNotFound()
 
@@ -180,8 +181,9 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
 
     Example:
 
-        >>> # Get observations of Monarch butterflies with photos + public location info,
-        >>> # on a specific date in the provice of Saskatchewan, CA
+        Get observations of Monarch butterflies with photos + public location info,
+        on a specific date in the provice of Saskatchewan, CA:
+
         >>> observations = get_observations(
         >>>     taxon_name='Danaus plexippus',
         >>>     created_on='2020-08-27',
@@ -190,6 +192,14 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
         >>>     geoprivacy='open',
         >>>     place_id=7953,
         >>> )
+
+        Get basic info for observations in response:
+
+        >>> from pyinaturalist.response_format import format_observation
+        >>> for obs in observations['results']:
+        >>>     print(format_observation(obs))
+        '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK, CA'
+        '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK, CA'
 
         .. admonition:: Example Response
             :class: toggle
@@ -202,6 +212,11 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
     """
     validate_multiple_choice_param(params, 'order_by', NODE_OBS_ORDER_BY_PROPERTIES)
     r = make_inaturalist_api_get_call('observations', params=params, user_agent=user_agent)
+    r.raise_for_status()
+    observations = r.json()
+    observations['results'] = [
+        convert_observation_timestamps(obs) for obs in observations['results']
+    ]
     return r.json()
 
 
