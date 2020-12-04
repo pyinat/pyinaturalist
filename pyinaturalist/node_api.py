@@ -554,6 +554,7 @@ def get_projects(user_agent: str = None, **params) -> JsonResponse:
 
     response = r.json()
     response['results'] = convert_all_coordinates(response['results'])
+    response['results'] = convert_all_timestamps(response['results'])
     return response
 
 
@@ -592,6 +593,7 @@ def get_projects_by_id(
 
     response = r.json()
     response['results'] = convert_all_coordinates(response['results'])
+    response['results'] = convert_all_timestamps(response['results'])
     return response
 
 
@@ -623,7 +625,10 @@ def get_taxa(user_agent: str = None, **params) -> JsonResponse:
     params = translate_rank_range(params)
     r = make_inaturalist_api_get_call('taxa', params=params, user_agent=user_agent)
     r.raise_for_status()
-    return r.json()
+
+    taxa = r.json()
+    taxa['results'] = convert_all_timestamps(taxa['results'])
+    return taxa
 
 
 def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
@@ -657,7 +662,10 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     """
     r = make_inaturalist_api_get_call('taxa', ids=taxon_id, user_agent=user_agent)
     r.raise_for_status()
-    return r.json()
+
+    taxa = r.json()
+    taxa['results'] = convert_all_timestamps(taxa['results'])
+    return taxa
 
 
 @document_request_params([docs._taxon_params, docs._minify])

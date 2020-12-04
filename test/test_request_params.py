@@ -164,7 +164,10 @@ def test_all_rest_requests_use_param_conversion(
     request, preprocess_request_params, sleep, convert_all_place_coordinates, http_function
 ):
     # Handle the one API response that returns a list instead of a dict
-    if http_function == pyinaturalist.rest_api.get_all_observation_fields:
+    if http_function in [
+        pyinaturalist.rest_api.get_observation_fields,
+        pyinaturalist.rest_api.get_all_observation_fields,
+    ]:
         request().json.return_value = []
     else:
         request().json.return_value = {
