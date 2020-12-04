@@ -1,5 +1,7 @@
 import os
 import pytest
+from datetime import datetime
+from dateutil.tz import tzoffset, tzutc
 from pprint import pprint
 from unittest.mock import patch
 from urllib.parse import urlencode, urljoin
@@ -106,7 +108,10 @@ def test_get_observations(requests_mock):
     assert observations['total_results'] == 2
     assert len(observations['results']) == 1
     assert first_result['taxon_geoprivacy'] == 'open'
-    assert first_result['observed_on'] == '2020-08-27'
+    assert first_result['created_at'] == datetime(2020, 8, 27, 18, 0, 51, tzinfo=tzutc())
+    assert first_result['observed_on'] == datetime(
+        2020, 8, 27, 8, 57, 22, tzinfo=tzoffset('Etc/UTC', 0)
+    )
     assert first_result['taxon']['id'] == 48662
     assert len(first_result['place_ids']) == 13
 
@@ -304,6 +309,8 @@ def test_get_projects(requests_mock):
     assert first_result['title'] == 'PNW Invasive Plant EDDR'
     assert first_result['is_umbrella'] is False
     assert len(first_result['user_ids']) == 33
+    assert first_result['created_at'] == datetime(2016, 7, 20, 23, 0, 5, tzinfo=tzutc())
+    assert first_result['updated_at'] == datetime(2020, 7, 28, 20, 9, 49, tzinfo=tzutc())
 
 
 def test_get_projects_by_id(requests_mock):
@@ -320,6 +327,8 @@ def test_get_projects_by_id(requests_mock):
     assert first_result['title'] == 'Tucson High Native and Invasive Species Inventory'
     assert first_result['place_id'] == 96103
     assert first_result['location'] == [32.2264416406, -110.9617278383]
+    assert first_result['created_at'] == datetime(2016, 7, 26, 23, 8, 47, tzinfo=tzutc())
+    assert first_result['updated_at'] == datetime(2017, 9, 16, 1, 51, 1, tzinfo=tzutc())
 
 
 # Taxa
@@ -445,7 +454,6 @@ def test_get_taxa_autocomplete_minified(requests_mock):
         '  621584:      Species Vespicula cypho',
         '  621586:      Species Vespicula zollingeri',
     ]
-
 
     response = get_taxa_autocomplete(q='vespi', minify=True)
     pprint(response['results'])

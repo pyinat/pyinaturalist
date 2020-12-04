@@ -133,20 +133,20 @@ def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_str
 )
 @patch('pyinaturalist.request_params.translate_rank_range')
 @patch('pyinaturalist.response_format.as_geojson_feature')
-@patch('pyinaturalist.node_api.convert_location_to_float')
-@patch('pyinaturalist.node_api._convert_all_locations_to_float')
+@patch('pyinaturalist.node_api.convert_all_coordinates', side_effect=lambda x: x)
+@patch('pyinaturalist.node_api.convert_all_place_coordinates', side_effect=lambda x: x)
 @patch('pyinaturalist.api_requests.preprocess_request_params')
 @patch('pyinaturalist.api_requests.requests.request')
 def test_all_node_requests_use_param_conversion(
     request,
     preprocess_request_params,
-    convert_all_locations_to_float,
-    convert_location_to_float,
+    convert_all_place_coordinates,
+    convert_all_coordinates,
     as_geojson,
     translate_rank_range,
     http_function,
 ):
-    request().json.return_value = {'total_results': 1, 'results': [{}]}
+    request().json.return_value = {'total_results': 1, 'results': [{'id': 1}]}
     mock_args = get_mock_args_for_signature(http_function)
     http_function(*mock_args)
     assert preprocess_request_params.call_count == 1
@@ -156,15 +156,18 @@ def test_all_node_requests_use_param_conversion(
     'http_function', get_module_http_functions(pyinaturalist.rest_api).values()
 )
 @patch.dict(os.environ, MOCK_CREDS_ENV)
-@patch('pyinaturalist.rest_api.convert_lat_long_to_float')
+@patch('pyinaturalist.rest_api.convert_all_coordinates')
 @patch('pyinaturalist.rest_api.sleep')
 @patch('pyinaturalist.api_requests.preprocess_request_params')
 @patch('pyinaturalist.api_requests.requests.request')
 def test_all_rest_requests_use_param_conversion(
-    request, preprocess_request_params, sleep, convert_lat_long_to_float, http_function
+    request, preprocess_request_params, sleep, convert_all_place_coordinates, http_function
 ):
     # Handle the one API response that returns a list instead of a dict
-    if http_function == pyinaturalist.rest_api.get_all_observation_fields:
+    if http_function in [
+        pyinaturalist.rest_api.get_observation_fields,
+        pyinaturalist.rest_api.get_all_observation_fields,
+    ]:
         request().json.return_value = []
     else:
         request().json.return_value = {

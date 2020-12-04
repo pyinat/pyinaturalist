@@ -33,7 +33,7 @@ from pyinaturalist.request_params import (
     ensure_file_objs,
     validate_multiple_choice_param,
 )
-from pyinaturalist.response_format import convert_lat_long_to_float
+from pyinaturalist.response_format import convert_all_coordinates, convert_all_timestamps
 
 
 @document_request_params(
@@ -108,7 +108,10 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
     )
 
     if response_format == 'json':
-        return convert_lat_long_to_float(response.json())
+        observations = response.json()
+        observations = convert_all_coordinates(observations)
+        observations = convert_all_timestamps(observations)
+        return observations
     else:
         return response.text
 
@@ -141,7 +144,11 @@ def get_observation_fields(user_agent: str = None, **params) -> ListResponse:
         params=params,
         user_agent=user_agent,
     )
-    return response.json()
+    response.raise_for_status()
+
+    obs_fields = response.json()
+    obs_fields = convert_all_timestamps(obs_fields)
+    return obs_fields
 
 
 @document_request_params([docs._search_query])
@@ -161,12 +168,12 @@ def get_all_observation_fields(**params) -> ListResponse:
     page = 1
 
     while True:
-        r = get_observation_fields(page=page, **params)
+        response = get_observation_fields(page=page, **params)
 
-        if not r:
+        if not response:
             return results
 
-        results += r
+        results += response
         page += 1
         sleep(THROTTLING_DELAY)
 
