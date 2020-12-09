@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+  jupyter:
+    build:
+      context: .
+      network: host
+    container_name: jupyter
+    volumes:
+      # Mount the current directory as the Jupyter workspace
+      - .:/home/jovyan/work
+      # Or mount your own workspace path
+      # - /home/username/workspace:/home/jovyan/work
+    restart: unless-stopped
+    # Set user and group IDs, if needed
+    # user: 'root'
+    # environment:
+    #   NB_UID: 1000
+    #   NB_GID: 1000
