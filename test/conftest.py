@@ -4,10 +4,20 @@ Pytest will also automatically pick up any fixtures defined here.
 """
 import json
 import logging
+import os
 import re
 from inspect import Parameter, getmembers, isfunction, signature
 from os.path import abspath, dirname, join
 from unittest.mock import MagicMock
+
+# If ipdb is installed, register it as the default debugger
+try:
+    import ipdb  # noqa: F401
+
+    os.environ['PYTHONBREAKPOINT'] = 'ipdb.set_trace'
+except ImportError:
+    pass
+
 
 HTTP_FUNC_PATTERN = re.compile(r'(get|put|post|delete)_.+')
 SAMPLE_DATA_DIR = abspath(join(dirname(__file__), 'sample_data'))

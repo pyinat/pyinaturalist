@@ -29,6 +29,8 @@ extras_require = {
         'requests-mock>=1.7',
         'tox>=3.15',
     ],
+    # Packages used only for local debugging
+    'debug': ['ipython', 'ipdb'],
 }
 # All development/testing packages combined
 extras_require['dev'] = list(chain.from_iterable(extras_require.values()))
