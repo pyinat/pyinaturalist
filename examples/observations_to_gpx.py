@@ -1,5 +1,7 @@
-# Extra dependencies:
-# pip install gpxpy
+""" Example to get observation locations + metadata in GPX format.
+Extra dependencies:
+    `pip install gpxpy`
+"""
 from logging import getLogger
 
 from gpxpy.gpx import GPX, GPXTrack, GPXTrackPoint, GPXTrackSegment, GPXWaypoint
