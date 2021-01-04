@@ -1,9 +1,19 @@
-# Extra dependencies:
-# pip install acopy geopy networkx tsplib95
-# pip install https://github.com/DiegoVicen/som-tsp
+"""Example to convert observation locations to TSP format.
+
+This file can then be used to compute the shortest path that hits all locations as a
+Traveling Salesperson problem. This only exports a TSP file, which is compatible with many TSP
+implementations; it does not solve it.
+
+Extra dependencies:
+    `pip install geopy networkx tsplib95`
+Example python TSP implementations:
+    `pip install acopy`
+    `pip install https://github.com/DiegoVicen/som-tsp`
+"""
 from geopy.distance import distance
 from networkx import Graph
 from tsplib95.models import StandardProblem
+
 from pyinaturalist.constants import JsonResponse, List
 
 
