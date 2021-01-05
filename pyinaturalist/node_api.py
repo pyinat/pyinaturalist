@@ -15,7 +15,6 @@ Functions
 from logging import getLogger
 from time import sleep
 from typing import List
-from urllib.parse import urljoin
 
 import requests
 
@@ -50,14 +49,14 @@ from pyinaturalist.response_format import (
 logger = getLogger(__name__)
 
 
-def make_inaturalist_api_get_call(endpoint: str, **kwargs) -> requests.Response:
+def node_api_get(endpoint: str, **kwargs) -> requests.Response:
     """Make an API call to iNaturalist.
 
     Args:
-        endpoint: The name of an endpoint not including the base URL e.g. 'observations'
+        endpoint: The name of an endpoint resource, not including the base URL e.g. 'observations'
         kwargs: Arguments for :py:func:`.api_requests.request`
     """
-    return get(urljoin(INAT_NODE_API_BASE_URL, endpoint), **kwargs)
+    return get(f'{INAT_NODE_API_BASE_URL}{endpoint}', **kwargs)
 
 
 # Controlled Terms
@@ -127,9 +126,7 @@ def get_controlled_terms(taxon_id: int = None, user_agent: str = None) -> JsonRe
     """
     # This is actually two endpoints, but they are so similar it seems best to combine them
     endpoint = 'controlled_terms/for_taxon' if taxon_id else 'controlled_terms'
-    response = make_inaturalist_api_get_call(
-        endpoint, params={'taxon_id': taxon_id}, user_agent=user_agent
-    )
+    response = node_api_get(endpoint, params={'taxon_id': taxon_id}, user_agent=user_agent)
 
     # controlled_terms/for_taxon returns a 422 if the specified taxon does not exist
     if response.status_code in (404, 422):
@@ -143,7 +140,7 @@ def get_controlled_terms(taxon_id: int = None, user_agent: str = None) -> JsonRe
 
 
 def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse:
-    """Get details about an observation.
+    """Get details about a single observation by ID
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_id
 
@@ -213,7 +210,7 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
         JSON response containing observation records
     """
     validate_multiple_choice_param(params, 'order_by', NODE_OBS_ORDER_BY_PROPERTIES)
-    r = make_inaturalist_api_get_call('observations', params=params, user_agent=user_agent)
+    r = node_api_get('observations', params=params, user_agent=user_agent)
     r.raise_for_status()
 
     observations = r.json()
@@ -223,7 +220,8 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
     return observations
 
 
-# TODO: Should use a requests Session here for several subsequent requests
+# TODO: Consolidate logic from get_all_*() functions into a generic pagination function
+#       This would have two variations: by page number (most common) and by ID (as seen below)
 @document_request_params([*docs._get_observations, docs._only_id])
 def get_all_observations(user_agent: str = None, **params) -> List[JsonResponse]:
     """Like :py:func:`get_observations()`, but handles pagination and returns all results in one
@@ -289,7 +287,7 @@ def get_observation_species_counts(user_agent: str = None, **params) -> JsonResp
     Returns:
         JSON response containing taxon records with counts
     """
-    r = make_inaturalist_api_get_call(
+    r = node_api_get(
         'observations/species_counts',
         params=params,
         user_agent=user_agent,
@@ -324,7 +322,7 @@ def get_all_observation_species_counts(user_agent: str = None, **params) -> List
     Returns:
         Combined list of taxon records with counts
     """
-    results = []  # type: List[JsonResponse]
+    results: List[JsonResponse] = []
     page = 1
 
     pagination_params = {
@@ -403,7 +401,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
     Returns:
         JSON response containing place records
     """
-    r = make_inaturalist_api_get_call('places', ids=place_id, user_agent=user_agent)
+    r = node_api_get('places', ids=place_id, user_agent=user_agent)
     r.raise_for_status()
 
     # Convert coordinates to floats
@@ -465,7 +463,7 @@ def get_places_nearby(user_agent: str = None, **params) -> JsonResponse:
     Returns:
         JSON response containing place records, divided into 'standard' and 'community' places.
     """
-    r = make_inaturalist_api_get_call('places/nearby', params=params, user_agent=user_agent)
+    r = node_api_get('places/nearby', params=params, user_agent=user_agent)
     r.raise_for_status()
     return convert_all_place_coordinates(r.json())
 
@@ -497,7 +495,7 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
     Returns:
         JSON response containing place records
     """
-    r = make_inaturalist_api_get_call('places/autocomplete', params={'q': q}, user_agent=user_agent)
+    r = node_api_get('places/autocomplete', params={'q': q}, user_agent=user_agent)
     r.raise_for_status()
 
     # Convert coordinates to floats
@@ -549,7 +547,7 @@ def get_projects(user_agent: str = None, **params) -> JsonResponse:
         JSON response containing project records
     """
     validate_multiple_choice_param(params, 'order_by', PROJECT_ORDER_BY_PROPERTIES)
-    r = make_inaturalist_api_get_call('projects', params=params, user_agent=user_agent)
+    r = node_api_get('projects', params=params, user_agent=user_agent)
     r.raise_for_status()
 
     response = r.json()
@@ -583,7 +581,7 @@ def get_projects_by_id(
     Returns:
         JSON response containing project records
     """
-    r = make_inaturalist_api_get_call(
+    r = node_api_get(
         'projects',
         ids=project_id,
         params={'rule_details': rule_details},
@@ -623,7 +621,7 @@ def get_taxa(user_agent: str = None, **params) -> JsonResponse:
         JSON response containing taxon records
     """
     params = translate_rank_range(params)
-    r = make_inaturalist_api_get_call('taxa', params=params, user_agent=user_agent)
+    r = node_api_get('taxa', params=params, user_agent=user_agent)
     r.raise_for_status()
 
     taxa = r.json()
@@ -660,7 +658,7 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     Returns:
         JSON response containing taxon records
     """
-    r = make_inaturalist_api_get_call('taxa', ids=taxon_id, user_agent=user_agent)
+    r = node_api_get('taxa', ids=taxon_id, user_agent=user_agent)
     r.raise_for_status()
 
     taxa = r.json()
@@ -700,7 +698,7 @@ def get_taxa_autocomplete(user_agent: str = None, **params) -> JsonResponse:
         JSON response containing taxon records
     """
     params = translate_rank_range(params)
-    r = make_inaturalist_api_get_call('taxa/autocomplete', params=params, user_agent=user_agent)
+    r = node_api_get('taxa/autocomplete', params=params, user_agent=user_agent)
     r.raise_for_status()
     json_response = r.json()
 

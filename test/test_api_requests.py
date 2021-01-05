@@ -7,13 +7,18 @@ from pyinaturalist.api_requests import MOCK_RESPONSE, delete, get, post, put, re
 
 # Just test that the wrapper methods call requests.request with the appropriate HTTP method
 @pytest.mark.parametrize(
-    'function, http_method',
+    'http_func, http_method',
     [(delete, 'DELETE'), (get, 'GET'), (post, 'POST'), (put, 'PUT')],
 )
-@patch('pyinaturalist.api_requests.request')
-def test_http_methods(mock_request, function, http_method):
-    function('https://url', param='value')
-    mock_request.assert_called_with(http_method, 'https://url', param='value')
+@patch('pyinaturalist.api_requests.requests.Session.request')
+def test_http_methods(mock_request, http_func, http_method):
+    http_func('https://url', params={'key': 'value'})
+    mock_request.assert_called_with(
+        http_method,
+        'https://url',
+        params={'key': 'value'},
+        headers={'Accept': 'application/json', 'User-Agent': pyinaturalist.user_agent},
+    )
 
 
 # Test that the requests() wrapper passes along expected headers; just tests kwargs, not mock response
@@ -35,7 +40,7 @@ def test_http_methods(mock_request, function, http_method):
         ),
     ],
 )
-@patch('pyinaturalist.api_requests.requests.request')
+@patch('pyinaturalist.api_requests.requests.Session.request')
 def test_request_headers(mock_request, input_kwargs, expected_headers):
     request('GET', 'https://url', **input_kwargs)
     request_kwargs = mock_request.call_args[1]
@@ -75,9 +80,9 @@ def test_request_headers(mock_request, input_kwargs, expected_headers):
     ],
 )
 @patch('pyinaturalist.api_requests.getenv')
-@patch('pyinaturalist.api_requests.requests')
+@patch('pyinaturalist.api_requests.requests.Session.request')
 def test_request_dry_run(
-    mock_requests,
+    mock_request,
     mock_getenv,
     enabled_const,
     enabled_env,
@@ -102,11 +107,11 @@ def test_request_dry_run(
 
     # Verify that the request was or wasn't mocked based on settings
     if expected_real_request:
-        assert mock_requests.request.call_count == 1
-        assert response == mock_requests.request()
+        assert mock_request.call_count == 1
+        assert response == mock_request()
     else:
         assert response == MOCK_RESPONSE
-        assert mock_requests.request.call_count == 0
+        assert mock_request.call_count == 0
 
 
 # In addition to the test cases above, ensure that the request/response isn't altered with dry-run disabled

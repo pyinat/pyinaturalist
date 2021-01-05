@@ -369,21 +369,21 @@ def test_get_taxa(requests_mock):
         ({'max_rank': 'species', 'rank': 'override_me'}, SPECIES_AND_LOWER),
     ],
 )
-@patch('pyinaturalist.node_api.make_inaturalist_api_get_call')
+@patch('pyinaturalist.node_api.get')
 def test_get_taxa_by_rank_range(
-    mock_inaturalist_api_get_call,
+    mock_get,
     params,
     expected_ranks,
 ):
     # Make sure custom rank params result in the correct 'rank' param value
     get_taxa(**params)
-    kwargs = mock_inaturalist_api_get_call.call_args[1]
+    kwargs = mock_get.call_args[1]
     requested_rank = kwargs['params']['rank']
     assert requested_rank == expected_ranks
 
 
 # This is just a spot test of a case in which boolean params should be converted
-@patch('pyinaturalist.api_requests.requests.request')
+@patch('pyinaturalist.api_requests.requests.Session.request')
 def test_get_taxa_by_name_and_is_active(request):
     get_taxa(q='Lixus bardanae', is_active=False)
     request_kwargs = request.call_args[1]
