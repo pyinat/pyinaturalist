@@ -1,4 +1,5 @@
 """ Some common functions for HTTP requests used by both the Node and REST API modules """
+import threading
 from logging import getLogger
 from os import getenv
 from typing import Dict, List, Union
@@ -15,6 +16,17 @@ MOCK_RESPONSE = Mock(spec=requests.Response)
 MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0}
 
 logger = getLogger(__name__)
+thread_local = threading.local()
+
+
+def get_session() -> requests.Session:
+    """Get a Session object that will be reused across requests to take advantage of connection
+    pooling. If used in a multi-threaded context (for example, a
+    :py:class:`~concurrent.futures.ThreadPoolExecutor`), a separate session is used for each thread.
+    """
+    if not hasattr(thread_local, "session"):
+        thread_local.session = requests.Session()
+    return thread_local.session
 
 
 # TODO: Copy function signature of request(), add `url`, and apply to these 4 wrapper functions
@@ -46,6 +58,7 @@ def request(
     ids: Union[str, List] = None,
     params: Dict = None,
     headers: Dict = None,
+    session: requests.Session = None,
     **kwargs,
 ) -> requests.Response:
     """Wrapper around :py:func:`requests.request` that supports dry-run mode and
@@ -59,11 +72,13 @@ def request(
         ids: One or more integer IDs used as REST resource(s) to request
         params: Requests parameters
         headers: Request headers
+        session: Existing Session object to use instead of creating a new one
 
     Returns:
         API response
     """
     # Set user agent and authentication headers, if specified
+    session = session or get_session()
     headers = headers or {}
     headers['Accept'] = 'application/json'
     headers['User-Agent'] = user_agent or pyinaturalist.user_agent
@@ -72,7 +87,7 @@ def request(
 
     params = preprocess_request_params(params)
 
-    # If one or more REST resources are requested, update the request URL accordignly
+    # If one or more REST resources are requested by ID, update the request URL accordingly
     if ids:
         url = url.rstrip('/') + '/' + validate_ids(ids)
 
@@ -82,7 +97,7 @@ def request(
         log_request(method, url, params=params, headers=headers, **kwargs)
         return MOCK_RESPONSE
     else:
-        return requests.request(method, url, params=params, headers=headers, **kwargs)
+        return session.request(method, url, params=params, headers=headers, **kwargs)
 
 
 def is_dry_run_enabled(method: str) -> bool:
