@@ -9,6 +9,7 @@ import requests
 
 import pyinaturalist
 from pyinaturalist.constants import WRITE_HTTP_METHODS
+from pyinaturalist.forge_utils import copy_signature
 from pyinaturalist.request_params import preprocess_request_params, validate_ids
 
 # Mock response content to return in dry-run mode
@@ -21,33 +22,13 @@ thread_local = threading.local()
 
 def get_session() -> requests.Session:
     """Get a Session object that will be reused across requests to take advantage of connection
-    pooling. If used in a multi-threaded context (for example, a
-    :py:class:`~concurrent.futures.ThreadPoolExecutor`), a separate session is used for each thread.
+    pooling. This is especially relevant for large paginated requests. If used in a multi-threaded
+    context (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), a separate session
+    is used for each thread.
     """
     if not hasattr(thread_local, "session"):
         thread_local.session = requests.Session()
     return thread_local.session
-
-
-# TODO: Copy function signature of request(), add `url`, and apply to these 4 wrapper functions
-def delete(url: str, **kwargs) -> requests.Response:
-    """ Wrapper around :py:func:`requests.delete` that supports dry-run mode """
-    return request('DELETE', url, **kwargs)
-
-
-def get(url: str, **kwargs) -> requests.Response:
-    """ Wrapper around :py:func:`requests.get` that supports dry-run mode """
-    return request('GET', url, **kwargs)
-
-
-def post(url: str, **kwargs) -> requests.Response:
-    """ Wrapper around :py:func:`requests.post` that supports dry-run mode """
-    return request('POST', url, **kwargs)
-
-
-def put(url: str, **kwargs) -> requests.Response:
-    """ Wrapper around :py:func:`requests.put` that supports dry-run mode """
-    return request('PUT', url, **kwargs)
 
 
 def request(
@@ -98,6 +79,30 @@ def request(
         return MOCK_RESPONSE
     else:
         return session.request(method, url, params=params, headers=headers, **kwargs)
+
+
+@copy_signature(request, exclude='method')
+def delete(url: str, **kwargs) -> requests.Response:
+    """ Wrapper around :py:func:`requests.delete` that supports dry-run mode """
+    return request('DELETE', url, **kwargs)
+
+
+@copy_signature(request, exclude='method')
+def get(url: str, **kwargs) -> requests.Response:
+    """ Wrapper around :py:func:`requests.get` that supports dry-run mode """
+    return request('GET', url, **kwargs)
+
+
+@copy_signature(request, exclude='method')
+def post(url: str, **kwargs) -> requests.Response:
+    """ Wrapper around :py:func:`requests.post` that supports dry-run mode """
+    return request('POST', url, **kwargs)
+
+
+@copy_signature(request, exclude='method')
+def put(url: str, **kwargs) -> requests.Response:
+    """ Wrapper around :py:func:`requests.put` that supports dry-run mode """
+    return request('PUT', url, **kwargs)
 
 
 def is_dry_run_enabled(method: str) -> bool:
