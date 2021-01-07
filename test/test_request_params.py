@@ -136,7 +136,7 @@ def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_str
 @patch('pyinaturalist.node_api.convert_all_coordinates', side_effect=lambda x: x)
 @patch('pyinaturalist.node_api.convert_all_place_coordinates', side_effect=lambda x: x)
 @patch('pyinaturalist.api_requests.preprocess_request_params')
-@patch('pyinaturalist.api_requests.requests.request')
+@patch('pyinaturalist.api_requests.requests.Session.request')
 def test_all_node_requests_use_param_conversion(
     request,
     preprocess_request_params,
@@ -159,7 +159,7 @@ def test_all_node_requests_use_param_conversion(
 @patch('pyinaturalist.rest_api.convert_all_coordinates')
 @patch('pyinaturalist.rest_api.sleep')
 @patch('pyinaturalist.api_requests.preprocess_request_params')
-@patch('pyinaturalist.api_requests.requests.request')
+@patch('pyinaturalist.api_requests.requests.Session.request')
 def test_all_rest_requests_use_param_conversion(
     request, preprocess_request_params, sleep, convert_all_place_coordinates, http_function
 ):
