@@ -133,6 +133,7 @@ def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_str
 )
 @patch('pyinaturalist.request_params.translate_rank_range')
 @patch('pyinaturalist.response_format.as_geojson_feature')
+@patch('pyinaturalist.node_api.format_histogram')
 @patch('pyinaturalist.node_api.convert_all_coordinates', side_effect=lambda x: x)
 @patch('pyinaturalist.node_api.convert_all_place_coordinates', side_effect=lambda x: x)
 @patch('pyinaturalist.api_requests.preprocess_request_params')
@@ -142,7 +143,8 @@ def test_all_node_requests_use_param_conversion(
     preprocess_request_params,
     convert_all_place_coordinates,
     convert_all_coordinates,
-    as_geojson,
+    format_histogram,
+    as_geojson_feature,
     translate_rank_range,
     http_function,
 ):
@@ -213,9 +215,14 @@ def test_validate_multiple_choice_param():
 def test_validate_multiple_choice_params(params):
     # If valid, there is no return value, but an exception should not be raised
     validate_multiple_choice_params(params)
+
     # If invalid, an exception should be raised
     with pytest.raises(ValueError):
         validate_multiple_choice_params({k: 'Invalid_value' for k in params})
+
     # A valid + invalid value should also raise an exception
+    def append_invalid_value(value):
+        return [*value, 'Invalid_value'] if isinstance(value, list) else [value, 'Invalid_value']
+
     with pytest.raises(ValueError):
-        validate_multiple_choice_params({k: [v, 'Invalid_value'] for k, v in params.items()})
+        validate_multiple_choice_params({k: append_invalid_value(v) for k, v in params.items()})
