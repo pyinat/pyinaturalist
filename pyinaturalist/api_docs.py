@@ -227,15 +227,11 @@ def _observation_rest_only(
 
 def _observation_histogram(
     date_field: str = 'observed',
-    interval: str = 'month',
+    interval: str = 'month_of_year',
 ):
     """
     date_field: Histogram basis: either when the observation was created or observed
     interval: Time interval for histogram, with groups starting on or contained within the group value.
-    The year, month, week, day, and hour options will set default values for d1 or created_d1 depending on
-    the value of date_field, to limit the number of groups returned.
-    You can override those values if you want data from a longer or shorter time span. The hour interval only works with
-    date_field=created, and this you should filter dates with created_d[1,2]
     """
 
 

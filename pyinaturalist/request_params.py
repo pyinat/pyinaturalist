@@ -6,7 +6,7 @@ from dateutil.tz import tzlocal
 from io import BytesIO
 from logging import getLogger
 from os.path import abspath, expanduser
-from typing import Any, BinaryIO, Dict, Iterable, Optional
+from typing import Any, BinaryIO, Dict, Iterable, Optional, Tuple
 
 from pyinaturalist.constants import FileOrPath, RequestParams
 
@@ -155,7 +155,7 @@ def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any
     if not params:
         return {}
 
-    validate_multiple_choice_params(params)
+    params = validate_multiple_choice_params(params)
     params = convert_bool_params(params)
     params = convert_datetime_params(params)
     params = convert_list_params(params)
@@ -282,22 +282,33 @@ def is_valid_multiple_choice_option(value: Any, choices: Iterable) -> bool:
     return all([v in choices for v in value])
 
 
-def validate_multiple_choice_param(params: RequestParams, key: str, choices: Iterable):
-    """Verify if a multiple-choice request parameter contains valid value(s);
-    if not, raise an error. **Used for endpoint-specific params.**
+def validate_multiple_choice_param(
+    params: RequestParams, key: str, choices: Iterable
+) -> RequestParams:
+    """Verify that a multiple-choice request parameter contains valid value(s);
+    if not, raise an error.
+    **Used for endpoint-specific params.**
+
+    Returns:
+        Parameters with modifications (if any)
 
     Raises:
         :py:exc:`ValueError`
     """
-    if key in params and not is_valid_multiple_choice_option(params[key], choices):
-        raise ValueError(MULTIPLE_CHOICE_ERROR_MSG.format(key, choices, params[key]))
+    params, error_msg = _validate_multiple_choice_param(params, key, choices)
+    if error_msg:
+        raise ValueError(error_msg)
+    return params
 
 
-def validate_multiple_choice_params(params: RequestParams):
+def validate_multiple_choice_params(params: RequestParams) -> RequestParams:
     """Verify that multiple-choice request parameters contain a valid value.
 
     **Note:** This does not check endpoint-specific params, i.e., those that have the same name
     but different values across different endpoints.
+
+    Returns:
+        Parameters with modifications (if any)
 
     Raises:
         :py:exc:`ValueError`;
@@ -306,12 +317,42 @@ def validate_multiple_choice_params(params: RequestParams):
     # Collect info on any validation errors
     errors = []
     for key, choices in MULTIPLE_CHOICE_PARAMS.items():
-        if key in params and not is_valid_multiple_choice_option(params[key], choices):
-            errors.append(MULTIPLE_CHOICE_ERROR_MSG.format(key, choices, params[key]))
+        params, error_msg = _validate_multiple_choice_param(params, key, choices)
+        if error_msg:
+            errors.append(error_msg)
 
     # Combine all messages (if multiple) into one error message
     if errors:
         raise ValueError('\n'.join(errors))
+    return params
+
+
+def _validate_multiple_choice_param(
+    params: RequestParams, key: str, choices: Iterable
+) -> Tuple[RequestParams, Optional[str]]:
+    """Verify that a multiple-choice request parameter contains valid value(s);
+    if not, return an error message.
+
+    Returns:
+        Parameters with modifications (if any), and a validation error message (if any)
+    """
+    error_msg = None
+    if key in params:
+        params[key] = _normalize_multiple_choice_value(params[key])
+    if not is_valid_multiple_choice_option(params.get(key), choices):
+        error_msg = MULTIPLE_CHOICE_ERROR_MSG.format(key, choices, params[key])
+    return params, error_msg
+
+
+def _normalize_multiple_choice_value(value):
+    """Convert any spaces in a multiple choice value to underscores;
+    e.g. treat 'month of year' as equivalent to 'month_of_year'
+    """
+    if not value:
+        return value
+    if isinstance(value, list):
+        return [v.replace(' ', '_') for v in value]
+    return value.replace(' ', '_')
 
 
 def _isoformat(d):

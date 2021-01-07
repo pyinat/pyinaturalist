@@ -12,7 +12,6 @@ Functions
     :nosignatures:
 
 """
-from dateutil.parser import parse as parse_date
 from logging import getLogger
 from time import sleep
 from typing import List
@@ -25,6 +24,7 @@ from pyinaturalist.constants import (
     INAT_NODE_API_BASE_URL,
     PER_PAGE_RESULTS,
     THROTTLING_DELAY,
+    HistogramResponse,
     JsonResponse,
     MultiInt,
 )
@@ -44,6 +44,7 @@ from pyinaturalist.response_format import (
     convert_all_timestamps,
     convert_observation_timestamps,
     flatten_nested_params,
+    format_histogram,
     format_taxon,
 )
 
@@ -174,12 +175,17 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
 
 
 @document_request_params([*docs._get_observations, docs._observation_histogram])
-def get_observation_histogram(
-    user_agent: str = None, interval: str = 'month', **params
-) -> JsonResponse:
+def get_observation_histogram(user_agent: str = None, **params) -> HistogramResponse:
     """Search observations and return histogram data for the given time interval
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_histogram
+
+    Search parameters are the same as :py:func:`.get_observations()`, with the addition of ``date_field`` and
+    ``interval``.
+    The year, month, week, day, and hour options will set default values for ``d1`` or ``created_d1`` depending on
+    the value of date_field, to limit the number of groups returned.
+    You can override those values if you want data from a longer or shorter time span. The hour interval only works with
+    ``date_field='created'``, and this you should filter dates with ``created_d[1,2]``.
 
     Example:
 
@@ -196,15 +202,8 @@ def get_observation_histogram(
     """
     r = node_api_get('observations/histogram', params=params, user_agent=user_agent)
     r.raise_for_status()
-
-    # TODO: Is any error handling necessary here? Responses seem fairly consistent and predictable
-    histogram = r.json()['results'][interval]
-    if interval in ['month_of_year', 'week_of_year']:
-        histogram = {int(k): v for k, v in histogram.items()}
-    else:
-        histogram = {parse_date(k): v for k, v in histogram.items()}
-
-    return histogram
+    print(r.json())
+    return format_histogram(r.json(), params)
 
 
 @document_request_params([*docs._get_observations, docs._pagination, docs._only_id])
