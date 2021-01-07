@@ -12,6 +12,7 @@ Functions
     :nosignatures:
 
 """
+from dateutil.parser import parse as parse_date
 from logging import getLogger
 from time import sleep
 from typing import List
@@ -170,6 +171,40 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
         return convert_observation_timestamps(r['results'][0])
 
     raise ObservationNotFound()
+
+
+@document_request_params([*docs._get_observations, docs._observation_histogram])
+def get_observation_histogram(
+    user_agent: str = None, interval: str = 'month', **params
+) -> JsonResponse:
+    """Search observations and return histogram data for the given time interval
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_histogram
+
+    Example:
+
+        TODO
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_histogram.json
+                :language: JSON
+
+    Returns:
+        JSON response containing observation time series data
+    """
+    r = node_api_get('observations/histogram', params=params, user_agent=user_agent)
+    r.raise_for_status()
+
+    # TODO: Is any error handling necessary here? Responses seem fairly consistent and predictable
+    histogram = r.json()['results'][interval]
+    if interval in ['month_of_year', 'week_of_year']:
+        histogram = {int(k): v for k, v in histogram.items()}
+    else:
+        histogram = {parse_date(k): v for k, v in histogram.items()}
+
+    return histogram
 
 
 @document_request_params([*docs._get_observations, docs._pagination, docs._only_id])

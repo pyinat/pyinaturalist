@@ -110,6 +110,8 @@ COMMUNITY_ID_STATUSES = ['most_agree', 'most_disagree', 'some_agree']
 EXTRA_PROPERTIES = ['fields', 'identifications', 'projects']
 GEOPRIVACY_LEVELS = ['obscured', 'obscured_private', 'open', 'private']
 HAS_PROPERTIES = ['photo', 'geo']
+HISTOGRAM_DATE_FIELDS = ['created', 'observed']
+HISTOGRAM_INTERVALS = ['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
 ORDER_DIRECTIONS = ['asc', 'desc']
 PROJECT_TYPES = ['collection', 'umbrella']
 QUALITY_GRADES = ['casual', 'needs_id', 'research']
@@ -119,12 +121,14 @@ SEARCH_PROPERTIES = ['names', 'tags', 'description', 'place']
 # Multiple-choice request parameters, with keys mapped to their possible choices (non-endpoint-specific)
 MULTIPLE_CHOICE_PARAMS = {
     'csi': CONSERVATION_STATUSES,
+    'date_field': HISTOGRAM_DATE_FIELDS,
     'extra': EXTRA_PROPERTIES,
     'geoprivacy': GEOPRIVACY_LEVELS,
     'has': HAS_PROPERTIES,
     'hrank': RANKS,
     'iconic_taxa': list(ICONIC_TAXA.values()),
     'identifications': COMMUNITY_ID_STATUSES,
+    'interval': HISTOGRAM_INTERVALS,
     'license': CC_LICENSES,
     'lrank': RANKS,
     'max_rank': RANKS,
