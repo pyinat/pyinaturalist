@@ -431,6 +431,79 @@ def get_geojson_observations(properties: List[str] = None, **params) -> JsonResp
     )
 
 
+@document_request_params([*docs._get_observations, docs._pagination])
+def get_observation_observers(user_agent: str = None, **params) -> JsonResponse:
+    """Get observers of observations matching the search criteria and the count of
+    observations and distinct taxa of rank species they have observed.
+
+    Notes:
+    Options for ``order_by`` are 'observation_count' (default) or 'species_count'.
+
+    ``GET /observations/observers`` API node is buggy. It's currently limited to
+    500 results and using ``order_by=species_count`` may produce unusual results.
+    See this issue for more details: https://github.com/inaturalist/iNaturalistAPI/issues/235
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_observers
+
+    Example:
+        >>> get_observation_observers(place_id=72645, order_by='species_count')
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_observers_ex_results.json
+                :language: JSON
+
+    Returns:
+        JSON response of observers
+    """
+
+    params.setdefault('per_page', 500)  # patch for API issue #235
+
+    r = node_api_get(
+        'observations/observers',
+        params=params,
+        user_agent=user_agent,
+    )
+    r.raise_for_status()
+    return r.json()
+
+
+@document_request_params([*docs._get_observations, docs._pagination])
+def get_observation_identifiers(user_agent: str = None, **params) -> JsonResponse:
+    """Get identifiers of observations matching the search criteria and the count of
+    observations they have identified. By default, results are sorted by ID count in descending.
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_identifiers
+
+    Example:
+        >>> get_observation_identifiers(place_id=72645)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_identifiers_ex_results.json
+                :language: JSON
+
+    Returns:
+        JSON response of identifiers
+
+    Notes:
+    The ``GET /observations/identifiers`` API node is currently limited to
+    500 results. See this issue for more details: https://github.com/inaturalist/iNaturalistAPI/issues/236
+    """
+
+    params.setdefault('per_page', 500)  # patch until issue #236 is resolved
+
+    r = node_api_get(
+        'observations/identifiers',
+        params=params,
+        user_agent=user_agent,
+    )
+    r.raise_for_status()
+    return r.json()
+
+
 # Places
 # --------------------
 
