@@ -373,6 +373,167 @@ def get_geojson_observations(properties: List[str] = None, **params) -> JsonResp
     )
 
 
+@document_request_params([*docs._get_observations, docs._pagination])
+def get_observation_observers(user_agent: str = None, **params) -> JsonResponse:
+    """Get observers of observations matching the search criteria and the count of
+    observations and distinct taxa of rank species they have observed.
+
+    Notes:
+    Options for ``order_by`` are 'observation_count' (default) or 'species_count'.
+
+    ``GET /observations/observers`` API node is buggy. It's currently limited to
+    500 results and using ``order_by=species_count`` may produce unusual results.
+    See this issue for more details: https://github.com/inaturalist/iNaturalistAPI/issues/235
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_observers
+
+    Example:
+        >>> get_observation_observers(place_id=72645, order_by='species_count')
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_observers_ex_results.json
+                :language: JSON
+
+    Returns:
+        JSON response of observers
+    """
+
+    params.setdefault('per_page', 500) # patch for API issue #235
+
+    r = make_inaturalist_api_get_call(
+        'observations/observers',
+        params=params,
+        user_agent=user_agent,
+    )
+    r.raise_for_status()
+    return r.json()
+
+
+@document_request_params([*docs._get_observations, docs._pagination])
+def get_all_observation_observers(user_agent: str = None, **params) -> List[JsonResponse]:
+    """Like :py:func:`get_observation_observers()`, but handles pagination and returns all
+    results in one call. Explicit pagination parameters will be ignored.
+
+    Example:
+        >>> get_all_observation_observers(place_id=72645, iconic_taxa='Mollusca')
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_all_observation_observers_ex_results.json
+                :language: JSON
+
+    Returns:
+        Combined list of observer records with counts
+    """
+    results = []  # type: List[JsonResponse]
+    page = 1
+
+    pagination_params = {
+        **params,
+        **{
+            'per_page': PER_PAGE_RESULTS,
+            'user_agent': user_agent,
+        },
+    }
+
+    while True:
+        pagination_params['page'] = page
+        page_obs = get_observation_observers(**pagination_params)
+        results += page_obs.get('results', [])
+
+        # patch for API issue #235 (see ``get_observation_observers`` Notes)
+        if (len(results) == page_obs['total_results']) or (len(results) >= 500):
+            return results
+
+        # if len(results) == page_obs['total_results']:
+        #     return results
+
+        sleep(THROTTLING_DELAY)
+        page += 1
+
+
+@document_request_params([*docs._get_observations, docs._pagination])
+def get_observation_identifiers(user_agent: str = None, **params) -> JsonResponse:
+    """Get identifiers of observations matching the search criteria and the count of
+    observations they have identified. By default, results are sorted by ID count in descending.
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_identifiers
+
+    Example:
+        >>> get_observation_identifiers(place_id=72645)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_identifiers_ex_results.json
+                :language: JSON
+
+    Returns:
+        JSON response of identifiers
+
+    Notes:
+    The ``GET /observations/identifiers`` API node is currently limited to
+    500 results. See this issue for more details: https://github.com/inaturalist/iNaturalistAPI/issues/236
+    """
+
+    params.setdefault('per_page', 500) # patch until issue #236 is resolved
+
+    r = make_inaturalist_api_get_call(
+        'observations/identifiers',
+        params=params,
+        user_agent=user_agent,
+    )
+    r.raise_for_status()
+    return r.json()
+
+
+@document_request_params([*docs._get_observations, docs._pagination])
+def get_all_observation_identifiers(user_agent: str = None, **params) -> List[JsonResponse]:
+    """Like :py:func:`get_observation_identifiers()`, but handles pagination and returns all
+    results in one call. Explicit pagination parameters will be ignored.
+
+    Example:
+        >>> get_all_observation_observers(place_id=72645, iconic_taxa='Mollusca')
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_all_observation_identifiers_ex_results.json
+                :language: JSON
+
+    Returns:
+        Combined list of identifier records with counts
+    """
+    results = []  # type: List[JsonResponse]
+    page = 1
+
+    pagination_params = {
+        **params,
+        **{
+            'per_page': PER_PAGE_RESULTS,
+            'user_agent': user_agent,
+        },
+    }
+
+    while True:
+        pagination_params['page'] = page
+        page_obs = get_observation_identifiers(**pagination_params)
+        results += page_obs.get('results', [])
+
+        # patch for issue #236 (see ``get_observation_identifiers`` Notes)
+        if (len(results) == page_obs['total_results']) or (len(results) >= 500):
+            return results
+
+        # if len(results) == page_obs['total_results']:
+        #     return results
+
+        sleep(THROTTLING_DELAY)
+        page += 1
+
+
 # Places
 # --------------------
 

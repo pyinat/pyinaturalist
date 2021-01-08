@@ -1,0 +1,61 @@
+{
+  "total_results": 4,
+  "page": 1,
+  "per_page": 2,
+  "results": [
+    {
+      "user_id": 53153,
+      "observation_count": 750,
+      "species_count": 264,
+      "user": {
+        "id": 53153,
+        "login": "willkuhn",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2014-09-15T18:38:59+00:00",
+        "login_autocomplete": "willkuhn",
+        "login_exact": "willkuhn",
+        "name": "Will Kuhn",
+        "name_autocomplete": "Will Kuhn",
+        "orcid": "https://orcid.org/0000-0002-5506-6379",
+        "icon": "https://static.inaturalist.org/attachments/users/icons/53153/thumb.jpeg?1606488424",
+        "observations_count": 2945,
+        "identifications_count": 3895,
+        "journal_posts_count": 0,
+        "activity_count": 6840,
+        "species_count": 1230,
+        "universal_search_rank": 2945,
+        "roles": [],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/53153/medium.jpeg?1606488424"
+      }
+    },
+    {
+      "user_id": 3151147,
+      "observation_count": 30,
+      "species_count": 25,
+      "user": {
+        "id": 3151147,
+        "login": "antnyreda",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2020-06-09T17:06:27+00:00",
+        "login_autocomplete": "antnyreda",
+        "login_exact": "antnyreda",
+        "name": null,
+        "name_autocomplete": null,
+        "orcid": null,
+        "icon": null,
+        "observations_count": 35,
+        "identifications_count": 0,
+        "journal_posts_count": 0,
+        "activity_count": 35,
+        "species_count": 32,
+        "universal_search_rank": 35,
+        "roles": [],
+        "site_id": 1,
+        "icon_url": null
+      }
+    }
+  ]
+}

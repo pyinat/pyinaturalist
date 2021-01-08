@@ -12,6 +12,10 @@ from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.node_api import (
     get_all_observation_species_counts,
     get_all_observations,
+    get_observation_observers,
+    get_all_observation_observers,
+    get_observation_identifiers,
+    get_all_observation_identifiers,
     get_controlled_terms,
     get_geojson_observations,
     get_observation,
@@ -135,6 +139,84 @@ def test_get_all_observations(sleep, requests_mock):
 
     assert type(observations) is list
     assert len(observations) == 2
+
+
+def test_get_observation_observers(requests_mock):
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, 'observations/observers'),
+        json=load_sample_data('get_observation_observers_node_page1.json'),
+        status_code=200,
+    )
+
+    observers = get_observation_observers(place_id=125323)
+    first_result = observers['results'][0]
+
+    assert observers['total_results'] == 4
+    assert len(observers['results']) == 2
+    assert first_result['user']['spam'] == False
+    assert first_result['user']['suspended'] == False
+
+
+@patch('pyinaturalist.node_api.sleep')
+def test_get_all_observation_observers(sleep, requests_mock):
+    # Make response appear as though there are more pages
+    page_1 = load_sample_data('get_observation_observers_node_page1.json')
+    page_2 = load_sample_data('get_observation_observers_node_page2.json')
+
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, 'observations/observers'),
+        [
+            {'json': page_1, 'status_code': 200},
+            {'json': page_2, 'status_code': 200},
+        ],
+    )
+
+    observers = get_all_observation_observers(place_id=125323)
+
+    assert isinstance(observers,list)
+    assert len(observers) == 4
+
+
+def test_get_observation_identifiers(requests_mock):
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, 'observations/identifiers'),
+        json=load_sample_data('get_observation_identifiers_node_page1.json'),
+        status_code=200,
+    )
+
+    identifiers = get_observation_identifiers(
+        place_id=125323,
+        iconic_taxa='Amphibia'
+    )
+    first_result = identifiers['results'][0]
+
+    assert identifiers['total_results'] == 6
+    assert len(identifiers['results']) == 3
+    assert first_result['user']['spam'] == False
+    assert first_result['user']['suspended'] == False
+
+
+@patch('pyinaturalist.node_api.sleep')
+def test_get_all_observation_identifiers(sleep, requests_mock):
+    # Make response appear as though there are more pages
+    page_1 = load_sample_data('get_observation_identifiers_node_page1.json')
+    page_2 = load_sample_data('get_observation_identifiers_node_page2.json')
+
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, 'observations/identifiers'),
+        [
+            {'json': page_1, 'status_code': 200},
+            {'json': page_2, 'status_code': 200},
+        ],
+    )
+
+    identifiers = get_all_observation_identifiers(
+        place_id=125323,
+        iconic_taxa='Amphibia'
+    )
+
+    assert isinstance(identifiers,list)
+    assert len(identifiers) == 6
 
 
 def test_get_geojson_observations(requests_mock):
