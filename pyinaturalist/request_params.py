@@ -43,7 +43,7 @@ DATETIME_PARAMS = [
     'updated_since',  # TODO: test if this one behaves differently in Node API vs REST API
 ]
 
-# Reponse formats supported by GET /observations endpoint
+# Response formats supported by GET /observations endpoint
 OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
 
 # Creative Commons license codes

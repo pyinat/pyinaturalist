@@ -190,8 +190,8 @@ def test_validate_multiple_choice_param():
     }
     choices = ['str1', 'str2', 'valid_str']
 
-    validate_multiple_choice_param(params, 'param1', choices)
-    assert True
+    validated_params = validate_multiple_choice_param(params, 'param1', choices)
+    assert params == validated_params
     with pytest.raises(ValueError):
         validate_multiple_choice_param(params, 'param2', choices)
 
@@ -213,7 +213,7 @@ def test_validate_multiple_choice_param():
     ],
 )
 def test_validate_multiple_choice_params(params):
-    # If valid, there is no return value, but an exception should not be raised
+    # If valid, no exception should not be raised
     validate_multiple_choice_params(params)
 
     # If invalid, an exception should be raised
@@ -226,3 +226,16 @@ def test_validate_multiple_choice_params(params):
 
     with pytest.raises(ValueError):
         validate_multiple_choice_params({k: append_invalid_value(v) for k, v in params.items()})
+
+
+@pytest.mark.parametrize(
+    'params, expected_value',
+    [
+        ({'identifications': 'most agree'}, 'most_agree'),
+        ({'interval': 'month of year'}, 'month_of_year'),
+    ],
+)
+def test_validate_multiple_choice_params__normalization(params, expected_value):
+    validated_params = validate_multiple_choice_params(params)
+    value = next(iter(validated_params.values()))
+    assert value == expected_value

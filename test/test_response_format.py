@@ -5,10 +5,27 @@ from dateutil.tz import tzoffset
 from pyinaturalist.response_format import (
     convert_observation_timestamps,
     convert_offset,
+    format_histogram,
     format_observation,
     format_taxon,
 )
 from test.conftest import load_sample_data
+
+
+def test_format_histogram__datetime_keys():
+    response = load_sample_data('get_observation_histogram_month.json')
+    histogram = format_histogram(response)
+    assert histogram[datetime(2020, 1, 1, 0, 0)] == 272
+    assert all([isinstance(k, datetime) for k in histogram.keys()])
+    assert all([isinstance(v, int) for v in histogram.values()])
+
+
+def test_format_histogram__int_keys():
+    response = load_sample_data('get_observation_histogram_month_of_year.json')
+    histogram = format_histogram(response)
+    assert histogram[1] == 272
+    assert all([isinstance(k, int) for k in histogram.keys()])
+    assert all([isinstance(v, int) for v in histogram.values()])
 
 
 def test_format_observation():
