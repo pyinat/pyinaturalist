@@ -1,3 +1,5 @@
+from datetime import datetime
+
 {
     datetime(2019, 12, 30, 0, 0): 35,
     datetime(2020, 1, 6, 0, 0): 27,

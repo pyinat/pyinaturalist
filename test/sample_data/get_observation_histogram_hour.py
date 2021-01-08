@@ -1,3 +1,6 @@
+from datetime import datetime
+from dateutil.tz import tzutc
+
 {
     datetime(2020, 1, 1, 14, 0, tzinfo=tzutc()): 1,
     datetime(2020, 1, 1, 15, 0, tzinfo=tzutc()): 13,

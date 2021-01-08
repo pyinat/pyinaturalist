@@ -132,8 +132,7 @@ def get_observation_fields(user_agent: str = None, **params) -> ListResponse:
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_observation_fields_page1.json
-                :language: javascript
+            .. literalinclude:: ../sample_data/get_observation_fields.py
 
     Returns:
         Observation fields as a list of dicts
