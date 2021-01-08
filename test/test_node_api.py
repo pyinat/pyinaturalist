@@ -10,15 +10,15 @@ import pyinaturalist
 from pyinaturalist.constants import INAT_NODE_API_BASE_URL, PER_PAGE_RESULTS
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.node_api import (
+    get_all_observation_identifiers,
+    get_all_observation_observers,
     get_all_observation_species_counts,
     get_all_observations,
-    get_observation_observers,
-    get_all_observation_observers,
-    get_observation_identifiers,
-    get_all_observation_identifiers,
     get_controlled_terms,
     get_geojson_observations,
     get_observation,
+    get_observation_identifiers,
+    get_observation_observers,
     get_observation_species_counts,
     get_observations,
     get_places_autocomplete,
