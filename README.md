@@ -61,33 +61,23 @@ to skip straight to the API docs.
 ## Installation
 
 Install the latest stable version with pip:
-
 ```bash
 $ pip install pyinaturalist
 ```
 
-Or, if you would like to use the latest development (non-stable) version:
-
+Or, if you would like to use the latest development (pre-release) version:
 ```bash
 $ pip install --pre pyinaturalist
 ```
 
-To set up for local development (preferably in a new virtualenv):
-
-```bash
-$ git clone https://github.com/niconoe/pyinaturalist.git
-$ cd pyinaturalist
-$ pip install -Ue ".[dev]"
-$ # Optional but recommended:
-$ pre-commit install --config .github/pre-commit.yml
-```
-
-To install with minimal dependencies (disables optional features):
-
+To install with minimal dependencies (which disables some optional features):
 ```bash
 $ pip install --no-deps pyinaturalist
 $ pip install python-dateutil requests
 ```
+
+See [Contributing](https://pyinaturalist.readthedocs.io/en/latest/contributing.html) for details on
+setup for local development.
 
 ## Development Status
 Pyinaturalist is under active development. More endpoints and features will continue to be added as

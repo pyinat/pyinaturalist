@@ -55,10 +55,10 @@ GET               | /observations/{id}/taxon_summary            |
 POST              | /subscriptions/observation/{id}/subscribe   |
 POST              | /votes/vote/observation/{id}                |
 DELETE            | /votes/unvote/observation/{id}              |
-GET               | /observations                               |
+GET               | /observations                               | yes
 POST              | /observations                               |
 GET               | /observations/deleted                       |
-GET               | /observations/histogram                     |
+GET               | /observations/histogram                     | yes
 GET               | /observations/identifiers                   |
 GET               | /observations/observers                     |
 GET               | /observations/popular_field_values          |

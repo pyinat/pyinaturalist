@@ -3,17 +3,26 @@
 Contributions are welcome, and they are greatly appreciated! Every
 little bit helps, and credit will always be given.
 
+## Installation
+To set up for local development:
+```bash
+$ git clone https://github.com/niconoe/pyinaturalist.git
+$ cd pyinaturalist
+$ pip install -Ue ".[dev]"
+$ # Optional but recommended:
+$ pre-commit install --config .github/pre-commit.yml
+```
+
 ## Contribution Guidelines
 
 ### Documentation
-
 We use [Sphinx](http://www.sphinx-doc.org/en/master/), and the references page is automatically
 generated thanks to `sphinx.ext.autodoc` and `sphinx_autodoc_typehints` extensions. All
 functions / methods / classes should have proper docstrings.
 
 To build the docs locally:
 ```bash
-$ tox -e docs
+$ make -C docs html
 ```
 
 To preview:
@@ -32,7 +41,6 @@ For any new or changed behavior, add a brief high-level summary to `HISTORY.md`.
 This isn't needed for internal changes (tests, other docs, refactoring, etc.).
 
 ### Tests
-
 We use the [pytest](https://docs.pytest.org/en/latest/) framework for unit testing.
 Just run the `pytest` command to run locally.
 
@@ -40,7 +48,6 @@ We also use [tox](https://tox.readthedocs.io/en/latest/) to test multiple python
 Use the `tox` command to run locally. This is also run by GitHub Actions on all pull requests.
 
 ### Type Annotations
-
 All parameters and return values should have type annotations, which will be checked by `mypy` and
 will show up in the documentation.
 
