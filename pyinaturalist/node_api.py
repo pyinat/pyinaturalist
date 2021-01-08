@@ -24,6 +24,7 @@ from pyinaturalist.constants import (
     INAT_NODE_API_BASE_URL,
     PER_PAGE_RESULTS,
     THROTTLING_DELAY,
+    HistogramResponse,
     JsonResponse,
     MultiInt,
 )
@@ -43,6 +44,7 @@ from pyinaturalist.response_format import (
     convert_all_timestamps,
     convert_observation_timestamps,
     flatten_nested_params,
+    format_histogram,
     format_taxon,
 )
 
@@ -172,6 +174,64 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
     raise ObservationNotFound()
 
 
+@document_request_params([*docs._get_observations, docs._observation_histogram])
+def get_observation_histogram(user_agent: str = None, **params) -> HistogramResponse:
+    """Search observations and return histogram data for the given time interval
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_histogram
+
+    **Notes:**
+
+    * Search parameters are the same as :py:func:`.get_observations()`, with the addition of
+      ``date_field`` and ``interval``.
+    * ``date_field`` may be either 'observed' (default) or 'created'.
+    * Observed date ranges can be filtered by parameters ``d1`` and ``d2``
+    * Created date ranges can be filtered by parameters ``created_d1`` and ``created_d2``
+    * ``interval`` may be one of: 'year', 'month', 'week', 'day', 'hour', 'month_of_year', or
+      'week_of_year'; spaces are also allowed instead of underscores, e.g. 'month of year'.
+    * The year, month, week, day, and hour interval options will set default values for ``d1`` and
+      ``created_d1``, to limit the number of groups returned. You can override those values if you
+      want data from a longer or shorter time span.
+    * The 'hour' interval only works with ``date_field='created'``
+
+    Example:
+
+        Get observations per month during 2020 in Austria (place ID 8057)
+
+        >>> response = get_observation_histogram(
+        >>>     interval='month',
+        >>>     d1='2020-01-01',
+        >>>     d2='2020-12-31',
+        >>>     place_id=8057,
+        >>> )
+
+        .. admonition:: Example Response (observations per month of year)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_histogram_month_of_year.json
+                :language: JSON
+
+        .. admonition:: Example Response (observations per month)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_histogram_month.json
+                :language: JSON
+
+        .. admonition:: Example Response (observations per day)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_histogram_day.json
+                :language: JSON
+
+    Returns:
+        JSON response containing observation time series data
+    """
+    r = node_api_get('observations/histogram', params=params, user_agent=user_agent)
+    r.raise_for_status()
+    print(r.json())
+    return format_histogram(r.json())
+
+
 @document_request_params([*docs._get_observations, docs._pagination, docs._only_id])
 def get_observations(user_agent: str = None, **params) -> JsonResponse:
     """Search observations.
@@ -181,7 +241,7 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
     Example:
 
         Get observations of Monarch butterflies with photos + public location info,
-        on a specific date in the provice of Saskatchewan, CA:
+        on a specific date in the provice of Saskatchewan, CA (place ID 7953):
 
         >>> response = get_observations(
         >>>     taxon_name='Danaus plexippus',

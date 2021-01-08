@@ -15,6 +15,7 @@ from pyinaturalist.node_api import (
     get_controlled_terms,
     get_geojson_observations,
     get_observation,
+    get_observation_histogram,
     get_observation_species_counts,
     get_observations,
     get_places_autocomplete,
@@ -86,6 +87,21 @@ def test_get_observation(requests_mock):
     assert observation['id'] == 16227955
     assert observation['user']['login'] == 'niconoe'
     assert len(observation['photos']) == 2
+
+
+def test_get_observation_histogram(requests_mock):
+    requests_mock.get(
+        urljoin(INAT_NODE_API_BASE_URL, 'observations/histogram'),
+        json=load_sample_data('get_observation_histogram_month.json'),
+        status_code=200,
+    )
+
+    histogram = get_observation_histogram(
+        interval='month', place_id=24, d1='2020-01-01', d2='2020-12-31'
+    )
+    assert len(histogram) == 12
+    assert histogram[datetime(2020, 1, 1, 0, 0)] == 272
+    assert all([isinstance(k, datetime) for k in histogram.keys()])
 
 
 def test_get_observations(requests_mock):

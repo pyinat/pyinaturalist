@@ -225,6 +225,16 @@ def _observation_rest_only(
     """
 
 
+def _observation_histogram(
+    date_field: str = 'observed',
+    interval: str = 'month_of_year',
+):
+    """
+    date_field: Histogram basis: either when the observation was created or observed
+    interval: Time interval for histogram, with groups starting on or contained within the group value.
+    """
+
+
 def _create_observation(
     species_guess: str = None,
     taxon_id: int = None,

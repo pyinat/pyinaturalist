@@ -7,7 +7,7 @@ from logging import getLogger
 from typing import Any, Dict, Iterable, List, Optional
 from warnings import catch_warnings, simplefilter
 
-from pyinaturalist.constants import JsonResponse, ResponseObject
+from pyinaturalist.constants import HistogramResponse, JsonResponse, ResponseObject
 
 GENERIC_TIME_FIELDS = ('created_at', 'updated_at')
 OBSERVATION_TIME_FIELDS = (
@@ -248,6 +248,20 @@ def flatten_nested_params(observation: ResponseObject) -> ResponseObject:
     observation['taxon_common_name'] = taxon.get('preferred_common_name')
     observation['photo_url'] = photos[0].get('url')
     return observation
+
+
+# TODO: Is any error handling necessary here? Responses seem fairly consistent and predictable.
+def format_histogram(response: JsonResponse) -> HistogramResponse:
+    """Format a response containing time series data into a single ``{date: value}`` dict"""
+    # The inner result object's key will be the name of the interval requested
+    interval = next(iter(response['results'].keys()))
+    histogram = response['results'][interval]
+
+    # Convert keys to appropriate type depending on interval
+    if interval in ['month_of_year', 'week_of_year']:
+        return {int(k): v for k, v in histogram.items()}
+    else:
+        return {parse_date(k): v for k, v in histogram.items()}
 
 
 def format_observation(observation: ResponseObject) -> str:
