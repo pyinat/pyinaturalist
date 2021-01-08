@@ -173,7 +173,7 @@ def test_get_all_observation_observers(sleep, requests_mock):
 
     observers = get_all_observation_observers(place_id=125323)
 
-    assert isinstance(observers,list)
+    assert isinstance(observers, list)
     assert len(observers) == 4
 
 
@@ -184,10 +184,7 @@ def test_get_observation_identifiers(requests_mock):
         status_code=200,
     )
 
-    identifiers = get_observation_identifiers(
-        place_id=125323,
-        iconic_taxa='Amphibia'
-    )
+    identifiers = get_observation_identifiers(place_id=125323, iconic_taxa='Amphibia')
     first_result = identifiers['results'][0]
 
     assert identifiers['total_results'] == 6
@@ -210,12 +207,9 @@ def test_get_all_observation_identifiers(sleep, requests_mock):
         ],
     )
 
-    identifiers = get_all_observation_identifiers(
-        place_id=125323,
-        iconic_taxa='Amphibia'
-    )
+    identifiers = get_all_observation_identifiers(place_id=125323, iconic_taxa='Amphibia')
 
-    assert isinstance(identifiers,list)
+    assert isinstance(identifiers, list)
     assert len(identifiers) == 6
 
 
