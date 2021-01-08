@@ -229,7 +229,7 @@ def get_observation_histogram(user_agent: str = None, **params) -> HistogramResp
     r = node_api_get('observations/histogram', params=params, user_agent=user_agent)
     r.raise_for_status()
     print(r.json())
-    return format_histogram(r.json(), params)
+    return format_histogram(r.json())
 
 
 @document_request_params([*docs._get_observations, docs._pagination, docs._only_id])
