@@ -1,9 +1,10 @@
 # History
 
-## 0.12 (TBD)
+## 0.12 (Est. 2021-02)
 
 ### New Endpoints
-* Added new function for Node API **Controlled Terms** endpoints: `get_controlled_terms()`
+* Added new function for **Observation Histogram** endpoint: `get_observation_histogram()`
+* Added new function for **Controlled Terms** endpoints: `get_controlled_terms()`
     * Wraps both `GET /controlled_terms` and `/controlled_terms/for_taxon` endpoints
     
 ### Modified Endpoints
@@ -27,6 +28,9 @@
 * Added documentation & examples for authentication options
 
 ### Other Changes
+* Added a `Dockerfile` and `docker-compose.yml` for a Jupyter notebook containing pyinaturalist + other relevant packages
+* Added some more detailed usage examples under `examples/` 
+* Improved performance for large paginated queries
 * Dropped support for python 3.5
 * Removed request parameters deprecated in 0.11
 
