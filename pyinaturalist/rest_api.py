@@ -91,8 +91,7 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
                 :language: javascript
 
     Returns:
-        Return type will be ``dict`` for the ``json`` response format, and ``str`` for all
-        others.
+        Return type will be ``dict`` for the ``json`` response format, and ``str`` for all others.
     """
     response_format = params.pop('response_format', 'json')
     if response_format == 'geojson':
@@ -161,7 +160,7 @@ def get_all_observation_fields(**params) -> ListResponse:
         >>> get_all_observation_fields(q='number of')
 
     Returns:
-        Observation fields as a list of dicts. Response format is the same as the inner
+        Observation fields as a list of dicts. Response format is the same as the inner\
         'results' object returned by :py:func:`.get_observation_fields`.
     """
     results = []  # type: List[Dict[str, Any]]
@@ -223,7 +222,7 @@ def put_observation_field_values(
         user_agent: A user-agent string that will be passed to iNaturalist.
 
     Returns:
-        The nwely updated field value record
+        The newly updated field value record
     """
 
     payload = {

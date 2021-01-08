@@ -224,7 +224,8 @@ def get_observation_histogram(user_agent: str = None, **params) -> HistogramResp
                 :language: JSON
 
     Returns:
-        JSON response containing observation time series data
+        Dict of ``{time_key: observation_count}``. Keys are ints for 'month of year' and\
+        'week of year' intervals, and :py:class:`~datetime.datetime` objects for all other intervals.
     """
     r = node_api_get('observations/histogram', params=params, user_agent=user_agent)
     r.raise_for_status()
@@ -300,7 +301,7 @@ def get_all_observations(user_agent: str = None, **params) -> List[JsonResponse]
         >>> )
 
     Returns:
-        Combined list of observation records. Response format is the same as the inner 'results'
+        Combined list of observation records. Response format is the same as the inner 'results'\
         object returned by :py:func:`.get_observations()`.
     """
     results: List[JsonResponse] = []
