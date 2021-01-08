@@ -7,7 +7,7 @@ from logging import getLogger
 from typing import Any, Dict, Iterable, List, Optional
 from warnings import catch_warnings, simplefilter
 
-from pyinaturalist.constants import HistogramResponse, JsonResponse, ResponseObject, RequestParams
+from pyinaturalist.constants import HistogramResponse, JsonResponse, RequestParams, ResponseObject
 from pyinaturalist.request_params import validate_multiple_choice_params
 
 GENERIC_TIME_FIELDS = ('created_at', 'updated_at')

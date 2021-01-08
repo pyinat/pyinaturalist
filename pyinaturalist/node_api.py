@@ -180,21 +180,47 @@ def get_observation_histogram(user_agent: str = None, **params) -> HistogramResp
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_histogram
 
-    Search parameters are the same as :py:func:`.get_observations()`, with the addition of ``date_field`` and
-    ``interval``.
-    The year, month, week, day, and hour options will set default values for ``d1`` or ``created_d1`` depending on
-    the value of date_field, to limit the number of groups returned.
-    You can override those values if you want data from a longer or shorter time span. The hour interval only works with
-    ``date_field='created'``, and this you should filter dates with ``created_d[1,2]``.
+    **Notes:**
+
+    * Search parameters are the same as :py:func:`.get_observations()`, with the addition of
+      ``date_field`` and ``interval``.
+    * ``date_field`` may be either 'observed' (default) or 'created'.
+    * Observed date ranges can be filtered by parameters ``d1`` and ``d2``
+    * Created date ranges can be filtered by parameters ``created_d1`` and ``created_d2``
+    * ``interval`` may be one of: 'year', 'month', 'week', 'day', 'hour', 'month_of_year', or
+      'week_of_year'; spaces are also allowed instead of underscores, e.g. 'month of year'.
+    * The year, month, week, day, and hour interval options will set default values for ``d1`` and
+      ``created_d1``, to limit the number of groups returned. You can override those values if you
+      want data from a longer or shorter time span.
+    * The 'hour' interval only works with ``date_field='created'``
 
     Example:
 
-        TODO
+        Get observations per month during 2020 in Austria (place ID 8057)
 
-        .. admonition:: Example Response
+        >>> response = get_observation_histogram(
+        >>>     interval='month',
+        >>>     d1='2020-01-01',
+        >>>     d2='2020-12-31',
+        >>>     place_id=8057,
+        >>> )
+
+        .. admonition:: Example Response (observations per month of year)
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_observation_histogram.json
+            .. literalinclude:: ../sample_data/get_observation_histogram_month_of_year.json
+                :language: JSON
+
+        .. admonition:: Example Response (observations per month)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_histogram_month.json
+                :language: JSON
+
+        .. admonition:: Example Response (observations per day)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_histogram_day.json
                 :language: JSON
 
     Returns:
@@ -215,7 +241,7 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
     Example:
 
         Get observations of Monarch butterflies with photos + public location info,
-        on a specific date in the provice of Saskatchewan, CA:
+        on a specific date in the provice of Saskatchewan, CA (place ID 7953):
 
         >>> response = get_observations(
         >>>     taxon_name='Danaus plexippus',
