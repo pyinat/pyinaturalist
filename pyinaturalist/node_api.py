@@ -460,7 +460,7 @@ def get_observation_observers(user_agent: str = None, **params) -> JsonResponse:
 
     params.setdefault('per_page', 500)  # patch for API issue #235
 
-    r = make_inaturalist_api_get_call(
+    r = node_api_get(
         'observations/observers',
         params=params,
         user_agent=user_agent,
@@ -539,7 +539,7 @@ def get_observation_identifiers(user_agent: str = None, **params) -> JsonRespons
 
     params.setdefault('per_page', 500)  # patch until issue #236 is resolved
 
-    r = make_inaturalist_api_get_call(
+    r = node_api_get(
         'observations/identifiers',
         params=params,
         user_agent=user_agent,
