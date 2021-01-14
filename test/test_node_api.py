@@ -17,12 +17,9 @@ from pyinaturalist.node_api import (
     get_controlled_terms,
     get_geojson_observations,
     get_observation,
-<<<<<<< c4583fd97cb200cfc94512c7edcc30e170189c48
+    get_observation_histogram,
     get_observation_identifiers,
     get_observation_observers,
-=======
-    get_observation_histogram,
->>>>>>> Simplify histogram formatting a bit; add unit tests
     get_observation_species_counts,
     get_observations,
     get_places_autocomplete,
