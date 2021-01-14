@@ -54,3 +54,4 @@ docs/modules/
 .idea/
 .ipynb_checkpoints/
 swagger.json
+dev_*.py

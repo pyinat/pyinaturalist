@@ -1,0 +1,87 @@
+{
+  "total_results": 6,
+  "page": 1,
+  "per_page": 3,
+  "results": [
+    {
+      "user_id": 112514,
+      "count": 1,
+      "user": {
+        "id": 112514,
+        "login": "earthstephen",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2015-06-27T17:16:40+00:00",
+        "login_autocomplete": "earthstephen",
+        "login_exact": "earthstephen",
+        "name": "Stephen",
+        "name_autocomplete": "Stephen",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/112514/thumb.jpg?1475548347",
+        "observations_count": 1231,
+        "identifications_count": 689,
+        "journal_posts_count": 0,
+        "activity_count": 1920,
+        "species_count": 576,
+        "universal_search_rank": 1231,
+        "roles": [],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/112514/medium.jpg?1475548347"
+      }
+    },
+    {
+      "user_id": 207263,
+      "count": 1,
+      "user": {
+        "id": 207263,
+        "login": "johntrent",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2016-03-30T16:32:27+00:00",
+        "login_autocomplete": "johntrent",
+        "login_exact": "johntrent",
+        "name": "John Trent",
+        "name_autocomplete": "John Trent",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/207263/thumb.jpeg?1588380729",
+        "observations_count": 19066,
+        "identifications_count": 9253,
+        "journal_posts_count": 1,
+        "activity_count": 28320,
+        "species_count": 3565,
+        "universal_search_rank": 19066,
+        "roles": [],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/207263/medium.jpeg?1588380729"
+      }
+    },
+    {
+      "user_id": 324885,
+      "count": 1,
+      "user": {
+        "id": 324885,
+        "login": "lucareptile",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2016-09-09T00:19:57+00:00",
+        "login_autocomplete": "lucareptile",
+        "login_exact": "lucareptile",
+        "name": "Luca Catanzaro",
+        "name_autocomplete": "Luca Catanzaro",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/324885/thumb.jpg?1566422568",
+        "observations_count": 21480,
+        "identifications_count": 109080,
+        "journal_posts_count": 0,
+        "activity_count": 130560,
+        "species_count": 2470,
+        "universal_search_rank": 21480,
+        "roles": [
+          "curator"
+        ],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/324885/medium.jpg?1566422568"
+      }
+    }
+  ]
+}
