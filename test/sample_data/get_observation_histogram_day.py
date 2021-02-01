@@ -1,3 +1,5 @@
+from datetime import datetime
+
 {
     datetime(2020, 1, 1, 0, 0): 11,
     datetime(2020, 1, 2, 0, 0): 6,

@@ -153,8 +153,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_observation.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_observation.py
 
     Args:
         observation_id: Observation ID
@@ -208,23 +207,21 @@ def get_observation_histogram(user_agent: str = None, **params) -> HistogramResp
         .. admonition:: Example Response (observations per month of year)
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_observation_histogram_month_of_year.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_observation_histogram_month_of_year.py
 
         .. admonition:: Example Response (observations per month)
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_observation_histogram_month.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_observation_histogram_month.py
 
         .. admonition:: Example Response (observations per day)
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_observation_histogram_day.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_observation_histogram_day.py
 
     Returns:
-        JSON response containing observation time series data
+        Dict of ``{time_key: observation_count}``. Keys are ints for 'month of year' and\
+        'week of year' intervals, and :py:class:`~datetime.datetime` objects for all other intervals.
     """
     r = node_api_get('observations/histogram', params=params, user_agent=user_agent)
     r.raise_for_status()
@@ -263,8 +260,7 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_observations_node_page1.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_observations_node.py
 
     Returns:
         JSON response containing observation records
@@ -300,7 +296,7 @@ def get_all_observations(user_agent: str = None, **params) -> List[JsonResponse]
         >>> )
 
     Returns:
-        Combined list of observation records. Response format is the same as the inner 'results'
+        Combined list of observation records. Response format is the same as the inner 'results'\
         object returned by :py:func:`.get_observations()`.
     """
     results: List[JsonResponse] = []
@@ -341,8 +337,7 @@ def get_observation_species_counts(user_agent: str = None, **params) -> JsonResp
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_observation_species_counts.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_observation_species_counts.py
 
     Returns:
         JSON response containing taxon records with counts
@@ -525,8 +520,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_places_by_id.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_places_by_id.py
 
     Args:
         place_id: Get a place with this ID. Multiple values are allowed.
@@ -590,8 +584,7 @@ def get_places_nearby(user_agent: str = None, **params) -> JsonResponse:
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_places_nearby.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_places_nearby.py
 
     Returns:
         JSON response containing place records, divided into 'standard' and 'community' places.
@@ -619,8 +612,7 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_places_autocomplete.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_places_autocomplete.py
 
     Args:
         q: Name must begin with this value
@@ -673,8 +665,7 @@ def get_projects(user_agent: str = None, **params) -> JsonResponse:
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_projects.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_projects.py
 
     Returns:
         JSON response containing project records
@@ -703,8 +694,7 @@ def get_projects_by_id(
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_projects_by_id.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_projects_by_id.py
 
     Args:
         project_id: Get projects with this ID. Multiple values are allowed.
@@ -782,8 +772,7 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_taxa_by_id.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_taxa_by_id.py
 
     Args:
         taxon_id: Get taxa with this ID. Multiple values are allowed.
