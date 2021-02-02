@@ -183,7 +183,7 @@ def convert_datetime_params(params: RequestParams) -> RequestParams:
     for k, v in params.items():
         if isinstance(v, datetime) or isinstance(v, date):
             params[k] = _isoformat(v)
-        if v is not None and k in DATETIME_PARAMS:
+        elif v is not None and k in DATETIME_PARAMS:
             params[k] = _isoformat(parse_timestamp(v))
 
     return params
