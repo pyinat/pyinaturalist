@@ -1,13 +1,22 @@
 FROM jupyter/scipy-notebook
 USER root
 
-# Install a few more conda packages, and install any non-conda pip packages last
+# Install some more conda packages useful for data exploration & visualization
 RUN conda install --quiet --yes \
     'altair=4.*' \
     'dash=1.*' \
-    'pip=20.3.*' && \
+    'gdal=3.*' \
+    'geoviews' \
+    'geopandas' \
+    'pip=21.*' \
+    'plotly=4.*' \
+    'python-dateutil' \
+    'python-forge' \
+    'requests=2.25.*' \
+    'xarray' && \
     conda clean --all -f -y && \
-    pip install "pyinaturalist~=0.11" && \
+    # Install any non-conda pip packages last
+    pip install pyinaturalist && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
 

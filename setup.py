@@ -48,7 +48,7 @@ setup(
         'keyring~=21.4.0',
         'python-dateutil>=2.0',
         'python-forge',
-        'requests>=2.24.0',
+        'requests~=2.25.0',
     ],
     extras_require=extras_require,
     zip_safe=False,
