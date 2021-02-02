@@ -245,7 +245,7 @@ def convert_observation_fields(params: RequestParams) -> RequestParams:
 
 def strip_empty_params(params: RequestParams) -> RequestParams:
     """Remove any request parameters with empty or ``None`` values."""
-    return {k: v for k, v in params.items() if v or v is False}
+    return {k: v for k, v in params.items() if v or v in [False, 0, 0.0]}
 
 
 def is_int(value: Any) -> bool:
