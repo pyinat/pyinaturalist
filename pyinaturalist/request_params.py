@@ -2,11 +2,12 @@
 import warnings
 from datetime import date, datetime
 from dateutil.parser import parse as parse_timestamp
+from dateutil.relativedelta import relativedelta
 from dateutil.tz import tzlocal
 from io import BytesIO
 from logging import getLogger
 from os.path import abspath, expanduser
-from typing import Any, BinaryIO, Dict, Iterable, Optional, Tuple
+from typing import Any, BinaryIO, Dict, Iterable, List, Optional, Tuple
 
 from pyinaturalist.constants import FileOrPath, RequestParams
 
@@ -189,32 +190,6 @@ def convert_datetime_params(params: RequestParams) -> RequestParams:
     return params
 
 
-def ensure_file_obj(photo: FileOrPath) -> BinaryIO:
-    """Given a file objects or path, read it into a file-like object if it's a path"""
-    if isinstance(photo, str):
-        file_path = abspath(expanduser(photo))
-        logger.info(f'Reading from file: {file_path}')
-        with open(file_path, 'rb') as f:
-            return BytesIO(f.read())
-    return photo
-
-
-def ensure_file_objs(photos: Iterable[FileOrPath]) -> Iterable[BinaryIO]:
-    """Given one or more file objects and/or paths, read any paths into a file-like object"""
-    return [ensure_file_obj(photo) for photo in ensure_list(photos)]
-
-
-def ensure_list(values: Any):
-    """If the value is a string or comma-separated list of values, convert it into a list"""
-    if not values:
-        values = []
-    elif isinstance(values, str) and ',' in values:
-        values = values.split(',')
-    elif not isinstance(values, list):
-        values = [values]
-    return values
-
-
 def convert_list(obj: Any) -> str:
     """Convert list parameters into an API-compatible (comma-delimited) string"""
     if not obj:
@@ -241,6 +216,63 @@ def convert_observation_fields(params: RequestParams) -> RequestParams:
             {'observation_field_id': k, 'value': v} for k, v in obs_fields.items()
         ]
     return params
+
+
+def get_interval_ranges(
+    start_date: datetime, end_date: datetime, interval='monthly'
+) -> List[Tuple[datetime, datetime]]:
+    """Get a list of date ranges between ``start_date`` and ``end_date`` with the specified interval
+    Example:
+        >>> # Get date ranges representing months of a year
+        >>> get_interval_ranges(datetime(2020, 1, 1), datetime(2020, 12, 31), 'monthly')
+
+    Args:
+        start_date: Starting date of date ranges (inclusive)
+        end_date: End date of date ranges (inclusive)
+        interval: Either 'monthly' or 'yearly'
+
+    Returns:
+        List of date ranges in the format: ``[(start_date, end_date), (start_date, end_date), ...]``
+    """
+    if interval == 'monthly':
+        delta = relativedelta(months=1)
+    elif interval == 'yearly':
+        delta = relativedelta(years=1)
+    else:
+        raise ValueError(f'Invalid interval: {interval}')
+
+    incremental_date = start_date
+    interval_ranges = []
+    while incremental_date <= end_date:
+        interval_ranges.append((incremental_date, incremental_date + delta - relativedelta(days=1)))
+        incremental_date += delta
+    return interval_ranges
+
+
+def ensure_file_obj(photo: FileOrPath) -> BinaryIO:
+    """Given a file objects or path, read it into a file-like object if it's a path"""
+    if isinstance(photo, str):
+        file_path = abspath(expanduser(photo))
+        logger.info(f'Reading from file: {file_path}')
+        with open(file_path, 'rb') as f:
+            return BytesIO(f.read())
+    return photo
+
+
+def ensure_file_objs(photos: Iterable[FileOrPath]) -> Iterable[BinaryIO]:
+    """Given one or more file objects and/or paths, read any paths into a file-like object"""
+    return [ensure_file_obj(photo) for photo in ensure_list(photos)]
+
+
+def ensure_list(values: Any):
+    """If the value is a string or comma-separated list of values, convert it into a list"""
+    if not values:
+        values = []
+    elif isinstance(values, str) and ',' in values:
+        values = values.split(',')
+    elif not isinstance(values, list):
+        values = [values]
+    return values
 
 
 def strip_empty_params(params: RequestParams) -> RequestParams:
