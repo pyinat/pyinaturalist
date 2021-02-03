@@ -92,6 +92,8 @@ they are needed or requested.
 ## Usage Examples
 Following are usage examples for some of the most commonly used basic features.
 
+Also see the **examples/** folder for some more detailed examples.
+
 ### Observations
 
 #### Search observations

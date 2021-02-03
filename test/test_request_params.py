@@ -14,6 +14,7 @@ from pyinaturalist.request_params import (
     convert_list_params,
     convert_observation_fields,
     ensure_file_obj,
+    get_interval_ranges,
     preprocess_request_params,
     strip_empty_params,
     validate_ids,
@@ -86,6 +87,48 @@ def test_ensure_file_obj__file_path():
 def test_ensure_file_obj__file_obj():
     file_obj = BytesIO(b'test content')
     assert ensure_file_obj(file_obj) == file_obj
+
+
+def test_get_interval_ranges__monthly():
+    expected_ranges = [
+        (datetime(2020, 1, 1, 0, 0), datetime(2020, 1, 31, 0, 0)),
+        (datetime(2020, 2, 1, 0, 0), datetime(2020, 2, 29, 0, 0)),
+        (datetime(2020, 3, 1, 0, 0), datetime(2020, 3, 31, 0, 0)),
+        (datetime(2020, 4, 1, 0, 0), datetime(2020, 4, 30, 0, 0)),
+        (datetime(2020, 5, 1, 0, 0), datetime(2020, 5, 31, 0, 0)),
+        (datetime(2020, 6, 1, 0, 0), datetime(2020, 6, 30, 0, 0)),
+        (datetime(2020, 7, 1, 0, 0), datetime(2020, 7, 31, 0, 0)),
+        (datetime(2020, 8, 1, 0, 0), datetime(2020, 8, 31, 0, 0)),
+        (datetime(2020, 9, 1, 0, 0), datetime(2020, 9, 30, 0, 0)),
+        (datetime(2020, 10, 1, 0, 0), datetime(2020, 10, 31, 0, 0)),
+        (datetime(2020, 11, 1, 0, 0), datetime(2020, 11, 30, 0, 0)),
+        (datetime(2020, 12, 1, 0, 0), datetime(2020, 12, 31, 0, 0)),
+    ]
+    ranges = get_interval_ranges(datetime(2020, 1, 1), datetime(2020, 12, 31), 'monthly')
+    assert ranges == expected_ranges
+
+
+def test_get_interval_ranges__yearly():
+    expected_ranges = [
+        (datetime(2010, 1, 1, 0, 0), datetime(2010, 12, 31, 0, 0)),
+        (datetime(2011, 1, 1, 0, 0), datetime(2011, 12, 31, 0, 0)),
+        (datetime(2012, 1, 1, 0, 0), datetime(2012, 12, 31, 0, 0)),
+        (datetime(2013, 1, 1, 0, 0), datetime(2013, 12, 31, 0, 0)),
+        (datetime(2014, 1, 1, 0, 0), datetime(2014, 12, 31, 0, 0)),
+        (datetime(2015, 1, 1, 0, 0), datetime(2015, 12, 31, 0, 0)),
+        (datetime(2016, 1, 1, 0, 0), datetime(2016, 12, 31, 0, 0)),
+        (datetime(2017, 1, 1, 0, 0), datetime(2017, 12, 31, 0, 0)),
+        (datetime(2018, 1, 1, 0, 0), datetime(2018, 12, 31, 0, 0)),
+        (datetime(2019, 1, 1, 0, 0), datetime(2019, 12, 31, 0, 0)),
+        (datetime(2020, 1, 1, 0, 0), datetime(2020, 12, 31, 0, 0)),
+    ]
+    ranges = get_interval_ranges(datetime(2010, 1, 1), datetime(2020, 1, 1), 'yearly')
+    assert ranges == expected_ranges
+
+
+def test_get_interval_ranges__invalid():
+    with pytest.raises(ValueError):
+        get_interval_ranges(datetime(2020, 1, 1), datetime(2020, 12, 31), 'daily')
 
 
 def test_strip_empty_params():

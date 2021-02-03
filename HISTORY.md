@@ -1,12 +1,15 @@
 # History
 
-## 0.12 (Est. 2021-02)
+## 0.12 (2021-02-02)
+[See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/3?closed=1) 
 
 ### New Endpoints
 * Added new function for **Observation Histogram** endpoint: `get_observation_histogram()`
+* Added new function for **Observers** endpoint: `get_observation_observers()`
+* Added new function for **Identifiers** endpoint: `get_observation_identifiers()`
 * Added new function for **Controlled Terms** endpoints: `get_controlled_terms()`
     * Wraps both `GET /controlled_terms` and `/controlled_terms/for_taxon` endpoints
-    
+
 ### Modified Endpoints
 * Added conversion from date/time strings to timezone-aware python `datetime` objects.
   This applies to the following functions:
@@ -29,10 +32,11 @@
 
 ### Other Changes
 * Added a `Dockerfile` and `docker-compose.yml` for a Jupyter notebook containing pyinaturalist + other relevant packages
-* Added some more detailed usage examples under `examples/` 
+* Added some more detailed usage examples under `examples/`
 * Improved performance for large paginated queries
+* Fixed bug that dropped request parameter values of `0` as if they were `None`
 * Dropped support for python 3.5
-* Removed request parameters deprecated in 0.11
+* Removed request parameters that were deprecated in 0.11
 
 ## 0.11 (2020-11-04)
 [See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/2?closed=1)
