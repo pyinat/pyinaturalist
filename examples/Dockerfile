@@ -4,6 +4,7 @@ USER root
 # Install some more conda packages useful for data exploration & visualization
 RUN conda install --quiet --yes \
     'altair=4.*' \
+    'altair-saver' \
     'dash=1.*' \
     'gdal=3.*' \
     'geoviews' \

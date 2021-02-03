@@ -1,6 +1,6 @@
 # History
 
-## 0.12 (Est. 2021-02)
+## 0.12 (2021-02-02)
 
 ### New Endpoints
 * Added new function for **Observation Histogram** endpoint: `get_observation_histogram()`

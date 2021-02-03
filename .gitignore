@@ -51,6 +51,7 @@ docs/modules/
 .DS_Store
 
 # Editors
+.~*
 .idea/
 .ipynb_checkpoints/
 swagger.json

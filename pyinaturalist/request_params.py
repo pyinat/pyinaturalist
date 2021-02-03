@@ -193,7 +193,7 @@ def convert_datetime_params(params: RequestParams) -> RequestParams:
 def convert_list(obj: Any) -> str:
     """Convert list parameters into an API-compatible (comma-delimited) string"""
     if not obj:
-        return ''
+        return obj
     if isinstance(obj, list):
         return ','.join(map(str, obj))
     return str(obj)
