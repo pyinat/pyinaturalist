@@ -64,7 +64,7 @@ def request(
     headers['Accept'] = 'application/json'
     headers['User-Agent'] = user_agent or pyinaturalist.user_agent
     if access_token:
-        headers['Authorization'] = 'Bearer %s' % access_token
+        headers['Authorization'] = f'Bearer {access_token}'
 
     params = preprocess_request_params(params)
 
