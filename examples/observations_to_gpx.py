@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ Example to get observation locations + metadata in GPX format.
 Extra dependencies:
     `pip install gpxpy`
