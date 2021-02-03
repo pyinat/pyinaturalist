@@ -3,17 +3,26 @@
 Contributions are welcome, and they are greatly appreciated! Every
 little bit helps, and credit will always be given.
 
+## Installation
+To set up for local development:
+```bash
+$ git clone https://github.com/niconoe/pyinaturalist.git
+$ cd pyinaturalist
+$ pip install -Ue ".[dev]"
+$ # Optional but recommended:
+$ pre-commit install --config .github/pre-commit.yml
+```
+
 ## Contribution Guidelines
 
 ### Documentation
-
 We use [Sphinx](http://www.sphinx-doc.org/en/master/), and the references page is automatically
 generated thanks to `sphinx.ext.autodoc` and `sphinx_autodoc_typehints` extensions. All
 functions / methods / classes should have proper docstrings.
 
 To build the docs locally:
 ```bash
-$ tox -e docs
+$ make -C docs html
 ```
 
 To preview:
@@ -24,26 +33,45 @@ $ open docs/_build/index.html
 $ xdg-open docs/_build/index.html
 ```
 
-[Hosted documentation](https://pyinaturalist.readthedocs.io/) is automatically updated when code
-gets pushed to the `master` branch.
+Documentation is automatically built by ReadTheDocs whenever code is merged into either `master` or `dev`:
+* [Stable release (master branch)](https://pyinaturalist.readthedocs.io/en/stable/)
+* [Development pre-release (dev branch)](https://pyinaturalist.readthedocs.io/en/latest/)
 
 For any new or changed behavior, add a brief high-level summary to `HISTORY.md`.
 This isn't needed for internal changes (tests, other docs, refactoring, etc.).
 
 ### Tests
-
 We use the [pytest](https://docs.pytest.org/en/latest/) framework for unit testing.
-
 Just run the `pytest` command to run locally.
 
-We also use [tox](https://tox.readthedocs.io/en/latest/) to test multiple python versions, as well as test coverage, style, and type checks:
-
-Use the `tox` command to run locally. This is also run by Travis CI on all pull requests.
+We also use [tox](https://tox.readthedocs.io/en/latest/) to test multiple python versions.
+Use the `tox` command to run locally. This is also run by GitHub Actions on all pull requests.
 
 ### Type Annotations
+All parameters and return values should have type annotations, which will be checked by `mypy` and
+will show up in the documentation.
 
-All functions / methods should have parameters and return value type annotations.
-Those type annotations are checked by MyPy (`tox -e mypy`) and will appear in the documentation.
+### Formatting, Linting, Type Checking, Etc.
+Code checking and formatting tools used include:
+* [black](https://github.com/psf/black)
+* [isort](https://pycqa.github.io/isort/)
+* [flake8](https://flake8.pycqa.org/en/latest/)
+* [mypy](https://mypy.readthedocs.io/en/stable/getting_started.html)
+
+All of these will be run by GitHub Actions on pull requests.
+
+#### Pre-Commit Hooks
+Optionally, there is included config to easily set these up to run as a
+[pre-commit hook](https://github.com/pre-commit/pre-commit):
+```bash
+pre-commit install --config .github/pre-commit.yml
+```
+
+This can save you some time in that it will show you errors immediately rather than waiting for CI
+jobs to complete. You can disable these hooks at any time with:
+```bash
+pre-commit uninstall
+```
 
 ### Pull Requests
 Here are some general guidelines for submitting a pull request:
@@ -56,7 +84,7 @@ Here are some general guidelines for submitting a pull request:
 ### Releases
 For maintainers:
 
-Releases are based on git tags. Travis CI will build and deploy packages to PyPi on tagged commits
+Releases are based on git tags. GitHub Actions will build and deploy packages to PyPi on tagged commits
 on the `master` branch. Release steps:
 
 - Update the version in `pyinaturalist/__init__.py`
@@ -93,7 +121,7 @@ official pyinaturalist docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 ### Submit Feedback
-The best way to send feedback is to file an issue at https://github.com/niconoe/pyinaturalist/issues.
+The best way to send feedback is to [create an issue](https://github.com/niconoe/pyinaturalist/issues/new/choose)
 
 If you are proposing a feature:
 

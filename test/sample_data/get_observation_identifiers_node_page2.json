@@ -1,0 +1,85 @@
+{
+  "total_results": 6,
+  "page": 2,
+  "per_page": 3,
+  "results": [
+    {
+      "user_id": 769610,
+      "count": 1,
+      "user": {
+        "id": 769610,
+        "login": "bobbyfingers",
+        "spam": false,
+        "suspended": true,
+        "created_at": "2018-02-20T05:52:44+00:00",
+        "login_autocomplete": "bobbyfingers",
+        "login_exact": "bobbyfingers",
+        "name": "",
+        "name_autocomplete": "",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/769610/thumb.jpg?1589693736",
+        "observations_count": 856,
+        "identifications_count": 147074,
+        "journal_posts_count": 0,
+        "activity_count": 147930,
+        "species_count": 293,
+        "universal_search_rank": 856,
+        "roles": [],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/769610/medium.jpg?1589693736"
+      }
+    },
+    {
+      "user_id": 824100,
+      "count": 1,
+      "user": {
+        "id": 824100,
+        "login": "jakeschneider00",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2018-04-02T20:41:12+00:00",
+        "login_autocomplete": "jakeschneider00",
+        "login_exact": "jakeschneider00",
+        "name": null,
+        "name_autocomplete": null,
+        "orcid": null,
+        "icon": null,
+        "observations_count": 1308,
+        "identifications_count": 2414,
+        "journal_posts_count": 0,
+        "activity_count": 3722,
+        "species_count": 675,
+        "universal_search_rank": 1308,
+        "roles": [],
+        "site_id": 1,
+        "icon_url": null
+      }
+    },
+    {
+      "user_id": 2129322,
+      "count": 1,
+      "user": {
+        "id": 2129322,
+        "login": "blissfulbufo",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2019-08-13T23:11:09+00:00",
+        "login_autocomplete": "blissfulbufo",
+        "login_exact": "blissfulbufo",
+        "name": "Bliss M.",
+        "name_autocomplete": "Bliss M.",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/2129322/thumb.jpeg?1572256973",
+        "observations_count": 473,
+        "identifications_count": 2775,
+        "journal_posts_count": 0,
+        "activity_count": 3248,
+        "species_count": 308,
+        "universal_search_rank": 473,
+        "roles": [],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/2129322/medium.jpeg?1572256973"
+      }
+    }
+  ]
+}

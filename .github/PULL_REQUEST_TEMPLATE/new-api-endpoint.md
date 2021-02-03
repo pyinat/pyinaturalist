@@ -1,4 +1,4 @@
-# New API Endpoint(s): 
+# New API Endpoint(s):
 Closes #<issue number>
 
 ### Checklist
@@ -12,4 +12,3 @@ Closes #<issue number>
 * **Tests**
   - [ ] Add sample response data
   - [ ] Add unit tests for new endpoint(s)
-

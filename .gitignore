@@ -6,17 +6,19 @@
 # Packages
 *.egg
 *.egg-info
-dist
-build
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
 .installed.cfg
+.mypy_cache/
+bin
+build
+develop-eggs
+dist
+eggs
 lib
 lib64
+parts
+sdist
+var
+venv/
 
 # Installer logs
 pip-log.txt
@@ -48,8 +50,9 @@ docs/modules/
 # Mac OS X
 .DS_Store
 
-.idea
-.mypy_cache
-venv/
-
+# Editors
+.~*
+.idea/
+.ipynb_checkpoints/
 swagger.json
+dev_*.py

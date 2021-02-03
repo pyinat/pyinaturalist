@@ -1,0 +1,48 @@
+{
+  "total_results": 1,
+  "page": 1,
+  "per_page": 30,
+  "results": [
+    {
+      "id": 9,
+      "ontology_uri": "",
+      "uri": "",
+      "is_value": false,
+      "multivalued": false,
+      "uuid": "6a659546-c3aa-45ff-8f6c-0706f2361cfe",
+      "values": [
+        {
+          "id": 10,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "3288a7bd-6ca7-413e-9890-5c4c541331de",
+          "label": "Female"
+        },
+        {
+          "id": 11,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "207a8f33-ee23-44c9-88a5-e6a036a7d950",
+          "label": "Male"
+        },
+        {
+          "id": 20,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "1e75ade7-f1c2-4ef7-994b-c5b07d52713e",
+          "label": "Cannot Be Determined"
+        }
+      ],
+      "excepted_taxon_ids": [
+        47170,
+        333586,
+        63081,
+        47113
+      ],
+      "label": "Sex"
+    }
+  ]
+}

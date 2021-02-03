@@ -1,7 +1,13 @@
-# TODO: Make these extend `requests.HTTPError` to simplify error handling in client code?
-class AuthenticationError(Exception):
+from requests import HTTPError
+
+
+class AuthenticationError(HTTPError):
     pass
 
 
-class ObservationNotFound(Exception):
+class ObservationNotFound(HTTPError):
+    pass
+
+
+class TaxonNotFound(HTTPError):
     pass

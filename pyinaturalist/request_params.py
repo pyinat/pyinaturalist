@@ -1,147 +1,151 @@
 """Helper functions for processing and validating request parameters"""
+import warnings
 from datetime import date, datetime
+from dateutil.parser import parse as parse_timestamp
+from dateutil.relativedelta import relativedelta
+from dateutil.tz import tzlocal
 from io import BytesIO
 from logging import getLogger
 from os.path import abspath, expanduser
-from typing import Any, BinaryIO, Dict, Iterable, Optional
-import warnings
+from typing import Any, BinaryIO, Dict, Iterable, List, Optional, Tuple
 
-from dateutil.parser import parse as parse_timestamp
-from dateutil.tz import tzlocal
 from pyinaturalist.constants import FileOrPath, RequestParams
-
 
 # Basic observation attributes to include by default in geojson responses
 DEFAULT_OBSERVATION_ATTRS = [
-    "id",
-    "photo_url",
-    "positional_accuracy",
-    "preferred_common_name",
-    "quality_grade",
-    "taxon_id",
-    "taxon_name",
-    "time_observed_at",
-    "uri",
+    'id',
+    'photo_url',
+    'positional_accuracy',
+    'quality_grade',
+    'taxon_id',
+    'taxon_name',
+    'taxon_common_name',
+    'time_observed_at',
+    'uri',
 ]
 
 # All request parameters from both Node API and REST (Rails) API that accept date or datetime strings
 DATETIME_PARAMS = [
-    "created_after",
-    "created_d1",
-    "created_d2",
-    "created_on",
-    "d1",
-    "d2",
-    "newer_than",
-    "observation_created_d1",
-    "observation_created_d2",
-    "observed_d1",
-    "observed_d2",
-    "observed_on",
-    "older_than",
-    "on",
-    "since",
-    "updated_since",  # TODO: test if this one behaves differently in Node API vs REST API
+    'created_after',
+    'created_d1',
+    'created_d2',
+    'created_on',
+    'd1',
+    'd2',
+    'newer_than',
+    'observation_created_d1',
+    'observation_created_d2',
+    'observed_d1',
+    'observed_d2',
+    'observed_on',
+    'older_than',
+    'on',
+    'since',
+    'updated_since',  # TODO: test if this one behaves differently in Node API vs REST API
 ]
 
-# Reponse formats supported by GET /observations endpoint
-OBSERVATION_FORMATS = ["atom", "csv", "dwc", "json", "kml", "widget"]
+# Response formats supported by GET /observations endpoint
+OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
 
 # Creative Commons license codes
-CC_LICENSES = ["CC-BY", "CC-BY-NC", "CC-BY-ND", "CC-BY-SA", "CC-BY-NC-ND", "CC-BY-NC-SA", "CC0"]
+CC_LICENSES = ['CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0']
 
 # IUCN Conservation status codes; for more info, see: https://www.iucnredlist.org
-CONSERVATION_STATUSES = ["LC", "NT", "VU", "EN", "CR", "EW", "EX"]
+CONSERVATION_STATUSES = ['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX']
 
-# Taxon ID and name of main taxa "categories" that can be filtered on
+# Taxon ID and name of main taxa 'categories' that can be filtered on
 ICONIC_TAXA = {
-    0: "Unknown",
-    1: "Animalia",
-    3: "Aves",
-    20978: "Amphibia",
-    26036: "Reptilia",
-    40151: "Mammalia",
-    47178: "Actinopterygii",
-    47115: "Mollusca",
-    47119: "Arachnida",
-    47158: "Insecta",
-    47126: "Plantae",
-    47170: "Fungi",
-    48222: "Chromista",
-    47686: "Protozoa",
+    0: 'Unknown',
+    1: 'Animalia',
+    3: 'Aves',
+    20978: 'Amphibia',
+    26036: 'Reptilia',
+    40151: 'Mammalia',
+    47178: 'Actinopterygii',
+    47115: 'Mollusca',
+    47119: 'Arachnida',
+    47158: 'Insecta',
+    47126: 'Plantae',
+    47170: 'Fungi',
+    48222: 'Chromista',
+    47686: 'Protozoa',
 }
 
 # Taxonomic ranks that can be filtered on
 RANKS = [
-    "form",
-    "variety",
-    "subspecies",
-    "hybrid",
-    "species",
-    "genushybrid",
-    "subgenus",
-    "genus",
-    "subtribe",
-    "tribe",
-    "supertribe",
-    "subfamily",
-    "family",
-    "epifamily",
-    "superfamily",
-    "infraorder",
-    "suborder",
-    "order",
-    "superorder",
-    "infraclass",
-    "subclass",
-    "class",
-    "superclass",
-    "subphylum",
-    "phylum",
-    "kingdom",
+    'form',
+    'variety',
+    'subspecies',
+    'hybrid',
+    'species',
+    'genushybrid',
+    'subgenus',
+    'genus',
+    'subtribe',
+    'tribe',
+    'supertribe',
+    'subfamily',
+    'family',
+    'epifamily',
+    'superfamily',
+    'infraorder',
+    'suborder',
+    'order',
+    'superorder',
+    'infraclass',
+    'subclass',
+    'class',
+    'superclass',
+    'subphylum',
+    'phylum',
+    'kingdom',
 ]
 
 # Endpoint-specific options for multiple choice parameters
-NODE_OBS_ORDER_BY_PROPERTIES = ["created_at", "id", "observed_on", "species_guess", "votes"]
-REST_OBS_ORDER_BY_PROPERTIES = ["date_added", "observed_on"]
-PROJECT_ORDER_BY_PROPERTIES = ["created", "distance", "featured", "recent_posts", "updated"]
+NODE_OBS_ORDER_BY_PROPERTIES = ['created_at', 'id', 'observed_on', 'species_guess', 'votes']
+REST_OBS_ORDER_BY_PROPERTIES = ['date_added', 'observed_on']
+PROJECT_ORDER_BY_PROPERTIES = ['created', 'distance', 'featured', 'recent_posts', 'updated']
 
 # Options for multiple choice parameters (non-endpoint-specific)
-COMMUNITY_ID_STATUSES = ["most_agree", "most_disagree", "some_agree"]
-EXTRA_PROPERTIES = ["fields", "identifications", "projects"]
-GEOPRIVACY_LEVELS = ["obscured", "obscured_private", "open", "private"]
-HAS_PROPERTIES = ["photo", "geo"]
-ORDER_DIRECTIONS = ["asc", "desc"]
-PROJECT_TYPES = ["collection", "umbrella"]
-QUALITY_GRADES = ["casual", "needs_id", "research"]
-SEARCH_PROPERTIES = ["names", "tags", "description", "place"]
+COMMUNITY_ID_STATUSES = ['most_agree', 'most_disagree', 'some_agree']
+EXTRA_PROPERTIES = ['fields', 'identifications', 'projects']
+GEOPRIVACY_LEVELS = ['obscured', 'obscured_private', 'open', 'private']
+HAS_PROPERTIES = ['photo', 'geo']
+HISTOGRAM_DATE_FIELDS = ['created', 'observed']
+HISTOGRAM_INTERVALS = ['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
+ORDER_DIRECTIONS = ['asc', 'desc']
+PROJECT_TYPES = ['collection', 'umbrella']
+QUALITY_GRADES = ['casual', 'needs_id', 'research']
+SEARCH_PROPERTIES = ['names', 'tags', 'description', 'place']
 
 
 # Multiple-choice request parameters, with keys mapped to their possible choices (non-endpoint-specific)
 MULTIPLE_CHOICE_PARAMS = {
-    "csi": CONSERVATION_STATUSES,
-    "extra": EXTRA_PROPERTIES,
-    "geoprivacy": GEOPRIVACY_LEVELS,
-    "has": HAS_PROPERTIES,
-    "hrank": RANKS,
-    "iconic_taxa": list(ICONIC_TAXA.values()),
-    "identifications": COMMUNITY_ID_STATUSES,
-    "license": CC_LICENSES,
-    "lrank": RANKS,
-    "max_rank": RANKS,
-    "min_rank": RANKS,
-    "order": ORDER_DIRECTIONS,
-    "photo_license": CC_LICENSES,
-    "quality_grade": QUALITY_GRADES,
-    "rank": RANKS,
-    "search_on": SEARCH_PROPERTIES,
-    "sound_license": CC_LICENSES,
-    "taxon_geoprivacy": GEOPRIVACY_LEVELS,
-    "type": PROJECT_TYPES,
+    'csi': CONSERVATION_STATUSES,
+    'date_field': HISTOGRAM_DATE_FIELDS,
+    'extra': EXTRA_PROPERTIES,
+    'geoprivacy': GEOPRIVACY_LEVELS,
+    'has': HAS_PROPERTIES,
+    'hrank': RANKS,
+    'iconic_taxa': list(ICONIC_TAXA.values()),
+    'identifications': COMMUNITY_ID_STATUSES,
+    'interval': HISTOGRAM_INTERVALS,
+    'license': CC_LICENSES,
+    'lrank': RANKS,
+    'max_rank': RANKS,
+    'min_rank': RANKS,
+    'order': ORDER_DIRECTIONS,
+    'photo_license': CC_LICENSES,
+    'quality_grade': QUALITY_GRADES,
+    'rank': RANKS,
+    'search_on': SEARCH_PROPERTIES,
+    'sound_license': CC_LICENSES,
+    'taxon_geoprivacy': GEOPRIVACY_LEVELS,
+    'type': PROJECT_TYPES,
 }
 
 MULTIPLE_CHOICE_ERROR_MSG = (
-    "Parameter '{}' must have one of the following values: {}\n\tValue provided: {}"
+    'Parameter "{}" must have one of the following values: {}\n\tValue provided: {}'
 )
 
 logger = getLogger(__name__)
@@ -152,27 +156,12 @@ def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any
     if not params:
         return {}
 
-    validate_multiple_choice_params(params)
+    params = validate_multiple_choice_params(params)
     params = convert_bool_params(params)
     params = convert_datetime_params(params)
     params = convert_list_params(params)
     params = strip_empty_params(params)
     return params
-
-
-# TODO: Remove in 0.12
-def check_deprecated_params(params=None, **kwargs) -> Dict[str, Any]:
-    """Check for usage of request parameters that are deprecated but still supported for
-    backwards-compatibility
-    """
-    if params:
-        warn("The 'params' argument is deprecated; please use keyword arguments instead")
-        kwargs.update(params)
-    if kwargs.get("search_query"):
-        warn("The 'search_query' argument is deprecated; use 'q' instead")
-        kwargs["q"] = kwargs.pop("search_query")
-
-    return kwargs
 
 
 def convert_bool_params(params: RequestParams) -> RequestParams:
@@ -195,18 +184,77 @@ def convert_datetime_params(params: RequestParams) -> RequestParams:
     for k, v in params.items():
         if isinstance(v, datetime) or isinstance(v, date):
             params[k] = _isoformat(v)
-        if v is not None and k in DATETIME_PARAMS:
+        elif v is not None and k in DATETIME_PARAMS:
             params[k] = _isoformat(parse_timestamp(v))
 
     return params
+
+
+def convert_list(obj: Any) -> str:
+    """Convert list parameters into an API-compatible (comma-delimited) string"""
+    if not obj:
+        return obj
+    if isinstance(obj, list):
+        return ','.join(map(str, obj))
+    return str(obj)
+
+
+def convert_list_params(params: RequestParams) -> RequestParams:
+    """Convert any list parameters into an API-compatible (comma-delimited) string.
+    Will be url-encoded by requests. For example: `['k1', 'k2', 'k3'] -> k1%2Ck2%2Ck3`
+    """
+    return {k: convert_list(v) for k, v in params.items()}
+
+
+def convert_observation_fields(params: RequestParams) -> RequestParams:
+    """Translate simplified format of observation field values into API-compatible format"""
+    if 'observation_fields' in params:
+        params['observation_field_values_attributes'] = params.pop('observation_fields')
+    obs_fields = params.get('observation_field_values_attributes')
+    if isinstance(obs_fields, dict):
+        params['observation_field_values_attributes'] = [
+            {'observation_field_id': k, 'value': v} for k, v in obs_fields.items()
+        ]
+    return params
+
+
+def get_interval_ranges(
+    start_date: datetime, end_date: datetime, interval='monthly'
+) -> List[Tuple[datetime, datetime]]:
+    """Get a list of date ranges between ``start_date`` and ``end_date`` with the specified interval
+    Example:
+        >>> # Get date ranges representing months of a year
+        >>> get_interval_ranges(datetime(2020, 1, 1), datetime(2020, 12, 31), 'monthly')
+
+    Args:
+        start_date: Starting date of date ranges (inclusive)
+        end_date: End date of date ranges (inclusive)
+        interval: Either 'monthly' or 'yearly'
+
+    Returns:
+        List of date ranges in the format: ``[(start_date, end_date), (start_date, end_date), ...]``
+    """
+    if interval == 'monthly':
+        delta = relativedelta(months=1)
+    elif interval == 'yearly':
+        delta = relativedelta(years=1)
+    else:
+        raise ValueError(f'Invalid interval: {interval}')
+
+    incremental_date = start_date
+    interval_ranges = []
+    while incremental_date <= end_date:
+        interval_ranges.append((incremental_date, incremental_date + delta - relativedelta(days=1)))
+        incremental_date += delta
+    return interval_ranges
 
 
 def ensure_file_obj(photo: FileOrPath) -> BinaryIO:
     """Given a file objects or path, read it into a file-like object if it's a path"""
     if isinstance(photo, str):
         file_path = abspath(expanduser(photo))
-        logger.info("Reading from file: {}".format(file_path))
-        with open(file_path, "rb") as f:
+        logger.info(f'Reading from file: {file_path}')
+        with open(file_path, 'rb') as f:
             return BytesIO(f.read())
     return photo
 
@@ -220,44 +268,16 @@ def ensure_list(values: Any):
     """If the value is a string or comma-separated list of values, convert it into a list"""
     if not values:
         values = []
-    elif isinstance(values, str) and "," in values:
-        values = values.split(",")
+    elif isinstance(values, str) and ',' in values:
+        values = values.split(',')
     elif not isinstance(values, list):
         values = [values]
     return values
 
 
-def convert_list(obj: Any) -> str:
-    """Convert list parameters into an API-compatible (comma-delimited) string"""
-    if not obj:
-        return ""
-    if isinstance(obj, list):
-        return ",".join(map(str, obj))
-    return str(obj)
-
-
-def convert_list_params(params: RequestParams) -> RequestParams:
-    """Convert any list parameters into an API-compatible (comma-delimited) string.
-    Will be url-encoded by requests. For example: `['k1', 'k2', 'k3'] -> k1%2Ck2%2Ck3`
-    """
-    return {k: convert_list(v) for k, v in params.items()}
-
-
-def convert_observation_fields(params: RequestParams) -> RequestParams:
-    """Translate simplified format of observation field values into API-compatible format"""
-    if "observation_fields" in params:
-        params["observation_field_values_attributes"] = params.pop("observation_fields")
-    obs_fields = params.get("observation_field_values_attributes")
-    if isinstance(obs_fields, dict):
-        params["observation_field_values_attributes"] = [
-            {"observation_field_id": k, "value": v} for k, v in obs_fields.items()
-        ]
-    return params
-
-
 def strip_empty_params(params: RequestParams) -> RequestParams:
     """Remove any request parameters with empty or ``None`` values."""
-    return {k: v for k, v in params.items() if v or v is False}
+    return {k: v for k, v in params.items() if v or v in [False, 0, 0.0]}
 
 
 def is_int(value: Any) -> bool:
@@ -281,7 +301,7 @@ def validate_ids(ids: Any) -> str:
         :py:exc:`ValueError` if any values are not valid integers
     """
     if not is_int_list(ids):
-        raise ValueError("Invalid ID(s): {}; must specify integers only".format(ids))
+        raise ValueError(f'Invalid ID(s): {ids}; must specify integers only')
     return convert_list([int(id) for id in ensure_list(ids)])
 
 
@@ -294,22 +314,33 @@ def is_valid_multiple_choice_option(value: Any, choices: Iterable) -> bool:
     return all([v in choices for v in value])
 
 
-def validate_multiple_choice_param(params: RequestParams, key: str, choices: Iterable):
-    """Verify if a multiple-choice request parameter contains valid value(s);
-    if not, raise an error. **Used for endpoint-specific params.**
+def validate_multiple_choice_param(
+    params: RequestParams, key: str, choices: Iterable
+) -> RequestParams:
+    """Verify that a multiple-choice request parameter contains valid value(s);
+    if not, raise an error.
+    **Used for endpoint-specific params.**
+
+    Returns:
+        Parameters with modifications (if any)
 
     Raises:
         :py:exc:`ValueError`
     """
-    if key in params and not is_valid_multiple_choice_option(params[key], choices):
-        raise ValueError(MULTIPLE_CHOICE_ERROR_MSG.format(key, choices, params[key]))
+    params, error_msg = _validate_multiple_choice_param(params, key, choices)
+    if error_msg:
+        raise ValueError(error_msg)
+    return params
 
 
-def validate_multiple_choice_params(params: RequestParams):
+def validate_multiple_choice_params(params: RequestParams) -> RequestParams:
     """Verify that multiple-choice request parameters contain a valid value.
 
     **Note:** This does not check endpoint-specific params, i.e., those that have the same name
     but different values across different endpoints.
+
+    Returns:
+        Parameters with modifications (if any)
 
     Raises:
         :py:exc:`ValueError`;
@@ -318,12 +349,42 @@ def validate_multiple_choice_params(params: RequestParams):
     # Collect info on any validation errors
     errors = []
     for key, choices in MULTIPLE_CHOICE_PARAMS.items():
-        if key in params and not is_valid_multiple_choice_option(params[key], choices):
-            errors.append(MULTIPLE_CHOICE_ERROR_MSG.format(key, choices, params[key]))
+        params, error_msg = _validate_multiple_choice_param(params, key, choices)
+        if error_msg:
+            errors.append(error_msg)
 
     # Combine all messages (if multiple) into one error message
     if errors:
-        raise ValueError("\n".join(errors))
+        raise ValueError('\n'.join(errors))
+    return params
+
+
+def _validate_multiple_choice_param(
+    params: RequestParams, key: str, choices: Iterable
+) -> Tuple[RequestParams, Optional[str]]:
+    """Verify that a multiple-choice request parameter contains valid value(s);
+    if not, return an error message.
+
+    Returns:
+        Parameters with modifications (if any), and a validation error message (if any)
+    """
+    error_msg = None
+    if key in params:
+        params[key] = _normalize_multiple_choice_value(params[key])
+    if not is_valid_multiple_choice_option(params.get(key), choices):
+        error_msg = MULTIPLE_CHOICE_ERROR_MSG.format(key, choices, params[key])
+    return params, error_msg
+
+
+def _normalize_multiple_choice_value(value):
+    """Convert any spaces in a multiple choice value to underscores;
+    e.g. treat 'month of year' as equivalent to 'month_of_year'
+    """
+    if not value:
+        return value
+    if isinstance(value, list):
+        return [v.replace(' ', '_') for v in value]
+    return value.replace(' ', '_')
 
 
 def _isoformat(d):
@@ -340,15 +401,15 @@ def translate_rank_range(params: RequestParams) -> RequestParams:
 
     def _get_rank_index(rank: str) -> int:
         if rank not in RANKS:
-            raise ValueError("Invalid rank")
+            raise ValueError('Invalid rank')
         return RANKS.index(rank)
 
-    min_rank, max_rank = params.pop("min_rank", None), params.pop("max_rank", None)
+    min_rank, max_rank = params.pop('min_rank', None), params.pop('max_rank', None)
     if min_rank or max_rank:
         # Use indices in RANKS list to determine range of ranks to include
         min_rank_index = _get_rank_index(min_rank) if min_rank else 0
         max_rank_index = _get_rank_index(max_rank) + 1 if max_rank else len(RANKS)
-        params["rank"] = RANKS[min_rank_index:max_rank_index]
+        params['rank'] = RANKS[min_rank_index:max_rank_index]
     return params
 
 

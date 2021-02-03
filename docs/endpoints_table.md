@@ -14,8 +14,8 @@ DELETE            | /votes/unvote/annotation/{id}               |
 POST              | /comments                                   |
 DELETE            | /comments/{id}                              |
 PUT               | /comments/{id}                              |
-GET               | /controlled_terms                           |
-GET               | /controlled_terms/for_taxon                 |
+GET               | /controlled_terms                           | yes
+GET               | /controlled_terms/for_taxon                 | yes
 POST              | /flags                                      |
 DELETE            | /flags/{id}                                 |
 PUT               | /flags/{id}                                 |
@@ -55,12 +55,12 @@ GET               | /observations/{id}/taxon_summary            |
 POST              | /subscriptions/observation/{id}/subscribe   |
 POST              | /votes/vote/observation/{id}                |
 DELETE            | /votes/unvote/observation/{id}              |
-GET               | /observations                               |
+GET               | /observations                               | yes
 POST              | /observations                               |
 GET               | /observations/deleted                       |
-GET               | /observations/histogram                     |
-GET               | /observations/identifiers                   |
-GET               | /observations/observers                     |
+GET               | /observations/histogram                     | yes
+GET               | /observations/identifiers                   | yes
+GET               | /observations/observers                     | yes
 GET               | /observations/popular_field_values          |
 GET               | /observations/species_counts                | yes
 GET               | /observations/updates                       |
@@ -110,7 +110,7 @@ GET               | /grid/{zoom}/{x}/{y}.grid.json              |
 GET               | /heatmap/{zoom}/{x}/{y}.grid.json           |
 GET               | /points/{zoom}/{x}/{y}.grid.json            |
 POST              | /photos                                     |
-                  
+
 
 ### Rails-Based API
 For full documentation, see: https://www.inaturalist.org/pages/api+reference

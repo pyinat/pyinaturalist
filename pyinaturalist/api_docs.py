@@ -3,19 +3,18 @@ Reusable template functions used for API documentation.
 Each template function contains a portion of an endpoint's request parameters, with corresponding
 type annotations and docstrings.
 """
-from typing import Any, Dict, List, Iterable
+from typing import Iterable, List
 
 from pyinaturalist.constants import (
-    MultiInt,
-    MultiStr,
     Date,
     DateTime,
-    IntOrStr,
     FileOrPath,
+    IntOrStr,
+    MultiInt,
+    MultiStr,
     ObsFieldValues,
 )
 from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
-
 
 # Observations
 # --------------------
@@ -127,7 +126,7 @@ def _observation_node_only(
     captive: Captive or cultivated observations
     endemic: Observations whose taxa are endemic to their location
     geo: Observations that are georeferenced
-    id_please: Observations with the **deprecated** "ID, Please!" flag.
+    id_please: Observations with the **deprecated** 'ID, Please!' flag.
         Note that this will return observations, but that this attribute is no longer used.
     identified: Observations that have community identifications
     introduced: Observations whose taxa are introduced in their location
@@ -207,7 +206,7 @@ def _observation_rest_only(
     h1: Date = None,
     h2: Date = None,
     extra: str = None,
-    response_format: str = "json",
+    response_format: str = 'json',
 ):
     """
     has: Catch-all for some boolean selectors. This can be used multiple times, e.g.
@@ -223,6 +222,16 @@ def _observation_rest_only(
         **'observation_photos'** returns information about the photos' relationship with the
         observation, like their order.
     response_format: A supported response format to return
+    """
+
+
+def _observation_histogram(
+    date_field: str = 'observed',
+    interval: str = 'month_of_year',
+):
+    """
+    date_field: Histogram basis: either when the observation was created or observed
+    interval: Time interval for histogram, with groups starting on or contained within the group value.
     """
 
 
@@ -247,7 +256,7 @@ def _create_observation(
     local_photos: Iterable[FileOrPath] = None,
 ):
     """
-    species_guess: Equivalent to the "What did you see?" field on the observation form.
+    species_guess: Equivalent to the 'What did you see?' field on the observation form.
         iNat will try to choose a single taxon based on this, but it may fail if it's ambuguous
     taxon_id: ID of the taxon to associate with this observation
     observed_on_string: Date/time of the observation. Time zone will default to the user's
@@ -299,6 +308,7 @@ def _projects_params(
     radius: int = 500,
     featured: bool = None,
     noteworthy: bool = None,
+    place_id: MultiInt = None,
     site_id: int = None,
     rule_details: bool = None,
     type: MultiStr = None,
@@ -315,6 +325,7 @@ def _projects_params(
     radius: Distance from center (``(lat, lng)``) to search, in kilometers. Defaults to 500km.
     featured:  Must be marked featured for the relevant site
     noteworthy: Must be marked noteworthy for the relevant site
+    place_id: Must be in the place with this ID
     site_id: Site ID that applies to ``featured`` and ``noteworthy``.
         Defaults to the site of the authenticated user, or to the main iNaturalist site
     rule_details: Return more information about project rules, for example return a full taxon
@@ -409,13 +420,6 @@ def _geojson_properties(properties: List[str] = None):
     """
 
 
-# TODO: Remove deprecated `params` arg in 0.12
-def _legacy_params(params: Dict[str, Any] = None):
-    """
-    params: [DEPRECATED] Request parameters as a dict instead of keyword arguments
-    """
-
-
 def _minify(minify: str = None):
     """
     minify: Condense each match into a single string containing taxon ID, rank, and name
@@ -462,24 +466,22 @@ def _pagination(
 
 
 _get_observations = [
-    _legacy_params,
     _observation_common,
     _observation_node_only,
     _bounding_box,
 ]
 
 
-# TODO: Remove deprecated `search_query` kwarg in 0.12
-def _search_query(q: str = None, search_query: str = None):
+def _search_query(q: str = None):
     """
     q: Search query
     """
 
 
 def _format_param_choices():
-    return "\n".join(
-        ["  * {}: {}".format(param, choices) for param, choices in MULTIPLE_CHOICE_PARAMS.items()]
+    return '\n'.join(
+        [f'  * {param}: {choices}' for param, choices in MULTIPLE_CHOICE_PARAMS.items()]
     )
 
 
-MULTIPLE_CHOICE_PARAM_DOCS = "**Multiple-Choice Parameters:**\n" + _format_param_choices()
+MULTIPLE_CHOICE_PARAM_DOCS = '**Multiple-Choice Parameters:**\n' + _format_param_choices()

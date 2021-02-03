@@ -1,10 +1,10 @@
-"""
-Utilities built on top of ``python-forge`` used to simplify usage for API docs, mainly by
-combining function signature modification with docstring modification.
+"""Utilities built on top of ``python-forge`` that simplify defining API docs by combining
+function signature modification with docstring modification.
+This module makes ``python-forge`` optional; if not installed, these functions will quietly fail
+without modifying the target functions.
 """
 from inspect import cleandoc
 from itertools import chain
-from functools import wraps
 from logging import getLogger
 from typing import Callable, List
 
@@ -13,7 +13,7 @@ from pyinaturalist.constants import TemplateFunction
 logger = getLogger(__name__)
 
 
-def document_request_params(template_functions: List[TemplateFunction]):
+def document_request_params(template_functions: List[TemplateFunction]) -> Callable:
     """Document a function with both docstrings and function signatures from one or more
     template functions.
 
@@ -50,7 +50,7 @@ def document_request_params(template_functions: List[TemplateFunction]):
     """
     template_functions = [*template_functions, _user_agent]
 
-    def f(func):
+    def wrapper(func):
         # Modify docstring
         func = copy_docstrings(func, template_functions)
 
@@ -58,16 +58,11 @@ def document_request_params(template_functions: List[TemplateFunction]):
         try:
             func = copy_signatures(func, template_functions)
         except ImportError:
-            logger.debug("Forge not installed; skipping runtime API documentation")
+            logger.debug('Forge not installed; skipping runtime API documentation')
 
-        # Call modified function
-        @wraps(func)
-        def g(*args, **kwargs):
-            return func(*args, **kwargs)
+        return func
 
-        return g
-
-    return f
+    return wrapper
 
 
 def copy_docstrings(
@@ -81,31 +76,46 @@ def copy_docstrings(
         template_functions: Functions containing docstrings to apply to ``target_function``
     """
     # Start with initial function description only
-    docstring, return_value_desc = _split_docstring(target_function.__doc__ or "")
+    docstring, return_value_desc = _split_docstring(target_function.__doc__ or '')
 
     # Insert 'Args' section
-    docstring += "\n\nArgs:"
+    docstring += '\n\nArgs:'
     for template_function in template_functions:
-        docstring += template_function.__doc__ or ""
+        docstring += template_function.__doc__ or ''
         docstring = docstring.rstrip()
 
     # Insert 'Returns' section, if present
     if return_value_desc:
-        docstring += "\n\nReturns:\n    " + return_value_desc
+        docstring += f'\n\nReturns:\n    {return_value_desc}'
 
     target_function.__doc__ = docstring
     return target_function
 
 
 def _split_docstring(docstring):
-    """ Split a docstring into a function description + return value description, if present. """
-    if "Returns:" in docstring:
-        function_desc, return_value_desc = docstring.split("Returns:")
+    """Split a docstring into a function description + return value description, if present"""
+    if 'Returns:' in docstring:
+        function_desc, return_value_desc = docstring.split('Returns:')
     else:
         function_desc = docstring
-        return_value_desc = ""
+        return_value_desc = ''
 
     return cleandoc(function_desc.strip()), cleandoc(return_value_desc.strip())
+
+
+def copy_signature(template_function: Callable, include=None, exclude=None) -> Callable:
+    """A wrapper around :py:func:`forge.copy` that silently fails if forge is not installed"""
+
+    def wrapper(target_function: Callable):
+        try:
+            import forge
+        except ImportError:
+            return target_function
+
+        revision = forge.copy(template_function, include=include, exclude=exclude)
+        return revision(target_function)
+
+    return wrapper
 
 
 def copy_signatures(
@@ -122,7 +132,7 @@ def copy_signatures(
 
 
 def _get_combined_revision(template_functions: List[TemplateFunction]):
-    """ Create a :py:class:`forge.Revision` from the combined parameters of multiple functions """
+    """Create a :py:class:`forge.Revision` from the combined parameters of multiple functions"""
     import forge
 
     # Use forge.copy to create a revision for each template function
