@@ -12,11 +12,12 @@ Contents
 ========
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   general_usage
-   endpoints
-   reference
-   contributing
-   authors
-   history
+    general_usage
+    endpoints
+    examples
+    reference
+    contributing
+    authors
+    history
