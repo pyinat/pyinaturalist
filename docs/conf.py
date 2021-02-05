@@ -2,20 +2,26 @@
 import sys
 from os import makedirs, symlink
 from os.path import abspath, dirname, exists, join
+from shutil import copytree, rmtree
+
+# This import is here to preempt a possible circular import bug in nbsphinx 0.8 and/or ipython 7.20
+import prompt_toolkit  # noqa: F401
 
 DOCS_DIR = abspath(dirname(__file__))
 PROJECT_DIR = dirname(DOCS_DIR)
 PACKAGE_DIR = join(PROJECT_DIR, 'pyinaturalist')
 
 # Source paths and symlink paths for static content to include
-SRC_IMAGE_DIR = join(DOCS_DIR, 'images')
-SYMLINK_IMAGE_DIR = join(DOCS_DIR, 'docs', 'images')
-SRC_DATA_DIR = join(PROJECT_DIR, 'test', 'sample_data')
-SYMLINK_DATA_DIR = join(DOCS_DIR, 'sample_data')
+IMAGE_DIR_SRC = join(DOCS_DIR, 'images')
+IMAGE_DIR_SYMLINK = join(DOCS_DIR, 'docs', 'images')
+DATA_DIR_SRC = join(PROJECT_DIR, 'test', 'sample_data')
+DATA_DIR_SYMLINK = join(DOCS_DIR, 'sample_data')
+NOTEBOOK_DIR_SRC = join(PROJECT_DIR, 'examples')
+NOTEBOOK_DIR_COPY = join(DOCS_DIR, 'examples')
 
 # Add project path so we can import our package
 sys.path.insert(0, PROJECT_DIR)
-from pyinaturalist import __version__  # noqa
+from pyinaturalist import __version__  # noqa: E402
 
 # General information about the project.
 project = 'pyinaturalist'
@@ -40,9 +46,13 @@ extensions = [
     'sphinx_autodoc_typehints',
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
+    'sphinx_copybutton',
     'sphinxcontrib.apidoc',
     'm2r2',
+    'nbsphinx',
 ]
+
+nbsphinx_allow_errors = True
 
 # Enable automatic links to other projects' Sphinx docs
 intersphinx_mapping = {
@@ -59,6 +69,9 @@ automodsumm_inherited_members = False
 autosummary_imported_members = False
 numpydoc_show_class_members = False
 
+# Strip prompt text when copying code blocks with copy button
+copybutton_prompt_text = r'>>> |\.\.\. |\$ '
+copybutton_prompt_is_regexp = True
 
 # Use apidoc to auto-generate rst sources
 # Added here instead of instead of in Makefile so it will be used by ReadTheDocs
@@ -97,20 +110,20 @@ def setup(app):
         * https://docs.readthedocs.io/en/stable/builds.html
         * https://github.com/sphinx-contrib/apidoc
     """
-    app.connect('builder-inited', make_symlinks)
+    app.connect('builder-inited', setup_external_files)
     app.connect('builder-inited', patch_automodapi)
     app.add_css_file('collapsible_container.css')
 
 
-def make_symlinks(app):
-    """Create symlinks so that relative links to static content will resolve correctly in both:
-    * README.rst (as displayed on GitHub and PyPi) and
-    * Sphinx html docs (as displayed on readthedocs.io)
-
-    Also symlink sample response data so it can be used by both Sphinx and pytest
+def setup_external_files(app):
+    """Create symlinks and copies of files outside docs directory so they can be accessed by Sphinx
+    directives.
     """
-    make_symlink(SRC_IMAGE_DIR, SYMLINK_IMAGE_DIR)
-    make_symlink(SRC_DATA_DIR, SYMLINK_DATA_DIR)
+    make_symlink(IMAGE_DIR_SRC, IMAGE_DIR_SYMLINK)
+    make_symlink(DATA_DIR_SRC, DATA_DIR_SYMLINK)
+    # Unfortunately this can't by symlinked; nbsphinx will insert image links relative to this dir
+    rmtree(NOTEBOOK_DIR_COPY, ignore_errors=True)
+    copytree(NOTEBOOK_DIR_SRC, NOTEBOOK_DIR_COPY)
 
 
 def make_symlink(src, dest):
