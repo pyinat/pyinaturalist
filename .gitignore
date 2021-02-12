@@ -54,5 +54,7 @@ docs/modules/
 .~*
 .idea/
 .ipynb_checkpoints/
+.vim/
+.vscode/
 swagger.json
 dev_*.py

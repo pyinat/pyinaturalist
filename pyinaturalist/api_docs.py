@@ -34,6 +34,7 @@ def _observation_common(
     photo_license: MultiStr = None,
     out_of_range: bool = None,
     quality_grade: str = None,
+    id: MultiInt = None,
     taxon_id: MultiInt = None,
     taxon_name: MultiStr = None,
     iconic_taxa: MultiStr = None,
@@ -51,6 +52,7 @@ def _observation_common(
     out_of_range: Observations whose taxa are outside their known ranges
     list_id: Taxon must be in the list with this ID
     quality_grade: Must have this quality grade
+    id: Must have this observation ID
     taxon_id: Only show observations of these taxa and their descendants
     taxon_name: Taxon must have a scientific or common name matching this string
     iconic_taxa: Taxon must by within this iconic taxon
@@ -76,7 +78,6 @@ def _observation_node_only(
     taxon_is_active: bool = None,
     threatened: bool = None,
     verifiable: bool = None,
-    id: MultiInt = None,
     not_id: MultiInt = None,
     sound_license: MultiStr = None,
     ofv_datatype: MultiStr = None,
@@ -144,7 +145,6 @@ def _observation_node_only(
     threatened: Observations whose taxa are threatened in their location
     verifiable: Observations with a ``quality_grade`` of either ``needs_id`` or ``research``.
         Equivalent to ``quality_grade=needs_id,research``
-    id: Must have this ID
     not_id: Must not have this ID
     place_id: Must be observed within the place with this ID
     project_id: Must be added to the project this ID or slug
