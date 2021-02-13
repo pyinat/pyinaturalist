@@ -23,12 +23,12 @@ See full project documentation at https://pyinaturalist.readthedocs.io.
 ## Features
 
 [iNaturalist](https://www.inaturalist.org) is a rich source of biodiversity data, and offers an
-extensive API to interact with nearly every aspect of its platform. 
+extensive API to interact with nearly every aspect of its platform.
 
 If you want to explore or analyze these data using python, then pyinaturalist can help.
 It adds a number of python-specific conveniences, including:
 
-* **Requests:** Simplified usage with python types and data structures rather than raw request parameter strings   
+* **Requests:** Simplified usage with python types and data structures rather than raw request parameter strings
 * **Responses:** Type conversions from JSON primitives to things you would expect in python
 * **Typing:** Complete parameter definitions with type annotations, which significantly enhances
   usability within an IDE, Jupyter notebook, or any other environment with type checking & autocompletion
@@ -37,7 +37,7 @@ It adds a number of python-specific conveniences, including:
 * **Security:** Keyring integration for secure credential storage
 * **Testing:** A dry-run mode to preview your requests before potentially modifying data
 
-Many of the most relevant API endpoints are implemented, including:
+Many of the most relevant API endpoints are included:
 * **Searching for:**
     * controlled terms
     * observations
@@ -54,8 +54,10 @@ Many of the most relevant API endpoints are implemented, including:
     * observation fields
     * observation photos
 
-See [Endpoints](https://pyinaturalist.readthedocs.io/en/latest/endpoints.html) for a complete list of
-implemented endpoints, and see [Reference](https://pyinaturalist.readthedocs.io/en/latest/reference.html)
+See
+[Endpoints](https://pyinaturalist.readthedocs.io/en/latest/endpoints.html)
+for a complete list of endpoints wrapped by pyinaturalist, and see
+[Reference](https://pyinaturalist.readthedocs.io/en/latest/reference.html)
 to skip straight to the API docs.
 
 ## Installation
@@ -76,8 +78,9 @@ $ pip install --no-deps pyinaturalist
 $ pip install python-dateutil requests
 ```
 
-See [Contributing](https://pyinaturalist.readthedocs.io/en/latest/contributing.html) for details on
-setup for local development.
+See
+[Contributing](https://pyinaturalist.readthedocs.io/en/latest/contributing.html)
+for details on setup for local development.
 
 ## Development Status
 Pyinaturalist is under active development. More endpoints and features will continue to be added as
@@ -116,7 +119,8 @@ token = get_access_token(
     app_secret='my_app_secret',
 )
 ```
-See [Authentication](https://pyinaturalist.readthedocs.io/en/latest/general_usage.html#authentication)
+See
+[Authentication](https://pyinaturalist.readthedocs.io/en/latest/general_usage.html#authentication)
 for additional authentication options, including environment variables and keyring services.
 
 #### Create a new observation
@@ -301,7 +305,7 @@ see what else you can do with pyinaturalist.
 ## Feedback
 If you have any problems, suggestions, or questions about pyinaturalist, please let us know!
 Just [create an issue here](https://github.com/niconoe/pyinaturalist/issues/new/choose).
- 
+
 **Note:** pyinaturalist is not directly affiliated with iNaturalist.org or the
 California Academy of Sciences. If you have non-python-specific questions about iNaturalist, the
-[iNaturalist Community Forum](https://forum.inaturalist.org/) is going to be your best resource.
+[iNaturalist Community Forum](https://forum.inaturalist.org/) is the best place to start.

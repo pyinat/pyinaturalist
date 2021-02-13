@@ -11,9 +11,11 @@ extras_require = {
     # Packages used for documentation builds
     'docs': [
         'm2r2',
+        'nbsphinx',
         'Sphinx~=3.2.1',
         'sphinx-autodoc-typehints',
         'sphinx-automodapi',
+        'sphinx-copybutton',
         'sphinx-rtd-theme',
         'sphinxcontrib-apidoc',
     ],
