@@ -49,7 +49,9 @@ jobs:
           restore-keys: ${{ runner.os }}-pip-3.8
 
       - name: Install dependencies
-        run: pip install ".[dev]"
+        run: |
+          sudo apt install -y pandoc
+          pip install ".[dev]"
       - name: Run style checks
         run: |
           black --check --diff .
