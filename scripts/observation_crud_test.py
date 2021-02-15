@@ -1,29 +1,33 @@
 #!/usr/bin/env python
-"""A semi-automated script used to test all observation CRUD endpoints. Must provide iNat
-credentials via environment variables. See :py:func:`.get_access_token` for details.
+"""A partially automated script for testing all observation CRUD endpoints,
+in absence of integration tests.
+iNat credentials must be provided via environment variables.
+See :py:func:`.get_access_token` for details.
+
 Usage example:
 ```
 export INAT_USERNAME=''
 export INAT_PASSWORD=''
 export INAT_APP_ID=''
 export INAT_APP_SECRET=''
-python test/manual_tests/obs_crud_test.py
+python scripts/obs_crud_test.py
 ```
 """
 from datetime import datetime
 from os.path import join
 from pprint import pprint
 
+from pyinaturalist.constants import SAMPLE_DATA_DIR
 from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import (
     add_photo_to_observation,
     create_observation,
     delete_observation,
     get_access_token,
-    put_observation_field_values,
     update_observation,
 )
-from test.conftest import SAMPLE_DATA_DIR
+
+# put_observation_field_values,
 
 SAMPLE_PHOTO = join(SAMPLE_DATA_DIR, 'obs_image.jpg')
 

@@ -7,10 +7,12 @@ import logging
 import os
 import re
 from inspect import Parameter, getmembers, isfunction, signature
-from os.path import abspath, dirname, join
+from os.path import join
 from unittest.mock import MagicMock
 
 # If ipdb is installed, register it as the default debugger
+from pyinaturalist.constants import SAMPLE_DATA_DIR
+
 try:
     import ipdb  # noqa: F401
 
@@ -20,7 +22,6 @@ except ImportError:
 
 
 HTTP_FUNC_PATTERN = re.compile(r'(get|put|post|delete)_.+')
-SAMPLE_DATA_DIR = abspath(join(dirname(__file__), 'sample_data'))
 
 MOCK_CREDS_ENV = {
     'INAT_USERNAME': 'valid_username',

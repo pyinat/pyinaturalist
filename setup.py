@@ -32,7 +32,7 @@ extras_require = {
         'tox>=3.15',
     ],
     # Packages used only for local debugging
-    'debug': ['ipython', 'ipdb'],
+    'debug': ['ipython', 'ipdb', 'prance[osv]', 'rich'],
 }
 # All development/testing packages combined
 extras_require['dev'] = list(chain.from_iterable(extras_require.values()))
