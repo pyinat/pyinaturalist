@@ -17,7 +17,7 @@ from pyinaturalist import api_docs as docs
 from pyinaturalist.api_requests import delete, get, post, put
 from pyinaturalist.auth import get_access_token  # noqa
 from pyinaturalist.constants import (
-    INAT_BASE_URL,
+    API_V0_BASE_URL,
     THROTTLING_DELAY,
     FileOrPath,
     JsonResponse,
@@ -101,7 +101,7 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
     validate_multiple_choice_param(params, 'order_by', REST_OBS_ORDER_BY_PROPERTIES)
 
     response = get(
-        f'{INAT_BASE_URL}/observations.{response_format}',
+        f'{API_V0_BASE_URL}/observations.{response_format}',
         params=params,
         user_agent=user_agent,
     )
@@ -138,7 +138,7 @@ def get_observation_fields(user_agent: str = None, **params) -> ListResponse:
         Observation fields as a list of dicts
     """
     response = get(
-        f'{INAT_BASE_URL}/observation_fields.json',
+        f'{API_V0_BASE_URL}/observation_fields.json',
         params=params,
         user_agent=user_agent,
     )
@@ -233,7 +233,7 @@ def put_observation_field_values(
     }
 
     response = put(
-        f'{INAT_BASE_URL}/observation_field_values/{observation_field_id}',
+        f'{API_V0_BASE_URL}/observation_field_values/{observation_field_id}',
         access_token=access_token,
         user_agent=user_agent,
         json=payload,
@@ -289,7 +289,7 @@ def create_observation(access_token: str = None, user_agent: str = None, **param
         params['local_photos'] = ensure_file_objs(params['local_photos'])
 
     response = post(
-        url=f'{INAT_BASE_URL}/observations.json',
+        url=f'{API_V0_BASE_URL}/observations.json',
         json={'observation': params},
         access_token=access_token,
         user_agent=user_agent,
@@ -362,7 +362,7 @@ def update_observation(
         params['ignore_photos'] = 1
 
     response = put(
-        url=f'{INAT_BASE_URL}/observations/{observation_id}.json',
+        url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
         json={'observation': params},
         access_token=access_token,
         user_agent=user_agent,
@@ -406,7 +406,7 @@ def add_photo_to_observation(
         Information about the newly created photo
     """
     response = post(
-        url=f'{INAT_BASE_URL}/observation_photos',
+        url=f'{API_V0_BASE_URL}/observation_photos',
         access_token=access_token,
         data={'observation_photo[observation_id]': observation_id},
         files={'file': ensure_file_obj(photo)},
@@ -436,7 +436,7 @@ def delete_observation(observation_id: int, access_token: str = None, user_agent
         :py:exc:`requests.HTTPError` (403) if the observation belongs to another user
     """
     response = delete(
-        url=f'{INAT_BASE_URL}/observations/{observation_id}.json',
+        url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
         access_token=access_token,
         user_agent=user_agent,
         headers={'Content-type': 'application/json'},

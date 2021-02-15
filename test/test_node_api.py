@@ -4,10 +4,10 @@ from datetime import datetime
 from dateutil.tz import tzoffset, tzutc
 from pprint import pprint
 from unittest.mock import patch
-from urllib.parse import urlencode, urljoin
+from urllib.parse import urlencode
 
 import pyinaturalist
-from pyinaturalist.constants import INAT_NODE_API_BASE_URL, PER_PAGE_RESULTS
+from pyinaturalist.constants import API_V1_BASE_URL, PER_PAGE_RESULTS
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.node_api import (
     get_all_observation_species_counts,
@@ -37,7 +37,7 @@ from test.conftest import load_sample_data
 
 def test_get_controlled_terms(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'controlled_terms'),
+        f'{API_V1_BASE_URL}/controlled_terms',
         json=load_sample_data('get_controlled_terms.json'),
         status_code=200,
     )
@@ -56,7 +56,7 @@ def test_get_controlled_terms(requests_mock):
 
 def test_get_controlled_terms_for_taxon(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'controlled_terms/for_taxon'),
+        f'{API_V1_BASE_URL}/controlled_terms/for_taxon',
         json=load_sample_data('get_controlled_terms_for_taxon.json'),
         status_code=200,
     )
@@ -79,7 +79,7 @@ def test_get_controlled_terms_for_taxon(requests_mock):
 
 def test_get_observation(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         json=load_sample_data('get_observation.json'),
         status_code=200,
     )
@@ -93,7 +93,7 @@ def test_get_observation(requests_mock):
 
 def test_get_observation_histogram(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations/histogram'),
+        f'{API_V1_BASE_URL}/observations/histogram',
         json=load_sample_data('get_observation_histogram_month.json'),
         status_code=200,
     )
@@ -108,7 +108,7 @@ def test_get_observation_histogram(requests_mock):
 
 def test_get_observations(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         json=load_sample_data('get_observations_node_page1.json'),
         status_code=200,
     )
@@ -142,7 +142,7 @@ def test_get_all_observations(sleep, requests_mock):
     page_2 = load_sample_data('get_observations_node_page2.json')
 
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         [
             {'json': page_1, 'status_code': 200},
             {'json': page_2, 'status_code': 200},
@@ -157,7 +157,7 @@ def test_get_all_observations(sleep, requests_mock):
 
 def test_get_observation_observers(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations/observers'),
+        f'{API_V1_BASE_URL}/observations/observers',
         json=load_sample_data('get_observation_observers_node_page1.json'),
         status_code=200,
     )
@@ -167,13 +167,13 @@ def test_get_observation_observers(requests_mock):
 
     assert observers['total_results'] == 4
     assert len(observers['results']) == 2
-    assert first_result['user']['spam'] == False
-    assert first_result['user']['suspended'] == False
+    assert first_result['user']['spam'] is False
+    assert first_result['user']['suspended'] is False
 
 
 def test_get_observation_identifiers(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations/identifiers'),
+        f'{API_V1_BASE_URL}/observations/identifiers',
         json=load_sample_data('get_observation_identifiers_node_page1.json'),
         status_code=200,
     )
@@ -183,13 +183,13 @@ def test_get_observation_identifiers(requests_mock):
 
     assert identifiers['total_results'] == 6
     assert len(identifiers['results']) == 3
-    assert first_result['user']['spam'] == False
-    assert first_result['user']['suspended'] == False
+    assert first_result['user']['spam'] is False
+    assert first_result['user']['suspended'] is False
 
 
 def test_get_geojson_observations(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         json=load_sample_data('get_observation.json'),
         status_code=200,
     )
@@ -203,7 +203,7 @@ def test_get_geojson_observations(requests_mock):
 
 def test_get_geojson_observations__custom_properties(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         json=load_sample_data('get_observation.json'),
         status_code=200,
     )
@@ -218,7 +218,7 @@ def test_get_geojson_observations__custom_properties(requests_mock):
 
 def test_get_non_existent_observation(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         json=load_sample_data('get_nonexistent_observation.json'),
         status_code=200,
     )
@@ -228,7 +228,7 @@ def test_get_non_existent_observation(requests_mock):
 
 def test_get_observation_species_counts(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations/species_counts'),
+        f'{API_V1_BASE_URL}/observations/species_counts',
         json=load_sample_data('get_observation_species_counts.json'),
         status_code=200,
     )
@@ -242,7 +242,7 @@ def test_get_observation_species_counts(requests_mock):
 
 def test_get_all_observation_species_counts(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations/species_counts'),
+        f'{API_V1_BASE_URL}/observations/species_counts',
         [
             {
                 'json': load_sample_data('get_all_observation_species_counts_page1.json'),
@@ -279,7 +279,7 @@ def test_get_observation_species_counts__invalid_multiple_choice_params():
 
 def test_get_places_by_id(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'places/93735,89191'),
+        f'{API_V1_BASE_URL}/places/93735,89191',
         json=load_sample_data('get_places_by_id.json'),
         status_code=200,
     )
@@ -303,7 +303,7 @@ def test_get_places_by_id__invalid_inputs(place_id):
 
 def test_get_places_nearby(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'places/nearby'),
+        f'{API_V1_BASE_URL}/places/nearby',
         json=load_sample_data('get_places_nearby.json'),
         status_code=200,
     )
@@ -324,7 +324,7 @@ def test_get_places_nearby(requests_mock):
 
 def test_get_places_autocomplete(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'places/autocomplete'),
+        f'{API_V1_BASE_URL}/places/autocomplete',
         json=load_sample_data('get_places_autocomplete.json'),
         status_code=200,
     )
@@ -346,7 +346,7 @@ def test_get_places_autocomplete(requests_mock):
 
 def test_get_projects(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'projects'),
+        f'{API_V1_BASE_URL}/projects',
         json=load_sample_data('get_projects.json'),
         status_code=200,
     )
@@ -365,7 +365,7 @@ def test_get_projects(requests_mock):
 
 def test_get_projects_by_id(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'projects/8348,6432'),
+        f'{API_V1_BASE_URL}/projects/8348,6432',
         json=load_sample_data('get_projects_by_id.json'),
         status_code=200,
     )
@@ -390,9 +390,9 @@ CLASS_THOUGH_PHYLUM = ['class', 'superclass', 'subphylum', 'phylum']
 
 
 def test_get_taxa(requests_mock):
-    params = urlencode({'q': 'vespi', 'rank': 'genus,subgenus,species'})
+    params = {'q': 'vespi', 'rank': 'genus,subgenus,species'}
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'taxa?' + params),
+        f'{API_V1_BASE_URL}/taxa?{urlencode(params)}',
         json=load_sample_data('get_taxa.json'),
         status_code=200,
     )
@@ -443,7 +443,7 @@ def test_get_taxa_by_name_and_is_active(request):
 def test_get_taxa_by_id(requests_mock):
     taxon_id = 70118
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'taxa/' + str(taxon_id)),
+        f'{API_V1_BASE_URL}/taxa/{taxon_id}',
         json=load_sample_data('get_taxa_by_id.json'),
         status_code=200,
     )
@@ -466,7 +466,7 @@ def test_get_taxa_by_id__invalid_inputs(taxon_id):
 
 def test_get_taxa_autocomplete(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'taxa/autocomplete'),
+        f'{API_V1_BASE_URL}/taxa/autocomplete',
         json=load_sample_data('get_taxa_autocomplete.json'),
         status_code=200,
     )
@@ -487,7 +487,7 @@ def test_get_taxa_autocomplete(requests_mock):
 # Test usage of format_taxon() with get_taxa_autocomplete()
 def test_get_taxa_autocomplete_minified(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'taxa/autocomplete'),
+        f'{API_V1_BASE_URL}/taxa/autocomplete',
         json=load_sample_data('get_taxa_autocomplete.json'),
         status_code=200,
     )
@@ -513,7 +513,7 @@ def test_get_taxa_autocomplete_minified(requests_mock):
 @patch.dict(os.environ, {'GITHUB_REF': 'refs/heads/master'}, clear=True)
 def test_user_agent(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         json=load_sample_data('get_observation.json'),
         status_code=200,
     )
