@@ -6,7 +6,7 @@ from keyring.errors import KeyringError
 from requests import HTTPError
 
 from pyinaturalist.auth import get_access_token, get_keyring_credentials, set_keyring_credentials
-from pyinaturalist.constants import INAT_BASE_URL
+from pyinaturalist.constants import API_V0_BASE_URL
 from pyinaturalist.exceptions import AuthenticationError
 from test.conftest import MOCK_CREDS_ENV, MOCK_CREDS_OAUTH, load_sample_data
 
@@ -21,7 +21,7 @@ token_rejected_json = load_sample_data('get_access_token_401.json')
 @patch.dict(os.environ, {}, clear=True)
 def test_get_access_token(requests_mock):
     requests_mock.post(
-        f'{INAT_BASE_URL}/oauth/token',
+        f'{API_V0_BASE_URL}/oauth/token',
         json=token_accepted_json,
         status_code=200,
     )
@@ -34,7 +34,7 @@ def test_get_access_token(requests_mock):
 @patch('pyinaturalist.auth.get_keyring_credentials')
 def test_get_access_token__envars(mock_keyring_credentials, requests_mock):
     requests_mock.post(
-        f'{INAT_BASE_URL}/oauth/token',
+        f'{API_V0_BASE_URL}/oauth/token',
         json=token_accepted_json,
         status_code=200,
     )
@@ -53,7 +53,7 @@ def test_get_access_token__envars(mock_keyring_credentials, requests_mock):
 )
 def test_get_access_token__mixed_args_and_envars(requests_mock):
     requests_mock.post(
-        f'{INAT_BASE_URL}/oauth/token',
+        f'{API_V0_BASE_URL}/oauth/token',
         json=token_accepted_json,
         status_code=200,
     )
@@ -67,7 +67,7 @@ def test_get_access_token__mixed_args_and_envars(requests_mock):
 @patch('pyinaturalist.auth.post')
 def test_get_access_token__keyring(mock_post, mock_keyring_credentials, requests_mock):
     requests_mock.post(
-        f'{INAT_BASE_URL}/oauth/token',
+        f'{API_V0_BASE_URL}/oauth/token',
         json=token_accepted_json,
         status_code=200,
     )
@@ -87,7 +87,7 @@ def test_get_access_token__missing_creds(mock_keyring_credentials):
 
 def test_get_access_token__invalid_creds(requests_mock):
     requests_mock.post(
-        f'{INAT_BASE_URL}/oauth/token',
+        f'{API_V0_BASE_URL}/oauth/token',
         json=token_rejected_json,
         status_code=401,
     )

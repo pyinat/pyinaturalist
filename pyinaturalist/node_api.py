@@ -21,7 +21,7 @@ import requests
 from pyinaturalist import api_docs as docs
 from pyinaturalist.api_requests import get
 from pyinaturalist.constants import (
-    INAT_NODE_API_BASE_URL,
+    API_V1_BASE_URL,
     PER_PAGE_RESULTS,
     THROTTLING_DELAY,
     HistogramResponse,
@@ -58,7 +58,7 @@ def node_api_get(endpoint: str, **kwargs) -> requests.Response:
         endpoint: The name of an endpoint resource, not including the base URL e.g. 'observations'
         kwargs: Arguments for :py:func:`.api_requests.request`
     """
-    return get(f'{INAT_NODE_API_BASE_URL}{endpoint}', **kwargs)
+    return get(f'{API_V1_BASE_URL}/{endpoint}', **kwargs)
 
 
 # Controlled Terms

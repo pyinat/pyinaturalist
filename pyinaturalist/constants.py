@@ -2,10 +2,14 @@ from datetime import date, datetime
 from os.path import abspath, dirname, join
 from typing import Any, BinaryIO, Dict, List, Union
 
-INAT_NODE_API_BASE_URL = 'https://api.inaturalist.org/v1/'
-INAT_BASE_URL = 'https://www.inaturalist.org'
-INAT_KEYRING_KEY = '/inaturalist'
+# iNaturalist URLs
+API_V0_BASE_URL = 'https://www.inaturalist.org'
+API_V1_BASE_URL = 'https://api.inaturalist.org/v1'
+API_V2_BASE_URL = 'https://api.inaturalist.org/v2'
+DWC_ARCHIVE_URL = 'http://www.inaturalist.org/observations/gbif-observations-dwca.zip'
+PHOTO_BASE_URL = 'https://static.inaturalist.org/photos'
 
+KEYRING_KEY = '/inaturalist'
 PER_PAGE_RESULTS = 200  # Default number of records per page for paginated queries
 THROTTLING_DELAY = 1.0  # Delay between paginated queries, in seconds
 

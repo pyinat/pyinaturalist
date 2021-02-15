@@ -3,7 +3,7 @@ from os import getenv
 from typing import Dict
 
 from pyinaturalist.api_requests import post
-from pyinaturalist.constants import INAT_BASE_URL, INAT_KEYRING_KEY
+from pyinaturalist.constants import API_V0_BASE_URL, KEYRING_KEY
 from pyinaturalist.exceptions import AuthenticationError
 
 logger = getLogger(__name__)
@@ -73,7 +73,7 @@ def get_access_token(
         raise AuthenticationError('Not all authentication parameters were provided')
 
     response = post(
-        f'{INAT_BASE_URL}/oauth/token',
+        f'{API_V0_BASE_URL}/oauth/token',
         json=payload,
         user_agent=user_agent,
     )
@@ -98,10 +98,10 @@ def get_keyring_credentials() -> Dict[str, str]:
     # Quietly fail if keyring backend is not available
     try:
         return {
-            'username': get_password(INAT_KEYRING_KEY, 'username'),
-            'password': get_password(INAT_KEYRING_KEY, 'password'),
-            'client_id': get_password(INAT_KEYRING_KEY, 'app_id'),
-            'client_secret': get_password(INAT_KEYRING_KEY, 'app_secret'),
+            'username': get_password(KEYRING_KEY, 'username'),
+            'password': get_password(KEYRING_KEY, 'password'),
+            'client_id': get_password(KEYRING_KEY, 'app_id'),
+            'client_secret': get_password(KEYRING_KEY, 'app_secret'),
         }
     except KeyringError as e:
         logger.warning(str(e))
@@ -125,7 +125,7 @@ def set_keyring_credentials(
     """
     from keyring import set_password
 
-    set_password(INAT_KEYRING_KEY, 'username', username)
-    set_password(INAT_KEYRING_KEY, 'password', password)
-    set_password(INAT_KEYRING_KEY, 'app_id', app_id)
-    set_password(INAT_KEYRING_KEY, 'app_secret', app_secret)
+    set_password(KEYRING_KEY, 'username', username)
+    set_password(KEYRING_KEY, 'password', password)
+    set_password(KEYRING_KEY, 'app_id', app_id)
+    set_password(KEYRING_KEY, 'app_secret', app_secret)

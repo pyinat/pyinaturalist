@@ -1,5 +1,4 @@
 import pytest
-from copy import deepcopy
 from datetime import datetime, timedelta
 from dateutil.tz import tzutc
 from io import BytesIO
@@ -7,7 +6,7 @@ from unittest.mock import patch
 
 from requests import HTTPError
 
-from pyinaturalist.constants import INAT_BASE_URL
+from pyinaturalist.constants import API_V0_BASE_URL
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.rest_api import (
     OBSERVATION_FORMATS,
@@ -38,7 +37,7 @@ def test_get_observations(response_format, requests_mock):
     key = 'json' if response_format == 'json' else 'text'
 
     requests_mock.get(
-        f'{INAT_BASE_URL}/observations.{response_format}',
+        f'{API_V0_BASE_URL}/observations.{response_format}',
         status_code=200,
         **{key: mock_response},
     )
@@ -68,11 +67,10 @@ def test_get_observations__invalid_format(response_format):
 def test_get_observation_fields(requests_mock):
     """ get_observation_fields() work as expected (basic use)"""
     requests_mock.get(
-        f'{INAT_BASE_URL}/observation_fields.json?q=sex&page=2',
+        f'{API_V0_BASE_URL}/observation_fields.json?q=sex&page=2',
         json=PAGE_2_JSON_RESPONSE,
         status_code=200,
     )
-    expected_response = deepcopy(PAGE_2_JSON_RESPONSE)
 
     response = get_observation_fields(q='sex', page=2)
     first_result = response[0]
@@ -86,17 +84,17 @@ def test_get_observation_fields(requests_mock):
 def test_get_all_observation_fields(requests_mock):
     """get_all_observation_fields() is able to paginate, accepts a search query and return correct results"""
     requests_mock.get(
-        f'{INAT_BASE_URL}/observation_fields.json?q=sex&page=1',
+        f'{API_V0_BASE_URL}/observation_fields.json?q=sex&page=1',
         json=PAGE_1_JSON_RESPONSE,
         status_code=200,
     )
     requests_mock.get(
-        f'{INAT_BASE_URL}/observation_fields.json?q=sex&page=2',
+        f'{API_V0_BASE_URL}/observation_fields.json?q=sex&page=2',
         json=PAGE_2_JSON_RESPONSE,
         status_code=200,
     )
     requests_mock.get(
-        f'{INAT_BASE_URL}/observation_fields.json?q=sex&page=3',
+        f'{API_V0_BASE_URL}/observation_fields.json?q=sex&page=3',
         json=[],
         status_code=200,
     )
@@ -112,7 +110,7 @@ def test_get_all_observation_fields(requests_mock):
 def test_get_all_observation_fields_noparam(requests_mock):
     """get_all_observation_fields() can also be called without a search query without errors"""
     requests_mock.get(
-        f'{INAT_BASE_URL}/observation_fields.json?page=1',
+        f'{API_V0_BASE_URL}/observation_fields.json?page=1',
         json=[],
         status_code=200,
     )
@@ -122,7 +120,7 @@ def test_get_all_observation_fields_noparam(requests_mock):
 
 def test_put_observation_field_values(requests_mock):
     requests_mock.put(
-        f'{INAT_BASE_URL}/observation_field_values/31',
+        f'{API_V0_BASE_URL}/observation_field_values/31',
         json=load_sample_data('put_observation_field_value_result.json'),
         status_code=200,
     )
@@ -142,7 +140,7 @@ def test_put_observation_field_values(requests_mock):
 
 def test_update_observation(requests_mock):
     requests_mock.put(
-        f'{INAT_BASE_URL}/observations/17932425.json',
+        f'{API_V0_BASE_URL}/observations/17932425.json',
         json=load_sample_data('update_observation_result.json'),
         status_code=200,
     )
@@ -174,7 +172,7 @@ def test_update_nonexistent_observation(requests_mock):
     'observation does not exist'
     """
     requests_mock.put(
-        f'{INAT_BASE_URL}/observations/999999999.json',
+        f'{API_V0_BASE_URL}/observations/999999999.json',
         json={'error': 'Cette observation n’existe plus.'},
         status_code=410,
     )
@@ -193,7 +191,7 @@ def test_update_nonexistent_observation(requests_mock):
 def test_update_observation_not_mine(requests_mock):
     """When we try to update the obs of another user, iNat returns an error 410 with 'obs does not longer exists'."""
     requests_mock.put(
-        f'{INAT_BASE_URL}/observations/16227955.json',
+        f'{API_V0_BASE_URL}/observations/16227955.json',
         json={'error': 'Cette observation n’existe plus.'},
         status_code=410,
     )
@@ -211,7 +209,7 @@ def test_update_observation_not_mine(requests_mock):
 
 def test_create_observation(requests_mock):
     requests_mock.post(
-        f'{INAT_BASE_URL}/observations.json',
+        f'{API_V0_BASE_URL}/observations.json',
         json=load_sample_data('create_observation_result.json'),
         status_code=200,
     )
@@ -241,7 +239,7 @@ def test_create_observation_fail(requests_mock):
     }
 
     requests_mock.post(
-        f'{INAT_BASE_URL}/observations.json',
+        f'{API_V0_BASE_URL}/observations.json',
         json=load_sample_data('create_observation_fail.json'),
         status_code=422,
     )
@@ -254,7 +252,7 @@ def test_create_observation_fail(requests_mock):
 
 def test_add_photo_to_observation(requests_mock):
     requests_mock.post(
-        f'{INAT_BASE_URL}/observation_photos',
+        f'{API_V0_BASE_URL}/observation_photos',
         json=load_sample_data('add_photo_to_observation.json'),
         status_code=200,
     )
@@ -266,14 +264,14 @@ def test_add_photo_to_observation(requests_mock):
 
 
 def test_delete_observation(requests_mock):
-    requests_mock.delete(f'{INAT_BASE_URL}/observations/24774619.json', status_code=200)
+    requests_mock.delete(f'{API_V0_BASE_URL}/observations/24774619.json', status_code=200)
     response = delete_observation(observation_id=24774619, access_token='valid token')
     assert response is None
 
 
 def test_delete_unexisting_observation(requests_mock):
     """ObservationNotFound is raised if the observation doesn't exists"""
-    requests_mock.delete(f'{INAT_BASE_URL}/observations/24774619.json', status_code=404)
+    requests_mock.delete(f'{API_V0_BASE_URL}/observations/24774619.json', status_code=404)
 
     with pytest.raises(ObservationNotFound):
         delete_observation(observation_id=24774619, access_token='valid token')
