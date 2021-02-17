@@ -12,6 +12,7 @@ extras_require = {
     'docs': [
         'm2r2',
         'nbsphinx',
+        'prompt_toolkit',
         'Sphinx~=3.2.1',
         'sphinx-autodoc-typehints',
         'sphinx-automodapi',

@@ -4,7 +4,6 @@ USER root
 # Install some more conda packages useful for data exploration & visualization
 RUN conda install --quiet --yes \
     'altair=4.*' \
-    'altair-saver' \
     'dash=1.*' \
     'gdal=3.*' \
     'geoviews' \
@@ -12,12 +11,12 @@ RUN conda install --quiet --yes \
     'pip=21.*' \
     'plotly=4.*' \
     'python-dateutil' \
-    'python-forge' \
-    'requests=2.25.*' \
+    'rich' \
+    'requests=2.*' \
     'xarray' && \
     conda clean --all -f -y && \
     # Install any non-conda pip packages last
-    pip install pyinaturalist && \
+    pip install pyinaturalist altair-saver && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
 
