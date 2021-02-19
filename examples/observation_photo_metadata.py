@@ -22,6 +22,15 @@ from bs4 import BeautifulSoup
 from pyinaturalist.node_api import get_observation
 from pyinaturalist.rest_api import get_access_token
 
+# !! Replace values here !!
+OBSERVATION_IDS = [99]
+ACCESS_TOKEN = get_access_token(
+    username='',
+    password='',
+    app_id='',
+    app_secret='',
+)
+
 IGNORE_ATTRIBUTES = ['Associated observations', 'Sizes']
 PHOTO_INFO_BASE_URL = 'https://www.inaturalist.org/photos'
 
@@ -43,23 +52,19 @@ def get_photo_metadata(photo_url, access_token):
 
 
 def get_observation_photo_metadata(observation_id, access_token):
-    """Attempt to scrape metadata from all photo info pages associated with an observation"""
+    """Attempt to scrape metadata from a photo info pages associated with an observation
+    (first photo only)
+    """
     print(f'Fetching observation {observation_id}')
     obs = get_observation(observation_id)
     photo_ids = [photo['id'] for photo in obs.get('photos', [])]
     photo_urls = [f'{PHOTO_INFO_BASE_URL}/{id}' for id in photo_ids]
     print(f'{len(photo_urls)} photo URL(s) found')
-    return [get_photo_metadata(url, access_token) for url in photo_urls]
+    return get_photo_metadata(photo_urls[0], access_token)
 
 
-# !! Replace values here !!
 if __name__ == '__main__':
-    observation_id = 99
-    access_token = get_access_token(
-        username='',
-        password='',
-        app_id='',
-        app_secret='',
-    )
-    all_metadata = get_observation_photo_metadata(observation_id, access_token)
-    pprint(all_metadata, indent=4)
+    photo_metadata = {}
+    for id in OBSERVATION_IDS:
+        photo_metadata[id] = get_observation_photo_metadata(id, ACCESS_TOKEN)
+    pprint(photo_metadata, indent=4)
