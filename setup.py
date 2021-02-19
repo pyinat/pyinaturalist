@@ -49,6 +49,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'keyring~=21.4.0',
+        'pyrate-limiter',
         'python-dateutil>=2.0',
         'python-forge',
         'requests~=2.25.0',
