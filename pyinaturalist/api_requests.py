@@ -8,7 +8,6 @@ from typing import Dict, List, Union
 from unittest.mock import Mock
 
 import requests
-from pyrate_limiter import BucketFullException, Duration, Limiter, RequestRate
 
 import pyinaturalist
 from pyinaturalist.constants import WRITE_HTTP_METHODS
@@ -19,13 +18,19 @@ from pyinaturalist.request_params import preprocess_request_params, validate_ids
 MOCK_RESPONSE = Mock(spec=requests.Response)
 MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0}
 
-# Request rate limits
-REQUEST_RATES = [
-    RequestRate(5, Duration.SECOND),
-    RequestRate(60, Duration.MINUTE),
-    RequestRate(10000, Duration.DAY),
-]
-RATE_LIMITER = Limiter(*REQUEST_RATES)
+# Request rate limits. Only compatible with python 3.7+.
+try:
+    from pyrate_limiter import BucketFullException, Duration, Limiter, RequestRate
+
+    REQUEST_RATES = [
+        RequestRate(5, Duration.SECOND),
+        RequestRate(60, Duration.MINUTE),
+        RequestRate(10000, Duration.DAY),
+    ]
+    RATE_LIMITER = Limiter(*REQUEST_RATES)
+except ImportError:
+    RATE_LIMITER = None
+
 MAX_RETRIES = 15
 
 logger = getLogger(__name__)
@@ -107,10 +112,14 @@ def put(url: str, **kwargs) -> requests.Response:
     return request('PUT', url, **kwargs)
 
 
+# TODO: This could be simplified after implementing:
+#  https://github.com/vutran1710/PyrateLimiter/issues/19
 @contextmanager
 def apply_rate_limit():
-    """Add delays in between requests to stay within the rate limits"""
-    n_retries = 0
+    """Add delays in between requests to stay within the rate limits."""
+    # Bypass rate-limiting for python 3.6
+    n_retries = 0 if RATE_LIMITER else MAX_RETRIES
+
     while n_retries < MAX_RETRIES:
         # Check if there are more requests left in our "bucket"
         try:
