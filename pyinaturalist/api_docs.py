@@ -16,6 +16,80 @@ from pyinaturalist.constants import (
 )
 from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
 
+# Identifications
+# --------------------
+
+
+def _identification_params(
+    current_taxon: bool = None,
+    own_observation: bool = None,
+    is_change: bool = None,
+    taxon_active: bool = None,
+    observation_taxon_active: bool = None,
+    id: MultiInt = None,
+    rank: MultiStr = None,
+    observation_rank: MultiStr = None,
+    user_id: MultiInt = None,
+    user_login: MultiStr = None,
+    current: bool = None,
+    category: MultiStr = None,
+    place_id: MultiInt = None,
+    quality_grade: MultiStr = None,
+    taxon_id: MultiInt = None,
+    observation_taxon_id: MultiInt = None,
+    iconic_taxon_id: MultiInt = None,
+    observation_iconic_taxon_id: MultiInt = None,
+    lrank: str = None,
+    hrank: str = None,
+    observation_lrank: str = None,
+    observation_hrank: str = None,
+    without_taxon_id: MultiInt = None,
+    without_observation_taxon_id: MultiInt = None,
+    d1: Date = None,
+    d2: Date = None,
+    observation_created_d1: Date = None,
+    observation_created_d2: Date = None,
+    observed_d1: Date = None,
+    observed_d2: Date = None,
+    id_above: int = None,
+    id_below: int = None,
+):
+    """
+    current_taxon: ID's taxon is the same it's observation's taxon
+    own_observation: ID was added by the observer
+    is_change: ID was created as a results of a taxon change
+    taxon_active: ID's taxon is currently an active taxon
+    observation_taxon_active: Observation's taxon is currently an active taxon
+    id: Identification ID
+    rank: ID's taxon must have this rank  # Multiple choice
+    observation_rank: Observation's taxon must have this rank  # Multiple choice
+    user_id: Identifier must have this user ID
+    user_login: Identifier must have this login
+    current: Most recent Identification on a observation by a user
+    category: Type of identification
+    place_id: Observation must occur in this place
+    quality_grade: Observation must have this quality grade
+    taxon_id: Identification taxa must match the given taxa or their descendants
+    observation_taxon_id: Observation taxa must match the given taxa or their descendants
+    iconic_taxon_id: Identification iconic taxon ID
+    observation_iconic_taxon_id: Observation iconic taxon ID
+    lrank: Identification taxon must have this rank or higher
+    hrank: Identification taxon must have this rank or lower
+    observation_lrank: Observation taxon must have this rank or higher
+    observation_hrank: Observation taxon must have this rank or lower
+    without_taxon_id: Exclude Identifications of these taxa and their descendants
+    without_observation_taxon_id: Exclude Identifications of observations of these taxa and their descendants
+    d1: Must be observed on or after this date
+    d2: Must be observed on or before this date
+    observation_created_d1: Observation must be created on or after this date
+    observation_created_d2: Observation must be created on or before this date
+    observed_d1: Observation must be observed on or after this date
+    observed_d2: Observation must be observed on or before this date
+    id_above: Must have an ID above this value
+    id_below: Must have an ID below this value
+    """
+
+
 # Observations
 # --------------------
 
