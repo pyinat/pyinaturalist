@@ -1,7 +1,17 @@
 # History
 
+## 0.13
+
+### New Endpoints
+* Added new functions for **Identifications** endpoints: `get_identifications()` and `get_identifications_by_id()`
+
+### Other Changes
+* Added global rate-limiting to stay within the rates suggested in
+  [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
+  (per second, minute, and day)
+
 ## 0.12 (2021-02-02)
-[See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/3?closed=1) 
+[See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/3?closed=1)
 
 ### New Endpoints
 * Added new function for **Observation Histogram** endpoint: `get_observation_histogram()`
