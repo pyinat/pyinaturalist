@@ -1,16 +1,33 @@
 """ Some common functions for HTTP requests used by both the Node and REST API modules """
 import threading
+from contextlib import contextmanager
 from logging import getLogger
 from os import getenv
+from time import sleep
 from typing import Dict, List, Union
 from unittest.mock import Mock
 
 import requests
 
 import pyinaturalist
-from pyinaturalist.constants import WRITE_HTTP_METHODS
+from pyinaturalist.constants import MAX_DELAY, WRITE_HTTP_METHODS
+from pyinaturalist.exceptions import TooManyRequests
 from pyinaturalist.forge_utils import copy_signature
 from pyinaturalist.request_params import preprocess_request_params, validate_ids
+
+# Request rate limits. Only compatible with python 3.7+.
+# TODO: Remove try-except after dropping support for python 3.6
+try:
+    from pyrate_limiter import BucketFullException, Duration, Limiter, RequestRate
+
+    REQUEST_RATES = [
+        RequestRate(5, Duration.SECOND),
+        RequestRate(60, Duration.MINUTE),
+        RequestRate(10000, Duration.DAY),
+    ]
+    RATE_LIMITER = Limiter(*REQUEST_RATES)
+except ImportError:
+    RATE_LIMITER = None
 
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=requests.Response)
@@ -18,17 +35,6 @@ MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0}
 
 logger = getLogger(__name__)
 thread_local = threading.local()
-
-
-def get_session() -> requests.Session:
-    """Get a Session object that will be reused across requests to take advantage of connection
-    pooling. This is especially relevant for large paginated requests. If used in a multi-threaded
-    context (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), a separate session
-    is used for each thread.
-    """
-    if not hasattr(thread_local, "session"):
-        thread_local.session = requests.Session()
-    return thread_local.session
 
 
 def request(
@@ -42,8 +48,8 @@ def request(
     session: requests.Session = None,
     **kwargs,
 ) -> requests.Response:
-    """Wrapper around :py:func:`requests.request` that supports dry-run mode and
-    adds appropriate headers.
+    """Wrapper around :py:func:`requests.request` that supports dry-run mode and rate-limiting,
+    and adds appropriate headers.
 
     Args:
         method: HTTP method
@@ -78,31 +84,69 @@ def request(
         log_request(method, url, params=params, headers=headers, **kwargs)
         return MOCK_RESPONSE
     else:
-        return session.request(method, url, params=params, headers=headers, **kwargs)
+        with apply_rate_limit(RATE_LIMITER, max_delay=MAX_DELAY):
+            return session.request(method, url, params=params, headers=headers, **kwargs)
 
 
 @copy_signature(request, exclude='method')
 def delete(url: str, **kwargs) -> requests.Response:
-    """ Wrapper around :py:func:`requests.delete` that supports dry-run mode """
+    """Wrapper around :py:func:`requests.delete` that supports dry-run mode and rate-limiting"""
     return request('DELETE', url, **kwargs)
 
 
 @copy_signature(request, exclude='method')
 def get(url: str, **kwargs) -> requests.Response:
-    """ Wrapper around :py:func:`requests.get` that supports dry-run mode """
+    """Wrapper around :py:func:`requests.get` that supports dry-run mode and rate-limiting"""
     return request('GET', url, **kwargs)
 
 
 @copy_signature(request, exclude='method')
 def post(url: str, **kwargs) -> requests.Response:
-    """ Wrapper around :py:func:`requests.post` that supports dry-run mode """
+    """Wrapper around :py:func:`requests.post` that supports dry-run mode and rate-limiting"""
     return request('POST', url, **kwargs)
 
 
 @copy_signature(request, exclude='method')
 def put(url: str, **kwargs) -> requests.Response:
-    """ Wrapper around :py:func:`requests.put` that supports dry-run mode """
+    """Wrapper around :py:func:`requests.put` that supports dry-run mode and rate-limiting"""
     return request('PUT', url, **kwargs)
+
+
+@contextmanager
+def apply_rate_limit(limiter, bucket: str = None, max_delay: int = None):
+    """Add delays in between requests to stay within the rate limits.
+
+    Args:
+        limiter: :py:class:`pyrate_limiter.Limiter` object
+        bucket: Optional name of a separate 'bucket' with which to track rate limits
+        max_delay: Maximum time in seconds to allow waiting before aborting the request
+    """
+    if limiter:
+        # Check if there are more requests left in our "bucket"
+        try:
+            limiter.try_acquire(bucket or pyinaturalist.user_agent)
+        # Abort if we need to wait for too long; otherwise, wait until we can send more requests
+        except BucketFullException as e:
+            delay_time = e.meta_info.get('remaining_time', 1)
+            logger.debug(str(e.meta_info))
+            logger.info(f'Rate limit reached; {delay_time} seconds remaining before next request')
+
+            if max_delay and delay_time > max_delay:
+                raise TooManyRequests(e)
+            sleep(delay_time)
+
+    yield
+
+
+def get_session() -> requests.Session:
+    """Get a Session object that will be reused across requests to take advantage of connection
+    pooling. This is especially relevant for large paginated requests. If used in a multi-threaded
+    context (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), a separate session
+    is used for each thread.
+    """
+    if not hasattr(thread_local, "session"):
+        thread_local.session = requests.Session()
+    return thread_local.session
 
 
 def is_dry_run_enabled(method: str) -> bool:
