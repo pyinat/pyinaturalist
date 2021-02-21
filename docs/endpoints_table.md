@@ -20,9 +20,9 @@ POST              | /flags                                      |
 DELETE            | /flags/{id}                                 |
 PUT               | /flags/{id}                                 |
 DELETE            | /identifications/{id}                       |
-GET               | /identifications/{id}                       |
+GET               | /identifications/{id}                       | yes
 PUT               | /identifications/{id}                       |
-GET               | /identifications                            |
+GET               | /identifications                            | yes
 POST              | /identifications                            |
 GET               | /identifications/categories                 |
 GET               | /identifications/species_counts             |

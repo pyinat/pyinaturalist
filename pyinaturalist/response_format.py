@@ -164,7 +164,7 @@ def convert_offset(
         offset = parse_offset(tz_offset, tz_name)
         return datetime_obj.replace(tzinfo=offset)
     except (AttributeError, TypeError, ValueError) as e:
-        logger.info(f'Could not parse offset: {tz_offset}: {str(e)}')
+        logger.debug(f'Could not parse offset: {tz_offset}: {str(e)}')
         return None
 
 
@@ -216,7 +216,7 @@ def try_datetime(timestamp: str, **kwargs) -> Optional[datetime]:
             simplefilter('ignore', category=UnknownTimezoneWarning)
             return parse_date(timestamp, **kwargs)
     except (AttributeError, TypeError, ValueError) as e:
-        logger.info(f'Could not parse timestamp: {timestamp}: {str(e)}')
+        logger.debug(f'Could not parse timestamp: {timestamp}: {str(e)}')
         return None
 
 
