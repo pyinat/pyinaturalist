@@ -12,6 +12,7 @@ PHOTO_BASE_URL = 'https://static.inaturalist.org/photos'
 KEYRING_KEY = '/inaturalist'
 PER_PAGE_RESULTS = 200  # Default number of records per page for paginated queries
 THROTTLING_DELAY = 1.0  # Delay between paginated queries, in seconds
+MAX_DELAY = 60  # Maximum time to wait for rate-limiting before aborting
 
 # Toggle dry-run mode: this will run and log mock HTTP requests instead of real ones
 DRY_RUN_ENABLED = False  # Mock all requests, including GET

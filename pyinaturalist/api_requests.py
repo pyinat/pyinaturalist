@@ -10,15 +10,13 @@ from unittest.mock import Mock
 import requests
 
 import pyinaturalist
-from pyinaturalist.constants import WRITE_HTTP_METHODS
+from pyinaturalist.constants import MAX_DELAY, WRITE_HTTP_METHODS
+from pyinaturalist.exceptions import TooManyRequests
 from pyinaturalist.forge_utils import copy_signature
 from pyinaturalist.request_params import preprocess_request_params, validate_ids
 
-# Mock response content to return in dry-run mode
-MOCK_RESPONSE = Mock(spec=requests.Response)
-MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0}
-
 # Request rate limits. Only compatible with python 3.7+.
+# TODO: Remove try-except after dropping support for python 3.6
 try:
     from pyrate_limiter import BucketFullException, Duration, Limiter, RequestRate
 
@@ -31,7 +29,9 @@ try:
 except ImportError:
     RATE_LIMITER = None
 
-MAX_RETRIES = 15
+# Mock response content to return in dry-run mode
+MOCK_RESPONSE = Mock(spec=requests.Response)
+MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0}
 
 logger = getLogger(__name__)
 thread_local = threading.local()
@@ -84,7 +84,7 @@ def request(
         log_request(method, url, params=params, headers=headers, **kwargs)
         return MOCK_RESPONSE
     else:
-        with apply_rate_limit():
+        with apply_rate_limit(RATE_LIMITER, max_delay=MAX_DELAY):
             return session.request(method, url, params=params, headers=headers, **kwargs)
 
 
@@ -112,33 +112,28 @@ def put(url: str, **kwargs) -> requests.Response:
     return request('PUT', url, **kwargs)
 
 
-# TODO: This could be simplified after implementing:
-#  https://github.com/vutran1710/PyrateLimiter/issues/19
 @contextmanager
-def apply_rate_limit():
-    """Add delays in between requests to stay within the rate limits."""
-    # Bypass rate-limiting for python 3.6
-    n_retries = 0 if RATE_LIMITER else MAX_RETRIES
+def apply_rate_limit(limiter, bucket: str = None, max_delay: int = None):
+    """Add delays in between requests to stay within the rate limits.
 
-    while n_retries < MAX_RETRIES:
+    Args:
+        limiter: :py:class:`pyrate_limiter.Limiter` object
+        bucket: Optional name of a separate 'bucket' with which to track rate limits
+        max_delay: Maximum time in seconds to allow waiting before aborting the request
+    """
+    if limiter:
         # Check if there are more requests left in our "bucket"
         try:
-            RATE_LIMITER.try_acquire(pyinaturalist.user_agent)
-            break
-
-        # If not, wait until there are
+            limiter.try_acquire(bucket or pyinaturalist.user_agent)
+        # Abort if we need to wait for too long; otherwise, wait until we can send more requests
         except BucketFullException as e:
-            if n_retries == 0:
-                logger.info(e.message)
-                logger.info('Rate limit reached; pausing before next request')
-            # Abort if we've waited too long (e.g., we've likely reached the daily limit)
-            elif n_retries == MAX_RETRIES:
-                logger.error(f'Max retries ({MAX_RETRIES}) reached! Aborting request.')
-                raise
-            logger.info(f'Sleeping: {0.5 * (n_retries + 1)}')
-            sleep(0.5 * (n_retries + 1))
+            delay_time = e.meta_info.get('remaining_time', 1)
+            logger.debug(str(e.meta_info))
+            logger.info(f'Rate limit reached; {delay_time} seconds remaining before next request')
 
-        n_retries += 1
+            if max_delay and delay_time > max_delay:
+                raise TooManyRequests(e)
+            sleep(delay_time)
 
     yield
 
