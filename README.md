@@ -25,11 +25,14 @@ See full project documentation at https://pyinaturalist.readthedocs.io.
 [iNaturalist](https://www.inaturalist.org) is a rich source of biodiversity data, and offers an
 extensive API to interact with nearly every aspect of its platform.
 
-If you want to explore or analyze these data using python, then pyinaturalist can help.
-It adds a number of python-specific conveniences, including:
+If you want to make use of these data within a python application, script, or notebook, then
+pyinaturalist can help. It adds a number of python-specific conveniences, including:
 
-* **Requests:** Simplified usage with python types and data structures rather than raw request parameter strings
-* **Responses:** Type conversions from JSON primitives to things you would expect in python
+* **Requests:** Simplified usage with python types and data structures
+* **Responses:** Type conversions to things you would expect in python
+  (for example, timestamps to timezone-aware `datetime` objects)
+* **Server-Friendly Usage:** Client-side rate-limiting that follows the
+  [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
 * **Typing:** Complete parameter definitions with type annotations, which significantly enhances
   usability within an IDE, Jupyter notebook, or any other environment with type checking & autocompletion
 * **Messages:** Improved error handling, which means less time spent figuring out why an API call failed
@@ -40,6 +43,7 @@ It adds a number of python-specific conveniences, including:
 Many of the most relevant API endpoints are included:
 * **Searching for:**
     * controlled terms
+    * identifications
     * observations
     * observation fields
     * observation species counts
