@@ -4,16 +4,16 @@ from contextlib import contextmanager
 from logging import getLogger
 from os import getenv
 from time import sleep
-from typing import Dict, List, Union
+from typing import Dict
 from unittest.mock import Mock
 
 import requests
 
 import pyinaturalist
-from pyinaturalist.constants import MAX_DELAY, WRITE_HTTP_METHODS
+from pyinaturalist.constants import MAX_DELAY, WRITE_HTTP_METHODS, MultiInt, RequestParams
 from pyinaturalist.exceptions import TooManyRequests
 from pyinaturalist.forge_utils import copy_signature
-from pyinaturalist.request_params import preprocess_request_params, validate_ids
+from pyinaturalist.request_params import prepare_request
 
 # Request rate limits. Only compatible with python 3.7+.
 # TODO: Remove try-except after dropping support for python 3.6
@@ -42,8 +42,8 @@ def request(
     url: str,
     access_token: str = None,
     user_agent: str = None,
-    ids: Union[str, List] = None,
-    params: Dict = None,
+    ids: MultiInt = None,
+    params: RequestParams = None,
     headers: Dict = None,
     session: requests.Session = None,
     **kwargs,
@@ -64,19 +64,8 @@ def request(
     Returns:
         API response
     """
-    # Set user agent and authentication headers, if specified
+    url, params, headers = prepare_request(url, access_token, user_agent, ids, params, headers)
     session = session or get_session()
-    headers = headers or {}
-    headers['Accept'] = 'application/json'
-    headers['User-Agent'] = user_agent or pyinaturalist.user_agent
-    if access_token:
-        headers['Authorization'] = f'Bearer {access_token}'
-
-    params = preprocess_request_params(params)
-
-    # If one or more REST resources are requested by ID, update the request URL accordingly
-    if ids:
-        url = url.rstrip('/') + '/' + validate_ids(ids)
 
     # Run either real request or mock request depending on settings
     if is_dry_run_enabled(method):

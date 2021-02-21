@@ -9,7 +9,8 @@ from logging import getLogger
 from os.path import abspath, expanduser
 from typing import Any, BinaryIO, Dict, Iterable, List, Optional, Tuple
 
-from pyinaturalist.constants import FileOrPath, RequestParams
+import pyinaturalist
+from pyinaturalist.constants import FileOrPath, MultiInt, RequestParams
 
 # Basic observation attributes to include by default in geojson responses
 DEFAULT_OBSERVATION_ATTRS = [
@@ -156,8 +157,43 @@ MULTIPLE_CHOICE_ERROR_MSG = (
 logger = getLogger(__name__)
 
 
-def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any]:
-    """ Perform type conversions, sanity checks, etc. on request parameters """
+def prepare_request(
+    url: str,
+    access_token: str = None,
+    user_agent: str = None,
+    ids: MultiInt = None,
+    params: RequestParams = None,
+    headers: Dict = None,
+) -> Tuple[str, RequestParams, Dict]:
+    """Translate some ``pyinaturalist``-specific params into standard ``requests``
+    params and headers, and other request param preprocessing
+
+    Returns:
+        Tuple of ``(URL, params, headers)``
+    """
+    # Prepare request params
+    params = preprocess_request_params(params)
+
+    # Prepare user and authentication headers
+    headers = headers or {}
+    headers['Accept'] = 'application/json'
+    if access_token:
+        headers['Authorization'] = f'Bearer {access_token}'
+
+    # Allow user agent to be passed either in params or as a separate kwarg
+    if 'user_agent' in params:
+        user_agent = params.pop('user_agent')
+    headers['User-Agent'] = user_agent or pyinaturalist.user_agent
+
+    # If one or more REST resources are requested by ID, update the request URL accordingly
+    if ids:
+        url = url.rstrip('/') + '/' + validate_ids(ids)
+
+    return url, params, headers
+
+
+def preprocess_request_params(params: Optional[RequestParams]) -> RequestParams:
+    """Perform type conversions, sanity checks, etc. on request parameters"""
     if not params:
         return {}
 
