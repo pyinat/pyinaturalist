@@ -113,6 +113,7 @@ GEOPRIVACY_LEVELS = ['obscured', 'obscured_private', 'open', 'private']
 HAS_PROPERTIES = ['photo', 'geo']
 HISTOGRAM_DATE_FIELDS = ['created', 'observed']
 HISTOGRAM_INTERVALS = ['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
+ID_CATEGORIES = ['improving', 'supporting', 'leading', 'maverick']
 ORDER_DIRECTIONS = ['asc', 'desc']
 PROJECT_TYPES = ['collection', 'umbrella']
 QUALITY_GRADES = ['casual', 'needs_id', 'research']
@@ -121,6 +122,7 @@ SEARCH_PROPERTIES = ['names', 'tags', 'description', 'place']
 
 # Multiple-choice request parameters, with keys mapped to their possible choices (non-endpoint-specific)
 MULTIPLE_CHOICE_PARAMS = {
+    'category': ID_CATEGORIES,
     'csi': CONSERVATION_STATUSES,
     'date_field': HISTOGRAM_DATE_FIELDS,
     'extra': EXTRA_PROPERTIES,
@@ -134,6 +136,9 @@ MULTIPLE_CHOICE_PARAMS = {
     'lrank': RANKS,
     'max_rank': RANKS,
     'min_rank': RANKS,
+    'observation_hrank': RANKS,
+    'observation_lrank': RANKS,
+    'observation_rank': RANKS,
     'order': ORDER_DIRECTIONS,
     'photo_license': CC_LICENSES,
     'quality_grade': QUALITY_GRADES,

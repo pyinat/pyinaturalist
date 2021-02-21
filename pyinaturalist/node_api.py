@@ -137,6 +137,69 @@ def get_controlled_terms(taxon_id: int = None, user_agent: str = None) -> JsonRe
     return response.json()
 
 
+# Identifications
+# --------------------
+
+
+def get_identifications_by_id(identification_id: MultiInt, user_agent: str = None) -> JsonResponse:
+    """Get one or more identification records by ID.
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications_id
+
+    Example:
+
+        >>> get_identifications_by_id(155554373)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_identifications.py
+
+    Args:
+        identification_id: Get taxa with this ID. Multiple values are allowed.
+
+    Returns:
+        Response dict containing identification records
+    """
+    r = node_api_get('identifications', ids=identification_id, user_agent=user_agent)
+    r.raise_for_status()
+
+    identifications = r.json()
+    identifications['results'] = convert_all_timestamps(identifications['results'])
+    return identifications
+
+
+@document_request_params([docs._identification_params, docs._pagination, docs._only_id])
+def get_identifications(user_agent: str = None, **params) -> JsonResponse:
+    """Search identifications.
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications
+
+    Example:
+
+        >>> # Get all of your own species-level identifications
+        >>> response = get_identifications(user_login='my_username', rank='species')
+        >>> print([f"{i['user']['login']}: {i['taxon_id']} ({i['category']})" for i in response['results']])
+        my_username: 60132 (supporting)
+        my_username: 47126 (improving)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_identifications.py
+
+    Returns:
+        Response dict containing identification records
+    """
+    params = translate_rank_range(params)
+    r = node_api_get('identifications', params=params, user_agent=user_agent)
+    r.raise_for_status()
+
+    identifications = r.json()
+    identifications['results'] = convert_all_timestamps(identifications['results'])
+    return identifications
+
+
 # Observations
 # --------------------
 
@@ -262,7 +325,7 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
             .. literalinclude:: ../sample_data/get_observations_node.py
 
     Returns:
-        JSON response containing observation records
+        Response dict containing observation records
     """
     validate_multiple_choice_param(params, 'order_by', NODE_OBS_ORDER_BY_PROPERTIES)
     r = node_api_get('observations', params=params, user_agent=user_agent)
@@ -339,7 +402,7 @@ def get_observation_species_counts(user_agent: str = None, **params) -> JsonResp
             .. literalinclude:: ../sample_data/get_observation_species_counts.py
 
     Returns:
-        JSON response containing taxon records with counts
+        Response dict containing taxon records with counts
     """
     r = node_api_get(
         'observations/species_counts',
@@ -449,7 +512,7 @@ def get_observation_observers(user_agent: str = None, **params) -> JsonResponse:
                 :language: JSON
 
     Returns:
-        JSON response of observers
+        Response dict of observers
     """
 
     params.setdefault('per_page', 500)  # patch for API issue #235
@@ -480,7 +543,7 @@ def get_observation_identifiers(user_agent: str = None, **params) -> JsonRespons
                 :language: JSON
 
     Returns:
-        JSON response of identifiers
+        Response dict of identifiers
 
     Notes:
     The ``GET /observations/identifiers`` API node is currently limited to
@@ -525,7 +588,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
         place_id: Get a place with this ID. Multiple values are allowed.
 
     Returns:
-        JSON response containing place records
+        Response dict containing place records
     """
     r = node_api_get('places', ids=place_id, user_agent=user_agent)
     r.raise_for_status()
@@ -586,7 +649,7 @@ def get_places_nearby(user_agent: str = None, **params) -> JsonResponse:
             .. literalinclude:: ../sample_data/get_places_nearby.py
 
     Returns:
-        JSON response containing place records, divided into 'standard' and 'community' places.
+        Response dict containing place records, divided into 'standard' and 'community' places.
     """
     r = node_api_get('places/nearby', params=params, user_agent=user_agent)
     r.raise_for_status()
@@ -617,7 +680,7 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
         q: Name must begin with this value
 
     Returns:
-        JSON response containing place records
+        Response dict containing place records
     """
     r = node_api_get('places/autocomplete', params={'q': q}, user_agent=user_agent)
     r.raise_for_status()
@@ -667,7 +730,7 @@ def get_projects(user_agent: str = None, **params) -> JsonResponse:
             .. literalinclude:: ../sample_data/get_projects.py
 
     Returns:
-        JSON response containing project records
+        Response dict containing project records
     """
     validate_multiple_choice_param(params, 'order_by', PROJECT_ORDER_BY_PROPERTIES)
     r = node_api_get('projects', params=params, user_agent=user_agent)
@@ -701,7 +764,7 @@ def get_projects_by_id(
             object instead of simply an ID
 
     Returns:
-        JSON response containing project records
+        Response dict containing project records
     """
     r = node_api_get(
         'projects',
@@ -740,7 +803,7 @@ def get_taxa(user_agent: str = None, **params) -> JsonResponse:
                 :language: JSON
 
     Returns:
-        JSON response containing taxon records
+        Response dict containing taxon records
     """
     params = translate_rank_range(params)
     r = node_api_get('taxa', params=params, user_agent=user_agent)
@@ -777,7 +840,7 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
         taxon_id: Get taxa with this ID. Multiple values are allowed.
 
     Returns:
-        JSON response containing taxon records
+        Response dict containing taxon records
     """
     r = node_api_get('taxa', ids=taxon_id, user_agent=user_agent)
     r.raise_for_status()
@@ -816,7 +879,7 @@ def get_taxa_autocomplete(user_agent: str = None, **params) -> JsonResponse:
                 :language: JSON
 
     Returns:
-        JSON response containing taxon records
+        Response dict containing taxon records
     """
     params = translate_rank_range(params)
     r = node_api_get('taxa/autocomplete', params=params, user_agent=user_agent)
