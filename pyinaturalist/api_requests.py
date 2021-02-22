@@ -1,4 +1,4 @@
-""" Some common functions for HTTP requests used by both the Node and REST API modules """
+"""Some common functions for HTTP requests used by all API modules"""
 import threading
 from contextlib import contextmanager
 from logging import getLogger

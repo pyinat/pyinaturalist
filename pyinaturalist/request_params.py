@@ -1,4 +1,7 @@
-"""Helper functions for processing and validating request parameters"""
+"""Helper functions for processing and validating request parameters.
+The main purpose of these functions is to support some python-specific conveniences and translate
+them into standard request parameters, along with request validation that makes debugging easier.
+"""
 import warnings
 from datetime import date, datetime
 from dateutil.parser import parse as parse_timestamp
@@ -198,6 +201,7 @@ def preprocess_request_params(params: Optional[RequestParams]) -> RequestParams:
         return {}
 
     params = validate_multiple_choice_params(params)
+    params = convert_pagination_params(params)
     params = convert_bool_params(params)
     params = convert_datetime_params(params)
     params = convert_list_params(params)
@@ -256,6 +260,14 @@ def convert_observation_fields(params: RequestParams) -> RequestParams:
         params['observation_field_values_attributes'] = [
             {'observation_field_id': k, 'value': v} for k, v in obs_fields.items()
         ]
+    return params
+
+
+def convert_pagination_params(params: RequestParams) -> RequestParams:
+    """Allow ``count_only=True`` as a slightly more intuitive shortcut to only get a count of
+    results"""
+    if params.pop('count_only', None) is True:
+        params['per_page'] = 0
     return params
 
 
