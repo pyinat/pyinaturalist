@@ -10,6 +10,7 @@ from pyinaturalist.request_params import (
     convert_datetime_params,
     convert_list_params,
     convert_observation_fields,
+    convert_pagination_params,
     ensure_file_obj,
     get_interval_ranges,
     preprocess_request_params,
@@ -69,6 +70,19 @@ def test_convert_observation_fields():
     assert params['observation_field_values_attributes'] == [
         {'observation_field_id': 1, 'value': 'value'}
     ]
+
+
+def test_convert_pagination_params():
+    params = convert_pagination_params({'per_page': 100})
+    assert params['per_page'] == 100
+
+    params = convert_pagination_params({'per_page': 100, 'count_only': True})
+    assert params['per_page'] == 0
+    assert 'count_only' not in params
+
+    params = convert_pagination_params({'per_page': 100, 'count_only': False})
+    assert params['per_page'] == 100
+    assert 'count_only' not in params
 
 
 def test_ensure_file_obj__file_path():
