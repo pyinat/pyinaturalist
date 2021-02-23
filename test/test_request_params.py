@@ -1,4 +1,3 @@
-import os
 import pytest
 from datetime import date, datetime
 from dateutil.tz import gettz
@@ -6,13 +5,12 @@ from io import BytesIO
 from tempfile import NamedTemporaryFile
 from unittest.mock import patch
 
-import pyinaturalist.node_api
-import pyinaturalist.rest_api
 from pyinaturalist.request_params import (
     convert_bool_params,
     convert_datetime_params,
     convert_list_params,
     convert_observation_fields,
+    convert_pagination_params,
     ensure_file_obj,
     get_interval_ranges,
     preprocess_request_params,
@@ -21,7 +19,6 @@ from pyinaturalist.request_params import (
     validate_multiple_choice_param,
     validate_multiple_choice_params,
 )
-from test.conftest import MOCK_CREDS_ENV, get_mock_args_for_signature, get_module_http_functions
 
 TEST_PARAMS = {
     'is_active': False,
@@ -73,6 +70,19 @@ def test_convert_observation_fields():
     assert params['observation_field_values_attributes'] == [
         {'observation_field_id': 1, 'value': 'value'}
     ]
+
+
+def test_convert_pagination_params():
+    params = convert_pagination_params({'per_page': 100})
+    assert params['per_page'] == 100
+
+    params = convert_pagination_params({'per_page': 100, 'count_only': True})
+    assert params['per_page'] == 0
+    assert 'count_only' not in params
+
+    params = convert_pagination_params({'per_page': 100, 'count_only': False})
+    assert params['per_page'] == 100
+    assert 'count_only' not in params
 
 
 def test_ensure_file_obj__file_path():
@@ -166,64 +176,6 @@ def test_validate_ids__invalid(value):
 def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_strip):
     preprocess_request_params({'id': 1})
     assert all([mock_bool.called, mock_datetime.called, mock_list.called, mock_strip.called])
-
-
-# The following tests ensure that all API requests call preprocess_request_params() at some point
-# Almost all logic except the request is mocked out so this can generically apply to all API functions
-# Using parametrization here so that on failure, pytest will show the specific function that failed
-@pytest.mark.parametrize(
-    'http_function', get_module_http_functions(pyinaturalist.node_api).values()
-)
-@patch('pyinaturalist.request_params.translate_rank_range')
-@patch('pyinaturalist.response_format.as_geojson_feature')
-@patch('pyinaturalist.node_api.format_histogram')
-@patch('pyinaturalist.node_api.convert_all_coordinates', side_effect=lambda x: x)
-@patch('pyinaturalist.node_api.convert_all_place_coordinates', side_effect=lambda x: x)
-@patch('pyinaturalist.api_requests.preprocess_request_params')
-@patch('pyinaturalist.api_requests.requests.Session.request')
-def test_all_node_requests_use_param_conversion(
-    request,
-    preprocess_request_params,
-    convert_all_place_coordinates,
-    convert_all_coordinates,
-    format_histogram,
-    as_geojson_feature,
-    translate_rank_range,
-    http_function,
-):
-    request().json.return_value = {'total_results': 1, 'results': [{'id': 1}]}
-    mock_args = get_mock_args_for_signature(http_function)
-    http_function(*mock_args)
-    assert preprocess_request_params.call_count == 1
-
-
-@pytest.mark.parametrize(
-    'http_function', get_module_http_functions(pyinaturalist.rest_api).values()
-)
-@patch.dict(os.environ, MOCK_CREDS_ENV)
-@patch('pyinaturalist.rest_api.convert_all_coordinates')
-@patch('pyinaturalist.rest_api.sleep')
-@patch('pyinaturalist.api_requests.preprocess_request_params')
-@patch('pyinaturalist.api_requests.requests.Session.request')
-def test_all_rest_requests_use_param_conversion(
-    request, preprocess_request_params, sleep, convert_all_place_coordinates, http_function
-):
-    # Handle the one API response that returns a list instead of a dict
-    if http_function in [
-        pyinaturalist.rest_api.get_observation_fields,
-        pyinaturalist.rest_api.get_all_observation_fields,
-    ]:
-        request().json.return_value = []
-    else:
-        request().json.return_value = {
-            'total_results': 1,
-            'access_token': '',
-            'results': [],
-        }
-
-    mock_args = get_mock_args_for_signature(http_function)
-    http_function(*mock_args)
-    assert preprocess_request_params.call_count == 1
 
 
 def test_validate_multiple_choice_param():
