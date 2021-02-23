@@ -44,7 +44,7 @@ from pyinaturalist.response_format import convert_all_coordinates, convert_all_t
         docs._pagination,
     ]
 )
-def get_observations(user_agent: str = None, **params) -> Union[List, str]:
+def get_observations(**params) -> Union[List, str]:
     """Get observation data, optionally in an alternative format. Also see
     :py:func:`.get_geojson_observations` for GeoJSON format (not included here because it wraps
     a separate API endpoint).
@@ -103,7 +103,6 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
     response = get(
         f'{API_V0_BASE_URL}/observations.{response_format}',
         params=params,
-        user_agent=user_agent,
     )
 
     if response_format == 'json':
@@ -116,7 +115,7 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
 
 
 @document_request_params([docs._search_query, docs._page])
-def get_observation_fields(user_agent: str = None, **params) -> ListResponse:
+def get_observation_fields(**params) -> ListResponse:
     """Search observation fields. Observation fields are basically typed data fields that
     users can attach to observation.
 
@@ -140,7 +139,6 @@ def get_observation_fields(user_agent: str = None, **params) -> ListResponse:
     response = get(
         f'{API_V0_BASE_URL}/observation_fields.json',
         params=params,
-        user_agent=user_agent,
     )
     response.raise_for_status()
 
@@ -243,9 +241,8 @@ def put_observation_field_values(
     return response.json()
 
 
-# TODO: more thorough usage example
 @document_request_params([docs._access_token, docs._create_observation])
-def create_observation(access_token: str = None, user_agent: str = None, **params) -> ListResponse:
+def create_observation(access_token: str = None, **params) -> ListResponse:
     """Create a new observation.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#post-observations
@@ -292,7 +289,6 @@ def create_observation(access_token: str = None, user_agent: str = None, **param
         url=f'{API_V0_BASE_URL}/observations.json',
         json={'observation': params},
         access_token=access_token,
-        user_agent=user_agent,
     )
     response.raise_for_status()
     return response.json()
@@ -309,7 +305,6 @@ def create_observation(access_token: str = None, user_agent: str = None, **param
 def update_observation(
     observation_id: int,
     access_token: str = None,
-    user_agent: str = None,
     **params,
 ) -> ListResponse:
     """
@@ -365,7 +360,6 @@ def update_observation(
         url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
         json={'observation': params},
         access_token=access_token,
-        user_agent=user_agent,
     )
     response.raise_for_status()
     return response.json()
@@ -438,8 +432,8 @@ def delete_observation(observation_id: int, access_token: str = None, user_agent
     response = delete(
         url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
         access_token=access_token,
-        user_agent=user_agent,
         headers={'Content-type': 'application/json'},
+        user_agent=user_agent,
     )
     if response.status_code == 404:
         raise ObservationNotFound

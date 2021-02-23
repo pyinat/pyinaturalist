@@ -5,6 +5,18 @@
 ### New Endpoints
 * Added new functions for **Identifications** endpoints: `get_identifications()` and `get_identifications_by_id()`
 
+### Modified Endpoints
+* Added `count_only=True` as an alias for `per_page=0` (to get only result counts).
+  This applies to all functions that support pagination:
+  * `node_api.get_identifications()`
+  * `node_api.get_observations()`
+  * `node_api.get_observation_species_counts()`
+  * `node_api.get_observation_observers()`
+  * `node_api.get_observation_identifiers()`
+  * `node_api.get_projects()`
+  * `rest_api.get_observations()`
+  * `rest_api.get_observation_fields()`
+
 ### Other Changes
 * Added global rate-limiting to stay within the rates suggested in
   [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
