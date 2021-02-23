@@ -13,23 +13,16 @@ Functions
 
 """
 from logging import getLogger
-from time import sleep
 from typing import List
 
 import requests
 
 from pyinaturalist import api_docs as docs
 from pyinaturalist.api_requests import get
-from pyinaturalist.constants import (
-    API_V1_BASE_URL,
-    PER_PAGE_RESULTS,
-    THROTTLING_DELAY,
-    HistogramResponse,
-    JsonResponse,
-    MultiInt,
-)
+from pyinaturalist.constants import API_V1_BASE_URL, HistogramResponse, JsonResponse, MultiInt
 from pyinaturalist.exceptions import ObservationNotFound, TaxonNotFound
 from pyinaturalist.forge_utils import document_request_params
+from pyinaturalist.pagination import paginate
 from pyinaturalist.request_params import (
     DEFAULT_OBSERVATION_ATTRS,
     NODE_OBS_ORDER_BY_PROPERTIES,
@@ -338,17 +331,10 @@ def get_observations(**params) -> JsonResponse:
     return observations
 
 
-# TODO: Consolidate logic from get_all_*() functions into a generic pagination function
-#       This would have two variations: by page number (most common) and by ID (as seen below)
 @document_request_params([*docs._get_observations, docs._only_id])
 def get_all_observations(**params) -> List[JsonResponse]:
     """Like :py:func:`get_observations()`, but handles pagination and returns all results in one
     call. Explicit pagination parameters will be ignored.
-
-    Notes on pagination from the iNaturalist documentation:
-    'The large size of the observations index prevents us from supporting the page parameter when
-    retrieving records from large result sets. If you need to retrieve large numbers of records,
-    use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead.'
 
     Example:
 
@@ -361,27 +347,7 @@ def get_all_observations(**params) -> List[JsonResponse]:
         Combined list of observation records. Response format is the same as the inner 'results'\
         object returned by :py:func:`.get_observations()`.
     """
-    results: List[JsonResponse] = []
-    id_above = 0
-    pagination_params = {
-        **params,
-        **{
-            'order_by': 'id',
-            'order': 'asc',
-            'per_page': PER_PAGE_RESULTS,
-        },
-    }
-
-    while True:
-        pagination_params['id_above'] = id_above
-        page_obs = get_observations(**pagination_params)
-        results = results + page_obs.get('results', [])
-
-        if page_obs['total_results'] <= PER_PAGE_RESULTS:
-            return results
-
-        sleep(THROTTLING_DELAY)
-        id_above = results[-1]['id']
+    return paginate(get_observations, method='id', **params)
 
 
 @document_request_params([*docs._get_observations, docs._pagination])
@@ -436,26 +402,7 @@ def get_all_observation_species_counts(**params) -> List[JsonResponse]:
     Returns:
         Combined list of taxon records with counts
     """
-    results: List[JsonResponse] = []
-    page = 1
-
-    pagination_params = {
-        **params,
-        **{
-            'per_page': PER_PAGE_RESULTS,
-        },
-    }
-
-    while True:
-        pagination_params['page'] = page
-        page_obs = get_observation_species_counts(**pagination_params)
-        results = results + page_obs.get('results', [])
-
-        if len(results) == page_obs['total_results']:
-            return results
-
-        sleep(THROTTLING_DELAY)
-        page += 1
+    return paginate(get_observation_species_counts, **params)
 
 
 @document_request_params([*docs._get_observations, docs._geojson_properties])
