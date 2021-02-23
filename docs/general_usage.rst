@@ -123,6 +123,9 @@ macOS and Linux systems. See this guide for setup info:
 
    Credentials storage with keyring + KeePassXC
 
+Pagination
+----------
+TODO
 
 Dry-run mode
 ------------

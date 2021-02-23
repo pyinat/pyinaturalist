@@ -7,7 +7,7 @@ from unittest.mock import patch
 from urllib.parse import urlencode
 
 import pyinaturalist
-from pyinaturalist.constants import API_V1_BASE_URL, PER_PAGE_RESULTS
+from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.node_api import (
     get_all_observation_species_counts,
@@ -172,11 +172,9 @@ def test_get_observations(requests_mock):
     assert len(first_result['place_ids']) == 13
 
 
-@patch('pyinaturalist.node_api.sleep')
+@patch('pyinaturalist.pagination.sleep')
 def test_get_all_observations(sleep, requests_mock):
-    # Make response appear as though there are more pages
     page_1 = load_sample_data('get_observations_node_page1.json')
-    page_1['total_results'] = PER_PAGE_RESULTS + 1
     page_2 = load_sample_data('get_observations_node_page2.json')
 
     requests_mock.get(
@@ -278,7 +276,8 @@ def test_get_observation_species_counts(requests_mock):
     assert first_result['taxon']['name'] == 'Harmonia axyridis'
 
 
-def test_get_all_observation_species_counts(requests_mock):
+@patch('pyinaturalist.pagination.sleep')
+def test_get_all_observation_species_counts(sleep, requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/observations/species_counts',
         [
@@ -298,6 +297,7 @@ def test_get_all_observation_species_counts(requests_mock):
     first_result = response[0]
     last_result = response[-1]
 
+    assert len(response) == 22
     assert first_result['count'] == 19
     assert first_result['taxon']['id'] == 27805
     assert first_result['taxon']['name'] == 'Notophthalmus viridescens'
