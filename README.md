@@ -11,6 +11,8 @@
 
 [![Run with Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
 
+![](docs/images/pyinaturalist_3b.png)
+
 Pyinaturalist is an iNaturalist API client for python.
 See full project documentation at https://pyinaturalist.readthedocs.io.
 
