@@ -411,7 +411,6 @@ def _projects_params(
     member_id: Project must have member with this user ID
     has_params: Must have search parameter requirements
     has_posts: Must have posts
-    per_page: Number of results to return in a page. The maximum value is generally 200 unless otherwise noted
     order_by: Sort order.
         ``distance`` only applies if lat and lng are specified.
         ``featured`` only applies if ``featured`` or ``noteworthy`` are true.
@@ -433,7 +432,6 @@ def _taxon_params(
     locale: str = None,
     preferred_place_id: int = None,
     all_names: bool = None,
-    per_page: int = None,
 ):
     """
     q: Name must begin with this value
@@ -447,8 +445,6 @@ def _taxon_params(
     locale: Locale preference for taxon common names
     preferred_place_id: Place preference for regional taxon common names
     all_names: Include all taxon names in the response
-    per_page: Number of results to return in a page. The maximum value is generally 200 unless
-        otherwise noted
     """
 
 
@@ -518,12 +514,6 @@ def _only_id(only_id: bool = False):
 def _observation_id(observation_id: int):
     """
     observation_id: iNaturalist observation ID
-    """
-
-
-def _page(page: int = None):
-    """
-    page: Page number of results to return
     """
 
 

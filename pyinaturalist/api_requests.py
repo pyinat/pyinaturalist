@@ -109,6 +109,7 @@ def put(url: str, **kwargs) -> requests.Response:
     return request('PUT', url, **kwargs)
 
 
+# TODO: Submit PR to add a contextmanager to pyrate-limiter
 @contextmanager
 def apply_rate_limit(limiter, bucket: str = None, max_delay: int = None):
     """Add delays in between requests to stay within the rate limits.

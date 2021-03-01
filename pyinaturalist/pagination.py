@@ -1,7 +1,8 @@
+from functools import wraps
 from logging import getLogger
 from math import ceil
 from time import sleep
-from typing import Callable, List
+from typing import Callable
 
 from pyinaturalist.constants import (
     EXPORT_URL,
@@ -15,7 +16,24 @@ from pyinaturalist.constants import (
 logger = getLogger(__name__)
 
 
-def paginate(api_func: Callable, method: str = 'page', **params) -> List[JsonResponse]:
+def add_paginate_all(method: str = 'page'):
+    """Decorator that adds auto-pagination support, invoked by passing ``page='all'`` to the wrapped
+    API function.
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(**params):
+            if params.get('page') == 'all':
+                return paginate_all(func, method=method, **params)
+            return func(**params)
+
+        return wrapper
+
+    return decorator
+
+
+def paginate_all(api_func: Callable, method: str = 'page', **params) -> JsonResponse:
     """Get all pages of a multi-page request. Explicit pagination parameters will be overridden.
 
     Args:
@@ -29,31 +47,29 @@ def paginate(api_func: Callable, method: str = 'page', **params) -> List[JsonRes
     use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead.'_
 
     Returns:
-        Combined list of results
+        Response dict containing combined results, in the same format as ``api_func``
     """
-    params['page'] = 1
-    params['per_page'] = PER_PAGE_RESULTS
     if method == 'id':
         params['order_by'] = 'id'
         params['order'] = 'asc'
+    else:
+        params['page'] = 1
+    params['per_page'] = PER_PAGE_RESULTS
 
     # Run an initial request to get request size
     response = api_func(**params)
     results = page_results = response['results']
-    total_results = response['total_results']
+    total_results = response.get('total_results')
     estimate_request_size(total_results)
 
-    # Show a warning if the request is too large
-    if total_results > LARGE_REQUEST_WARNING:
-        total_requests = ceil(total_results / PER_PAGE_RESULTS)
-        logger.warning(
-            f'This query will fetch {total_results} results in {total_requests} requests. '
-            'For bulk requests, consider using the iNat export tool instead.'
-        )
+    # Some endpoints (like get_observation_fields) don't return total_results for some reason
+    # Also check page size, in case total_results is off (race condition, outdated index, etc.)
+    def check_results():
+        more_results = total_results is None or len(results) < total_results
+        return more_results and len(page_results) > 0
 
     # Loop until we get all pages
-    # Also check page size, in case total_results is off (race condition, outdated db index, etc.)
-    while len(results) < total_results and len(page_results) > 0:
+    while check_results():
         if method == 'id':
             params['id_above'] = page_results[-1]['id']
         else:
@@ -63,13 +79,18 @@ def paginate(api_func: Callable, method: str = 'page', **params) -> List[JsonRes
         results += page_results
         sleep(THROTTLING_DELAY)
 
-    return results
+    return {
+        'results': results,
+        'total_results': len(results),
+    }
 
 
 def estimate_request_size(total_results):
     """Log the estimated total number of requests and rate-limiting delay, and show a warning if
     the request is too large
     """
+    if not total_results:
+        return
     total_requests = ceil(total_results / PER_PAGE_RESULTS)
     est_delay = ceil((total_requests / REQUESTS_PER_MINUTE) * 60)
     logger.info(

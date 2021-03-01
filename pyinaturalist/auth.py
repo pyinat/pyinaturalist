@@ -1,6 +1,6 @@
 from logging import getLogger
 from os import getenv
-from typing import Dict
+from typing import Dict, Optional
 
 from pyinaturalist.api_requests import post
 from pyinaturalist.constants import API_V0_BASE_URL, KEYRING_KEY
@@ -81,7 +81,7 @@ def get_access_token(
     return response.json()['access_token']
 
 
-def get_keyring_credentials() -> Dict[str, str]:
+def get_keyring_credentials() -> Dict[str, Optional[str]]:
     """Attempt to get iNaturalist credentials from the system keyring
 
     Returns:

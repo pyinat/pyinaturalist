@@ -14,6 +14,7 @@ Functions
 """
 from logging import getLogger
 from typing import List
+from warnings import warn
 
 import requests
 
@@ -22,7 +23,7 @@ from pyinaturalist.api_requests import get
 from pyinaturalist.constants import API_V1_BASE_URL, HistogramResponse, JsonResponse, MultiInt
 from pyinaturalist.exceptions import ObservationNotFound, TaxonNotFound
 from pyinaturalist.forge_utils import document_request_params
-from pyinaturalist.pagination import paginate
+from pyinaturalist.pagination import add_paginate_all, paginate_all
 from pyinaturalist.request_params import (
     DEFAULT_OBSERVATION_ATTRS,
     NODE_OBS_ORDER_BY_PROPERTIES,
@@ -163,6 +164,7 @@ def get_identifications_by_id(identification_id: MultiInt, user_agent: str = Non
 
 
 @document_request_params([docs._identification_params, docs._pagination, docs._only_id])
+@add_paginate_all(method='page')
 def get_identifications(**params) -> JsonResponse:
     """Search identifications.
 
@@ -285,6 +287,7 @@ def get_observation_histogram(**params) -> HistogramResponse:
 
 
 @document_request_params([*docs._get_observations, docs._pagination, docs._only_id])
+@add_paginate_all(method='id')
 def get_observations(**params) -> JsonResponse:
     """Search observations.
 
@@ -333,24 +336,13 @@ def get_observations(**params) -> JsonResponse:
 
 @document_request_params([*docs._get_observations, docs._only_id])
 def get_all_observations(**params) -> List[JsonResponse]:
-    """Like :py:func:`get_observations()`, but handles pagination and returns all results in one
-    call. Explicit pagination parameters will be ignored.
-
-    Example:
-
-        >>> observations = get_all_observations(
-        >>>     taxon_name='Danaus plexippus',
-        >>>     created_on='2020-08-27',
-        >>> )
-
-    Returns:
-        Combined list of observation records. Response format is the same as the inner 'results'\
-        object returned by :py:func:`.get_observations()`.
-    """
-    return paginate(get_observations, method='id', **params)
+    """[Deprecated] Like :py:func:`get_observations()`, but gets all pages of results"""
+    warn(DeprecationWarning("Use get_observations(page='all') instead"))
+    return paginate_all(get_observations, method='id', **params)['results']
 
 
 @document_request_params([*docs._get_observations, docs._pagination])
+@add_paginate_all(method='page')
 def get_observation_species_counts(**params) -> JsonResponse:
     """Get all species (or other 'leaf taxa') associated with observations matching the search
     criteria, and the count of observations they are associated with.
@@ -377,34 +369,6 @@ def get_observation_species_counts(**params) -> JsonResponse:
     return r.json()
 
 
-@document_request_params(docs._get_observations)
-def get_all_observation_species_counts(**params) -> List[JsonResponse]:
-    """Like :py:func:`get_observation_species_counts()`, but handles pagination and returns all
-    results in one call. Explicit pagination parameters will be ignored.
-
-    Notes:
-    While the ``page`` parameter is undocumented for observations/species_counts, it appears to be supported.
-    ``id_above`` and ``id_below`` are not helpful in the context.
-
-    Example:
-        >>> get_all_observation_species_counts(
-        ...     quality_grade='research',
-        ...     place_id=154695,
-        ...     iconic_taxa='Reptilia',
-        ... )
-
-        .. admonition:: Example Response
-            :class: toggle
-
-            .. literalinclude:: ../sample_data/get_all_observation_species_counts_ex_results.json
-                :language: JSON
-
-    Returns:
-        Combined list of taxon records with counts
-    """
-    return paginate(get_observation_species_counts, **params)
-
-
 @document_request_params([*docs._get_observations, docs._geojson_properties])
 def get_geojson_observations(properties: List[str] = None, **params) -> JsonResponse:
     """Get all observation results combined into a GeoJSON ``FeatureCollection``.
@@ -424,9 +388,10 @@ def get_geojson_observations(properties: List[str] = None, **params) -> JsonResp
         A ``FeatureCollection`` containing observation results as ``Feature`` dicts.
     """
     params['mappable'] = True
-    observations = get_all_observations(**params)
+    params['page'] = 'all'
+    response = get_observations(**params)
     return as_geojson_feature_collection(
-        (flatten_nested_params(obs) for obs in observations),
+        (flatten_nested_params(obs) for obs in response['results']),
         properties=properties if properties is not None else DEFAULT_OBSERVATION_ATTRS,
     )
 
@@ -437,13 +402,15 @@ def get_observation_observers(**params) -> JsonResponse:
     observations and distinct taxa of rank species they have observed.
 
     Notes:
-    Options for ``order_by`` are 'observation_count' (default) or 'species_count'.
+        * Options for ``order_by`` are 'observation_count' (default) or 'species_count'
+        * This endpoint will only return up to 500 results
 
     ``GET /observations/observers`` API node is buggy. It's currently limited to
     500 results and using ``order_by=species_count`` may produce unusual results.
     See this issue for more details: https://github.com/inaturalist/iNaturalistAPI/issues/235
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_observers
+
 
     Example:
         >>> get_observation_observers(place_id=72645, order_by='species_count')
@@ -457,8 +424,7 @@ def get_observation_observers(**params) -> JsonResponse:
     Returns:
         Response dict of observers
     """
-
-    params.setdefault('per_page', 500)  # patch for API issue #235
+    params.setdefault('per_page', 500)
 
     r = node_api_get(
         'observations/observers',
@@ -475,6 +441,8 @@ def get_observation_identifiers(**params) -> JsonResponse:
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_identifiers
 
+    Note: This endpoint will only return up to 500 results.
+
     Example:
         >>> get_observation_identifiers(place_id=72645)
 
@@ -486,13 +454,8 @@ def get_observation_identifiers(**params) -> JsonResponse:
 
     Returns:
         Response dict of identifiers
-
-    Notes:
-    The ``GET /observations/identifiers`` API node is currently limited to
-    500 results. See this issue for more details: https://github.com/inaturalist/iNaturalistAPI/issues/236
     """
-
-    params.setdefault('per_page', 500)  # patch until issue #236 is resolved
+    params.setdefault('per_page', 500)
 
     r = node_api_get(
         'observations/identifiers',
@@ -637,6 +600,7 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
 
 
 @document_request_params([docs._projects_params, docs._pagination])
+@add_paginate_all(method='page')
 def get_projects(**params) -> JsonResponse:
     """Given zero to many of following parameters, get projects matching the search criteria.
 
@@ -725,7 +689,8 @@ def get_projects_by_id(
 # --------------------
 
 
-@document_request_params([docs._taxon_params, docs._taxon_id_params])
+@document_request_params([docs._taxon_params, docs._taxon_id_params, docs._pagination])
+@add_paginate_all(method='page')
 def get_taxa(**params) -> JsonResponse:
     """Given zero to many of following parameters, get taxa matching the search criteria.
 

@@ -10,21 +10,16 @@ Functions
     :nosignatures:
 
 """
-from time import sleep
-from typing import Any, Dict, List, Union
+from typing import Any, List, Union
+from warnings import warn
 
 from pyinaturalist import api_docs as docs
 from pyinaturalist.api_requests import delete, get, post, put
 from pyinaturalist.auth import get_access_token  # noqa
-from pyinaturalist.constants import (
-    API_V0_BASE_URL,
-    THROTTLING_DELAY,
-    FileOrPath,
-    JsonResponse,
-    ListResponse,
-)
+from pyinaturalist.constants import API_V0_BASE_URL, FileOrPath, JsonResponse, ListResponse
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.forge_utils import document_request_params
+from pyinaturalist.pagination import add_paginate_all, paginate_all
 from pyinaturalist.request_params import (
     OBSERVATION_FORMATS,
     REST_OBS_ORDER_BY_PROPERTIES,
@@ -44,6 +39,7 @@ from pyinaturalist.response_format import convert_all_coordinates, convert_all_t
         docs._pagination,
     ]
 )
+@add_paginate_all(method='page')
 def get_observations(**params) -> Union[List, str]:
     """Get observation data, optionally in an alternative format. Also see
     :py:func:`.get_geojson_observations` for GeoJSON format (not included here because it wraps
@@ -114,8 +110,9 @@ def get_observations(**params) -> Union[List, str]:
         return response.text
 
 
-@document_request_params([docs._search_query, docs._page])
-def get_observation_fields(**params) -> ListResponse:
+@document_request_params([docs._search_query, docs._pagination])
+@add_paginate_all(method='page')
+def get_observation_fields(**params) -> JsonResponse:
     """Search observation fields. Observation fields are basically typed data fields that
     users can attach to observation.
 
@@ -144,34 +141,14 @@ def get_observation_fields(**params) -> ListResponse:
 
     obs_fields = response.json()
     obs_fields = convert_all_timestamps(obs_fields)
-    return obs_fields
+    return {'results': obs_fields}
 
 
 @document_request_params([docs._search_query])
 def get_all_observation_fields(**params) -> ListResponse:
-    """
-    Like :py:func:`.get_observation_fields()`, but handles pagination for you.
-
-    Example:
-
-        >>> get_all_observation_fields(q='number of')
-
-    Returns:
-        Observation fields as a list of dicts. Response format is the same as the inner\
-        'results' object returned by :py:func:`.get_observation_fields`.
-    """
-    results = []  # type: List[Dict[str, Any]]
-    page = 1
-
-    while True:
-        response = get_observation_fields(page=page, **params)
-
-        if not response:
-            return results
-
-        results += response
-        page += 1
-        sleep(THROTTLING_DELAY)
+    """[Deprecated] Like :py:func:`.get_observation_fields()`, but gets all pages of results"""
+    warn(DeprecationWarning("Use get_observation_fields(page='all') instead"))
+    return paginate_all(get_observation_fields, method='page', **params)['results']
 
 
 def put_observation_field_values(
