@@ -60,7 +60,9 @@ Many of the most relevant API endpoints are included:
 
 See
 [Endpoints](https://pyinaturalist.readthedocs.io/en/latest/endpoints.html)
-for a complete list of endpoints wrapped by pyinaturalist, and see
+for a complete list of endpoints wrapped by pyinaturalist, see
+[General Usage](https://pyinaturalist.readthedocs.io/en/latest/general_usage.html)
+for features common to all or most endpoints, and see
 [Reference](https://pyinaturalist.readthedocs.io/en/latest/reference.html)
 to skip straight to the API docs.
 

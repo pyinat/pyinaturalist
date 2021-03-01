@@ -9,6 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Run unit tests for each supported python version
   test:
     runs-on: ubuntu-18.04
     strategy:
@@ -34,6 +35,7 @@ jobs:
       - name: Run unit tests
         run: pytest
 
+  # Run code analysis checks, reports, etc.
   analyze:
     runs-on: ubuntu-18.04
     steps:
