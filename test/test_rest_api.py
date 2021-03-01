@@ -13,16 +13,12 @@ from pyinaturalist.rest_api import (
     add_photo_to_observation,
     create_observation,
     delete_observation,
-    get_all_observation_fields,
     get_observation_fields,
     get_observations,
     put_observation_field_values,
     update_observation,
 )
 from test.conftest import load_sample_data
-
-PAGE_1_JSON_RESPONSE = load_sample_data('get_observation_fields_page1.json')
-PAGE_2_JSON_RESPONSE = load_sample_data('get_observation_fields_page2.json')
 
 
 def get_observations_response(response_format):
@@ -66,31 +62,36 @@ def test_get_observations__invalid_format(response_format):
 
 def test_get_observation_fields(requests_mock):
     """ get_observation_fields() work as expected (basic use)"""
+    page_1_json_response = load_sample_data('get_observation_fields_page1.json')
+    page_2_json_response = load_sample_data('get_observation_fields_page2.json')
+
     requests_mock.get(
         f'{API_V0_BASE_URL}/observation_fields.json?q=sex&page=2',
-        json=PAGE_2_JSON_RESPONSE,
+        json=page_2_json_response,
         status_code=200,
     )
 
     response = get_observation_fields(q='sex', page=2)
-    first_result = response[0]
-    assert len(response) == 3
+    first_result = response['results'][0]
+    assert len(response['results']) == 3
     assert first_result['id'] == 5
     assert first_result['datatype'] == 'text'
     assert first_result['created_at'] == datetime(2012, 1, 23, 8, 12, 0, 138000, tzinfo=tzutc())
     assert first_result['updated_at'] == datetime(2018, 10, 16, 6, 47, 43, 975000, tzinfo=tzutc())
 
 
-def test_get_all_observation_fields(requests_mock):
-    """get_all_observation_fields() is able to paginate, accepts a search query and return correct results"""
+def test_get_observation_fields__all_pages(requests_mock):
+    page_1_json_response = load_sample_data('get_observation_fields_page1.json')
+    page_2_json_response = load_sample_data('get_observation_fields_page2.json')
+
     requests_mock.get(
         f'{API_V0_BASE_URL}/observation_fields.json?q=sex&page=1',
-        json=PAGE_1_JSON_RESPONSE,
+        json=page_1_json_response,
         status_code=200,
     )
     requests_mock.get(
         f'{API_V0_BASE_URL}/observation_fields.json?q=sex&page=2',
-        json=PAGE_2_JSON_RESPONSE,
+        json=page_2_json_response,
         status_code=200,
     )
     requests_mock.get(
@@ -98,24 +99,13 @@ def test_get_all_observation_fields(requests_mock):
         json=[],
         status_code=200,
     )
-    expected_response = PAGE_1_JSON_RESPONSE + PAGE_2_JSON_RESPONSE
+    expected_results = page_1_json_response + page_2_json_response
 
-    response = get_all_observation_fields(q='sex')
-    assert len(response) == len(expected_response)
-    first_result = response[0]
+    response = get_observation_fields(q='sex', page='all')
+    first_result = response['results'][0]
+    assert response['total_results'] == len(response['results']) == len(expected_results)
     assert first_result['created_at'] == datetime(2016, 5, 29, 16, 17, 8, 51000, tzinfo=tzutc())
     assert first_result['updated_at'] == datetime(2018, 1, 1, 1, 17, 56, 7000, tzinfo=tzutc())
-
-
-def test_get_all_observation_fields_noparam(requests_mock):
-    """get_all_observation_fields() can also be called without a search query without errors"""
-    requests_mock.get(
-        f'{API_V0_BASE_URL}/observation_fields.json?page=1',
-        json=[],
-        status_code=200,
-    )
-
-    get_all_observation_fields()
 
 
 def test_put_observation_field_values(requests_mock):
