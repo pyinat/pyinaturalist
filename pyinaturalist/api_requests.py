@@ -10,7 +10,15 @@ from unittest.mock import Mock
 import requests
 
 import pyinaturalist
-from pyinaturalist.constants import MAX_DELAY, WRITE_HTTP_METHODS, MultiInt, RequestParams
+from pyinaturalist.constants import (
+    MAX_DELAY,
+    REQUESTS_PER_DAY,
+    REQUESTS_PER_MINUTE,
+    REQUESTS_PER_SECOND,
+    WRITE_HTTP_METHODS,
+    MultiInt,
+    RequestParams,
+)
 from pyinaturalist.exceptions import TooManyRequests
 from pyinaturalist.forge_utils import copy_signature
 from pyinaturalist.request_params import prepare_request
@@ -21,9 +29,9 @@ try:
     from pyrate_limiter import BucketFullException, Duration, Limiter, RequestRate
 
     REQUEST_RATES = [
-        RequestRate(5, Duration.SECOND),
-        RequestRate(60, Duration.MINUTE),
-        RequestRate(10000, Duration.DAY),
+        RequestRate(REQUESTS_PER_SECOND, Duration.SECOND),
+        RequestRate(REQUESTS_PER_MINUTE, Duration.MINUTE),
+        RequestRate(REQUESTS_PER_DAY, Duration.DAY),
     ]
     RATE_LIMITER = Limiter(*REQUEST_RATES)
 except ImportError:
@@ -101,6 +109,7 @@ def put(url: str, **kwargs) -> requests.Response:
     return request('PUT', url, **kwargs)
 
 
+# TODO: Submit PR to add a contextmanager to pyrate-limiter
 @contextmanager
 def apply_rate_limit(limiter, bucket: str = None, max_delay: int = None):
     """Add delays in between requests to stay within the rate limits.

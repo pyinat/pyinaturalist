@@ -48,11 +48,11 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'keyring~=21.4.0',
+        'keyring~=22.3.0',
         'pyrate-limiter>=2.1.0; python_version>="3.7"',
         'python-dateutil>=2.0',
         'python-forge',
-        'requests~=2.25.0',
+        'requests>=2.20',
     ],
     extras_require=extras_require,
     zip_safe=False,

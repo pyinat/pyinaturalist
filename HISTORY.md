@@ -7,15 +7,23 @@
 
 ### Modified Endpoints
 * Added `count_only=True` as an alias for `per_page=0` (to get only result counts).
-  This applies to all functions that support pagination:
+* Added generic auto-pagination that can apply to any endpoint that supports pagination.
+* Added `page='all'` as a shortcut for auto-pagination
+* The above changes apply to all functions that support pagination:
   * `node_api.get_identifications()`
   * `node_api.get_observations()`
   * `node_api.get_observation_species_counts()`
   * `node_api.get_observation_observers()`
   * `node_api.get_observation_identifiers()`
   * `node_api.get_projects()`
+  * `node_api.get_taxa()`
   * `rest_api.get_observations()`
   * `rest_api.get_observation_fields()`
+* The following methods are now deprecated. They are still functional, but will raise a `DeprecationWarning`:
+  * `node_api.get_all_observations()`
+  * `rest_api.get_all_observation_fields()`
+* Removed `node_api.get_all_observation_species_counts()`, since this was only added recently
+* Updated `rest_api.get_observation_fields()` to return a dict with `'results'` for consistency with other endpoints
 
 ### Other Changes
 * Added global rate-limiting to stay within the rates suggested in

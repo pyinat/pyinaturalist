@@ -7,12 +7,19 @@ API_V0_BASE_URL = 'https://www.inaturalist.org'
 API_V1_BASE_URL = 'https://api.inaturalist.org/v1'
 API_V2_BASE_URL = 'https://api.inaturalist.org/v2'
 DWC_ARCHIVE_URL = 'http://www.inaturalist.org/observations/gbif-observations-dwca.zip'
+EXPORT_URL = 'https://www.inaturalist.org/observations/export'
 PHOTO_BASE_URL = 'https://static.inaturalist.org/photos'
 
 KEYRING_KEY = '/inaturalist'
+
+# Pagination and rate-limiting values
 PER_PAGE_RESULTS = 200  # Default number of records per page for paginated queries
 THROTTLING_DELAY = 1.0  # Delay between paginated queries, in seconds
 MAX_DELAY = 60  # Maximum time to wait for rate-limiting before aborting
+REQUESTS_PER_SECOND = 2
+REQUESTS_PER_MINUTE = 60
+REQUESTS_PER_DAY = 10000
+LARGE_REQUEST_WARNING = 5000  # Show a warning for queries that will return over this many results
 
 # Toggle dry-run mode: this will run and log mock HTTP requests instead of real ones
 DRY_RUN_ENABLED = False  # Mock all requests, including GET

@@ -123,6 +123,19 @@ macOS and Linux systems. See this guide for setup info:
 
    Credentials storage with keyring + KeePassXC
 
+Pagination
+----------
+Most endpoints support pagination, using the parameters:
+    * ``page``: Page number to get
+    * ``per_page``: Number of results to get per page
+    * ``count_only=True``: This is just a shortcut for ``per_page=0``, which will return only the
+      total number of results, not the results themselves.
+
+The default and maximum ``per_page`` values vary by endpoint, but it's 200 for most endpoints.
+
+To all pages of results and combine them into a single response, use ``page='all'``. Note that this
+replaces the `get_all_*()` functions from pyinaturalist<=0.12.
+
 
 Dry-run mode
 ------------

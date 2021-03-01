@@ -19,6 +19,8 @@ def document_request_params(template_functions: List[TemplateFunction]) -> Calla
 
     Signature modification requires ``python-forge``. If not installed, only docstrings will be modified.
 
+    If used with other decorators, this should go first (e.g., last in the call order).
+
     Example:
 
         >>> # 1. Template function with individual request params + docs
