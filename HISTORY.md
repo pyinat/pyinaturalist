@@ -6,6 +6,7 @@
 * Added new functions for **Identifications** endpoints: `get_identifications()` and `get_identifications_by_id()`
 
 ### Modified Endpoints
+* Added undocumented `ident_user_id` parameter to `get_observations()`
 * Added `count_only=True` as an alias for `per_page=0` (to get only result counts).
 * Added generic auto-pagination that can apply to any endpoint that supports pagination.
 * Added `page='all'` as a shortcut for auto-pagination

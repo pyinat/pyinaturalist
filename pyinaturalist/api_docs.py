@@ -30,7 +30,7 @@ def _identification_params(
     id: MultiInt = None,
     rank: MultiStr = None,
     observation_rank: MultiStr = None,
-    user_id: MultiInt = None,
+    user_id: MultiIntOrStr = None,
     user_login: MultiStr = None,
     current: bool = None,
     category: MultiStr = None,
@@ -65,7 +65,7 @@ def _identification_params(
     rank: ID's taxon must have this rank  # Multiple choice
     observation_rank: Observation's taxon must have this rank  # Multiple choice
     user_id: Identifier must have this user ID
-    user_login: Identifier must have this login
+    user_login: Identifier must have this user login
     current: Most recent Identification on a observation by a user
     category: Type of identification
     place_id: Observation must occur in this place
