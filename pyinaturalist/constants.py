@@ -27,4 +27,5 @@ RequestParams = Dict[str, Any]
 ResponseObject = Dict[str, Any]
 MultiInt = Union[int, List[int]]
 MultiStr = Union[str, List[str]]
+MultiIntOrStr = Union[MultiInt, MultiStr]
 TemplateFunction = Any  # Cannot use Callable/Protocol, as these will not allow a mix of signatures

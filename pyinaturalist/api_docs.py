@@ -11,6 +11,7 @@ from pyinaturalist.constants import (
     FileOrPath,
     IntOrStr,
     MultiInt,
+    MultiIntOrStr,
     MultiStr,
     ObsFieldValues,
 )
@@ -84,8 +85,9 @@ def _observation_node_only(
     rank: MultiStr = None,
     site_id: MultiStr = None,
     without_taxon_id: MultiInt = None,
-    user_id: MultiInt = None,
+    user_id: MultiIntOrStr = None,
     user_login: MultiStr = None,
+    ident_user_id: MultiIntOrStr = None,
     term_id: MultiInt = None,
     term_value_id: MultiInt = None,
     without_term_value_id: MultiInt = None,
@@ -151,8 +153,9 @@ def _observation_node_only(
     ofv_datatype: Must have an observation field value with this datatype
     sound_license: Must have at least one sound with this license
     without_taxon_id: Exclude observations of these taxa and their descendants
-    user_id: User must have this ID or login
-    user_login: User must have this login
+    user_id: Observer must have this user ID or login
+    user_login: Observer must have this user login
+    ident_user_id: Identifier must have this user ID or login
     term_id: Must have an annotation using this controlled term ID
     term_value_id: Must have an annotation using this controlled value ID.
         Must be combined with the ``term_id`` parameter
