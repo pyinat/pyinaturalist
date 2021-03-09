@@ -10,7 +10,6 @@ import pyinaturalist
 from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.node_api import (
-    get_all_observations,
     get_controlled_terms,
     get_geojson_observations,
     get_identifications,
@@ -374,6 +373,41 @@ def test_get_places_autocomplete(requests_mock):
     assert result['bbox_area'] == 0.000993854049
     assert result['location'] == [-29.665119, 17.88583]
     assert len(result['ancestor_place_ids']) == 4
+
+
+def test_get_places_autocomplete__all_pages(requests_mock):
+    page_1 = {'total_results': 25, 'results': [{'id': i} for i in range(20)]}
+    page_2 = {'total_results': 25, 'results': [{'id': i} for i in range(15, 25)]}
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/places/autocomplete',
+        [
+            {'json': page_1, 'status_code': 200},
+            {'json': page_2, 'status_code': 200},
+        ],
+    )
+
+    # Expect 2 requests, and for results to be deduplicated
+    response = get_places_autocomplete('springbok', page='all')
+    results = response['results']
+    assert len(results) == 25
+
+
+def test_get_places_autocomplete__single_page(requests_mock):
+    page_1 = {'total_results': 20, 'results': [{'id': i} for i in range(20)]}
+    page_2 = {'total_results': 20, 'results': [{'id': i} for i in range(15, 25)]}
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/places/autocomplete',
+        [
+            {'json': page_1, 'status_code': 200},
+            {'json': page_2, 'status_code': 200},
+        ],
+    )
+
+    # If all results are returned in the first request, expect just 1 request
+    response = get_places_autocomplete('springbok', page='all')
+    results = response['results']
+    assert len(results) == 20
+    assert max([r['id'] for r in results]) == 19
 
 
 # Projects

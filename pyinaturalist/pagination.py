@@ -23,22 +23,22 @@ def add_paginate_all(method: str = 'page'):
 
     def decorator(func):
         @wraps(func)
-        def wrapper(**params):
+        def wrapper(*args, **params):
             if params.get('page') == 'all':
-                return paginate_all(func, method=method, **params)
-            return func(**params)
+                return paginate_all(func, *args, method=method, **params)
+            return func(*args, **params)
 
         return wrapper
 
     return decorator
 
 
-def paginate_all(api_func: Callable, method: str = 'page', **params) -> JsonResponse:
+def paginate_all(api_func: Callable, *args, method: str = 'page', **params) -> JsonResponse:
     """Get all pages of a multi-page request. Explicit pagination parameters will be overridden.
 
     Args:
         api_func: API endpoint function to paginate
-        method: Pagination method; either 'page' or 'id' (see below)
+        method: Pagination method; either 'page', 'id', or 'autocomplete' (see below)
         params: Original request parameters
 
     Note on pagination by ID, from the iNaturalist documentation:
@@ -49,6 +49,8 @@ def paginate_all(api_func: Callable, method: str = 'page', **params) -> JsonResp
     Returns:
         Response dict containing combined results, in the same format as ``api_func``
     """
+    if method == 'autocomplete':
+        return paginate_autocomplete(api_func, *args, **params)
     if method == 'id':
         params['order_by'] = 'id'
         params['order'] = 'asc'
@@ -82,6 +84,33 @@ def paginate_all(api_func: Callable, method: str = 'page', **params) -> JsonResp
     return {
         'results': results,
         'total_results': len(results),
+    }
+
+
+def paginate_autocomplete(api_func: Callable, *args, **params) -> JsonResponse:
+    """Attempt to get as many results as possible from the places autocomplete endpoint.
+    This is necessary for some problematic places for which there are many matches but not ranked
+    with the desired match(es) first.
+
+    This works based on different rankings being returned for order_by=area. No other fields can be
+    sorted on, and direction can't be specified, but this can at least provide a few additional
+    results beyond the limit of 20.
+    """
+    params['per_page'] = 20
+    params.pop('order_by', None)
+
+    # Search with default ordering and ordering by area (if there are more than 20 results)
+    page_1 = api_func(*args, **params)
+    if page_1['total_results'] > 20:
+        page_2 = api_func(*args, **params, order_by='area')
+    else:
+        page_2 = {'results': []}
+
+    # De-duplicate results
+    unique_results = {r['id']: r for page in [page_1, page_2] for r in page['results']}
+    return {
+        'results': list(unique_results.values()),
+        'total_results': page_1['total_results'],
     }
 
 

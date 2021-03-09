@@ -560,10 +560,16 @@ def get_places_nearby(**params) -> JsonResponse:
     return convert_all_place_coordinates(r.json())
 
 
-def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
+@document_request_params([docs._search_query, docs._pagination])
+@add_paginate_all(method='autocomplete')
+def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
     """Given a query string, get places with names starting with the search term
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Places/get_places_autocomplete
+
+    **Note:** This endpoint accepts a ``per_page`` param, up to a max of 20 (default 10). Pages
+    beyond the first page cannot be retrieved. Use ``page=all`` to attempt to retrieve additional
+    results. See :py:func:`.paginate_autocomplete` for more info.
 
     Example:
         >>> response = get_places_autocomplete('Irkutsk')
@@ -586,7 +592,7 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
     Returns:
         Response dict containing place records
     """
-    r = node_api_get('places/autocomplete', params={'q': q}, user_agent=user_agent)
+    r = node_api_get('places/autocomplete', params={'q': q, **params})
     r.raise_for_status()
 
     # Convert coordinates to floats

@@ -16,6 +16,7 @@
   * `node_api.get_observation_species_counts()`
   * `node_api.get_observation_observers()`
   * `node_api.get_observation_identifiers()`
+  * `node_api.get_places_autocomplete()`
   * `node_api.get_projects()`
   * `node_api.get_taxa()`
   * `rest_api.get_observations()`
