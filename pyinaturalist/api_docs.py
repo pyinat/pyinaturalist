@@ -493,12 +493,6 @@ def _geojson_properties(properties: List[str] = None):
     """
 
 
-def _minify(minify: str = None):
-    """
-    minify: Condense each match into a single string containing taxon ID, rank, and name
-    """
-
-
 def _name(name: str = None):
     """
     name: Name must match this value

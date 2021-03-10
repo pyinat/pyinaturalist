@@ -6,8 +6,6 @@ from pyinaturalist.response_format import (
     convert_observation_timestamps,
     convert_offset,
     format_histogram,
-    format_observation,
-    format_taxon,
 )
 from test.conftest import load_sample_data
 
@@ -26,30 +24,6 @@ def test_format_histogram__int_keys():
     assert histogram[1] == 272
     assert all([isinstance(k, int) for k in histogram.keys()])
     assert all([isinstance(v, int) for v in histogram.values()])
-
-
-def test_format_observation():
-    observation = load_sample_data('get_observation.json')['results'][0]
-    assert format_observation(observation) == (
-        '[16227955] Species: Lixus bardanae '
-        'observed by niconoe on 2018-09-05 at 54 rue des Badauds'
-    )
-
-
-def test_format_taxon__with_common_name():
-    taxon = load_sample_data('get_taxa.json')['results'][0]
-    assert (
-        format_taxon(taxon) == 'Species: Nicrophorus vespilloides (Lesser Vespillo Burying Beetle)'
-    )
-
-
-def test_format_taxon__without_common_name():
-    taxon = load_sample_data('get_taxa.json')['results'][2]
-    assert format_taxon(taxon) == 'Species: Temnostoma vespiforme'
-
-
-def test_format_taxon__invalid():
-    assert format_taxon(None) == 'unknown taxon'
 
 
 @pytest.mark.parametrize(

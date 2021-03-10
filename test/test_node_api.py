@@ -2,7 +2,6 @@ import os
 import pytest
 from datetime import datetime
 from dateutil.tz import tzoffset, tzutc
-from pprint import pprint
 from unittest.mock import patch
 from urllib.parse import urlencode
 
@@ -552,32 +551,6 @@ def test_get_taxa_autocomplete(requests_mock):
     assert first_result['rank'] == 'family'
     assert first_result['is_active'] is True
     assert len(first_result['ancestor_ids']) == 11
-
-
-# Test usage of format_taxon() with get_taxa_autocomplete()
-def test_get_taxa_autocomplete_minified(requests_mock):
-    requests_mock.get(
-        f'{API_V1_BASE_URL}/taxa/autocomplete',
-        json=load_sample_data('get_taxa_autocomplete.json'),
-        status_code=200,
-    )
-
-    expected_results = [
-        '   52747:       Family Vespidae (Hornets, Paper Wasps, Potter Wasps, and Allies)',
-        '   84738:    Subfamily Vespinae (Hornets and Yellowjackets)',
-        '  131878:      Species Nicrophorus vespillo (Vespillo Burying Beetle)',
-        '  621585:      Species Vespicula trachinoides (Vespicula Waspfish)',
-        '  495392:      Species Vespidae st1',
-        '   70118:      Species Nicrophorus vespilloides (Lesser Vespillo Burying Beetle)',
-        '   92786:        Genus Vespicula',
-        '  646195:        Genus Vespiodes',
-        '  621584:      Species Vespicula cypho',
-        '  621586:      Species Vespicula zollingeri',
-    ]
-
-    response = get_taxa_autocomplete(q='vespi', minify=True)
-    pprint(response['results'])
-    assert response['results'] == expected_results
 
 
 @patch.dict(os.environ, {'GITHUB_REF': 'refs/heads/master'}, clear=True)
