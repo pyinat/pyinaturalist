@@ -4,7 +4,6 @@ This module makes ``python-forge`` optional; if not installed, these functions w
 without modifying the target functions.
 """
 from inspect import cleandoc
-from itertools import chain
 from logging import getLogger
 from typing import Callable, List
 
@@ -50,7 +49,7 @@ def document_request_params(template_functions: List[TemplateFunction]) -> Calla
         template_functions: Template functions containing docstrings and params to apply to the
             wrapped function
     """
-    template_functions = [*template_functions, _user_agent]
+    template_functions += [_user_agent]
 
     def wrapper(func):
         # Modify docstring
@@ -137,12 +136,10 @@ def _get_combined_revision(template_functions: List[TemplateFunction]):
     """Create a :py:class:`forge.Revision` from the combined parameters of multiple functions"""
     import forge
 
-    # Use forge.copy to create a revision for each template function
-    revisions = [forge.copy(func) for func in template_functions]
-
-    # Combine the parameters of all revisions into a single revision
-    fparams = [list(rev.signature.parameters.values()) for rev in revisions]
-    return forge.sign(*list(chain.from_iterable(fparams)))
+    fparams = {}
+    for func in template_functions:
+        fparams.update(forge.copy(func).signature.parameters)
+    return forge.sign(*fparams.values())
 
 
 # Param template that's added to every function signature by default

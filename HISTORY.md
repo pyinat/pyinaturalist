@@ -26,11 +26,13 @@
   * `rest_api.get_all_observation_fields()`
 * Removed `node_api.get_all_observation_species_counts()`, since this was only added recently
 * Updated `rest_api.get_observation_fields()` to return a dict with `'results'` for consistency with other endpoints
+* Removed `minify` option to `get_taxa_autocomplete`, and instead show a similar example in docstring
 
 ### Other Changes
 * Added global rate-limiting to stay within the rates suggested in
   [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
   (per second, minute, and day)
+* Added new module `pyinaturalist.response_utils` for optional formatting functions
 
 ## 0.12 (2021-02-02)
 [See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/3?closed=1)

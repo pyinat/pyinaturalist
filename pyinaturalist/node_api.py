@@ -37,9 +37,7 @@ from pyinaturalist.response_format import (
     convert_all_place_coordinates,
     convert_all_timestamps,
     convert_observation_timestamps,
-    flatten_nested_params,
     format_histogram,
-    format_taxon,
 )
 
 logger = getLogger(__name__)
@@ -309,9 +307,9 @@ def get_observations(**params) -> JsonResponse:
 
         Get basic info for observations in response:
 
-        >>> from pyinaturalist.response_format import format_observation
+        >>> from pyinaturalist.response_utils import format_observation_str
         >>> for obs in response['results']:
-        >>>     print(format_observation(obs))
+        >>>     print(format_observation_str(obs))
         '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK'
         '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK'
 
@@ -391,7 +389,7 @@ def get_geojson_observations(properties: List[str] = None, **params) -> JsonResp
     params['page'] = 'all'
     response = get_observations(**params)
     return as_geojson_feature_collection(
-        (flatten_nested_params(obs) for obs in response['results']),
+        response['results'],
         properties=properties if properties is not None else DEFAULT_OBSERVATION_ATTRS,
     )
 
@@ -762,7 +760,7 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     return taxa
 
 
-@document_request_params([docs._taxon_params, docs._minify])
+@document_request_params([docs._taxon_params])
 def get_taxa_autocomplete(**params) -> JsonResponse:
     """Given a query string, returns taxa with names starting with the search term
 
@@ -773,22 +771,28 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
 
     Example:
 
+        Get just the name of the first matching taxon:
+
         >>> response = get_taxa_autocomplete(q='vespi')
-        >>> first_result = response['results'][0]
-        >>> print(first_result['rank'], first_result['name'])
-        'family Vespidae'
+        >>> print(response['results'][0]['name'])
+        'Vespidae'
+
+        Get basic info for taxa in response:
+
+        >>> from pyinaturalist.response_utils import format_taxon_str
+        >>> for taxon in response['results']:
+        >>>     print(format_taxon_str(taxon, align=True))
+        >>> # See example output below
 
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_taxa_autocomplete.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_taxa_autocomplete.py
 
-        .. admonition:: Example Response (with **minify=True**)
+        .. admonition:: Example Response (formatted)
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_taxa_autocomplete_minified.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_taxa_autocomplete_minified.py
 
     Returns:
         Response dict containing taxon records
@@ -796,8 +800,4 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
     params = translate_rank_range(params)
     r = node_api_get('taxa/autocomplete', params=params)
     r.raise_for_status()
-    json_response = r.json()
-
-    if params.get('minify'):
-        json_response['results'] = [format_taxon(t, align=True) for t in json_response['results']]
-    return json_response
+    return r.json()

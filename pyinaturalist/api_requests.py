@@ -3,7 +3,6 @@ import threading
 from contextlib import contextmanager
 from logging import getLogger
 from os import getenv
-from time import sleep
 from typing import Dict
 from unittest.mock import Mock
 
@@ -19,14 +18,15 @@ from pyinaturalist.constants import (
     MultiInt,
     RequestParams,
 )
-from pyinaturalist.exceptions import TooManyRequests
+
+# from pyinaturalist.exceptions import TooManyRequests
 from pyinaturalist.forge_utils import copy_signature
 from pyinaturalist.request_params import prepare_request
 
 # Request rate limits. Only compatible with python 3.7+.
 # TODO: Remove try-except after dropping support for python 3.6
 try:
-    from pyrate_limiter import BucketFullException, Duration, Limiter, RequestRate
+    from pyrate_limiter import Duration, Limiter, RequestRate
 
     REQUEST_RATES = [
         RequestRate(REQUESTS_PER_SECOND, Duration.SECOND),
@@ -81,7 +81,7 @@ def request(
         log_request(method, url, params=params, headers=headers, **kwargs)
         return MOCK_RESPONSE
     else:
-        with apply_rate_limit(RATE_LIMITER, max_delay=MAX_DELAY):
+        with ratelimit():
             return session.request(method, url, params=params, headers=headers, **kwargs)
 
 
@@ -109,31 +109,17 @@ def put(url: str, **kwargs) -> requests.Response:
     return request('PUT', url, **kwargs)
 
 
-# TODO: Submit PR to add a contextmanager to pyrate-limiter
+# TODO: Handle error 429 if we still somehow exceed the rate limit?
 @contextmanager
-def apply_rate_limit(limiter, bucket: str = None, max_delay: int = None):
-    """Add delays in between requests to stay within the rate limits.
-
-    Args:
-        limiter: :py:class:`pyrate_limiter.Limiter` object
-        bucket: Optional name of a separate 'bucket' with which to track rate limits
-        max_delay: Maximum time in seconds to allow waiting before aborting the request
+def ratelimit(limiter=RATE_LIMITER, bucket=pyinaturalist.user_agent):
+    """Add delays in between requests to stay within the rate limits. If pyrate-limiter is
+    not installed, this will quietly do nothing.
     """
     if limiter:
-        # Check if there are more requests left in our "bucket"
-        try:
-            limiter.try_acquire(bucket or pyinaturalist.user_agent)
-        # Abort if we need to wait for too long; otherwise, wait until we can send more requests
-        except BucketFullException as e:
-            delay_time = e.meta_info.get('remaining_time', 1)
-            logger.debug(str(e.meta_info))
-            logger.info(f'Rate limit reached; {delay_time} seconds remaining before next request')
-
-            if max_delay and delay_time > max_delay:
-                raise TooManyRequests(e)
-            sleep(delay_time)
-
-    yield
+        with limiter.ratelimit(bucket, delay=True, max_delay=MAX_DELAY):
+            yield
+    else:
+        yield
 
 
 def get_session() -> requests.Session:
