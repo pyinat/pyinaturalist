@@ -3,20 +3,10 @@ from sys import version_info
 from unittest.mock import MagicMock, patch
 
 import pyinaturalist
-from pyinaturalist.api_requests import (
-    MOCK_RESPONSE,
-    apply_rate_limit,
-    delete,
-    get,
-    post,
-    put,
-    request,
-)
+from pyinaturalist.api_requests import MOCK_RESPONSE, delete, get, post, put, ratelimit, request
+
 
 # Just test that the wrapper methods call requests.request with the appropriate HTTP method
-from pyinaturalist.exceptions import TooManyRequests
-
-
 @pytest.mark.parametrize(
     'http_func, http_method',
     [(delete, 'DELETE'), (get, 'GET'), (post, 'POST'), (put, 'PUT')],
@@ -134,15 +124,15 @@ def test_request_dry_run_disabled(requests_mock):
 
 
 @pytest.mark.skipif(version_info < (3, 7), reason="Requires python 3.7+")
-@patch('pyinaturalist.api_requests.sleep')
-def test_apply_rate_limit(mock_sleep):
+@patch('pyrate_limiter.limit_context_decorator.sleep')
+def test_ratelimit(mock_sleep):
     from pyrate_limiter import Duration, Limiter, RequestRate
 
     limiter = Limiter(RequestRate(60, Duration.MINUTE))
     mock_func = MagicMock()
 
     for i in range(70):
-        with apply_rate_limit(limiter, bucket='pytest-1'):
+        with ratelimit(limiter, bucket='pytest-1'):
             mock_func()
 
     # With 70 requests and a limit of 60/minute, there should be a delay for the final 10 requests
@@ -151,27 +141,10 @@ def test_apply_rate_limit(mock_sleep):
 
 
 @pytest.mark.skipif(version_info < (3, 7), reason="Requires python 3.7+")
-@patch('pyinaturalist.api_requests.sleep')
-def test_apply_rate_limit__exceeds_max_delay(mock_sleep):
-    from pyrate_limiter import Duration, Limiter, RequestRate
-
-    limiter = Limiter(RequestRate(60, Duration.MINUTE))
-    mock_func = MagicMock()
-
-    for i in range(60):
-        with apply_rate_limit(limiter, bucket='pytest-2', max_delay=5):
-            mock_func()
-
-    # After reaching the rate limit, the next request should result in a long enough delay to abort
-    with pytest.raises(TooManyRequests):
-        with apply_rate_limit(limiter, bucket='pytest-2', max_delay=5):
-            mock_func()
-
-
-@patch('pyinaturalist.api_requests.sleep')
-def test_apply_rate_limit__no_limiter(mock_sleep):
+@patch('pyrate_limiter.limit_context_decorator.sleep')
+def test_ratelimit__no_limiter(mock_sleep):
     for i in range(70):
-        with apply_rate_limit(None):
+        with ratelimit(None):
             pass
 
     assert mock_sleep.call_count == 0
