@@ -9,13 +9,18 @@ Extra requirements:
 """
 from datetime import datetime
 from dateutil.parser import parse as parse_date
+from glob import glob
 from logging import basicConfig, getLogger
+from os.path import basename, dirname, join
 from time import sleep
 
+import pandas as pd
 import requests_cache
 
 from pyinaturalist.node_api import get_identifications, get_observations
-from pyinaturalist.response_format import to_dataframe
+from pyinaturalist.request_params import RANKS
+from pyinaturalist.response_format import try_datetime
+from pyinaturalist.response_utils import to_dataframe
 
 ICONIC_TAXON = 'Arachnida'
 
@@ -29,11 +34,15 @@ RANKING_WEIGHTS = {
     'account_age_days':                   0.5,   # Age of user account, in days
 }
 
-requests_cache.install_cache(backend='sqlite', cache_name='inat_requests.db')
+DATA_DIR = join(dirname(__file__), '..', 'downloads')
+CACHE_FILE = join(DATA_DIR, 'inat_requests.db')
+
+requests_cache.install_cache(backend='sqlite', cache_name=CACHE_FILE)
 logger = getLogger(__name__)
 basicConfig(level='INFO')
 
 
+# TODO: Refactor this to take a list of user records, return stats; update observations in dataframe instead of here
 def append_user_stats(observations):
     """For each observation, get some additional info about the observer"""
     user_stats = {obs['user']['id']: obs['user'] for obs in observations}
@@ -75,12 +84,85 @@ def rank_observations(df):
     return df.sort_values('rank')
 
 
+def minify_observations(df):
+    """Get minimal info for ranked and sorted observations"""
+    def get_default_photo(photos):
+        return photos[0]['url'].rsplit('/', 1)[0]
+
+    df['taxon.rank'] = df['taxon.rank'].apply(lambda x: f'{x.title()}: ')
+    df['taxon'] = df['taxon.rank'] + df['taxon.name']
+    df['photo'] = df['photos'].apply(get_default_photo)
+    return df[['id', 'taxon', 'photo']]
+
+
+def load_exports():
+    """Combine multiple exported CSV files into one"""
+    csv_files = glob(join(DATA_DIR, 'observations-*.csv'))
+    logger.info(f'Reading {len(csv_files)} exports:')
+    logger.info('\n'.join(['\t' + basename(f) for f in csv_files]))
+    dataframes = (pd.read_csv(f) for f in csv_files)
+
+    df = pd.concat(dataframes, ignore_index=True)
+    df = format_export(df)
+    df.to_csv(join(DATA_DIR, 'combined-observations.csv'))
+
+    return df
+
+
+def format_export(df):
+    """Format an exported CSV file to be similar to API response format"""
+    replace_strs = {
+        'common_name': 'taxon.preferred_common_name',
+        'taxon_': 'taxon.',
+        'user_': 'user.',
+        '_name': '',
+    }
+    drop_cols = [
+        'observed_on_string',
+        'positioning_method',
+        'positioning_device',
+        'scientific',
+        'time_observed_at',
+        'time_zone',
+    ]
+
+    # Convert datetimes
+    df['observed_on'] = df['observed_on_string'].apply(lambda x: try_datetime(x) or x)
+    df['created_at'] = df['created_at'].apply(lambda x: try_datetime(x) or x)
+    df['updated_at'] = df['updated_at'].apply(lambda x: try_datetime(x) or x)
+
+    # Rename and drop selected columns
+    def rename_column(col):
+        for str_1, str_2 in replace_strs.items():
+            col = col.replace(str_1, str_2)
+        return col
+
+    df = df.rename(columns={col: rename_column(col) for col in sorted(df.columns)})
+    df = df.drop(columns=['observed_on_string', 'time_observed_at', 'time_zone'])
+
+    def get_min_rank(series):
+        for rank in RANKS:
+            if series.get(f'taxon.{rank}'):
+                return rank
+        return ''
+
+    # Fill out taxon name and rank
+    df['taxon.rank'] = df.apply(get_min_rank, axis=1)
+    df['taxon.name'] = df.apply(lambda x: x.get(f"taxon.{x['taxon.rank']}"), axis=1)
+
+    return df.fillna('')
+
 
 def main():
     response = get_observations(iconic_taxa=ICONIC_TAXON, quality_grade='needs_id', per_page=200)
     observations = append_user_stats(response['results'])
     df = to_dataframe(observations)
     df = rank_observations(df)
+
+    # Save full and minimal results
+    df.to_json('ranked_observations.json')
+    minify_observations('minified_observations.json')
+
     return observations
 
 
