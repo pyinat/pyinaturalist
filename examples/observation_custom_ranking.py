@@ -11,7 +11,7 @@ from datetime import datetime
 from dateutil.parser import parse as parse_date
 from glob import glob
 from logging import basicConfig, getLogger
-from os.path import basename, dirname, join
+from os.path import basename, dirname, expanduser, isfile, join
 from time import sleep
 
 import pandas as pd
@@ -20,7 +20,7 @@ import requests_cache
 from pyinaturalist.node_api import get_identifications, get_observations
 from pyinaturalist.request_params import RANKS
 from pyinaturalist.response_format import try_datetime
-from pyinaturalist.response_utils import to_dataframe
+from pyinaturalist.response_utils import load_exports, to_dataframe
 
 ICONIC_TAXON = 'Arachnida'
 
@@ -36,6 +36,8 @@ RANKING_WEIGHTS = {
 
 DATA_DIR = join(dirname(__file__), '..', 'downloads')
 CACHE_FILE = join(DATA_DIR, 'inat_requests.db')
+CSV_EXPORTS = join(DATA_DIR, 'observations-*.csv')
+CSV_COMBINED_EXPORT = join(DATA_DIR, 'combined-observations.csv')
 
 requests_cache.install_cache(backend='sqlite', cache_name=CACHE_FILE)
 logger = getLogger(__name__)
@@ -84,28 +86,16 @@ def rank_observations(df):
     return df.sort_values('rank')
 
 
-def minify_observations(df):
-    """Get minimal info for ranked and sorted observations"""
-    def get_default_photo(photos):
-        return photos[0]['url'].rsplit('/', 1)[0]
+def load_combined_export():
+    """Either load and format raw export files, or load previously processed export file, if it
+    exists
+    """
+    if isfile(CSV_COMBINED_EXPORT):
+        return pd.read_csv(CSV_COMBINED_EXPORT)
 
-    df['taxon.rank'] = df['taxon.rank'].apply(lambda x: f'{x.title()}: ')
-    df['taxon'] = df['taxon.rank'] + df['taxon.name']
-    df['photo'] = df['photos'].apply(get_default_photo)
-    return df[['id', 'taxon', 'photo']]
-
-
-def load_exports():
-    """Combine multiple exported CSV files into one"""
-    csv_files = glob(join(DATA_DIR, 'observations-*.csv'))
-    logger.info(f'Reading {len(csv_files)} exports:')
-    logger.info('\n'.join(['\t' + basename(f) for f in csv_files]))
-    dataframes = (pd.read_csv(f) for f in csv_files)
-
-    df = pd.concat(dataframes, ignore_index=True)
+    df = load_exports(CSV_EXPORTS)
     df = format_export(df)
-    df.to_csv(join(DATA_DIR, 'combined-observations.csv'))
-
+    df.to_csv(CSV_COMBINED_EXPORT)
     return df
 
 
@@ -153,7 +143,21 @@ def format_export(df):
     return df.fillna('')
 
 
+def minify_observations(df):
+    """Get minimal info for ranked and sorted observations"""
+    def get_default_photo(photos):
+        return photos[0]['url'].rsplit('/', 1)[0]
+
+    df['taxon.rank'] = df['taxon.rank'].apply(lambda x: f'{x.title()}: ')
+    df['taxon'] = df['taxon.rank'] + df['taxon.name']
+    df['photo'] = df['photos'].apply(get_default_photo)
+    return df[['id', 'taxon', 'photo']]
+
+
 def main():
+    # WIP: Option to get data from export tool instead of API
+    # df = load_combined_export()
+
     response = get_observations(iconic_taxa=ICONIC_TAXON, quality_grade='needs_id', per_page=200)
     observations = append_user_stats(response['results'])
     df = to_dataframe(observations)
