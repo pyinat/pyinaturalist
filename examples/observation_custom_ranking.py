@@ -7,18 +7,17 @@ high-quality ones.
 Extra requirements:
     pip install pandas requests_cache
 """
-from datetime import datetime
-from dateutil.parser import parse as parse_date
-from glob import glob
+import json
 from logging import basicConfig, getLogger
-from os.path import basename, dirname, expanduser, isfile, join
+from os.path import dirname, isfile, join
 from time import sleep
 
 import pandas as pd
 import requests_cache
+from rich.progress import track
 
 from pyinaturalist.node_api import get_identifications, get_observations
-from pyinaturalist.request_params import RANKS
+from pyinaturalist.request_params import ICONIC_TAXA, RANKS
 from pyinaturalist.response_format import try_datetime
 from pyinaturalist.response_utils import load_exports, to_dataframe
 
@@ -31,50 +30,87 @@ RANKING_WEIGHTS = {
     'iconic_taxon_identifications_count': 2.0,   # Number of identifications for ICONIC_TAXON
     'observations_count':                 0.1,   # Total observations (all taxa)
     'identifications_count':              0.1,   # Total identifications (all taxa)
-    'account_age_days':                   0.5,   # Age of user account, in days
+    # 'account_age_days':                   0.5,   # Age of user account, in days
 }
 
 DATA_DIR = join(dirname(__file__), '..', 'downloads')
 CACHE_FILE = join(DATA_DIR, 'inat_requests.db')
 CSV_EXPORTS = join(DATA_DIR, 'observations-*.csv')
 CSV_COMBINED_EXPORT = join(DATA_DIR, 'combined-observations.csv')
+USER_STATS_FILE = join(DATA_DIR, f'user_stats_{ICONIC_TAXON.lower()}.json')
 
-requests_cache.install_cache(backend='sqlite', cache_name=CACHE_FILE)
 logger = getLogger(__name__)
 basicConfig(level='INFO')
+getLogger('pyrate_limiter').setLevel('WARNING')
+requests_cache.install_cache(backend='sqlite', cache_name=CACHE_FILE)
 
 
-# TODO: Refactor this to take a list of user records, return stats; update observations in dataframe instead of here
-def append_user_stats(observations):
-    """For each observation, get some additional info about the observer"""
-    user_stats = {obs['user']['id']: obs['user'] for obs in observations}
+def append_user_stats(df):
+    """Fetch user stats and append to a dataframe of observation records"""
+    user_info = get_all_user_stats(df['user.id'].unique())
+    for key in user_info[0].keys():
+        logger.info(f'Updating observations with {key}')
+        df[key] = df['user.id'].apply(lambda x: user_info[x])
+    return df
 
-    # Only fetch stats once per user, since some users will have multiple observations
-    logger.info(
-        f'Getting stats for {len(user_stats)} unique observers of '
-        f'{len(observations)} total observations'
+
+def get_all_user_stats(user_ids):
+    """Get some additional information about observers"""
+    iconic_taxa_lookup = {v.lower(): k for k, v in ICONIC_TAXA.items()}
+    iconic_taxon_id = iconic_taxa_lookup[ICONIC_TAXON.lower()]
+    user_ids = set(user_ids)
+    user_info = {}
+
+    # Load previously saved stats, if any
+    if isfile(USER_STATS_FILE):
+        with open(USER_STATS_FILE) as f:
+            user_info = {int(k): v for k, v in json.load(f).items()}
+        logger.info(f'{len(user_info)} partial results loaded')
+
+    n_users_remaining = len(user_ids) - len(user_info)
+    logger.info(f'Getting stats for {n_users_remaining} unique users')
+    logger.warning(
+        'Estimated time, with default API request throttling: '
+        f'{n_users_remaining / 30 / 60:.2f} hours'
     )
-    logger.warning(f'Estimated time, with conservative API request throttling: {len(user_stats)/60} minutes')
-    for user_id, user_info in user_stats.items():
-        logger.debug(f'Getting stats for user {user_id}')
-        user_obs = get_observations(
-            user_id=user_id,
-            iconic_taxa=ICONIC_TAXON,
-            quality_grade='research',
-            per_page=0,
-        )
-        user_ids = get_identifications(user_id=user_id, iconic_taxa=ICONIC_TAXON, per_page=0)
-        user_age = datetime.now() - parse_date(user_info['created_at']).replace(tzinfo=None)
+    for user_id in track(user_ids):
+        if user_id in user_info:
+            continue
 
-        user_stats[user_id]['iconic_taxon_rg_observations_count'] = user_obs['total_results']
-        user_stats[user_id]['iconic_taxon_identifications_count'] = user_ids['total_results']
-        user_stats[user_id]['account_age_days'] = max(user_age.days, 1)
-        sleep(1)
+        try:
+            user_info[user_id] = get_user_stats(user_id, iconic_taxon_id)
+        except (Exception, KeyboardInterrupt) as e:
+            logger.exception(e)
+            logger.error(f'Aborting and saving partial results to {USER_STATS_FILE}')
+            break
 
-    # Append user stats to the observation records
-    for obs in observations:
-        obs['user'].update(user_stats[obs['user']['id']])
-    return observations
+    with open(USER_STATS_FILE, 'w') as f:
+        json.dump(user_info, f)
+
+    return user_info
+
+
+def get_user_stats(user_id, iconic_taxon_id):
+    """Get info for an individual user"""
+    logger.debug(f'Getting stats for user {user_id}')
+    user_observations = get_observations(
+        user_id=user_id,
+        iconic_taxa=ICONIC_TAXON,
+        quality_grade='research',
+        count_only=True,
+    )
+    user_identifications = get_identifications(
+        user_id=user_id,
+        iconic_taxon_id=iconic_taxon_id,
+        count_only=True,
+    )
+    # user_age = datetime.now() - parse_date(user_info['created_at']).replace(tzinfo=None)
+    # account_age_days = max(user_age.days, 1)
+
+    return {
+        'iconic_taxon_rg_observations_count': user_observations['total_results'],
+        'iconic_taxon_identifications_count': user_identifications['total_results'],
+    }
 
 
 def rank_observations(df):
@@ -101,6 +137,7 @@ def load_combined_export():
 
 def format_export(df):
     """Format an exported CSV file to be similar to API response format"""
+    logger.info(f'Formatting {len(df)} observation records')
     replace_strs = {
         'common_name': 'taxon.preferred_common_name',
         'taxon_': 'taxon.',
@@ -128,7 +165,7 @@ def format_export(df):
         return col
 
     df = df.rename(columns={col: rename_column(col) for col in sorted(df.columns)})
-    df = df.drop(columns=['observed_on_string', 'time_observed_at', 'time_zone'])
+    df = df.drop(columns=drop_cols)
 
     def get_min_rank(series):
         for rank in RANKS:
@@ -154,21 +191,22 @@ def minify_observations(df):
     return df[['id', 'taxon', 'photo']]
 
 
-def main():
-    # WIP: Option to get data from export tool instead of API
-    # df = load_combined_export()
+def main(source='export'):
+    if source == 'api':
+        response = get_observations(iconic_taxa=ICONIC_TAXON, quality_grade='needs_id', page='all')
+        df = to_dataframe(response['results'])
+    else:
+        df = load_combined_export()
 
-    response = get_observations(iconic_taxa=ICONIC_TAXON, quality_grade='needs_id', per_page=200)
-    observations = append_user_stats(response['results'])
-    df = to_dataframe(observations)
+    df = append_user_stats(df)
     df = rank_observations(df)
 
     # Save full and minimal results
-    df.to_json('ranked_observations.json')
-    minify_observations('minified_observations.json')
+    df.to_json(join(DATA_DIR, 'ranked_observations.json'))
+    minify_observations(df).to_json(join(DATA_DIR, 'minified_observations.json'))
 
-    return observations
+    return df
 
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
