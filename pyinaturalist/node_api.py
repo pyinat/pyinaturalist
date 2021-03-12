@@ -801,3 +801,24 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
     r = node_api_get('taxa/autocomplete', params=params)
     r.raise_for_status()
     return r.json()
+
+
+# Users
+# --------------------
+
+
+def get_user_by_id(user_id: int, user_agent: str = None) -> JsonResponse:
+    """Get a user by ID.
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Users/get_users_id
+
+    Args:
+        user_id: Get the user with this ID. Only a single ID is allowed per request.
+
+    Returns:
+        Response dict containing user record
+    """
+    r = node_api_get('users', ids=[user_id], user_agent=user_agent)
+    r.raise_for_status()
+    results = r.json()['results']
+    return results[0] if results else {}
