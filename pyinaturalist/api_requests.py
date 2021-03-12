@@ -87,7 +87,7 @@ def request(
 
 
 def _request(session, *args, **kwargs) -> requests.Response:
-    max_retries = 10
+    max_retries = 4
     n_retries = 0
 
     while n_retries < max_retries:
@@ -95,7 +95,7 @@ def _request(session, *args, **kwargs) -> requests.Response:
         if response.status_code == 429:
             logger.error(str(response))
             n_retries += 1
-            sleep(60)
+            sleep(60 + (10 * n_retries))
         else:
             return response
 

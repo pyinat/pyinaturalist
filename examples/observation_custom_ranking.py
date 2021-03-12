@@ -80,8 +80,8 @@ def get_all_user_stats(user_ids, user_records=None):
 
     # Estimate how long this thing is gonna take
     n_users_remaining = len(user_ids) - len(user_info)
-    reqs_per_user = 2 if user_records else 3
-    est_time = n_users_remaining / (60 / reqs_per_user) / 60
+    secs_per_user = (2 if user_records else 3) * THROTTLING_DELAY
+    est_time = n_users_remaining / (60 / secs_per_user) / 60
     logger.info(f'Getting stats for {n_users_remaining} unique users')
     logger.warning(f'Estimated time, with default API request throttling: {est_time:.2f} hours')
 
