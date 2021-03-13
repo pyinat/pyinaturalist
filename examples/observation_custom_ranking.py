@@ -26,10 +26,13 @@ from pyinaturalist.response_format import try_datetime
 from pyinaturalist.response_utils import load_exports, to_dataframe
 
 ICONIC_TAXON = 'Arachnida'
+THROTTLING_DELAY = 3
 
 # Note: all values are normalized before ranking weights are applied.
 # fmt: off
 RANKING_WEIGHTS = {
+    'iqa_technical':                      2.0,   # Image quality assessment score
+    'iqa_aesthetic':                      1.0,   # Secondary image quality assessment score
     'iconic_taxon_rg_observations_count': 1.5,   # Number of research-grade observations for ICONIC_TAXON
     'iconic_taxon_identifications_count': 2.0,   # Number of identifications for ICONIC_TAXON
     'observations_count':                 0.1,   # Total observations (all taxa)
@@ -40,6 +43,7 @@ DATA_DIR = join(expanduser('~'), 'Downloads')
 CACHE_FILE = join(DATA_DIR, 'inat_requests.db')
 CSV_EXPORTS = join(DATA_DIR, 'observations-*.csv')
 CSV_COMBINED_EXPORT = join(DATA_DIR, 'combined-observations.csv')
+IQA_REPORTS = [join(DATA_DIR, 'iqa_aesthetic.json'), join(DATA_DIR, 'iqa_technical.json')]
 USER_STATS_FILE = join(DATA_DIR, f'user_stats_{ICONIC_TAXON.lower()}.json')
 
 PHOTO_ID_PATTERN = re.compile(r'.*photos/(.*)/.*\.(\w+)')
@@ -246,7 +250,7 @@ def main(source='export'):
     df = rank_observations(df)
 
     # Save full and minimal results
-    df.to_json(join(DATA_DIR, 'ranked_observations.json'))
+    df.to_csv(CSV_COMBINED_EXPORT)
     minify_observations(df).to_json(join(DATA_DIR, 'minified_observations.json'))
 
     return df
