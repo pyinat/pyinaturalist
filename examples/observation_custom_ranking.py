@@ -12,7 +12,7 @@ import re
 from datetime import datetime, timedelta
 from logging import basicConfig, getLogger
 from os import makedirs
-from os.path import dirname, isfile, join
+from os.path import expanduser, isfile, join
 from time import sleep
 
 import pandas as pd
@@ -34,10 +34,9 @@ RANKING_WEIGHTS = {
     'iconic_taxon_identifications_count': 2.0,   # Number of identifications for ICONIC_TAXON
     'observations_count':                 0.1,   # Total observations (all taxa)
     'identifications_count':              0.1,   # Total identifications (all taxa)
-    # 'account_age_days':                   0.5,   # Age of user account, in days
 }
 
-DATA_DIR = join(dirname(__file__), '..', 'downloads')
+DATA_DIR = join(expanduser('~'), 'Downloads')
 CACHE_FILE = join(DATA_DIR, 'inat_requests.db')
 CSV_EXPORTS = join(DATA_DIR, 'observations-*.csv')
 CSV_COMBINED_EXPORT = join(DATA_DIR, 'combined-observations.csv')
@@ -125,8 +124,6 @@ def get_user_stats(user_id, iconic_taxon_id, user=None):
         count_only=True,
     )
     sleep(THROTTLING_DELAY)
-    # user_age = datetime.now() - parse_date(user_info['created_at']).replace(tzinfo=None)
-    # account_age_days = max(user_age.days, 1)
 
     user['iconic_taxon_rg_observations_count'] = user_observations['total_results']
     user['iconic_taxon_identifications_count'] = user_identifications['total_results']
@@ -169,8 +166,10 @@ def load_observations_from_export():
     """
     makedirs(DATA_DIR, exist_ok=True)
     if isfile(CSV_COMBINED_EXPORT):
+        logger.info(f'Loading {CSV_COMBINED_EXPORT}')
         return pd.read_csv(CSV_COMBINED_EXPORT)
 
+    logger.info(f'Loading {CSV_EXPORTS}')
     df = load_exports(CSV_EXPORTS)
     df = format_export(df)
     df.to_csv(CSV_COMBINED_EXPORT)
