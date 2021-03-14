@@ -90,10 +90,10 @@ GET               | /search                                     |
 GET               | /taxa/{id}                                  | yes
 GET               | /taxa                                       | yes
 GET               | /taxa/autocomplete                          | yes
-GET               | /users/{id}                                 |
+GET               | /users/{id}                                 | yes
 PUT               | /users/{id}                                 |
 GET               | /users/{id}/projects                        |
-GET               | /users/autocomplete                         |
+GET               | /users/autocomplete                         | yes
 GET               | /users/me                                   |
 DELETE            | /users/{id}/mute                            |
 POST              | /users/{id}/mute                            |

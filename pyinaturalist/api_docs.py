@@ -511,6 +511,12 @@ def _observation_id(observation_id: int):
     """
 
 
+def _project_id(observation_id: int = None):
+    """
+    project_id: Only show users who are members of this project
+    """
+
+
 def _pagination(
     page: int = None,
     per_page: int = None,
