@@ -36,6 +36,7 @@ from pyinaturalist.response_format import (
     convert_all_coordinates,
     convert_all_place_coordinates,
     convert_all_timestamps,
+    convert_generic_timestamps,
     convert_observation_timestamps,
     format_histogram,
 )
@@ -762,7 +763,7 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
 
 @document_request_params([docs._taxon_params])
 def get_taxa_autocomplete(**params) -> JsonResponse:
-    """Given a query string, returns taxa with names starting with the search term
+    """Given a query string, return taxa with names starting with the search term
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_autocomplete
 
@@ -801,3 +802,62 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
     r = node_api_get('taxa/autocomplete', params=params)
     r.raise_for_status()
     return r.json()
+
+
+# Users
+# --------------------
+
+
+def get_user_by_id(user_id: int, user_agent: str = None) -> JsonResponse:
+    """Get a user by ID.
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Users/get_users_id
+
+    Args:
+        user_id: Get the user with this ID. Only a single ID is allowed per request.
+
+    Example:
+
+        >>> response = get_user_by_id(123456)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_user_by_id.py
+
+    Returns:
+        Response dict containing user record
+    """
+    r = node_api_get('users', ids=[user_id], user_agent=user_agent)
+    r.raise_for_status()
+    results = r.json()['results']
+    if not results:
+        return {}
+    return convert_generic_timestamps(results[0])
+
+
+@document_request_params([docs._search_query, docs._project_id, docs._pagination])
+def get_users_autocomplete(q: str, **params) -> JsonResponse:
+    """Given a query string, return users with names or logins starting with the search term
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Users/get_users_autocomplete
+
+    Note: Pagination is supported; default page size is 6, and max is 100.
+
+    Example:
+
+        >>> response = get_taxa_autocomplete(q='my_userna')
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_users_autocomplete.py
+
+    Returns:
+        Response dict containing user records
+    """
+    r = node_api_get('users/autocomplete', params={'q': q, **params})
+    r.raise_for_status()
+    users = r.json()
+    users['results'] = convert_all_timestamps(users['results'])
+    return users

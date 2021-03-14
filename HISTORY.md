@@ -4,6 +4,7 @@
 
 ### New Endpoints
 * Added new functions for **Identifications** endpoints: `get_identifications()` and `get_identifications_by_id()`
+* Added new functions for **Users** endpoints: `get_user_by_id()` and `get_users_autocomplete()`
 
 ### Modified Endpoints
 * Added undocumented `ident_user_id` parameter to `get_observations()`
