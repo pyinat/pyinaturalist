@@ -39,7 +39,7 @@ except ImportError:
 
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=requests.Response)
-MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0}
+MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0, 'access_token': ''}
 
 logger = getLogger(__name__)
 thread_local = threading.local()
