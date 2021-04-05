@@ -1,6 +1,6 @@
 # History
 
-## 0.13
+## 0.13 (2021-06-TBD)
 
 ### New Endpoints
 * Added new functions for **Identifications** endpoints: `get_identifications()` and `get_identifications_by_id()`
@@ -30,6 +30,7 @@
 * Removed `minify` option to `get_taxa_autocomplete`, and instead show a similar example in docstring
 
 ### Other Changes
+* Published [pyinaturalist on conda-forge](https://anaconda.org/conda-forge/pyinaturalist)
 * Added global rate-limiting to stay within the rates suggested in
   [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
   (per second, minute, and day)

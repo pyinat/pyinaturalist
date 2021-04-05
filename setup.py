@@ -13,11 +13,11 @@ extras_require = {
         'm2r2',
         'nbsphinx',
         'prompt_toolkit',
-        'Sphinx~=3.2.1',
+        'Sphinx~=3.5.3',
         'sphinx-autodoc-typehints',
         'sphinx-automodapi',
         'sphinx-copybutton',
-        'sphinx-rtd-theme',
+        'sphinx-rtd-theme~=0.5.2',
         'sphinxcontrib-apidoc',
     ],
     # Packages used for testing both locally and in CI jobs

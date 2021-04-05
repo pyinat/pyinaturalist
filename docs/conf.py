@@ -25,7 +25,7 @@ from pyinaturalist import __version__  # noqa: E402
 
 # General information about the project.
 project = 'pyinaturalist'
-copyright = '2020, Nicolas Noé'
+copyright = '2021, Nicolas Noé'
 needs_sphinx = '3.0'
 master_doc = 'index'
 source_suffix = ['.rst', '.md']
@@ -99,7 +99,7 @@ html_theme = 'sphinx_rtd_theme'
 
 
 def setup(app):
-    """Run some additional steps after the Sphinx builder is intialized.
+    """Run some additional steps after the Sphinx builder is initialized.
 
     In addition to basic things like adding static resources, this allows us to run any custom
     behavior that would otherwise go in the Makefile, so the readthedocs builder will behave the
