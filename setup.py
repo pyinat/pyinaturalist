@@ -45,7 +45,7 @@ setup(
     author='Nicolas Noé',
     author_email='nicolas@niconoe.eu',
     url='https://github.com/niconoe/pyinaturalist',
-    packages=find_packages(),
+    packages=find_packages(exclude=['examples', 'test']),
     include_package_data=True,
     install_requires=[
         'keyring~=22.3.0',
@@ -54,6 +54,7 @@ setup(
         'python-forge',
         'requests>=2.20',
     ],
+    python_requires='>=3.6',
     extras_require=extras_require,
     zip_safe=False,
 )
