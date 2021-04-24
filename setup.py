@@ -48,8 +48,8 @@ setup(
     packages=find_packages(exclude=['examples', 'test']),
     include_package_data=True,
     install_requires=[
-        'keyring~=22.3.0',
-        'pyrate-limiter>=2.3.0; python_version>="3.7"',
+        'keyring>=22.3',
+        'pyrate-limiter>=2.3; python_version>="3.7"',
         'python-dateutil>=2.0',
         'python-forge',
         'requests>=2.20',
