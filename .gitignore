@@ -52,6 +52,10 @@ docs/modules/
 # Mac OS X
 .DS_Store
 
+# Request cache
+*.sqlite
+*.db
+
 # Editors
 .~*
 .idea/
