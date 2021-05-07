@@ -35,6 +35,13 @@
   [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
   (per second, minute, and day)
 * Added new module `pyinaturalist.response_utils` for optional formatting functions
+* Moved `Dockerfile` and `docker-compose.yml` to a separate repo
+  ([inaturalist-notebook](https://github.com/reclosedev/requests-cache/issues/new/choose))
+  and published on Docker Hub
+
+-----
+### 0.12.1 (2021-03-07)
+* Add undocumented `ident_user_id` parameter to `get_observations()`
 
 ## 0.12 (2021-02-02)
 [See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/3?closed=1)
@@ -74,6 +81,7 @@
 * Dropped support for python 3.5
 * Removed request parameters that were deprecated in 0.11
 
+-----
 ## 0.11 (2020-11-04)
 [See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/2?closed=1)
 
@@ -133,6 +141,7 @@
 * Added a dry-run mode to mock out API requests for testing
 * Set up pre-release builds for latest development version
 
+-----
 ## 0.9.1 (2020-05-26)
 
 * Bugfix: proper support for boolean and integer list parameters ([Issue #17](https://github.com/niconoe/pyinaturalist/issues/17))
