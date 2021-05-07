@@ -1,5 +1,4 @@
 import pytest
-from sys import version_info
 from unittest.mock import MagicMock, patch
 
 import pyinaturalist
@@ -123,7 +122,6 @@ def test_request_dry_run_disabled(requests_mock):
     assert request('GET', 'http://url').json() == real_response
 
 
-@pytest.mark.skipif(version_info < (3, 7), reason="Requires python 3.7+")
 @patch('pyrate_limiter.limit_context_decorator.sleep')
 def test_ratelimit(mock_sleep):
     from pyrate_limiter import Duration, Limiter, RequestRate
@@ -140,7 +138,6 @@ def test_ratelimit(mock_sleep):
     assert mock_sleep.call_count == 10
 
 
-@pytest.mark.skipif(version_info < (3, 7), reason="Requires python 3.7+")
 @patch('pyrate_limiter.limit_context_decorator.sleep')
 def test_ratelimit__no_limiter(mock_sleep):
     for i in range(70):
