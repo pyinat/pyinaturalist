@@ -26,7 +26,7 @@ from pyinaturalist import __version__  # noqa: E402
 # General information about the project.
 project = 'pyinaturalist'
 copyright = '2021, Nicolas Noé'
-needs_sphinx = '3.0'
+needs_sphinx = '4.0'
 master_doc = 'index'
 source_suffix = ['.rst', '.md']
 version = release = __version__

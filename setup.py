@@ -13,7 +13,7 @@ extras_require = {
         'm2r2',
         'nbsphinx',
         'prompt_toolkit',
-        'Sphinx~=3.5.3',
+        'Sphinx~=4.0.1',
         'sphinx-autodoc-typehints',
         'sphinx-automodapi',
         'sphinx-copybutton',
