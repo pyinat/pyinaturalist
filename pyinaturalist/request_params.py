@@ -210,7 +210,7 @@ def preprocess_request_params(params: Optional[RequestParams]) -> RequestParams:
 
 
 def convert_bool_params(params: RequestParams) -> RequestParams:
-    """ Convert any boolean request parameters to javascript-style boolean strings """
+    """Convert any boolean request parameters to javascript-style boolean strings"""
     for k, v in params.items():
         if isinstance(v, bool):
             params[k] = str(v).lower()
@@ -334,7 +334,7 @@ def strip_empty_params(params: RequestParams) -> RequestParams:
 
 
 def is_int(value: Any) -> bool:
-    """ Determine if a value is a valid integer """
+    """Determine if a value is a valid integer"""
     try:
         int(value)
         return True

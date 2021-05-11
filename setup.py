@@ -22,7 +22,7 @@ extras_require = {
     ],
     # Packages used for testing both locally and in CI jobs
     'test': [
-        'black==20.8b1',
+        'black==21.5b1',
         'flake8',
         'isort',
         'mypy',

@@ -42,7 +42,7 @@ logging.getLogger('pyinaturalist').setLevel('DEBUG')
 
 
 def get_module_functions(module):
-    """ Get all functions belonging to a module (excluding imports) """
+    """Get all functions belonging to a module (excluding imports)"""
     return {
         name: member
         for name, member in getmembers(module)
@@ -51,7 +51,7 @@ def get_module_functions(module):
 
 
 def get_module_http_functions(module):
-    """ Get all functions belonging to a module and prefixed with an HTTP method """
+    """Get all functions belonging to a module and prefixed with an HTTP method"""
     return {
         name: func
         for name, func in get_module_functions(module).items()
