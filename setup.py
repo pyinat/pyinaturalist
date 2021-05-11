@@ -29,6 +29,7 @@ extras_require = {
         'pre-commit',
         'pytest>=5.0',
         'pytest-cov',
+        'pytest-xdist',
         'requests-mock>=1.7',
         'tox>=3.15',
     ],

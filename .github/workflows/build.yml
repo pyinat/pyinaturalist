@@ -36,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: pip install ".[dev]"
       - name: Run unit tests
-        run: pytest
+        run: pytest -n auto
 
   # Run code analysis checks, reports, etc.
   analyze:
@@ -66,7 +66,7 @@ jobs:
       - name: Run type checks
         run: mypy .
       - name: Generate code coverage report
-        run: pytest --cov --cov-report=term --cov-report=html
+        run: pytest -n auto --cov --cov-report=term --cov-report=html
       - name: Send code coverage report to Coveralls
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

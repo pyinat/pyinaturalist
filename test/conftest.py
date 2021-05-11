@@ -37,7 +37,7 @@ MOCK_CREDS_OAUTH = {
 }
 
 # Enable logging for urllib and other external loggers
-logging.basicConfig(level='WARN')
+logging.basicConfig(level='INFO')
 logging.getLogger('pyinaturalist').setLevel('DEBUG')
 
 

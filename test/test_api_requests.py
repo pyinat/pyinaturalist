@@ -1,5 +1,8 @@
 import pytest
+from time import sleep
 from unittest.mock import MagicMock, patch
+
+from pyrate_limiter import Duration, Limiter, RequestRate
 
 import pyinaturalist
 from pyinaturalist.api_requests import MOCK_RESPONSE, delete, get, post, put, ratelimit, request
@@ -122,20 +125,19 @@ def test_request_dry_run_disabled(requests_mock):
     assert request('GET', 'http://url').json() == real_response
 
 
-@patch('pyrate_limiter.limit_context_decorator.sleep')
+@patch('pyrate_limiter.limit_context_decorator.sleep', side_effect=sleep)
 def test_ratelimit(mock_sleep):
-    from pyrate_limiter import Duration, Limiter, RequestRate
 
-    limiter = Limiter(RequestRate(60, Duration.MINUTE))
+    limiter = Limiter(RequestRate(5, Duration.SECOND))
     mock_func = MagicMock()
 
-    for i in range(70):
+    for i in range(6):
         with ratelimit(limiter, bucket='pytest-1'):
             mock_func()
 
-    # With 70 requests and a limit of 60/minute, there should be a delay for the final 10 requests
-    assert mock_func.call_count == 70
-    assert mock_sleep.call_count == 10
+    # With 6 requests and a limit of 5 request/second, there should be a delay for the final request
+    assert mock_func.call_count == 6
+    assert mock_sleep.call_count == 1
 
 
 @patch('pyrate_limiter.limit_context_decorator.sleep')
