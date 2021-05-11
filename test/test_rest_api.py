@@ -28,7 +28,7 @@ def get_observations_response(response_format):
 
 @pytest.mark.parametrize('response_format', OBSERVATION_FORMATS)
 def test_get_observations(response_format, requests_mock):
-    """ Test all supported observation data formats """
+    """Test all supported observation data formats"""
     mock_response = get_observations_response(response_format)
     key = 'json' if response_format == 'json' else 'text'
 
@@ -61,7 +61,7 @@ def test_get_observations__invalid_format(response_format):
 
 
 def test_get_observation_fields(requests_mock):
-    """ get_observation_fields() work as expected (basic use)"""
+    """get_observation_fields() work as expected (basic use)"""
     page_1_json_response = load_sample_data('get_observation_fields_page1.json')
     page_2_json_response = load_sample_data('get_observation_fields_page2.json')
 

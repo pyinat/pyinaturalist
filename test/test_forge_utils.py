@@ -37,7 +37,7 @@ Returns:
 
 def test_copy_docstrings__without_return_desc():
     def func():
-        """ Test function. """
+        """Test function."""
 
     expected_docstring = """
 Test function.

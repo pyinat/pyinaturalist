@@ -80,7 +80,7 @@ def convert_all_coordinates(results: List[ResponseObject]) -> List[ResponseObjec
 
 
 def convert_all_place_coordinates(response: JsonResponse) -> JsonResponse:
-    """ Convert locations for both standard and community-contributed places to floats """
+    """Convert locations for both standard and community-contributed places to floats"""
     response['results'] = {
         'standard': convert_all_coordinates(response['results'].get('standard')),
         'community': convert_all_coordinates(response['results'].get('community')),
@@ -207,7 +207,7 @@ def parse_offset(tz_offset: str, tz_name: str = None) -> tzoffset:
 
 
 def try_datetime(timestamp: str, **kwargs) -> Optional[datetime]:
-    """ Parse a timestamp string into a datetime, if valid; return ``None`` otherwise """
+    """Parse a timestamp string into a datetime, if valid; return ``None`` otherwise"""
     if isinstance(timestamp, datetime):
         return timestamp
 
@@ -222,7 +222,7 @@ def try_datetime(timestamp: str, **kwargs) -> Optional[datetime]:
 
 
 def try_float(value: Any) -> Optional[float]:
-    """ Convert a value to a float, if valid; return ``None`` otherwise """
+    """Convert a value to a float, if valid; return ``None`` otherwise"""
     try:
         return float(value)
     except (TypeError, ValueError):

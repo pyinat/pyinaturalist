@@ -13,7 +13,7 @@ extras_require = {
         'm2r2',
         'nbsphinx',
         'prompt_toolkit',
-        'Sphinx~=3.5.3',
+        'Sphinx~=4.0.1',
         'sphinx-autodoc-typehints',
         'sphinx-automodapi',
         'sphinx-copybutton',
@@ -22,13 +22,14 @@ extras_require = {
     ],
     # Packages used for testing both locally and in CI jobs
     'test': [
-        'black==20.8b1',
+        'black==21.5b1',
         'flake8',
         'isort',
         'mypy',
         'pre-commit',
         'pytest>=5.0',
         'pytest-cov',
+        'pytest-xdist',
         'requests-mock>=1.7',
         'tox>=3.15',
     ],
@@ -49,7 +50,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'keyring>=22.3',
-        'pyrate-limiter>=2.3; python_version>="3.7"',
+        'pyrate-limiter>=2.3.3',
         'python-dateutil>=2.0',
         'python-forge',
         'requests>=2.20',

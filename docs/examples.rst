@@ -8,7 +8,8 @@ Examples
     examples/Data Visualizations - Regional Observation Stats.ipynb
     examples/Data Visualizations - Seaborn.ipynb
     examples/Data Visualizations - Matplotlib.ipynb
-    examples/observations_to_gpx.py
+
+.. examples/observations_to_gpx.py
 
 
 .. TODO: Can't generate thumbnails for Altair visualizations

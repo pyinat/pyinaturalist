@@ -155,6 +155,6 @@ def env_to_bool(environment_variable: str) -> bool:
 
 
 def log_request(*args, **kwargs):
-    """ Log all relevant information about an HTTP request """
+    """Log all relevant information about an HTTP request"""
     kwargs_strs = [f'{k}={v}' for k, v in kwargs.items()]
     logger.info('Request: {}'.format(', '.join(list(args) + kwargs_strs)))
