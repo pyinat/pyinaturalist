@@ -1,13 +1,13 @@
 .. _endpoints:
 
-Implemented Endpoints
-=====================
+Endpoint Summary
+================
+Below is a list of all iNaturalist API endpoints and their corresponding pyinaturalist functions.
+Note that some endpoints have more than one function associated with them.
 
 
 Pyinaturalist functions
 ----------------------------------------
-Below is a list of all API functions provided by pyinaturalist.
-Note that some endpoints have more than one function associated with them.
 
 Node-based API
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

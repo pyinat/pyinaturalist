@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-""" Example to get observation locations + metadata in GPX format.
+"""
+An example of converting observation locations + metadata into GPX format.
+
 Extra dependencies:
-    `pip install gpxpy`
+    ``pip install gpxpy``
 """
 from logging import getLogger
 
