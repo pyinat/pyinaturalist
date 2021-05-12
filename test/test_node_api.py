@@ -589,7 +589,7 @@ def test_get_users_autocomplete(requests_mock):
     assert first_result['created_at'] == datetime(2018, 4, 23, 17, 11, 14, tzinfo=tzutc())
 
 
-@patch.dict(os.environ, {'GITHUB_REF': 'refs/heads/master'}, clear=True)
+@patch.dict(os.environ, {'GITHUB_REF': 'refs/heads/main'}, clear=True)
 def test_user_agent(requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/observations',
