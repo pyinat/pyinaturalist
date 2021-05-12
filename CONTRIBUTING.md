@@ -33,8 +33,8 @@ $ open docs/_build/index.html
 $ xdg-open docs/_build/index.html
 ```
 
-Documentation is automatically built by ReadTheDocs whenever code is merged into either `master` or `dev`:
-* [Stable release (master branch)](https://pyinaturalist.readthedocs.io/en/stable/)
+Documentation is automatically built by ReadTheDocs whenever code is merged into either `main` or `dev`:
+* [Stable release (main branch)](https://pyinaturalist.readthedocs.io/en/stable/)
 * [Development pre-release (dev branch)](https://pyinaturalist.readthedocs.io/en/latest/)
 
 For any new or changed behavior, add a brief high-level summary to `HISTORY.md`.
@@ -85,11 +85,11 @@ Here are some general guidelines for submitting a pull request:
 For maintainers:
 
 Releases are based on git tags. GitHub Actions will build and deploy packages to PyPi on tagged commits
-on the `master` branch. Release steps:
+on the `main` branch. Release steps:
 
 - Update the version in `pyinaturalist/__init__.py`
 - Update the release notes in `HISTORY.md`
-- Merge changes into the `master` branch
+- Merge changes into the `main` branch
 - Push a new tag, e.g.: `git tag v0.1 && git push origin --tags`
 - This will trigger a deployment. Verify that this completes successfully and that the new version
   can be installed from pypi with `pip install`
