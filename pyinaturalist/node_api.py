@@ -308,9 +308,8 @@ def get_observations(**params) -> JsonResponse:
 
         Get basic info for observations in response:
 
-        >>> from pyinaturalist.response_utils import format_observation_str
-        >>> for obs in response['results']:
-        >>>     print(format_observation_str(obs))
+        >>> from pyinaturalist.formatters import format_observations
+        >>> print(format_observations(response['results']))
         '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK'
         '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK'
 
@@ -780,10 +779,21 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
 
         Get basic info for taxa in response:
 
-        >>> from pyinaturalist.response_utils import format_taxon_str
-        >>> for taxon in response['results']:
-        >>>     print(format_taxon_str(taxon, align=True))
+        >>> from pyinaturalist.formatters import format_taxa
+        >>> print(format_taxa(response['results'], align=True))
         >>> # See example output below
+
+        If you get unexpected matches, the search likely matched a synonym, either in the form of a
+        common name or an alternative classification. Check the ``matched_term`` property for more
+        info. For example:
+
+        ```python
+        >>> first_result = get_taxa_autocomplete(q='zygoca')['results'][0]
+        >>> first_result["name"]
+        "Schlumbergera truncata"  # This doesn't look like our search term!
+        >>> first_result["matched_term"]
+        "Zygocactus truncatus"    # ...Because it matched an older synonym for Schlumbergera
+        ```
 
         .. admonition:: Example Response
             :class: toggle
