@@ -38,6 +38,7 @@
 * Moved `Dockerfile` and `docker-compose.yml` to a separate repo
   ([inaturalist-notebook](https://github.com/reclosedev/requests-cache/issues/new/choose))
   and published on Docker Hub
+* Add some optional response formatting functions to `pyinaturalist.formatters`
 
 -----
 ### 0.12.1 (2021-03-07)

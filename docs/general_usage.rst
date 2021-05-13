@@ -1,6 +1,19 @@
 General Usage
 =============
-Following is some general usage information that applies to most or all pyinaturalist functions.
+This page contains usage information that applies to most or all pyinaturalist functions.
+
+Pagination
+----------
+Most endpoints support pagination, using the parameters:
+    * ``page``: Page number to get
+    * ``per_page``: Number of results to get per page
+    * ``count_only=True``: This is just a shortcut for ``per_page=0``, which will return only the
+      total number of results, not the results themselves.
+
+The default and maximum ``per_page`` values vary by endpoint, but it's 200 for most endpoints.
+
+To get all pages of results and combine them into a single response, use ``page='all'``.
+Note that this replaces the ``get_all_*()`` functions from pyinaturalist<=0.12.
 
 .. _auth:
 
@@ -123,19 +136,6 @@ macOS and Linux systems. See this guide for setup info:
 
    Credentials storage with keyring + KeePassXC
 
-Pagination
-----------
-Most endpoints support pagination, using the parameters:
-    * ``page``: Page number to get
-    * ``per_page``: Number of results to get per page
-    * ``count_only=True``: This is just a shortcut for ``per_page=0``, which will return only the
-      total number of results, not the results themselves.
-
-The default and maximum ``per_page`` values vary by endpoint, but it's 200 for most endpoints.
-
-To all pages of results and combine them into a single response, use ``page='all'``. Note that this
-replaces the `get_all_*()` functions from pyinaturalist<=0.12.
-
 
 Dry-run mode
 ------------
@@ -188,36 +188,26 @@ instead:
 
 User Agent
 ----------
-While not mandatory, it is considered good practice in the iNaturalist community to set a custom `user-agent <https://en.wikipedia.org/wiki/User_agent>`_ header to your API
-calls. That allows iNaturalist to identify "who's doing what" with their APIs, and maybe contact you back in case they want to start
-a discussion about how you use them.
+While not mandatory, it's good practice to include a `user-agent <https://en.wikipedia.org/wiki/User_agent>`_ in
+your API calls. This field can be either something that identifies the project or its contact person.
 
-It is recommended to set this user-agent field to either something that identifies the project (``MyCoolAndroidApp/2.0``) or its
-contact person (``Jane Doe, iNat user XXXXXX, jane@doe.net``).
-
-Pyinaturalist therefore provides a couple of features to make that easy:
-
+You can either set this globally:
 .. code-block:: python
 
     import pyinaturalist
     from pyinaturalist.node_api import get_observation
 
     pyinaturalist.user_agent = "MyCoolAndroidApp/2.0 (using Pyinaturalist)"
-
     # From now on, all API calls will use this user-agent.
 
-    t = get_access_token('username', 'password', 'app_id', 'app_secret')
-    do_something_else()
-    get_observation(observation_id=1234)
-    ...
 
-In the rare cases where you want to use multiple user agents in your script, you can configure it per call:
-
+Or for individual requests:
 .. code-block:: python
 
-    get_observation(observation_id=16227955, user_agent='AnotherUserAgent')
+    get_observation(observation_id=16227955, user_agent='Jane Doe <jane.doe@gmail.com>')
 
-All functions that communicate with the API accept the `user_agent` optional parameter. If you don't configure the user agent, `Pyinaturalist/<VERSION>` will be used.
+All API functions accept an optional ``user_agent`` parameter. If not configured,
+``Pyinaturalist/<VERSION>`` will be used.
 
 
 API Recommended Practices
