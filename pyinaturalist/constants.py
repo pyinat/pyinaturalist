@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from os.path import abspath, dirname, join
-from typing import Any, BinaryIO, Dict, List, Union
+from typing import Any, BinaryIO, Dict, Iterable, List, Union
 
 # iNaturalist URLs
 API_V0_BASE_URL = 'https://www.inaturalist.org'
@@ -43,6 +43,7 @@ ListResponse = List[Dict[str, Any]]
 ObsFieldValues = Union[Dict, List[Dict]]
 RequestParams = Dict[str, Any]
 ResponseObject = Dict[str, Any]
+ResponseOrObject = Union[JsonResponse, ResponseObject, Iterable[ResponseObject]]
 MultiInt = Union[int, List[int]]
 MultiStr = Union[str, List[str]]
 MultiIntOrStr = Union[MultiInt, MultiStr]
