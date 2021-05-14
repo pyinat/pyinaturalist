@@ -1,5 +1,66 @@
+[tool.poetry]
+name = "pyinaturalist"
+version = "0.13.0"
+description = "iNaturalist API client for python"
+authors = ["Nicolas Noé <nicolas@niconoe.eu>", "Jordan Cook <Jordan.Cook@pioneer.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/niconoe/pyinaturalist"
+repository = "https://github.com/niconoe/pyinaturalist"
+documentation = "https://pyinaturalist.readthedocs.io"
+keywords = ["inaturalist", "biodiversity", "api-client", "requests"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Typing :: Typed",
+]
+include = [
+    { path = "*.md" },
+    { path = "*.yml" },
+    { path = "docs", format = "sdist" },
+    { path = "examples", format = "sdist" },
+    { path = "test", format = "sdist" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+keyring = ">=22.3"
+python-dateutil = ">=2.0"
+python-forge = ">=18.6.0"
+pyrate-limiter = ">=2.3.3"
+requests = ">=2.20"
+
+# Documentation dependencies needed for Readthedocs builds
+docutils = { version = "0.16", optional = true }
+m2r2 = { version = ">=0.2.7", optional = true }
+Sphinx = { version = "^4.0.1", optional = true }
+# TODO: Revert to PyPI version once PR for fix is merged in
+sphinx-automodapi = { git = "https://github.com/JWCook/sphinx-automodapi.git", branch = "sphinx-4-compat", optional = true}
+sphinx-autodoc-typehints = { version = "^1.11", optional = true }
+sphinx-copybutton = { version = "^0.3", optional = true }
+sphinx-rtd-theme = { version = "0.5.2", optional = true }
+sphinxcontrib-apidoc = { version = "^0.3", optional = true }
+
+[tool.poetry.extras]
+docs = ["docutils", "m2r2", "Sphinx", "sphinx-autodoc-typehints", "sphinx-copybutton",
+        "sphinx-automodapi", "sphinx-material", "sphinxcontrib-apidoc"]
+
+[tool.poetry.dev-dependencies]
+black = {version = "21.5b0", python = "^3.6.2"}
+isort = ">=5.8"
+flake8 = "^3.9"
+mypy = "^0.812"
+pre-commit = {version = "^2.12", python = "^3.6.2"}
+pytest = "^6.2"
+pytest-cov = ">=2.11"
+pytest-xdist = ">=2.2"
+requests-mock = "^1.8"
+
 [build-system]
-requires = ['setuptools', 'wheel']
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 skip-string-normalization = true

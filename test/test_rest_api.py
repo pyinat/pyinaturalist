@@ -62,7 +62,6 @@ def test_get_observations__invalid_format(response_format):
 
 def test_get_observation_fields(requests_mock):
     """get_observation_fields() work as expected (basic use)"""
-    page_1_json_response = load_sample_data('get_observation_fields_page1.json')
     page_2_json_response = load_sample_data('get_observation_fields_page2.json')
 
     requests_mock.get(

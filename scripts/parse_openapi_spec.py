@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 """[WIP] Utilities to get some relevant pieces of API info from its OpenAPI spec
+
+Extra dependencies:
+    ``pip install prance[osv] rich``
 """
 import json
 from os.path import isfile, join

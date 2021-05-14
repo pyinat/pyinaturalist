@@ -9,6 +9,7 @@ on:
   workflow_dispatch:
 env:
   LATEST_PY_VERSION: '3.9'
+  COVERAGE_ARGS: '--cov --cov-report=term --cov-report=html'
 
 
 jobs:
@@ -24,19 +25,23 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+      - uses: snok/install-poetry@v1.1.4
+        with:
+          virtualenvs-in-project: true
 
-      # Cache packages per python version, and reuse until setup.py changes
-      - name: Cache pip packages
+      # Cache packages per python version, and reuse until lockfile changes
+      - name: Cache python packages
+        id: cache
         uses: actions/cache@v2
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('setup.py') }}
-          restore-keys: ${{ runner.os }}-pip-${{ matrix.python-version }}
-
+          path: .venv
+          key: venv-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
       - name: Install dependencies
-        run: pip install ".[dev]"
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: poetry install -v
+
       - name: Run unit tests
-        run: pytest -n auto
+        run: poetry run pytest -n auto
 
   # Run code analysis checks, reports, etc.
   analyze:
@@ -46,58 +51,58 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ env.LATEST_PY_VERSION }}
-      - name: Cache pip packages
+      - uses: snok/install-poetry@v1.1.4
+        with:
+          virtualenvs-in-project: true
+
+      # Cache packages and reuse until lockfile changes
+      - name: Cache python packages
+        id: cache
         uses: actions/cache@v2
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ env.LATEST_PY_VERSION }}-${{ hashFiles('setup.py') }}
-          restore-keys: ${{ runner.os }}-pip-${{ env.LATEST_PY_VERSION }}
-
+          path: .venv
+          key: venv-${{ env.LATEST_PY_VERSION }}-${{ hashFiles('poetry.lock') }}
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: poetry install -v
+
+      - name: Run style checks, type checks, and linting
         run: |
-          sudo apt install -y pandoc
-          pip install ".[dev]"
-      - name: Run style checks
-        run: |
+          source $VENV
           black --check --diff .
           isort --check --diff .
-      - name: Run linter
-        run: flake8 .
-      - name: Run type checks
-        run: mypy .
-      - name: Generate code coverage report
-        run: pytest -n auto --cov --cov-report=term --cov-report=html
-      - name: Send code coverage report to Coveralls
+          flake8 .
+          mypy pyinaturalist
+      - name: Generate and send code coverage report to Coveralls
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: coveralls --service=github
+        run: |
+          source $VENV
+          pytest -n auto ${{ env.COVERAGE_ARGS }}
+          pip install coveralls
+          coveralls --service=github
 
   # Deploy pre-release builds from 'pre-release' branch, and stable builds on tags only
   release:
     needs: [test, analyze]
-    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/pre-release' }}
+    if: startsWith(github.ref, 'refs/tags/v') || endsWith(github.ref, '/pre-release')
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ env.LATEST_PY_VERSION }}
+      - uses: snok/install-poetry@v1.1.4
+        with:
+          virtualenvs-in-project: true
 
-      # Build & deploy to PyPI
-      - name: Set pre-release version number
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
-        run: echo "PRE_RELEASE_SUFFIX=.dev${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
-      - name: Install dependencies
-        run: pip install -U ".[build]"
-      - name: Build wheel
+      - name: Set pre-release version number                                  
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}                     
+        run: poetry version $(poetry version -s).dev${GITHUB_RUN_NUMBER}
+      - name: Build and publish to pypi
         run: |
-          python setup.py --version
-          python setup.py sdist bdist_wheel
-      - name: Deploy to pypi
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: twine upload dist/*
+          poetry build
+          poetry publish -u __token__ -p ${{ secrets.PYPI_TOKEN }}
 
       # Notify Docker image repo that there's a new release available
       - name: Repository Dispatch

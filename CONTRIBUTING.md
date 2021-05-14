@@ -4,11 +4,11 @@ Contributions are welcome, and they are greatly appreciated! Every
 little bit helps, and credit will always be given.
 
 ## Installation
-To set up for local development:
+To set up for local development (requires [poetry](python-poetry.org)):
 ```bash
 $ git clone https://github.com/niconoe/pyinaturalist.git
 $ cd pyinaturalist
-$ pip install -Ue ".[dev]"
+$ poetry install -v -E docs
 $ # Optional but recommended:
 $ pre-commit install --config .github/pre-commit.yml
 ```
