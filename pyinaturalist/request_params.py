@@ -1,4 +1,7 @@
-"""Helper functions for processing and validating request parameters"""
+"""Helper functions for processing and validating request parameters.
+The main purpose of these functions is to support some python-specific conveniences and translate
+them into standard request parameters, along with request validation that makes debugging easier.
+"""
 import warnings
 from datetime import date, datetime
 from dateutil.parser import parse as parse_timestamp
@@ -9,7 +12,8 @@ from logging import getLogger
 from os.path import abspath, expanduser
 from typing import Any, BinaryIO, Dict, Iterable, List, Optional, Tuple
 
-from pyinaturalist.constants import FileOrPath, RequestParams
+import pyinaturalist
+from pyinaturalist.constants import FileOrPath, MultiInt, RequestParams
 
 # Basic observation attributes to include by default in geojson responses
 DEFAULT_OBSERVATION_ATTRS = [
@@ -113,6 +117,7 @@ GEOPRIVACY_LEVELS = ['obscured', 'obscured_private', 'open', 'private']
 HAS_PROPERTIES = ['photo', 'geo']
 HISTOGRAM_DATE_FIELDS = ['created', 'observed']
 HISTOGRAM_INTERVALS = ['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
+ID_CATEGORIES = ['improving', 'supporting', 'leading', 'maverick']
 ORDER_DIRECTIONS = ['asc', 'desc']
 PROJECT_TYPES = ['collection', 'umbrella']
 QUALITY_GRADES = ['casual', 'needs_id', 'research']
@@ -121,6 +126,7 @@ SEARCH_PROPERTIES = ['names', 'tags', 'description', 'place']
 
 # Multiple-choice request parameters, with keys mapped to their possible choices (non-endpoint-specific)
 MULTIPLE_CHOICE_PARAMS = {
+    'category': ID_CATEGORIES,
     'csi': CONSERVATION_STATUSES,
     'date_field': HISTOGRAM_DATE_FIELDS,
     'extra': EXTRA_PROPERTIES,
@@ -134,6 +140,9 @@ MULTIPLE_CHOICE_PARAMS = {
     'lrank': RANKS,
     'max_rank': RANKS,
     'min_rank': RANKS,
+    'observation_hrank': RANKS,
+    'observation_lrank': RANKS,
+    'observation_rank': RANKS,
     'order': ORDER_DIRECTIONS,
     'photo_license': CC_LICENSES,
     'quality_grade': QUALITY_GRADES,
@@ -151,12 +160,48 @@ MULTIPLE_CHOICE_ERROR_MSG = (
 logger = getLogger(__name__)
 
 
-def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any]:
-    """ Perform type conversions, sanity checks, etc. on request parameters """
+def prepare_request(
+    url: str,
+    access_token: str = None,
+    user_agent: str = None,
+    ids: MultiInt = None,
+    params: RequestParams = None,
+    headers: Dict = None,
+) -> Tuple[str, RequestParams, Dict]:
+    """Translate some ``pyinaturalist``-specific params into standard ``requests``
+    params and headers, and other request param preprocessing
+
+    Returns:
+        Tuple of ``(URL, params, headers)``
+    """
+    # Prepare request params
+    params = preprocess_request_params(params)
+
+    # Prepare user and authentication headers
+    headers = headers or {}
+    headers['Accept'] = 'application/json'
+    if access_token:
+        headers['Authorization'] = f'Bearer {access_token}'
+
+    # Allow user agent to be passed either in params or as a separate kwarg
+    if 'user_agent' in params:
+        user_agent = params.pop('user_agent')
+    headers['User-Agent'] = user_agent or pyinaturalist.user_agent
+
+    # If one or more REST resources are requested by ID, update the request URL accordingly
+    if ids:
+        url = url.rstrip('/') + '/' + validate_ids(ids)
+
+    return url, params, headers
+
+
+def preprocess_request_params(params: Optional[RequestParams]) -> RequestParams:
+    """Perform type conversions, sanity checks, etc. on request parameters"""
     if not params:
         return {}
 
     params = validate_multiple_choice_params(params)
+    params = convert_pagination_params(params)
     params = convert_bool_params(params)
     params = convert_datetime_params(params)
     params = convert_list_params(params)
@@ -165,7 +210,7 @@ def preprocess_request_params(params: Optional[Dict[str, Any]]) -> Dict[str, Any
 
 
 def convert_bool_params(params: RequestParams) -> RequestParams:
-    """ Convert any boolean request parameters to javascript-style boolean strings """
+    """Convert any boolean request parameters to javascript-style boolean strings"""
     for k, v in params.items():
         if isinstance(v, bool):
             params[k] = str(v).lower()
@@ -215,6 +260,14 @@ def convert_observation_fields(params: RequestParams) -> RequestParams:
         params['observation_field_values_attributes'] = [
             {'observation_field_id': k, 'value': v} for k, v in obs_fields.items()
         ]
+    return params
+
+
+def convert_pagination_params(params: RequestParams) -> RequestParams:
+    """Allow ``count_only=True`` as a slightly more intuitive shortcut to only get a count of
+    results"""
+    if params.pop('count_only', None) is True:
+        params['per_page'] = 0
     return params
 
 
@@ -281,7 +334,7 @@ def strip_empty_params(params: RequestParams) -> RequestParams:
 
 
 def is_int(value: Any) -> bool:
-    """ Determine if a value is a valid integer """
+    """Determine if a value is a valid integer"""
     try:
         int(value)
         return True

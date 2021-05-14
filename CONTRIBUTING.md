@@ -16,7 +16,7 @@ $ pre-commit install --config .github/pre-commit.yml
 ## Contribution Guidelines
 
 ### Documentation
-We use [Sphinx](http://www.sphinx-doc.org/en/master/), and the references page is automatically
+We use [Sphinx](http://www.sphinx-doc.org), and the references page is automatically
 generated thanks to `sphinx.ext.autodoc` and `sphinx_autodoc_typehints` extensions. All
 functions / methods / classes should have proper docstrings.
 
@@ -33,9 +33,9 @@ $ open docs/_build/index.html
 $ xdg-open docs/_build/index.html
 ```
 
-Documentation is automatically built by ReadTheDocs whenever code is merged into either `master` or `dev`:
-* [Stable release (master branch)](https://pyinaturalist.readthedocs.io/en/stable/)
-* [Development pre-release (dev branch)](https://pyinaturalist.readthedocs.io/en/latest/)
+Documentation is automatically built by ReadTheDocs whenever code is merged into `main`:
+* [Stable version (tags only))](https://pyinaturalist.readthedocs.io/en/stable/)
+* [Development version (all other commits)](https://pyinaturalist.readthedocs.io/en/latest/)
 
 For any new or changed behavior, add a brief high-level summary to `HISTORY.md`.
 This isn't needed for internal changes (tests, other docs, refactoring, etc.).
@@ -79,17 +79,17 @@ Here are some general guidelines for submitting a pull request:
 - If the changes are trivial, just briefly explain the changes in the PR description.
 - Otherwise, please submit an issue describing the proposed change prior to submitting a PR.
 - Make sure the code is tested, annotated and documented as described above.
-- Submit the PR to be merged into the `dev` branch.
+- Submit the PR to be merged into the `main` branch.
 
 ### Releases
 For maintainers:
 
 Releases are based on git tags. GitHub Actions will build and deploy packages to PyPi on tagged commits
-on the `master` branch. Release steps:
+on the `main` branch. Release steps:
 
 - Update the version in `pyinaturalist/__init__.py`
 - Update the release notes in `HISTORY.md`
-- Merge changes into the `master` branch
+- Merge changes into the `main` branch
 - Push a new tag, e.g.: `git tag v0.1 && git push origin --tags`
 - This will trigger a deployment. Verify that this completes successfully and that the new version
   can be installed from pypi with `pip install`

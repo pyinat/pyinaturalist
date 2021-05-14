@@ -1,7 +1,10 @@
-include AUTHORS.md
-include CONTRIBUTING.md
-include HISTORY.md
+include *.md
+include *.yml
 include LICENSE
-include README.md
-
-recursive-exclude test *
+include pyinaturalist/py.typed
+graft docs
+graft examples
+graft test
+prune docs/docs
+prune docs/_*
+global-exclude *.py[co]

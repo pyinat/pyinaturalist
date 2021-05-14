@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Example to convert observation locations to TSP format.
 
 This file can then be used to compute the shortest path that hits all locations as a

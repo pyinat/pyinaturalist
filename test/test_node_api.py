@@ -2,18 +2,17 @@ import os
 import pytest
 from datetime import datetime
 from dateutil.tz import tzoffset, tzutc
-from pprint import pprint
 from unittest.mock import patch
-from urllib.parse import urlencode, urljoin
+from urllib.parse import urlencode
 
 import pyinaturalist
-from pyinaturalist.constants import INAT_NODE_API_BASE_URL, PER_PAGE_RESULTS
+from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.node_api import (
-    get_all_observation_species_counts,
-    get_all_observations,
     get_controlled_terms,
     get_geojson_observations,
+    get_identifications,
+    get_identifications_by_id,
     get_observation,
     get_observation_histogram,
     get_observation_identifiers,
@@ -28,6 +27,8 @@ from pyinaturalist.node_api import (
     get_taxa,
     get_taxa_autocomplete,
     get_taxa_by_id,
+    get_user_by_id,
+    get_users_autocomplete,
 )
 from test.conftest import load_sample_data
 
@@ -37,7 +38,7 @@ from test.conftest import load_sample_data
 
 def test_get_controlled_terms(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'controlled_terms'),
+        f'{API_V1_BASE_URL}/controlled_terms',
         json=load_sample_data('get_controlled_terms.json'),
         status_code=200,
     )
@@ -56,7 +57,7 @@ def test_get_controlled_terms(requests_mock):
 
 def test_get_controlled_terms_for_taxon(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'controlled_terms/for_taxon'),
+        f'{API_V1_BASE_URL}/controlled_terms/for_taxon',
         json=load_sample_data('get_controlled_terms_for_taxon.json'),
         status_code=200,
     )
@@ -73,13 +74,49 @@ def test_get_controlled_terms_for_taxon(requests_mock):
     assert first_result['values'][0]['label'] == 'Female'
 
 
+# Identifications
+# --------------------
+
+
+def test_get_identifications(requests_mock):
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/identifications',
+        json=load_sample_data('get_identifications.json'),
+        status_code=200,
+    )
+    response = get_identifications()
+    assert len(response['results']) == 2
+    first_result = response['results'][0]
+    expected_datetime = datetime(2021, 2, 18, 20, 31, 32, tzinfo=tzoffset(None, -21600))
+
+    assert first_result['id'] == 155554373
+    assert first_result['user']['id'] == 2115051
+    assert first_result['taxon']['id'] == 60132
+    assert first_result['created_at'] == expected_datetime
+    assert first_result['current'] is True
+
+
+def test_get_identifications_by_id(requests_mock):
+    # Not much to test here, pretty much exactly the same as get_identifications()
+    mock_response = load_sample_data('get_identifications.json')
+    mock_response['results'] = [mock_response['results'][0]]
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/identifications/155554373',
+        json=mock_response,
+        status_code=200,
+    )
+
+    response = get_identifications_by_id(155554373)
+    assert response['results'][0]['id'] == 155554373
+
+
 # Observations
 # --------------------
 
 
 def test_get_observation(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         json=load_sample_data('get_observation.json'),
         status_code=200,
     )
@@ -93,7 +130,7 @@ def test_get_observation(requests_mock):
 
 def test_get_observation_histogram(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations/histogram'),
+        f'{API_V1_BASE_URL}/observations/histogram',
         json=load_sample_data('get_observation_histogram_month.json'),
         status_code=200,
     )
@@ -108,7 +145,7 @@ def test_get_observation_histogram(requests_mock):
 
 def test_get_observations(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         json=load_sample_data('get_observations_node_page1.json'),
         status_code=200,
     )
@@ -134,30 +171,27 @@ def test_get_observations(requests_mock):
     assert len(first_result['place_ids']) == 13
 
 
-@patch('pyinaturalist.node_api.sleep')
-def test_get_all_observations(sleep, requests_mock):
-    # Make response appear as though there are more pages
+@patch('pyinaturalist.pagination.sleep')
+def test_get_observations__all_pages(sleep, requests_mock):
     page_1 = load_sample_data('get_observations_node_page1.json')
-    page_1['total_results'] = PER_PAGE_RESULTS + 1
     page_2 = load_sample_data('get_observations_node_page2.json')
 
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         [
             {'json': page_1, 'status_code': 200},
             {'json': page_2, 'status_code': 200},
         ],
     )
 
-    observations = get_all_observations(id=[57754375, 57707611])
+    observations = get_observations(id=[57754375, 57707611], page='all')
 
-    assert type(observations) is list
-    assert len(observations) == 2
+    assert len(observations['results']) == 2
 
 
 def test_get_observation_observers(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations/observers'),
+        f'{API_V1_BASE_URL}/observations/observers',
         json=load_sample_data('get_observation_observers_node_page1.json'),
         status_code=200,
     )
@@ -167,13 +201,13 @@ def test_get_observation_observers(requests_mock):
 
     assert observers['total_results'] == 4
     assert len(observers['results']) == 2
-    assert first_result['user']['spam'] == False
-    assert first_result['user']['suspended'] == False
+    assert first_result['user']['spam'] is False
+    assert first_result['user']['suspended'] is False
 
 
 def test_get_observation_identifiers(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations/identifiers'),
+        f'{API_V1_BASE_URL}/observations/identifiers',
         json=load_sample_data('get_observation_identifiers_node_page1.json'),
         status_code=200,
     )
@@ -183,13 +217,13 @@ def test_get_observation_identifiers(requests_mock):
 
     assert identifiers['total_results'] == 6
     assert len(identifiers['results']) == 3
-    assert first_result['user']['spam'] == False
-    assert first_result['user']['suspended'] == False
+    assert first_result['user']['spam'] is False
+    assert first_result['user']['suspended'] is False
 
 
 def test_get_geojson_observations(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         json=load_sample_data('get_observation.json'),
         status_code=200,
     )
@@ -203,7 +237,7 @@ def test_get_geojson_observations(requests_mock):
 
 def test_get_geojson_observations__custom_properties(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         json=load_sample_data('get_observation.json'),
         status_code=200,
     )
@@ -218,7 +252,7 @@ def test_get_geojson_observations__custom_properties(requests_mock):
 
 def test_get_non_existent_observation(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         json=load_sample_data('get_nonexistent_observation.json'),
         status_code=200,
     )
@@ -228,7 +262,7 @@ def test_get_non_existent_observation(requests_mock):
 
 def test_get_observation_species_counts(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations/species_counts'),
+        f'{API_V1_BASE_URL}/observations/species_counts',
         json=load_sample_data('get_observation_species_counts.json'),
         status_code=200,
     )
@@ -240,9 +274,10 @@ def test_get_observation_species_counts(requests_mock):
     assert first_result['taxon']['name'] == 'Harmonia axyridis'
 
 
-def test_get_all_observation_species_counts(requests_mock):
+@patch('pyinaturalist.pagination.sleep')
+def test_get_observation_species_counts__all_pages(sleep, requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations/species_counts'),
+        f'{API_V1_BASE_URL}/observations/species_counts',
         [
             {
                 'json': load_sample_data('get_all_observation_species_counts_page1.json'),
@@ -254,12 +289,13 @@ def test_get_all_observation_species_counts(requests_mock):
             },
         ],
     )
-    response = get_all_observation_species_counts(
-        user_login='my_username', quality_grade='research'
+    response = get_observation_species_counts(
+        user_login='my_username', quality_grade='research', page='all'
     )
-    first_result = response[0]
-    last_result = response[-1]
+    first_result = response['results'][0]
+    last_result = response['results'][-1]
 
+    assert len(response['results']) == 22
     assert first_result['count'] == 19
     assert first_result['taxon']['id'] == 27805
     assert first_result['taxon']['name'] == 'Notophthalmus viridescens'
@@ -279,7 +315,7 @@ def test_get_observation_species_counts__invalid_multiple_choice_params():
 
 def test_get_places_by_id(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'places/93735,89191'),
+        f'{API_V1_BASE_URL}/places/93735,89191',
         json=load_sample_data('get_places_by_id.json'),
         status_code=200,
     )
@@ -303,7 +339,7 @@ def test_get_places_by_id__invalid_inputs(place_id):
 
 def test_get_places_nearby(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'places/nearby'),
+        f'{API_V1_BASE_URL}/places/nearby',
         json=load_sample_data('get_places_nearby.json'),
         status_code=200,
     )
@@ -324,7 +360,7 @@ def test_get_places_nearby(requests_mock):
 
 def test_get_places_autocomplete(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'places/autocomplete'),
+        f'{API_V1_BASE_URL}/places/autocomplete',
         json=load_sample_data('get_places_autocomplete.json'),
         status_code=200,
     )
@@ -340,13 +376,48 @@ def test_get_places_autocomplete(requests_mock):
     assert len(result['ancestor_place_ids']) == 4
 
 
+def test_get_places_autocomplete__all_pages(requests_mock):
+    page_1 = {'total_results': 25, 'results': [{'id': i} for i in range(20)]}
+    page_2 = {'total_results': 25, 'results': [{'id': i} for i in range(15, 25)]}
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/places/autocomplete',
+        [
+            {'json': page_1, 'status_code': 200},
+            {'json': page_2, 'status_code': 200},
+        ],
+    )
+
+    # Expect 2 requests, and for results to be deduplicated
+    response = get_places_autocomplete('springbok', page='all')
+    results = response['results']
+    assert len(results) == 25
+
+
+def test_get_places_autocomplete__single_page(requests_mock):
+    page_1 = {'total_results': 20, 'results': [{'id': i} for i in range(20)]}
+    page_2 = {'total_results': 20, 'results': [{'id': i} for i in range(15, 25)]}
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/places/autocomplete',
+        [
+            {'json': page_1, 'status_code': 200},
+            {'json': page_2, 'status_code': 200},
+        ],
+    )
+
+    # If all results are returned in the first request, expect just 1 request
+    response = get_places_autocomplete('springbok', page='all')
+    results = response['results']
+    assert len(results) == 20
+    assert max([r['id'] for r in results]) == 19
+
+
 # Projects
 # --------------------
 
 
 def test_get_projects(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'projects'),
+        f'{API_V1_BASE_URL}/projects',
         json=load_sample_data('get_projects.json'),
         status_code=200,
     )
@@ -365,7 +436,7 @@ def test_get_projects(requests_mock):
 
 def test_get_projects_by_id(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'projects/8348,6432'),
+        f'{API_V1_BASE_URL}/projects/8348,6432',
         json=load_sample_data('get_projects_by_id.json'),
         status_code=200,
     )
@@ -390,9 +461,9 @@ CLASS_THOUGH_PHYLUM = ['class', 'superclass', 'subphylum', 'phylum']
 
 
 def test_get_taxa(requests_mock):
-    params = urlencode({'q': 'vespi', 'rank': 'genus,subgenus,species'})
+    params = {'q': 'vespi', 'rank': 'genus,subgenus,species'}
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'taxa?' + params),
+        f'{API_V1_BASE_URL}/taxa?{urlencode(params)}',
         json=load_sample_data('get_taxa.json'),
         status_code=200,
     )
@@ -443,7 +514,7 @@ def test_get_taxa_by_name_and_is_active(request):
 def test_get_taxa_by_id(requests_mock):
     taxon_id = 70118
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'taxa/' + str(taxon_id)),
+        f'{API_V1_BASE_URL}/taxa/{taxon_id}',
         json=load_sample_data('get_taxa_by_id.json'),
         status_code=200,
     )
@@ -466,7 +537,7 @@ def test_get_taxa_by_id__invalid_inputs(taxon_id):
 
 def test_get_taxa_autocomplete(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'taxa/autocomplete'),
+        f'{API_V1_BASE_URL}/taxa/autocomplete',
         json=load_sample_data('get_taxa_autocomplete.json'),
         status_code=200,
     )
@@ -484,36 +555,44 @@ def test_get_taxa_autocomplete(requests_mock):
     assert len(first_result['ancestor_ids']) == 11
 
 
-# Test usage of format_taxon() with get_taxa_autocomplete()
-def test_get_taxa_autocomplete_minified(requests_mock):
+# Users
+# --------------------
+
+
+def test_get_user_by_id(requests_mock):
+    user_id = 1
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'taxa/autocomplete'),
-        json=load_sample_data('get_taxa_autocomplete.json'),
+        f'{API_V1_BASE_URL}/users/{user_id}',
+        json=load_sample_data('get_user_by_id.json'),
         status_code=200,
     )
 
-    expected_results = [
-        '   52747:       Family Vespidae (Hornets, Paper Wasps, Potter Wasps, and Allies)',
-        '   84738:    Subfamily Vespinae (Hornets and Yellowjackets)',
-        '  131878:      Species Nicrophorus vespillo (Vespillo Burying Beetle)',
-        '  621585:      Species Vespicula trachinoides (Vespicula Waspfish)',
-        '  495392:      Species Vespidae st1',
-        '   70118:      Species Nicrophorus vespilloides (Lesser Vespillo Burying Beetle)',
-        '   92786:        Genus Vespicula',
-        '  646195:        Genus Vespiodes',
-        '  621584:      Species Vespicula cypho',
-        '  621586:      Species Vespicula zollingeri',
-    ]
-
-    response = get_taxa_autocomplete(q='vespi', minify=True)
-    pprint(response['results'])
-    assert response['results'] == expected_results
+    user = get_user_by_id(user_id)
+    assert user['id'] == user_id
+    assert user['created_at'] == datetime(2008, 3, 20, 21, 15, 42, tzinfo=tzutc())
+    assert user['spam'] is False
 
 
-@patch.dict(os.environ, {'GITHUB_REF': 'refs/heads/master'}, clear=True)
+def test_get_users_autocomplete(requests_mock):
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/users/autocomplete',
+        json=load_sample_data('get_users_autocomplete.json'),
+        status_code=200,
+    )
+
+    response = get_users_autocomplete(q='niconoe')
+    first_result = response['results'][0]
+
+    assert len(response['results']) == response['total_results'] == 3
+    assert first_result['id'] == 886482
+    assert first_result['login'] == 'niconoe'
+    assert first_result['created_at'] == datetime(2018, 4, 23, 17, 11, 14, tzinfo=tzutc())
+
+
+@patch.dict(os.environ, {'GITHUB_REF': 'refs/heads/main'}, clear=True)
 def test_user_agent(requests_mock):
     requests_mock.get(
-        urljoin(INAT_NODE_API_BASE_URL, 'observations'),
+        f'{API_V1_BASE_URL}/observations',
         json=load_sample_data('get_observation.json'),
         status_code=200,
     )

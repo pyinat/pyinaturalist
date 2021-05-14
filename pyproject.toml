@@ -13,7 +13,7 @@ branch = true
 source = ['pyinaturalist']
 
 [tool.isort]
-profile = "black"
+profile = 'black'
 line_length = 100
 skip_gitignore = true
 known_first_party = ['test']

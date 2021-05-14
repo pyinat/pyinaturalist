@@ -1,4 +1,5 @@
 *.py[cod]
+downloads/
 
 # C extensions
 *.so
@@ -44,15 +45,22 @@ output/*/index.html
 # Sphinx
 docs/_build/
 docs/docs/
+docs/examples
 docs/sample_data
 docs/modules/
 
 # Mac OS X
 .DS_Store
 
+# Request cache
+*.sqlite
+*.db
+
 # Editors
 .~*
 .idea/
 .ipynb_checkpoints/
+.vim/
+.vscode/
 swagger.json
 dev_*.py

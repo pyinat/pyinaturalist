@@ -1,6 +1,9 @@
-""" Example to get observation locations + metadata in GPX format.
+#!/usr/bin/env python3
+"""
+An example of converting observation locations + metadata into GPX format.
+
 Extra dependencies:
-    `pip install gpxpy`
+    ``pip install gpxpy``
 """
 from logging import getLogger
 
@@ -8,7 +11,8 @@ from gpxpy.gpx import GPX, GPXTrack, GPXTrackPoint, GPXTrackSegment, GPXWaypoint
 
 from pyinaturalist.constants import JsonResponse, List
 from pyinaturalist.node_api import get_all_observations, get_observations  # noqa
-from pyinaturalist.response_format import convert_observation_timestamps, format_observation
+from pyinaturalist.response_format import convert_observation_timestamps
+from pyinaturalist.response_utils import format_observation
 
 logger = getLogger(__name__)
 

@@ -7,10 +7,12 @@ import logging
 import os
 import re
 from inspect import Parameter, getmembers, isfunction, signature
-from os.path import abspath, dirname, join
+from os.path import join
 from unittest.mock import MagicMock
 
 # If ipdb is installed, register it as the default debugger
+from pyinaturalist.constants import SAMPLE_DATA_DIR
+
 try:
     import ipdb  # noqa: F401
 
@@ -20,7 +22,6 @@ except ImportError:
 
 
 HTTP_FUNC_PATTERN = re.compile(r'(get|put|post|delete)_.+')
-SAMPLE_DATA_DIR = abspath(join(dirname(__file__), 'sample_data'))
 
 MOCK_CREDS_ENV = {
     'INAT_USERNAME': 'valid_username',
@@ -37,10 +38,11 @@ MOCK_CREDS_OAUTH = {
 
 # Enable logging for urllib and other external loggers
 logging.basicConfig(level='INFO')
+logging.getLogger('pyinaturalist').setLevel('DEBUG')
 
 
 def get_module_functions(module):
-    """ Get all functions belonging to a module (excluding imports) """
+    """Get all functions belonging to a module (excluding imports)"""
     return {
         name: member
         for name, member in getmembers(module)
@@ -49,7 +51,7 @@ def get_module_functions(module):
 
 
 def get_module_http_functions(module):
-    """ Get all functions belonging to a module and prefixed with an HTTP method """
+    """Get all functions belonging to a module and prefixed with an HTTP method"""
     return {
         name: func
         for name, func in get_module_functions(module).items()

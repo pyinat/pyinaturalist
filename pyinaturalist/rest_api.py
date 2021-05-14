@@ -10,21 +10,16 @@ Functions
     :nosignatures:
 
 """
-from time import sleep
-from typing import Any, Dict, List, Union
+from typing import Any, List, Union
+from warnings import warn
 
 from pyinaturalist import api_docs as docs
 from pyinaturalist.api_requests import delete, get, post, put
 from pyinaturalist.auth import get_access_token  # noqa
-from pyinaturalist.constants import (
-    INAT_BASE_URL,
-    THROTTLING_DELAY,
-    FileOrPath,
-    JsonResponse,
-    ListResponse,
-)
+from pyinaturalist.constants import API_V0_BASE_URL, FileOrPath, JsonResponse, ListResponse
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.forge_utils import document_request_params
+from pyinaturalist.pagination import add_paginate_all, paginate_all
 from pyinaturalist.request_params import (
     OBSERVATION_FORMATS,
     REST_OBS_ORDER_BY_PROPERTIES,
@@ -44,7 +39,8 @@ from pyinaturalist.response_format import convert_all_coordinates, convert_all_t
         docs._pagination,
     ]
 )
-def get_observations(user_agent: str = None, **params) -> Union[List, str]:
+@add_paginate_all(method='page')
+def get_observations(**params) -> Union[List, str]:
     """Get observation data, optionally in an alternative format. Also see
     :py:func:`.get_geojson_observations` for GeoJSON format (not included here because it wraps
     a separate API endpoint).
@@ -101,9 +97,8 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
     validate_multiple_choice_param(params, 'order_by', REST_OBS_ORDER_BY_PROPERTIES)
 
     response = get(
-        f'{INAT_BASE_URL}/observations.{response_format}',
+        f'{API_V0_BASE_URL}/observations.{response_format}',
         params=params,
-        user_agent=user_agent,
     )
 
     if response_format == 'json':
@@ -115,8 +110,9 @@ def get_observations(user_agent: str = None, **params) -> Union[List, str]:
         return response.text
 
 
-@document_request_params([docs._search_query, docs._page])
-def get_observation_fields(user_agent: str = None, **params) -> ListResponse:
+@document_request_params([docs._search_query, docs._pagination])
+@add_paginate_all(method='page')
+def get_observation_fields(**params) -> JsonResponse:
     """Search observation fields. Observation fields are basically typed data fields that
     users can attach to observation.
 
@@ -138,42 +134,22 @@ def get_observation_fields(user_agent: str = None, **params) -> ListResponse:
         Observation fields as a list of dicts
     """
     response = get(
-        f'{INAT_BASE_URL}/observation_fields.json',
+        f'{API_V0_BASE_URL}/observation_fields.json',
         params=params,
-        user_agent=user_agent,
     )
     response.raise_for_status()
 
     obs_fields = response.json()
     obs_fields = convert_all_timestamps(obs_fields)
-    return obs_fields
+    return {'results': obs_fields}
 
 
 @document_request_params([docs._search_query])
 def get_all_observation_fields(**params) -> ListResponse:
-    """
-    Like :py:func:`.get_observation_fields()`, but handles pagination for you.
-
-    Example:
-
-        >>> get_all_observation_fields(q='number of')
-
-    Returns:
-        Observation fields as a list of dicts. Response format is the same as the inner\
-        'results' object returned by :py:func:`.get_observation_fields`.
-    """
-    results = []  # type: List[Dict[str, Any]]
-    page = 1
-
-    while True:
-        response = get_observation_fields(page=page, **params)
-
-        if not response:
-            return results
-
-        results += response
-        page += 1
-        sleep(THROTTLING_DELAY)
+    """[Deprecated] Like :py:func:`.get_observation_fields()`, but gets all pages of results"""
+    msg = "get_all_observation_fields() is deprecated; please Use get_observation_fields(page='all') instead"
+    warn(DeprecationWarning(msg))
+    return paginate_all(get_observation_fields, method='page', **params)['results']
 
 
 def put_observation_field_values(
@@ -233,7 +209,7 @@ def put_observation_field_values(
     }
 
     response = put(
-        f'{INAT_BASE_URL}/observation_field_values/{observation_field_id}',
+        f'{API_V0_BASE_URL}/observation_field_values/{observation_field_id}',
         access_token=access_token,
         user_agent=user_agent,
         json=payload,
@@ -243,9 +219,8 @@ def put_observation_field_values(
     return response.json()
 
 
-# TODO: more thorough usage example
 @document_request_params([docs._access_token, docs._create_observation])
-def create_observation(access_token: str = None, user_agent: str = None, **params) -> ListResponse:
+def create_observation(access_token: str = None, **params) -> ListResponse:
     """Create a new observation.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#post-observations
@@ -289,10 +264,9 @@ def create_observation(access_token: str = None, user_agent: str = None, **param
         params['local_photos'] = ensure_file_objs(params['local_photos'])
 
     response = post(
-        url=f'{INAT_BASE_URL}/observations.json',
+        url=f'{API_V0_BASE_URL}/observations.json',
         json={'observation': params},
         access_token=access_token,
-        user_agent=user_agent,
     )
     response.raise_for_status()
     return response.json()
@@ -309,7 +283,6 @@ def create_observation(access_token: str = None, user_agent: str = None, **param
 def update_observation(
     observation_id: int,
     access_token: str = None,
-    user_agent: str = None,
     **params,
 ) -> ListResponse:
     """
@@ -362,10 +335,9 @@ def update_observation(
         params['ignore_photos'] = 1
 
     response = put(
-        url=f'{INAT_BASE_URL}/observations/{observation_id}.json',
+        url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
         json={'observation': params},
         access_token=access_token,
-        user_agent=user_agent,
     )
     response.raise_for_status()
     return response.json()
@@ -406,7 +378,7 @@ def add_photo_to_observation(
         Information about the newly created photo
     """
     response = post(
-        url=f'{INAT_BASE_URL}/observation_photos',
+        url=f'{API_V0_BASE_URL}/observation_photos',
         access_token=access_token,
         data={'observation_photo[observation_id]': observation_id},
         files={'file': ensure_file_obj(photo)},
@@ -436,10 +408,10 @@ def delete_observation(observation_id: int, access_token: str = None, user_agent
         :py:exc:`requests.HTTPError` (403) if the observation belongs to another user
     """
     response = delete(
-        url=f'{INAT_BASE_URL}/observations/{observation_id}.json',
+        url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
         access_token=access_token,
-        user_agent=user_agent,
         headers={'Content-type': 'application/json'},
+        user_agent=user_agent,
     )
     if response.status_code == 404:
         raise ObservationNotFound

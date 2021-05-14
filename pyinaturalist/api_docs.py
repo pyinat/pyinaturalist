@@ -17,6 +17,80 @@ from pyinaturalist.constants import (
 )
 from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
 
+# Identifications
+# --------------------
+
+
+def _identification_params(
+    current_taxon: bool = None,
+    own_observation: bool = None,
+    is_change: bool = None,
+    taxon_active: bool = None,
+    observation_taxon_active: bool = None,
+    id: MultiInt = None,
+    rank: MultiStr = None,
+    observation_rank: MultiStr = None,
+    user_id: MultiIntOrStr = None,
+    user_login: MultiStr = None,
+    current: bool = None,
+    category: MultiStr = None,
+    place_id: MultiInt = None,
+    quality_grade: MultiStr = None,
+    taxon_id: MultiInt = None,
+    observation_taxon_id: MultiInt = None,
+    iconic_taxon_id: MultiInt = None,
+    observation_iconic_taxon_id: MultiInt = None,
+    lrank: str = None,
+    hrank: str = None,
+    observation_lrank: str = None,
+    observation_hrank: str = None,
+    without_taxon_id: MultiInt = None,
+    without_observation_taxon_id: MultiInt = None,
+    d1: Date = None,
+    d2: Date = None,
+    observation_created_d1: Date = None,
+    observation_created_d2: Date = None,
+    observed_d1: Date = None,
+    observed_d2: Date = None,
+    id_above: int = None,
+    id_below: int = None,
+):
+    """
+    current_taxon: ID's taxon is the same it's observation's taxon
+    own_observation: ID was added by the observer
+    is_change: ID was created as a results of a taxon change
+    taxon_active: ID's taxon is currently an active taxon
+    observation_taxon_active: Observation's taxon is currently an active taxon
+    id: Identification ID
+    rank: ID's taxon must have this rank  # Multiple choice
+    observation_rank: Observation's taxon must have this rank  # Multiple choice
+    user_id: Identifier must have this user ID
+    user_login: Identifier must have this user login
+    current: Most recent Identification on a observation by a user
+    category: Type of identification
+    place_id: Observation must occur in this place
+    quality_grade: Observation must have this quality grade
+    taxon_id: Identification taxa must match the given taxa or their descendants
+    observation_taxon_id: Observation taxa must match the given taxa or their descendants
+    iconic_taxon_id: Identification iconic taxon ID
+    observation_iconic_taxon_id: Observation iconic taxon ID
+    lrank: Identification taxon must have this rank or higher
+    hrank: Identification taxon must have this rank or lower
+    observation_lrank: Observation taxon must have this rank or higher
+    observation_hrank: Observation taxon must have this rank or lower
+    without_taxon_id: Exclude Identifications of these taxa and their descendants
+    without_observation_taxon_id: Exclude Identifications of observations of these taxa and their descendants
+    d1: Must be observed on or after this date
+    d2: Must be observed on or before this date
+    observation_created_d1: Observation must be created on or after this date
+    observation_created_d2: Observation must be created on or before this date
+    observed_d1: Observation must be observed on or after this date
+    observed_d2: Observation must be observed on or before this date
+    id_above: Must have an ID above this value
+    id_below: Must have an ID below this value
+    """
+
+
 # Observations
 # --------------------
 
@@ -34,6 +108,7 @@ def _observation_common(
     photo_license: MultiStr = None,
     out_of_range: bool = None,
     quality_grade: str = None,
+    id: MultiInt = None,
     taxon_id: MultiInt = None,
     taxon_name: MultiStr = None,
     iconic_taxa: MultiStr = None,
@@ -51,6 +126,7 @@ def _observation_common(
     out_of_range: Observations whose taxa are outside their known ranges
     list_id: Taxon must be in the list with this ID
     quality_grade: Must have this quality grade
+    id: Must have this observation ID
     taxon_id: Only show observations of these taxa and their descendants
     taxon_name: Taxon must have a scientific or common name matching this string
     iconic_taxa: Taxon must by within this iconic taxon
@@ -76,7 +152,6 @@ def _observation_node_only(
     taxon_is_active: bool = None,
     threatened: bool = None,
     verifiable: bool = None,
-    id: MultiInt = None,
     not_id: MultiInt = None,
     sound_license: MultiStr = None,
     ofv_datatype: MultiStr = None,
@@ -144,7 +219,6 @@ def _observation_node_only(
     threatened: Observations whose taxa are threatened in their location
     verifiable: Observations with a ``quality_grade`` of either ``needs_id`` or ``research``.
         Equivalent to ``quality_grade=needs_id,research``
-    id: Must have this ID
     not_id: Must not have this ID
     place_id: Must be observed within the place with this ID
     project_id: Must be added to the project this ID or slug
@@ -337,7 +411,6 @@ def _projects_params(
     member_id: Project must have member with this user ID
     has_params: Must have search parameter requirements
     has_posts: Must have posts
-    per_page: Number of results to return in a page. The maximum value is generally 200 unless otherwise noted
     order_by: Sort order.
         ``distance`` only applies if lat and lng are specified.
         ``featured`` only applies if ``featured`` or ``noteworthy`` are true.
@@ -359,7 +432,6 @@ def _taxon_params(
     locale: str = None,
     preferred_place_id: int = None,
     all_names: bool = None,
-    per_page: int = None,
 ):
     """
     q: Name must begin with this value
@@ -373,8 +445,6 @@ def _taxon_params(
     locale: Locale preference for taxon common names
     preferred_place_id: Place preference for regional taxon common names
     all_names: Include all taxon names in the response
-    per_page: Number of results to return in a page. The maximum value is generally 200 unless
-        otherwise noted
     """
 
 
@@ -423,12 +493,6 @@ def _geojson_properties(properties: List[str] = None):
     """
 
 
-def _minify(minify: str = None):
-    """
-    minify: Condense each match into a single string containing taxon ID, rank, and name
-    """
-
-
 def _name(name: str = None):
     """
     name: Name must match this value
@@ -447,9 +511,9 @@ def _observation_id(observation_id: int):
     """
 
 
-def _page(page: int = None):
+def _project_id(observation_id: int = None):
     """
-    page: Page number of results to return
+    project_id: Only show users who are members of this project
     """
 
 
@@ -458,6 +522,7 @@ def _pagination(
     per_page: int = None,
     order: str = None,
     order_by: str = None,
+    count_only: bool = None,
 ):
     """
     page: Page number of results to return
@@ -465,6 +530,7 @@ def _pagination(
         unless otherwise noted
     order: Sort order
     order_by: Field to sort on
+    count_only: Only return a count of results; alias for ``per_page=0``
     """
 
 

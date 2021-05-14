@@ -1,7 +1,52 @@
 # History
 
+## 0.13 (2021-05-14)
+[See all Issues & PRs for 0.13](https://github.com/niconoe/pyinaturalist/milestone/4?closed=1)
+
+### New Endpoints
+* Added new functions for **Identifications** endpoints: `get_identifications()` and `get_identifications_by_id()`
+* Added new functions for **Users** endpoints: `get_user_by_id()` and `get_users_autocomplete()`
+
+### Modified Endpoints
+* Added undocumented `ident_user_id` parameter to `get_observations()`
+* Added `count_only=True` as an alias for `per_page=0` (to get only result counts).
+* Added generic auto-pagination that can apply to any endpoint that supports pagination.
+* Added `page='all'` as a shortcut for auto-pagination
+* The above changes apply to all functions that support pagination:
+  * `node_api.get_identifications()`
+  * `node_api.get_observations()`
+  * `node_api.get_observation_species_counts()`
+  * `node_api.get_observation_observers()`
+  * `node_api.get_observation_identifiers()`
+  * `node_api.get_places_autocomplete()`
+  * `node_api.get_projects()`
+  * `node_api.get_taxa()`
+  * `rest_api.get_observations()`
+  * `rest_api.get_observation_fields()`
+* The following methods are now deprecated. They are still functional, but will raise a `DeprecationWarning`:
+  * `node_api.get_all_observations()`
+  * `rest_api.get_all_observation_fields()`
+* Removed `node_api.get_all_observation_species_counts()`, since this was only added recently
+* Updated `rest_api.get_observation_fields()` to return a dict with `'results'` for consistency with other endpoints
+* Removed `minify` option to `get_taxa_autocomplete`, and instead show a similar example in docstring
+
+### Other Changes
+* Published [pyinaturalist on conda-forge](https://anaconda.org/conda-forge/pyinaturalist)
+* Added global rate-limiting to stay within the rates suggested in
+  [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
+  (per second, minute, and day)
+* Added new module `pyinaturalist.response_utils` for optional formatting functions
+* Moved `Dockerfile` and `docker-compose.yml` to a separate repo
+  ([inaturalist-notebook](https://github.com/reclosedev/requests-cache/issues/new/choose))
+  and published on Docker Hub
+* Add some optional response formatting functions to `pyinaturalist.formatters`
+
+-----
+### 0.12.1 (2021-03-07)
+* Add undocumented `ident_user_id` parameter to `get_observations()`
+
 ## 0.12 (2021-02-02)
-[See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/3?closed=1) 
+[See all Issues & PRs for 0.12](https://github.com/niconoe/pyinaturalist/milestone/3?closed=1)
 
 ### New Endpoints
 * Added new function for **Observation Histogram** endpoint: `get_observation_histogram()`
@@ -38,8 +83,9 @@
 * Dropped support for python 3.5
 * Removed request parameters that were deprecated in 0.11
 
+-----
 ## 0.11 (2020-11-04)
-[See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/2?closed=1)
+[See all Issues & PRs for 0.11](https://github.com/niconoe/pyinaturalist/milestone/2?closed=1)
 
 ### New Endpoints
 * Added new functions for Node API **Places** endpoints:
@@ -83,7 +129,7 @@
 * Added parameter validation for multiple-choice request parameters
 
 ## 0.10 (2020-06-16)
-[See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/1?closed=1)
+[See all Issues & PRs for 0.10](https://github.com/niconoe/pyinaturalist/milestone/1?closed=1)
 
 ### New Endpoints
 * Added new **Observation** endpoint: `rest_api.get_observations()`, with 6 additional observation response formats, including GeoJSON, Darwin Core, and others
@@ -97,6 +143,7 @@
 * Added a dry-run mode to mock out API requests for testing
 * Set up pre-release builds for latest development version
 
+-----
 ## 0.9.1 (2020-05-26)
 
 * Bugfix: proper support for boolean and integer list parameters ([Issue #17](https://github.com/niconoe/pyinaturalist/issues/17))

@@ -10,27 +10,31 @@ extras_require = {
     'build': ['coveralls', 'twine', 'wheel'],
     # Packages used for documentation builds
     'docs': [
-        'm2r2',
-        'Sphinx~=3.2.1',
+        'm2r2>=0.2.7',
+        'nbsphinx',
+        'prompt_toolkit',
+        'Sphinx~=4.0.1',
         'sphinx-autodoc-typehints',
         'sphinx-automodapi',
-        'sphinx-rtd-theme',
+        'sphinx-copybutton',
+        'sphinx-rtd-theme~=0.5.2',
         'sphinxcontrib-apidoc',
     ],
     # Packages used for testing both locally and in CI jobs
     'test': [
-        'black==20.8b1',
+        'black==21.5b1',
         'flake8',
         'isort',
         'mypy',
         'pre-commit',
         'pytest>=5.0',
         'pytest-cov',
+        'pytest-xdist',
         'requests-mock>=1.7',
         'tox>=3.15',
     ],
     # Packages used only for local debugging
-    'debug': ['ipython', 'ipdb'],
+    'debug': ['ipython', 'ipdb', 'prance[osv]', 'rich'],
 }
 # All development/testing packages combined
 extras_require['dev'] = list(chain.from_iterable(extras_require.values()))
@@ -42,14 +46,16 @@ setup(
     author='Nicolas Noé',
     author_email='nicolas@niconoe.eu',
     url='https://github.com/niconoe/pyinaturalist',
-    packages=find_packages(),
+    packages=find_packages(exclude=['examples', 'test']),
     include_package_data=True,
     install_requires=[
-        'keyring~=21.4.0',
+        'keyring>=22.3',
+        'pyrate-limiter>=2.3.3',
         'python-dateutil>=2.0',
         'python-forge',
-        'requests~=2.25.0',
+        'requests>=2.20',
     ],
+    python_requires='>=3.6',
     extras_require=extras_require,
     zip_safe=False,
 )

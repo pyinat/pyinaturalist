@@ -1,8 +1,11 @@
 import pytest
-from unittest.mock import patch
+from time import sleep
+from unittest.mock import MagicMock, patch
+
+from pyrate_limiter import Duration, Limiter, RequestRate
 
 import pyinaturalist
-from pyinaturalist.api_requests import MOCK_RESPONSE, delete, get, post, put, request
+from pyinaturalist.api_requests import MOCK_RESPONSE, delete, get, post, put, ratelimit, request
 
 
 # Just test that the wrapper methods call requests.request with the appropriate HTTP method
@@ -120,3 +123,27 @@ def test_request_dry_run_disabled(requests_mock):
     requests_mock.get('http://url', json={'results': ['response object']}, status_code=200)
 
     assert request('GET', 'http://url').json() == real_response
+
+
+@patch('pyrate_limiter.limit_context_decorator.sleep', side_effect=sleep)
+def test_ratelimit(mock_sleep):
+
+    limiter = Limiter(RequestRate(5, Duration.SECOND))
+    mock_func = MagicMock()
+
+    for i in range(6):
+        with ratelimit(limiter, bucket='pytest-1'):
+            mock_func()
+
+    # With 6 requests and a limit of 5 request/second, there should be a delay for the final request
+    assert mock_func.call_count == 6
+    assert mock_sleep.call_count == 1
+
+
+@patch('pyrate_limiter.limit_context_decorator.sleep')
+def test_ratelimit__no_limiter(mock_sleep):
+    for i in range(70):
+        with ratelimit(None):
+            pass
+
+    assert mock_sleep.call_count == 0

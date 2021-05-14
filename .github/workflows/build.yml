@@ -2,13 +2,17 @@ name: Build
 
 on:
   push:
-    branches: [master, dev]
+    branches: [main, dev, pre-release]
     tags: ['v*']
   pull_request:
     branches: [master, dev]
   workflow_dispatch:
+env:
+  LATEST_PY_VERSION: '3.9'
+
 
 jobs:
+  # Run unit tests for each supported python version
   test:
     runs-on: ubuntu-18.04
     strategy:
@@ -32,24 +36,27 @@ jobs:
       - name: Install dependencies
         run: pip install ".[dev]"
       - name: Run unit tests
-        run: pytest
+        run: pytest -n auto
 
+  # Run code analysis checks, reports, etc.
   analyze:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: ${{ env.LATEST_PY_VERSION }}
       - name: Cache pip packages
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-3.8-${{ hashFiles('setup.py') }}
-          restore-keys: ${{ runner.os }}-pip-3.8
+          key: ${{ runner.os }}-pip-${{ env.LATEST_PY_VERSION }}-${{ hashFiles('setup.py') }}
+          restore-keys: ${{ runner.os }}-pip-${{ env.LATEST_PY_VERSION }}
 
       - name: Install dependencies
-        run: pip install ".[dev]"
+        run: |
+          sudo apt install -y pandoc
+          pip install ".[dev]"
       - name: Run style checks
         run: |
           black --check --diff .
@@ -59,7 +66,7 @@ jobs:
       - name: Run type checks
         run: mypy .
       - name: Generate code coverage report
-        run: pytest --cov --cov-report=term --cov-report=html
+        run: pytest -n auto --cov --cov-report=term --cov-report=html
       - name: Send code coverage report to Coveralls
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -71,23 +78,38 @@ jobs:
           python setup.py sdist bdist_wheel
           twine check dist/*
 
-  # Deploy pre-release builds from dev branch, and stable builds on tags only
+  # Deploy pre-release builds from 'pre-release' branch, and stable builds on tags only
   release:
     needs: [test, analyze]
-    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/dev'
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/pre-release' }}
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: ${{ env.LATEST_PY_VERSION }}
 
+      # Build & deploy to PyPI
+      - name: Set pre-release version number
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        run: echo "PRE_RELEASE_SUFFIX=.dev${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
       - name: Install dependencies
         run: pip install -U ".[build]"
       - name: Build wheel
-        run: python setup.py sdist bdist_wheel
+        run: |
+          python setup.py --version
+          python setup.py sdist bdist_wheel
       - name: Deploy to pypi
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: twine upload dist/*
+
+      # Notify Docker image repo that there's a new release available
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.DOCKERHUB_TRIGGER_TOKEN }}
+          repository: JWCook/inaturalist-notebook
+          event-type: post-release
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'

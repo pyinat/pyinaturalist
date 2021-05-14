@@ -1,10 +1,13 @@
 # Pyinaturalist usage examples
 
 This folder contains some examples of building data visualizations and other neat things using
-iNaturalist data. A Dockerfile and docker-compose config are also included to help spin up a
-Jupyter notebook container with all prerequisites installed.
+iNaturalist data. These are also viewable on
+[readthedocs](https://pyinaturalist.readthedocs.io/en/stable/examples.html)
 
-Example visualizations:
+## Running with Jupyter
+See [inaturalist-notebook](https://github.com/JWCook/inaturalist-notebook) for a Jupyter container with all prerequisites installed.
+
+## Example visualizations
 
 ![](images/total_observations_by_iconic_taxon.png)
 

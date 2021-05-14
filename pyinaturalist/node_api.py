@@ -1,5 +1,5 @@
 """
-Code to access the (read-only, but fast) Node based public iNaturalist API
+Code to access the Node-based iNaturalist API
 See: http://api.inaturalist.org/v1/docs/
 
 Most recent API version tested: 1.3.0
@@ -13,23 +13,17 @@ Functions
 
 """
 from logging import getLogger
-from time import sleep
 from typing import List
+from warnings import warn
 
 import requests
 
 from pyinaturalist import api_docs as docs
 from pyinaturalist.api_requests import get
-from pyinaturalist.constants import (
-    INAT_NODE_API_BASE_URL,
-    PER_PAGE_RESULTS,
-    THROTTLING_DELAY,
-    HistogramResponse,
-    JsonResponse,
-    MultiInt,
-)
+from pyinaturalist.constants import API_V1_BASE_URL, HistogramResponse, JsonResponse, MultiInt
 from pyinaturalist.exceptions import ObservationNotFound, TaxonNotFound
 from pyinaturalist.forge_utils import document_request_params
+from pyinaturalist.pagination import add_paginate_all, paginate_all
 from pyinaturalist.request_params import (
     DEFAULT_OBSERVATION_ATTRS,
     NODE_OBS_ORDER_BY_PROPERTIES,
@@ -42,10 +36,9 @@ from pyinaturalist.response_format import (
     convert_all_coordinates,
     convert_all_place_coordinates,
     convert_all_timestamps,
+    convert_generic_timestamps,
     convert_observation_timestamps,
-    flatten_nested_params,
     format_histogram,
-    format_taxon,
 )
 
 logger = getLogger(__name__)
@@ -58,7 +51,7 @@ def node_api_get(endpoint: str, **kwargs) -> requests.Response:
         endpoint: The name of an endpoint resource, not including the base URL e.g. 'observations'
         kwargs: Arguments for :py:func:`.api_requests.request`
     """
-    return get(f'{INAT_NODE_API_BASE_URL}{endpoint}', **kwargs)
+    return get(f'{API_V1_BASE_URL}/{endpoint}', **kwargs)
 
 
 # Controlled Terms
@@ -137,6 +130,70 @@ def get_controlled_terms(taxon_id: int = None, user_agent: str = None) -> JsonRe
     return response.json()
 
 
+# Identifications
+# --------------------
+
+
+def get_identifications_by_id(identification_id: MultiInt, user_agent: str = None) -> JsonResponse:
+    """Get one or more identification records by ID.
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications_id
+
+    Example:
+
+        >>> get_identifications_by_id(155554373)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_identifications.py
+
+    Args:
+        identification_id: Get taxa with this ID. Multiple values are allowed.
+
+    Returns:
+        Response dict containing identification records
+    """
+    r = node_api_get('identifications', ids=identification_id, user_agent=user_agent)
+    r.raise_for_status()
+
+    identifications = r.json()
+    identifications['results'] = convert_all_timestamps(identifications['results'])
+    return identifications
+
+
+@document_request_params([docs._identification_params, docs._pagination, docs._only_id])
+@add_paginate_all(method='page')
+def get_identifications(**params) -> JsonResponse:
+    """Search identifications.
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications
+
+    Example:
+
+        >>> # Get all of your own species-level identifications
+        >>> response = get_identifications(user_login='my_username', rank='species')
+        >>> print([f"{i['user']['login']}: {i['taxon_id']} ({i['category']})" for i in response['results']])
+        my_username: 60132 (supporting)
+        my_username: 47126 (improving)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_identifications.py
+
+    Returns:
+        Response dict containing identification records
+    """
+    params = translate_rank_range(params)
+    r = node_api_get('identifications', params=params)
+    r.raise_for_status()
+
+    identifications = r.json()
+    identifications['results'] = convert_all_timestamps(identifications['results'])
+    return identifications
+
+
 # Observations
 # --------------------
 
@@ -174,7 +231,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
 
 
 @document_request_params([*docs._get_observations, docs._observation_histogram])
-def get_observation_histogram(user_agent: str = None, **params) -> HistogramResponse:
+def get_observation_histogram(**params) -> HistogramResponse:
     """Search observations and return histogram data for the given time interval
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_histogram
@@ -223,13 +280,14 @@ def get_observation_histogram(user_agent: str = None, **params) -> HistogramResp
         Dict of ``{time_key: observation_count}``. Keys are ints for 'month of year' and\
         'week of year' intervals, and :py:class:`~datetime.datetime` objects for all other intervals.
     """
-    r = node_api_get('observations/histogram', params=params, user_agent=user_agent)
+    r = node_api_get('observations/histogram', params=params)
     r.raise_for_status()
     return format_histogram(r.json())
 
 
 @document_request_params([*docs._get_observations, docs._pagination, docs._only_id])
-def get_observations(user_agent: str = None, **params) -> JsonResponse:
+@add_paginate_all(method='id')
+def get_observations(**params) -> JsonResponse:
     """Search observations.
 
     **API reference:** http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
@@ -250,9 +308,8 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
 
         Get basic info for observations in response:
 
-        >>> from pyinaturalist.response_format import format_observation
-        >>> for obs in response['results']:
-        >>>     print(format_observation(obs))
+        >>> from pyinaturalist.formatters import format_observations
+        >>> print(format_observations(response['results']))
         '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK'
         '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK'
 
@@ -262,10 +319,10 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
             .. literalinclude:: ../sample_data/get_observations_node.py
 
     Returns:
-        JSON response containing observation records
+        Response dict containing observation records
     """
     validate_multiple_choice_param(params, 'order_by', NODE_OBS_ORDER_BY_PROPERTIES)
-    r = node_api_get('observations', params=params, user_agent=user_agent)
+    r = node_api_get('observations', params=params)
     r.raise_for_status()
 
     observations = r.json()
@@ -275,55 +332,17 @@ def get_observations(user_agent: str = None, **params) -> JsonResponse:
     return observations
 
 
-# TODO: Consolidate logic from get_all_*() functions into a generic pagination function
-#       This would have two variations: by page number (most common) and by ID (as seen below)
 @document_request_params([*docs._get_observations, docs._only_id])
-def get_all_observations(user_agent: str = None, **params) -> List[JsonResponse]:
-    """Like :py:func:`get_observations()`, but handles pagination and returns all results in one
-    call. Explicit pagination parameters will be ignored.
-
-    Notes on pagination from the iNaturalist documentation:
-    'The large size of the observations index prevents us from supporting the page parameter when
-    retrieving records from large result sets. If you need to retrieve large numbers of records,
-    use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead.'
-
-    Example:
-
-        >>> observations = get_all_observations(
-        >>>     taxon_name='Danaus plexippus',
-        >>>     created_on='2020-08-27',
-        >>> )
-
-    Returns:
-        Combined list of observation records. Response format is the same as the inner 'results'\
-        object returned by :py:func:`.get_observations()`.
-    """
-    results: List[JsonResponse] = []
-    id_above = 0
-    pagination_params = {
-        **params,
-        **{
-            'order_by': 'id',
-            'order': 'asc',
-            'per_page': PER_PAGE_RESULTS,
-            'user_agent': user_agent,
-        },
-    }
-
-    while True:
-        pagination_params['id_above'] = id_above
-        page_obs = get_observations(**pagination_params)
-        results = results + page_obs.get('results', [])
-
-        if page_obs['total_results'] <= PER_PAGE_RESULTS:
-            return results
-
-        sleep(THROTTLING_DELAY)
-        id_above = results[-1]['id']
+def get_all_observations(**params) -> List[JsonResponse]:
+    """[Deprecated] Like :py:func:`get_observations()`, but gets all pages of results"""
+    msg = "get_all_observations() is deprecated; please Use get_observations(page='all') instead"
+    warn(DeprecationWarning(msg))
+    return paginate_all(get_observations, method='id', **params)['results']
 
 
 @document_request_params([*docs._get_observations, docs._pagination])
-def get_observation_species_counts(user_agent: str = None, **params) -> JsonResponse:
+@add_paginate_all(method='page')
+def get_observation_species_counts(**params) -> JsonResponse:
     """Get all species (or other 'leaf taxa') associated with observations matching the search
     criteria, and the count of observations they are associated with.
     **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
@@ -339,64 +358,14 @@ def get_observation_species_counts(user_agent: str = None, **params) -> JsonResp
             .. literalinclude:: ../sample_data/get_observation_species_counts.py
 
     Returns:
-        JSON response containing taxon records with counts
+        Response dict containing taxon records with counts
     """
     r = node_api_get(
         'observations/species_counts',
         params=params,
-        user_agent=user_agent,
     )
     r.raise_for_status()
     return r.json()
-
-
-@document_request_params(docs._get_observations)
-def get_all_observation_species_counts(user_agent: str = None, **params) -> List[JsonResponse]:
-    """Like :py:func:`get_observation_species_counts()`, but handles pagination and returns all
-    results in one call. Explicit pagination parameters will be ignored.
-
-    Notes:
-    While the ``page`` parameter is undocumented for observations/species_counts, it appears to be supported.
-    ``id_above`` and ``id_below`` are not helpful in the context.
-
-    Example:
-        >>> get_all_observation_species_counts(
-        ...     user_agent=None,
-        ...     quality_grade='research',
-        ...     place_id=154695,
-        ...     iconic_taxa='Reptilia',
-        ... )
-
-        .. admonition:: Example Response
-            :class: toggle
-
-            .. literalinclude:: ../sample_data/get_all_observation_species_counts_ex_results.json
-                :language: JSON
-
-    Returns:
-        Combined list of taxon records with counts
-    """
-    results: List[JsonResponse] = []
-    page = 1
-
-    pagination_params = {
-        **params,
-        **{
-            'per_page': PER_PAGE_RESULTS,
-            'user_agent': user_agent,
-        },
-    }
-
-    while True:
-        pagination_params['page'] = page
-        page_obs = get_observation_species_counts(**pagination_params)
-        results = results + page_obs.get('results', [])
-
-        if len(results) == page_obs['total_results']:
-            return results
-
-        sleep(THROTTLING_DELAY)
-        page += 1
 
 
 @document_request_params([*docs._get_observations, docs._geojson_properties])
@@ -418,26 +387,29 @@ def get_geojson_observations(properties: List[str] = None, **params) -> JsonResp
         A ``FeatureCollection`` containing observation results as ``Feature`` dicts.
     """
     params['mappable'] = True
-    observations = get_all_observations(**params)
+    params['page'] = 'all'
+    response = get_observations(**params)
     return as_geojson_feature_collection(
-        (flatten_nested_params(obs) for obs in observations),
+        response['results'],
         properties=properties if properties is not None else DEFAULT_OBSERVATION_ATTRS,
     )
 
 
 @document_request_params([*docs._get_observations, docs._pagination])
-def get_observation_observers(user_agent: str = None, **params) -> JsonResponse:
+def get_observation_observers(**params) -> JsonResponse:
     """Get observers of observations matching the search criteria and the count of
     observations and distinct taxa of rank species they have observed.
 
     Notes:
-    Options for ``order_by`` are 'observation_count' (default) or 'species_count'.
+        * Options for ``order_by`` are 'observation_count' (default) or 'species_count'
+        * This endpoint will only return up to 500 results
 
     ``GET /observations/observers`` API node is buggy. It's currently limited to
     500 results and using ``order_by=species_count`` may produce unusual results.
     See this issue for more details: https://github.com/inaturalist/iNaturalistAPI/issues/235
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_observers
+
 
     Example:
         >>> get_observation_observers(place_id=72645, order_by='species_count')
@@ -449,26 +421,26 @@ def get_observation_observers(user_agent: str = None, **params) -> JsonResponse:
                 :language: JSON
 
     Returns:
-        JSON response of observers
+        Response dict of observers
     """
-
-    params.setdefault('per_page', 500)  # patch for API issue #235
+    params.setdefault('per_page', 500)
 
     r = node_api_get(
         'observations/observers',
         params=params,
-        user_agent=user_agent,
     )
     r.raise_for_status()
     return r.json()
 
 
 @document_request_params([*docs._get_observations, docs._pagination])
-def get_observation_identifiers(user_agent: str = None, **params) -> JsonResponse:
+def get_observation_identifiers(**params) -> JsonResponse:
     """Get identifiers of observations matching the search criteria and the count of
     observations they have identified. By default, results are sorted by ID count in descending.
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_identifiers
+
+    Note: This endpoint will only return up to 500 results.
 
     Example:
         >>> get_observation_identifiers(place_id=72645)
@@ -480,19 +452,13 @@ def get_observation_identifiers(user_agent: str = None, **params) -> JsonRespons
                 :language: JSON
 
     Returns:
-        JSON response of identifiers
-
-    Notes:
-    The ``GET /observations/identifiers`` API node is currently limited to
-    500 results. See this issue for more details: https://github.com/inaturalist/iNaturalistAPI/issues/236
+        Response dict of identifiers
     """
-
-    params.setdefault('per_page', 500)  # patch until issue #236 is resolved
+    params.setdefault('per_page', 500)
 
     r = node_api_get(
         'observations/identifiers',
         params=params,
-        user_agent=user_agent,
     )
     r.raise_for_status()
     return r.json()
@@ -525,7 +491,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
         place_id: Get a place with this ID. Multiple values are allowed.
 
     Returns:
-        JSON response containing place records
+        Response dict containing place records
     """
     r = node_api_get('places', ids=place_id, user_agent=user_agent)
     r.raise_for_status()
@@ -537,7 +503,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
 
 
 @document_request_params([docs._bounding_box, docs._name])
-def get_places_nearby(user_agent: str = None, **params) -> JsonResponse:
+def get_places_nearby(**params) -> JsonResponse:
     """
     Given an bounding box, and an optional name query, return standard iNaturalist curator approved
     and community non-curated places nearby
@@ -586,17 +552,23 @@ def get_places_nearby(user_agent: str = None, **params) -> JsonResponse:
             .. literalinclude:: ../sample_data/get_places_nearby.py
 
     Returns:
-        JSON response containing place records, divided into 'standard' and 'community' places.
+        Response dict containing place records, divided into 'standard' and 'community' places.
     """
-    r = node_api_get('places/nearby', params=params, user_agent=user_agent)
+    r = node_api_get('places/nearby', params=params)
     r.raise_for_status()
     return convert_all_place_coordinates(r.json())
 
 
-def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
+@document_request_params([docs._search_query, docs._pagination])
+@add_paginate_all(method='autocomplete')
+def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
     """Given a query string, get places with names starting with the search term
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Places/get_places_autocomplete
+
+    **Note:** This endpoint accepts a ``per_page`` param, up to a max of 20 (default 10). Pages
+    beyond the first page cannot be retrieved. Use ``page=all`` to attempt to retrieve additional
+    results. See :py:func:`.paginate_autocomplete` for more info.
 
     Example:
         >>> response = get_places_autocomplete('Irkutsk')
@@ -617,9 +589,9 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
         q: Name must begin with this value
 
     Returns:
-        JSON response containing place records
+        Response dict containing place records
     """
-    r = node_api_get('places/autocomplete', params={'q': q}, user_agent=user_agent)
+    r = node_api_get('places/autocomplete', params={'q': q, **params})
     r.raise_for_status()
 
     # Convert coordinates to floats
@@ -633,7 +605,8 @@ def get_places_autocomplete(q: str, user_agent: str = None) -> JsonResponse:
 
 
 @document_request_params([docs._projects_params, docs._pagination])
-def get_projects(user_agent: str = None, **params) -> JsonResponse:
+@add_paginate_all(method='page')
+def get_projects(**params) -> JsonResponse:
     """Given zero to many of following parameters, get projects matching the search criteria.
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Projects/get_projects
@@ -667,10 +640,10 @@ def get_projects(user_agent: str = None, **params) -> JsonResponse:
             .. literalinclude:: ../sample_data/get_projects.py
 
     Returns:
-        JSON response containing project records
+        Response dict containing project records
     """
     validate_multiple_choice_param(params, 'order_by', PROJECT_ORDER_BY_PROPERTIES)
-    r = node_api_get('projects', params=params, user_agent=user_agent)
+    r = node_api_get('projects', params=params)
     r.raise_for_status()
 
     response = r.json()
@@ -701,7 +674,7 @@ def get_projects_by_id(
             object instead of simply an ID
 
     Returns:
-        JSON response containing project records
+        Response dict containing project records
     """
     r = node_api_get(
         'projects',
@@ -721,8 +694,9 @@ def get_projects_by_id(
 # --------------------
 
 
-@document_request_params([docs._taxon_params, docs._taxon_id_params])
-def get_taxa(user_agent: str = None, **params) -> JsonResponse:
+@document_request_params([docs._taxon_params, docs._taxon_id_params, docs._pagination])
+@add_paginate_all(method='page')
+def get_taxa(**params) -> JsonResponse:
     """Given zero to many of following parameters, get taxa matching the search criteria.
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
@@ -740,10 +714,10 @@ def get_taxa(user_agent: str = None, **params) -> JsonResponse:
                 :language: JSON
 
     Returns:
-        JSON response containing taxon records
+        Response dict containing taxon records
     """
     params = translate_rank_range(params)
-    r = node_api_get('taxa', params=params, user_agent=user_agent)
+    r = node_api_get('taxa', params=params)
     r.raise_for_status()
 
     taxa = r.json()
@@ -777,7 +751,7 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
         taxon_id: Get taxa with this ID. Multiple values are allowed.
 
     Returns:
-        JSON response containing taxon records
+        Response dict containing taxon records
     """
     r = node_api_get('taxa', ids=taxon_id, user_agent=user_agent)
     r.raise_for_status()
@@ -787,9 +761,9 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     return taxa
 
 
-@document_request_params([docs._taxon_params, docs._minify])
-def get_taxa_autocomplete(user_agent: str = None, **params) -> JsonResponse:
-    """Given a query string, returns taxa with names starting with the search term
+@document_request_params([docs._taxon_params])
+def get_taxa_autocomplete(**params) -> JsonResponse:
+    """Given a query string, return taxa with names starting with the search term
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_autocomplete
 
@@ -798,31 +772,103 @@ def get_taxa_autocomplete(user_agent: str = None, **params) -> JsonResponse:
 
     Example:
 
+        Get just the name of the first matching taxon:
+
         >>> response = get_taxa_autocomplete(q='vespi')
-        >>> first_result = response['results'][0]
-        >>> print(first_result['rank'], first_result['name'])
-        'family Vespidae'
+        >>> print(response['results'][0]['name'])
+        'Vespidae'
+
+        Get basic info for taxa in response:
+
+        >>> from pyinaturalist.formatters import format_taxa
+        >>> print(format_taxa(response['results'], align=True))
+        >>> # See example output below
+
+        If you get unexpected matches, the search likely matched a synonym, either in the form of a
+        common name or an alternative classification. Check the ``matched_term`` property for more
+        info. For example:
+
+        ```python
+        >>> first_result = get_taxa_autocomplete(q='zygoca')['results'][0]
+        >>> first_result["name"]
+        "Schlumbergera truncata"  # This doesn't look like our search term!
+        >>> first_result["matched_term"]
+        "Zygocactus truncatus"    # ...Because it matched an older synonym for Schlumbergera
+        ```
 
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_taxa_autocomplete.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_taxa_autocomplete.py
 
-        .. admonition:: Example Response (with **minify=True**)
+        .. admonition:: Example Response (formatted)
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_taxa_autocomplete_minified.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_taxa_autocomplete_minified.py
 
     Returns:
-        JSON response containing taxon records
+        Response dict containing taxon records
     """
     params = translate_rank_range(params)
-    r = node_api_get('taxa/autocomplete', params=params, user_agent=user_agent)
+    r = node_api_get('taxa/autocomplete', params=params)
     r.raise_for_status()
-    json_response = r.json()
+    return r.json()
 
-    if params.get('minify'):
-        json_response['results'] = [format_taxon(t, align=True) for t in json_response['results']]
-    return json_response
+
+# Users
+# --------------------
+
+
+def get_user_by_id(user_id: int, user_agent: str = None) -> JsonResponse:
+    """Get a user by ID.
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Users/get_users_id
+
+    Args:
+        user_id: Get the user with this ID. Only a single ID is allowed per request.
+
+    Example:
+
+        >>> response = get_user_by_id(123456)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_user_by_id.py
+
+    Returns:
+        Response dict containing user record
+    """
+    r = node_api_get('users', ids=[user_id], user_agent=user_agent)
+    r.raise_for_status()
+    results = r.json()['results']
+    if not results:
+        return {}
+    return convert_generic_timestamps(results[0])
+
+
+@document_request_params([docs._search_query, docs._project_id, docs._pagination])
+def get_users_autocomplete(q: str, **params) -> JsonResponse:
+    """Given a query string, return users with names or logins starting with the search term
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Users/get_users_autocomplete
+
+    Note: Pagination is supported; default page size is 6, and max is 100.
+
+    Example:
+
+        >>> response = get_taxa_autocomplete(q='my_userna')
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_users_autocomplete.py
+
+    Returns:
+        Response dict containing user records
+    """
+    r = node_api_get('users/autocomplete', params={'q': q, **params})
+    r.raise_for_status()
+    users = r.json()
+    users['results'] = convert_all_timestamps(users['results'])
+    return users
