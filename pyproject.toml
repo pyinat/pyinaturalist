@@ -11,7 +11,7 @@ directory = 'test-reports'
 [tool.coverage.run]
 branch = true
 source = ['pyinaturalist']
-omit = ['pyinaturalist/response_utils.py']
+omit = ['pyinaturalist/export.py']
 
 [tool.isort]
 profile = 'black'
