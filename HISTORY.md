@@ -1,6 +1,7 @@
 # History
 
-## 0.13 (2021-06-TBD)
+## 0.13 (2021-05-14)
+[See all Issues & PRs for 0.13](https://github.com/niconoe/pyinaturalist/milestone/4?closed=1)
 
 ### New Endpoints
 * Added new functions for **Identifications** endpoints: `get_identifications()` and `get_identifications_by_id()`
@@ -45,7 +46,7 @@
 * Add undocumented `ident_user_id` parameter to `get_observations()`
 
 ## 0.12 (2021-02-02)
-[See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/3?closed=1)
+[See all Issues & PRs for 0.12](https://github.com/niconoe/pyinaturalist/milestone/3?closed=1)
 
 ### New Endpoints
 * Added new function for **Observation Histogram** endpoint: `get_observation_histogram()`
@@ -84,7 +85,7 @@
 
 -----
 ## 0.11 (2020-11-04)
-[See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/2?closed=1)
+[See all Issues & PRs for 0.11](https://github.com/niconoe/pyinaturalist/milestone/2?closed=1)
 
 ### New Endpoints
 * Added new functions for Node API **Places** endpoints:
@@ -128,7 +129,7 @@
 * Added parameter validation for multiple-choice request parameters
 
 ## 0.10 (2020-06-16)
-[See all Issues & PRs](https://github.com/niconoe/pyinaturalist/milestone/1?closed=1)
+[See all Issues & PRs for 0.10](https://github.com/niconoe/pyinaturalist/milestone/1?closed=1)
 
 ### New Endpoints
 * Added new **Observation** endpoint: `rest_api.get_observations()`, with 6 additional observation response formats, including GeoJSON, Darwin Core, and others

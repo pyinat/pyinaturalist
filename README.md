@@ -16,14 +16,11 @@ See full project documentation at https://pyinaturalist.readthedocs.io.
 - [Next Steps](#next-steps)
 - [Feedback](#feedback)
 
-
 ## Features
 
-[iNaturalist](https://www.inaturalist.org) is a rich source of biodiversity data, and offers an
-extensive API to interact with it.
-
-If you want to make use of these data within a python application, script, or notebook, then
-pyinaturalist can help. It adds a number of python-specific conveniences, including:
+[iNaturalist](https://www.inaturalist.org) offers a rich source of biodiversity data, and an
+extensive API to interact with it. If you want to make use of these data in python, then
+pyinaturalist can help! It adds a number of python-specific conveniences, including:
 
 * **Requests:** Simplified usage with python types and data structures
 * **Responses:** Type conversions to things you would expect in python

@@ -5,7 +5,7 @@
     :end-line: 11
 
 .. mdinclude:: ../README.md
-    :start-line: 22
+    :start-line: 18
 
 
 Contents
