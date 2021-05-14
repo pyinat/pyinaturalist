@@ -10,7 +10,7 @@ extras_require = {
     'build': ['coveralls', 'twine', 'wheel'],
     # Packages used for documentation builds
     'docs': [
-        'm2r2',
+        'm2r2>=0.2.7',
         'nbsphinx',
         'prompt_toolkit',
         'Sphinx~=4.0.1',
