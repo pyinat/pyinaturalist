@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Example to get photo metadata from observation photos, which is currently not available in
+"""
+An example of getting photo metadata from observation photos, which is currently not available in
 the API and must be done by web scraping.
 
 Note that web scraping in general is not very reliable and is prone to breakage, so this script
@@ -8,11 +9,12 @@ example of photo info HTML at time of writing.
 
 Also note that photo metadata is only visible to logged in users, so an access token is required.
 For more details on authentication, see:
+
 * https://www.inaturalist.org/pages/api+reference#auth
 * https://pyinaturalist.readthedocs.io/en/latest/general_usage.html#authentication
 
 Extra dependencies:
-    `pip install beautifulsoup4`
+    ``pip install beautifulsoup4``
 """
 from pprint import pprint
 

@@ -147,7 +147,8 @@ def get_observation_fields(**params) -> JsonResponse:
 @document_request_params([docs._search_query])
 def get_all_observation_fields(**params) -> ListResponse:
     """[Deprecated] Like :py:func:`.get_observation_fields()`, but gets all pages of results"""
-    warn(DeprecationWarning("Use get_observation_fields(page='all') instead"))
+    msg = "get_all_observation_fields() is deprecated; please Use get_observation_fields(page='all') instead"
+    warn(DeprecationWarning(msg))
     return paginate_all(get_observation_fields, method='page', **params)['results']
 
 

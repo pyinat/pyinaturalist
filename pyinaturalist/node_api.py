@@ -1,5 +1,5 @@
 """
-Code to access the (read-only, but fast) Node based public iNaturalist API
+Code to access the Node-based iNaturalist API
 See: http://api.inaturalist.org/v1/docs/
 
 Most recent API version tested: 1.3.0
@@ -335,7 +335,8 @@ def get_observations(**params) -> JsonResponse:
 @document_request_params([*docs._get_observations, docs._only_id])
 def get_all_observations(**params) -> List[JsonResponse]:
     """[Deprecated] Like :py:func:`get_observations()`, but gets all pages of results"""
-    warn(DeprecationWarning("Use get_observations(page='all') instead"))
+    msg = "get_all_observations() is deprecated; please Use get_observations(page='all') instead"
+    warn(DeprecationWarning(msg))
     return paginate_all(get_observations, method='id', **params)['results']
 
 
