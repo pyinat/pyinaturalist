@@ -42,6 +42,28 @@ from pyinaturalist.response_format import (
     format_histogram,
 )
 
+__all__ = [
+    'get_controlled_terms',
+    'get_identifications_by_id',
+    'get_identifications',
+    'get_observation',
+    'get_observation_histogram',
+    'get_observations',
+    'get_observation_species_counts',
+    'get_geojson_observations',
+    'get_observation_observers',
+    'get_observation_identifiers',
+    'get_places_by_id',
+    'get_places_nearby',
+    'get_places_autocomplete',
+    'get_projects',
+    'get_projects_by_id',
+    'get_taxa',
+    'get_taxa_by_id',
+    'get_taxa_autocomplete',
+    'get_user_by_id',
+    'get_users_autocomplete',
+]
 logger = getLogger(__name__)
 
 

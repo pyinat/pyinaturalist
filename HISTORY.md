@@ -1,6 +1,6 @@
 # History
 
-## 0.13 (2021-05-14)
+## 0.13 (2021-05-TBD)
 [See all Issues & PRs for 0.13](https://github.com/niconoe/pyinaturalist/milestone/4?closed=1)
 
 ### New Endpoints
@@ -43,6 +43,8 @@
     * `simplify_observations()`
 
 ### Other Changes
+* All API functions and formatters can now be imported from the top-level package, e.g.
+  `from pyinaturalist import ...`
 * Published [pyinaturalist on conda-forge](https://anaconda.org/conda-forge/pyinaturalist)
 * Added global rate-limiting to stay within the rates suggested in
   [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)

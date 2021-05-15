@@ -30,6 +30,17 @@ from pyinaturalist.request_params import (
 )
 from pyinaturalist.response_format import convert_all_coordinates, convert_all_timestamps
 
+__all__ = [
+    'get_access_token',
+    'get_observations',
+    'get_observation_fields',
+    'put_observation_field_values',
+    'create_observation',
+    'update_observation',
+    'add_photo_to_observation',
+    'delete_observation',
+]
+
 
 @document_request_params(
     [
