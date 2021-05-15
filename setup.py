@@ -15,7 +15,9 @@ extras_require = {
         'prompt_toolkit',
         'Sphinx~=4.0.1',
         'sphinx-autodoc-typehints',
-        'sphinx-automodapi',
+        # 'sphinx-automodapi',
+        # TODO: Revert this once PR for fix is merged in
+        'sphinx-automodapi @ https://github.com/JWCook/sphinx-automodapi/archive/sphinx-4-compat.zip',
         'sphinx-copybutton',
         'sphinx-rtd-theme~=0.5.2',
         'sphinxcontrib-apidoc',
