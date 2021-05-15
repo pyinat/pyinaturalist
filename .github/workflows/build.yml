@@ -2,10 +2,10 @@ name: Build
 
 on:
   push:
-    branches: [main, dev, pre-release]
+    branches: [main, pre-release]
     tags: ['v*']
   pull_request:
-    branches: [master, dev]
+    branches: [main, pre-release]
   workflow_dispatch:
 env:
   LATEST_PY_VERSION: '3.9'
@@ -71,12 +71,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls --service=github
-      - name: Test Sphinx documentation build
-        run: make -C docs all
-      - name: Test package build
-        run: |
-          python setup.py sdist bdist_wheel
-          twine check dist/*
 
   # Deploy pre-release builds from 'pre-release' branch, and stable builds on tags only
   release:
