@@ -36,7 +36,7 @@ Many of the most relevant API endpoints are included:
 * **Searching for:**
     * controlled terms
     * identifications
-    * observations
+    * observations (multiple formats)
     * observation fields
     * observation species counts
     * places
@@ -45,6 +45,7 @@ Many of the most relevant API endpoints are included:
 * **Text search autocompletion for:**
     * places
     * species
+    * users
 * **Creating and updating:**
     * observations
     * observation fields
