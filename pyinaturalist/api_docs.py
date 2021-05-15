@@ -417,6 +417,26 @@ def _projects_params(
     """
 
 
+# Main Search
+# --------------------
+
+
+def _search_params(
+    q: str,
+    sources: MultiStr = None,  # enum
+    place_id: MultiInt = None,
+    locale: str = None,
+    preferred_place_id: int = None,
+):
+    """
+    q: Search query
+    sources: Object types to search
+    place_id: Results must be associated with this place
+    locale: Locale preference for taxon common names
+    preferred_place_id: Place preference for regional taxon common names
+    """
+
+
 # Taxa
 # --------------------
 

@@ -6,6 +6,7 @@ from pyinaturalist.formatters import (
     format_observations,
     format_places,
     format_projects,
+    format_search_results,
     format_species_counts,
     format_taxa,
     format_users,
@@ -26,6 +27,7 @@ places_nearby['standard'] = places_nearby['standard'][:3]
 places_nearby['community'] = places_nearby['community'][:3]
 project_1 = load_sample_data('get_projects.json')['results'][0]
 project_2 = load_sample_data('get_projects.json')['results'][1]
+search_results = load_sample_data('get_search.json')['results']
 species_count_1 = load_sample_data('get_observation_species_counts.json')['results'][0]
 species_count_2 = load_sample_data('get_observation_species_counts.json')['results'][1]
 taxon_1 = load_sample_data('get_taxa.json')['results'][0]
@@ -138,6 +140,26 @@ Community:
 [  150981] Ceap Breatainn
 """.strip()
     assert format_places(places_nearby, align=True) == places_str
+
+
+def test_format_search_results():
+    expected_str = (
+        '[Taxon] [47792] Order: Odonata (Dragonflies and Damselflies)\n'
+        '[Place] [113562] Odonates of Peninsular India and Sri Lanka\n'
+        '[Project] [9978] Ohio Dragonfly Survey  (Ohio Odonata Survey)\n'
+        '[User] [113886] odonatanb (Gilles Belliveau)'
+    )
+    assert format_search_results(search_results) == expected_str
+
+
+def test_format_search_results__align():
+    expected_str = (
+        '[  Taxon] [   47792]        Order: Odonata (Dragonflies and Damselflies)\n'  # TODO: fix alignment
+        '[  Place] [  113562] Odonates of Peninsular India and Sri Lanka\n'
+        '[Project] [    9978] Ohio Dragonfly Survey  (Ohio Odonata Survey)\n'
+        '[   User] [  113886] odonatanb (Gilles Belliveau)'
+    )
+    assert format_search_results(search_results, align=True) == expected_str
 
 
 @pytest.mark.parametrize('input', get_variations(species_count_1))

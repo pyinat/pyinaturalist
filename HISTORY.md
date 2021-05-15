@@ -4,6 +4,7 @@
 [See all Issues & PRs for 0.13](https://github.com/niconoe/pyinaturalist/milestone/4?closed=1)
 
 ### New Endpoints
+* Added new function for **Search** endpoint: `search()` (combined search for places, projects, taxa, and users)
 * Added new functions for **Identifications** endpoints: `get_identifications()` and `get_identifications_by_id()`
 * Added new functions for **Users** endpoints: `get_user_by_id()` and `get_users_autocomplete()`
 

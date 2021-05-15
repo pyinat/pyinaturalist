@@ -21,6 +21,7 @@ __all__ = [
     'format_observations',
     'format_places',
     'format_projects',
+    'format_search_results',
     'format_species_counts',
     'format_taxa',
     'format_users',
@@ -91,6 +92,25 @@ def format_projects(projects: ResponseOrObject, align: bool = False) -> str:
 def _format_project(project: ResponseObject, align: bool = False) -> str:
     project_id = pad(project['id'], 8, align)
     return f"[{project_id}] {project['title']}"
+
+
+def format_search_results(search_results: ResponseOrObject, align: bool = False) -> str:
+    """Format search results into a condensed list of values depending on result type"""
+    return _format_objects(search_results, align, _format_search_result)
+
+
+def _format_search_result(result: ResponseObject, align: bool = False) -> str:
+    """Format a search result depending on its type"""
+    search_formatters = {
+        'Place': _format_place,
+        'Project': _format_project,
+        'Taxon': _format_taxon,
+        'User': _format_user,
+    }
+    formatter = search_formatters[result['type']]
+    record_str = formatter(result['record'], align)
+    type_str = pad(result['type'], 7, align)
+    return f'[{type_str}] {record_str}'
 
 
 def format_species_counts(species_counts: ResponseOrObject, align: bool = False) -> str:

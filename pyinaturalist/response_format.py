@@ -9,7 +9,7 @@ from warnings import catch_warnings, simplefilter
 
 from pyinaturalist.constants import HistogramResponse, JsonResponse, ResponseObject
 
-GENERIC_TIME_FIELDS = ('created_at', 'updated_at')
+GENERIC_TIME_FIELDS = ('created_at', 'last_post_at', 'updated_at')
 OBSERVATION_TIME_FIELDS = (
     'created_at_details',
     'created_time_zone',
@@ -109,6 +109,11 @@ def convert_lat_long(result: ResponseObject) -> ResponseObject:
 
 def convert_location(result: ResponseObject):
     """Convert a coordinate pairs in a response item from strings to floats, if valid"""
+    # Format inner record if present, e.g. for search results
+    if 'record' in result:
+        result['record'] = convert_location(result['record'])
+        return result
+
     if ',' in (result.get('location') or ''):
         result['location'] = [try_float(coord) for coord in result['location'].split(',')]
     return result
@@ -119,6 +124,11 @@ def convert_generic_timestamps(result: ResponseObject) -> ResponseObject:
     **Note:** Compared to observation timestamps, these are generally more reliable. These seem to
     be consistently in ISO 8601 format.
     """
+    # Format inner record if present, e.g. for search results
+    if 'record' in result:
+        result['record'] = convert_generic_timestamps(result['record'])
+        return result
+
     for field in GENERIC_TIME_FIELDS:
         datetime_obj = try_datetime(result.get(field, ''))
         if datetime_obj:
