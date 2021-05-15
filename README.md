@@ -61,9 +61,7 @@ pip install pyinaturalist
 
 Then, import the main API functions:
 ```python
-from pyinaturalist.auth import get_access_token
-from pyinaturalist.rest_api import *
-from pyinaturalist.node_api import *
+from pyinaturalist import *
 ```
 
 ### Search observations
@@ -203,8 +201,6 @@ But it also provides an easy way to search the iNaturalist taxonomy database by 
 Here is a quick example that will run searches from console input:
 
 ```python
-from pyinaturalist.node_api import get_taxa_autocomplete
-
 while True:
     query = input("> ")
     response = get_taxa_autocomplete(q=query)
