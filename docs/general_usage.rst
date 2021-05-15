@@ -4,7 +4,6 @@ This page contains usage information that applies to most or all pyinaturalist f
 
 Installation
 ------------
-
 Install the latest stable version with pip::
 
     pip install pyinaturalist
@@ -54,7 +53,6 @@ providing credentials:
 
 Environment Variables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 You may provide credentials via environment variables instead of arguments. The
 environment variable names are the keyword arguments in uppercase, prefixed with ``INAT_``:
 
@@ -109,7 +107,6 @@ session. I.e., you can't set them in one terminal and then access them in anothe
 
 Keyring Integration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 To handle your credentials more securely, you can store them in your system keyring.
 You could manually store and retrieve them with a utility like
 `secret-tool <https://manpages.ubuntu.com/manpages/xenial/man1/secret-tool.1.html>`_
@@ -141,7 +138,6 @@ again unless you change your iNaturalist password.
 
 Password Manager Integration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 Keyring integration can be taken a step further by managing your keyring with a password
 manager. This has the advantage of keeping your credentials in one place that can be synced
 across multiple machines. `KeePassXC <https://keepassxc.org/>`_ offers this feature for
@@ -157,23 +153,20 @@ macOS and Linux systems. See this guide for setup info:
 
 Dry-run mode
 ------------
-While developing & testing an application that uses an API or other remote service, it can be
-useful to temporarily mock out HTTP requests, especially requests that add, modify, or delete
-real data. Pyinaturalist has some settings to make this easier.
+While developing and testing, it can be useful to temporarily mock out HTTP requests, especially
+requests that add, modify, or delete real data. Pyinaturalist has some settings to make this easier.
 
 Dry-run all requests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 To enable dry-run mode, set the ``DRY_RUN_ENABLED`` variable. When set, requests will not be sent
 but will be logged instead:
 
-.. code-block:: python
-
     >>> import logging
     >>> import pyinaturalist
-
-    # Enable at least INFO-level logging
+    >>>
+    >>> # Enable at least INFO-level logging
     >>> logging.basicConfig(level='INFO')
-
+    >>>
     >>> pyinaturalist.DRY_RUN_ENABLED = True
     >>> get_taxa(q='warbler', locale=1)
     {'results': [], 'total_results': 0}
@@ -181,8 +174,7 @@ but will be logged instead:
         params={'q': 'warbler', 'locale': 1},
         headers={'Accept': 'application/json', 'User-Agent': 'Pyinaturalist/0.9.1'}
 
-Or, if you are running your application in a command-line environment, you can set this as an
-environment variable instead (case-insensitive):
+You can also set this as an environment variable (case-insensitive):
 
 .. code-block:: bash
 
@@ -191,15 +183,12 @@ environment variable instead (case-insensitive):
 
 Dry-run only write requests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-If you would like to run ``GET`` requests but mock out any requests that modify data
+If you would like to send real ``GET`` requests but mock out any requests that modify data
 (``POST``, ``PUT``, ``DELETE``, etc.), you can use the ``DRY_RUN_WRITE_ONLY`` variable
 instead:
 
-.. code-block:: python
-
     >>> pyinaturalist.DRY_RUN_WRITE_ONLY = True
-
-    # Also works as an environment variable
+    >>> # Also works as an environment variable
     >>> import os
     >>> os.environ["DRY_RUN_WRITE_ONLY"] = 'True'
 
@@ -210,22 +199,19 @@ While not mandatory, it's good practice to include a `user-agent <https://en.wik
 your API calls. This field can be either something that identifies the project or its contact person.
 
 You can either set this globally:
-.. code-block:: python
 
-    import pyinaturalist
-    from pyinaturalist.node_api import get_observation
+    >>> import pyinaturalist
+    >>> from pyinaturalist.node_api import get_observation
+    >>>
+    >>> pyinaturalist.user_agent = "MyCoolAndroidApp/2.0 (using Pyinaturalist)"
+    >>> # From now on, all API calls will use this user-agent.
 
-    pyinaturalist.user_agent = "MyCoolAndroidApp/2.0 (using Pyinaturalist)"
-    # From now on, all API calls will use this user-agent.
 
+To set this for individual requests, all API functions accept an optional ``user_agent`` parameter:
 
-Or for individual requests:
-.. code-block:: python
+    >>> get_observation(observation_id=16227955, user_agent='Jane Doe <jane.doe@gmail.com>')
 
-    get_observation(observation_id=16227955, user_agent='Jane Doe <jane.doe@gmail.com>')
-
-All API functions accept an optional ``user_agent`` parameter. If not configured,
-``Pyinaturalist/<VERSION>`` will be used.
+If not configured, ``Pyinaturalist/<VERSION>`` will be used.
 
 
 API Recommended Practices
