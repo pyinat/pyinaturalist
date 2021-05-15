@@ -10,6 +10,7 @@ Functions
 .. automodsumm:: pyinaturalist.node_api
     :functions-only:
     :nosignatures:
+    :skip: get_all_observations
 
 """
 from logging import getLogger
@@ -71,32 +72,12 @@ def get_controlled_terms(taxon_id: int = None, user_agent: str = None) -> JsonRe
     Example:
 
         >>> response = get_controlled_terms()
-        >>> # Show a condensed list of terms and values
-        >>> for term in response['results']:
-        >>>     values = [f'    {value["id"]}: {value["label"]}' for value in term['values']]
-        >>>     print(f'{term["id"]}: {term["label"]}' + '\\n'.join(values))
+        >>> print(format_controlled_terms(response))
         1: Life Stage
             2: Adult
             3: Teneral
             4: Pupa
-            5: Nymph
-            6: Larva
-            7: Egg
-            8: Juvenile
-            16: Subimago
-        9: Sex
-            10: Female
-            11: Male
-            20: Cannot Be Determined
-        12: Plant Phenology
-            13: Flowering
-            14: Fruiting
-            15: Flower Budding
-            21: No Evidence of Flowering
-        17: Alive or Dead
-            18: Alive
-            19: Dead
-            20: Cannot Be Determined
+        ...
 
         .. admonition:: Example Response (all terms)
             :class: toggle
@@ -171,11 +152,14 @@ def get_identifications(**params) -> JsonResponse:
 
     Example:
 
-        >>> # Get all of your own species-level identifications
+        Get all of your own species-level identifications:
+
         >>> response = get_identifications(user_login='my_username', rank='species')
         >>> print([f"{i['user']['login']}: {i['taxon_id']} ({i['category']})" for i in response['results']])
-        my_username: 60132 (supporting)
-        my_username: 47126 (improving)
+        [155043569] Species: 76465 (leading) added on 2021-02-15 10:46:27-06:00 by jkcook
+        [153668189] Species: 76465 (supporting) added on 2021-02-06 17:43:37+00:00 by jkcook
+        [147500725] Species: 1163860 (improving) added on 2020-12-24 23:52:30+00:00 by jkcook
+        ...
 
         .. admonition:: Example Response
             :class: toggle
@@ -205,7 +189,9 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
 
     Example:
 
-        >>> get_observation(16227955)
+        >>> response = get_observation(16227955)
+        >>> print(format_observations(response))
+        [16227955] [493595] Species: Lixus bardanae observed on 2018-09-05 14:06:00+01:00 by niconoe at 54 rue des Badauds
 
         .. admonition:: Example Response
             :class: toggle
@@ -309,7 +295,7 @@ def get_observations(**params) -> JsonResponse:
         Get basic info for observations in response:
 
         >>> from pyinaturalist.formatters import format_observations
-        >>> print(format_observations(response['results']))
+        >>> print(format_observations(response))
         '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK'
         '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK'
 
@@ -332,10 +318,9 @@ def get_observations(**params) -> JsonResponse:
     return observations
 
 
-@document_request_params([*docs._get_observations, docs._only_id])
 def get_all_observations(**params) -> List[JsonResponse]:
-    """[Deprecated] Like :py:func:`get_observations()`, but gets all pages of results"""
-    msg = "get_all_observations() is deprecated; please Use get_observations(page='all') instead"
+    """Deprecated; use ``get_observations(page='all')`` instead"""
+    msg = "get_all_observations() is deprecated; please use get_observations(page='all') instead"
     warn(DeprecationWarning(msg))
     return paginate_all(get_observations, method='id', **params)['results']
 
@@ -350,7 +335,12 @@ def get_observation_species_counts(**params) -> JsonResponse:
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_species_counts
 
     Example:
-        >>> get_observation_species_counts(user_login='my_username', quality_grade='research')
+        >>> response = get_observation_species_counts(user_login='my_username', quality_grade='research')
+        >>> print(format_species_counts(response))
+        [62060] Species: Palomena prasina (Green Shield Bug): 10
+        [84804] Species: Graphosoma italicum (European Striped Shield Bug): 8
+        [55727] Species: Cymbalaria muralis (Ivy-leaved toadflax): 3
+        ...
 
         .. admonition:: Example Response
             :class: toggle
@@ -403,16 +393,17 @@ def get_observation_observers(**params) -> JsonResponse:
     Notes:
         * Options for ``order_by`` are 'observation_count' (default) or 'species_count'
         * This endpoint will only return up to 500 results
-
-    ``GET /observations/observers`` API node is buggy. It's currently limited to
-    500 results and using ``order_by=species_count`` may produce unusual results.
-    See this issue for more details: https://github.com/inaturalist/iNaturalistAPI/issues/235
+        * See this issue for more details: https://github.com/inaturalist/iNaturalistAPI/issues/235
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_observers
 
-
     Example:
-        >>> get_observation_observers(place_id=72645, order_by='species_count')
+        >>> response = get_observation_observers(place_id=72645, order_by='species_count')
+        >>> print(format_users(response, align=True))
+        [ 1566366] fossa1211
+        [  674557] schurchin
+        [    5813] fluffberger (Fluff Berger)
+
 
         .. admonition:: Example Response
             :class: toggle
@@ -443,7 +434,11 @@ def get_observation_identifiers(**params) -> JsonResponse:
     Note: This endpoint will only return up to 500 results.
 
     Example:
-        >>> get_observation_identifiers(place_id=72645)
+        >>> response = get_observation_identifiers(place_id=72645)
+        >>> print(format_users(response, align=True))
+        [  409010] jdoe42 (Jane Doe)
+        [  691216] jbrown252 (James Brown)
+        [ 3959037] tnsparkleberry
 
         .. admonition:: Example Response
             :class: toggle
@@ -476,11 +471,9 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
 
     Example:
         >>> response = get_places_by_id([67591, 89191])
-        >>> print({p['id']: p['name'] for p in  response['results']})
-        {
-            67591: 'Riversdale Beach',
-            89191: 'Conservation Area Riversdale',
-        }
+        >>> print(format_places(response))
+        [89191] Conservation Area Riversdale
+        [67591] Riversdale Beach
 
         .. admonition:: Example Response
             :class: toggle
@@ -505,8 +498,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
 @document_request_params([docs._bounding_box, docs._name])
 def get_places_nearby(**params) -> JsonResponse:
     """
-    Given an bounding box, and an optional name query, return standard iNaturalist curator approved
-    and community non-curated places nearby
+    Given an bounding box, and an optional name query, return places nearby
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Places/get_places_nearby
 
@@ -514,37 +506,26 @@ def get_places_nearby(**params) -> JsonResponse:
         >>> bounding_box = (150.0, -50.0, -149.999, -49.999)
         >>> response = get_places_nearby(*bounding_box)
 
-        Show basic info for standard (curated) places in response:
+        Response is split into standard (curated) places and community (non-curated) places:
 
-        >>> print({p['id']: p['name'] for p in  response['results']['standard']})
-        {
-            97394: 'North America',
-            97395: 'Asia',
-            97393: 'Oceania',
-            97392: 'Africa',
-            97391: 'Europe',
-            97389: 'South America',
-            7161:  'Russia',
-            1:     'United States',
-            6712:  'Canada',
-            10316: 'United States Minor Outlying Islands',
-        }
+        >>> print(len(response['results']['standard']))
+        10
+        >>> print(len(response['results']['community']))
+        10
 
-        Show basic info for community-contributed places in response:
+        Show basic info for all places in response:
 
-        >>> print({p['id']: p['name'] for p in  response['results']['community']})
-        {
-            11770:  'Mehedinti',
-            119755: 'Mahurangi College',
-            150981: 'Ceap Breatainn',
-            136758: 'Willapa Hills (US EPA Level IV Ecoregion)',
-            119694: 'Tetlin National Wildlife Refuge',
-            70630:  'Murray - Sunset',
-            141915: 'Fundy Pollinator Trail',
-            72346:  'Sucunduri',
-            50505:  'Great Salt Lake',
-            72230:  'Rio Novo',
-         }
+        >>> print(format_places(response, align=True))
+        Standard:
+        [   97394] North America
+        [   97395] Asia
+        [   97393] Oceania
+        ...
+        Community:
+        [  166719] Burgenland (accurate border)
+        [   11770] Mehedinti
+        [  119755] Mahurangi College
+        ...
 
         .. admonition:: Example Response
             :class: toggle
@@ -572,13 +553,11 @@ def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
 
     Example:
         >>> response = get_places_autocomplete('Irkutsk')
-        >>> print({p['id']: p['name'] for p in  response['results']})
-        {
-            11803:  'Irkutsk',
-            41853:  'Irkutsk',
-            41854:  'Irkutskiy rayon',
-            163077: 'Irkutsk agglomeration',
-        }
+        >>> print(format_places(response))
+        [   11803] Irkutsk
+        [   41854] Irkutskiy rayon
+        [  166186] Irkutsk Oblast - ADD
+        [  163077] Irkutsk agglomeration
 
         .. admonition:: Example Response
             :class: toggle
@@ -625,14 +604,12 @@ def get_projects(**params) -> JsonResponse:
 
         Show basic info for projects in response:
 
-        >>> print({p['id']: p['title'] for p in response['results']})
-        {
-            8291:  'PNW Invasive Plant EDDR',
-            19200: 'King County (WA) Noxious and Invasive Weeds',
-            8527:  'WA Invasives',
-            2344:  'Invasive & Huntable Animals',
-            6432:  'CBWN Invasive Plants',
-        }
+        >>> print(format_projects(response, align=True))
+        [    8291] PNW Invasive Plant EDDR
+        [   19200] King County (WA) Noxious and Invasive Weeds
+        [  102925] Keechelus/Kachess Invasive Plants
+        ...
+
 
         .. admonition:: Example Response
             :class: toggle
@@ -661,7 +638,10 @@ def get_projects_by_id(
 
     Example:
 
-        >>> get_projects_by_id([8348, 6432])
+        >>> response = get_projects_by_id([8348, 6432])
+        >>> print(format_projects(response))
+        [8348] Tucson High Native and Invasive Species Inventory
+        [6432] CBWN Invasive Plants
 
         .. admonition:: Example Response
             :class: toggle
@@ -704,8 +684,11 @@ def get_taxa(**params) -> JsonResponse:
     Example:
 
         >>> response = get_taxa(q='vespi', rank=['genus', 'family'])
-        >>> print({taxon['id']: taxon['name'] for taxon in response['results']})
-        {52747: 'Vespidae', 84737: 'Vespina', 92786: 'Vespicula', 646195: 'Vespiodes', ...}
+        >>> print(format_taxa(response))
+        [52747] Family: Vespidae (Hornets, Paper Wasps, Potter Wasps, and Allies)
+        [92786] Genus: Vespicula
+        [646195] Genus: Vespiodes
+        ...
 
         .. admonition:: Example Response
             :class: toggle
@@ -780,21 +763,20 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
 
         Get basic info for taxa in response:
 
-        >>> from pyinaturalist.formatters import format_taxa
-        >>> print(format_taxa(response['results'], align=True))
-        >>> # See example output below
+        >>> print(format_taxa(response, align=True))
+        [   52747]       Family: Vespidae (Hornets, Paper Wasps, Potter Wasps, and Allies)
+        [   84738]    Subfamily: Vespinae (Hornets and Yellowjackets)
+        [  131878]      Species: Nicrophorus vespillo (Vespillo Burying Beetle)
 
         If you get unexpected matches, the search likely matched a synonym, either in the form of a
         common name or an alternative classification. Check the ``matched_term`` property for more
         info. For example:
 
-        ```python
         >>> first_result = get_taxa_autocomplete(q='zygoca')['results'][0]
         >>> first_result["name"]
         "Schlumbergera truncata"  # This doesn't look like our search term!
         >>> first_result["matched_term"]
         "Zygocactus truncatus"    # ...Because it matched an older synonym for Schlumbergera
-        ```
 
         .. admonition:: Example Response
             :class: toggle
@@ -830,6 +812,8 @@ def get_user_by_id(user_id: int, user_agent: str = None) -> JsonResponse:
     Example:
 
         >>> response = get_user_by_id(123456)
+        >>> print(format_users(response))
+        [1234] my_username
 
         .. admonition:: Example Response
             :class: toggle
@@ -858,6 +842,9 @@ def get_users_autocomplete(q: str, **params) -> JsonResponse:
     Example:
 
         >>> response = get_taxa_autocomplete(q='my_userna')
+        >>> print(format_users(response))
+        [1234] my_username
+        [12345] my_username_2
 
         .. admonition:: Example Response
             :class: toggle

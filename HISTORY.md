@@ -28,18 +28,28 @@
   * `rest_api.get_all_observation_fields()`
 * Removed `node_api.get_all_observation_species_counts()`, since this was only added recently
 * Updated `rest_api.get_observation_fields()` to return a dict with `'results'` for consistency with other endpoints
-* Removed `minify` option to `get_taxa_autocomplete`, and instead show a similar example in docstring
+
+### Response Formatting
+* Removed `minify` option from `get_taxa_autocomplete`
+* Added the following response formatting functions to `pyinaturalist.formatters`:
+    * `format_controlled_terms()`
+    * `format_identifications()`
+    * `format_observations()`
+    * `format_places()`
+    * `format_projects()`
+    * `format_species_counts()`
+    * `format_taxa()`
+    * `format_users()`
+    * `simplify_observations()`
 
 ### Other Changes
 * Published [pyinaturalist on conda-forge](https://anaconda.org/conda-forge/pyinaturalist)
 * Added global rate-limiting to stay within the rates suggested in
   [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
   (per second, minute, and day)
-* Added new module `pyinaturalist.response_utils` for optional formatting functions
 * Moved `Dockerfile` and `docker-compose.yml` to a separate repo
   ([inaturalist-notebook](https://github.com/reclosedev/requests-cache/issues/new/choose))
   and published on Docker Hub
-* Add some optional response formatting functions to `pyinaturalist.formatters`
 
 -----
 ### 0.12.1 (2021-03-07)
