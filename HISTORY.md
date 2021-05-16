@@ -45,7 +45,7 @@
 
 ### Other Changes
 * All API functions and formatters can now be imported from the top-level package, e.g.
-  `from pyinaturalist import ...`
+  `from pyinaturalist import *`
 * Published [pyinaturalist on conda-forge](https://anaconda.org/conda-forge/pyinaturalist)
 * Added global rate-limiting to stay within the rates suggested in
   [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
@@ -53,6 +53,8 @@
 * Moved `Dockerfile` and `docker-compose.yml` to a separate repo
   ([inaturalist-notebook](https://github.com/reclosedev/requests-cache/issues/new/choose))
   and published on Docker Hub
+* Packaging is now handled with Poetry. For users, installation still works the same. For developers,
+  see [Contributing Guide](https://github.com/niconoe/pyinaturalist/blob/main/CONTRIBUTING.md) for details.
 
 -----
 ### 0.12.1 (2021-03-07)
