@@ -6,6 +6,7 @@ from pyinaturalist.formatters import (
     format_observations,
     format_places,
     format_projects,
+    format_search_results,
     format_species_counts,
     format_taxa,
     format_users,
@@ -26,6 +27,7 @@ places_nearby['standard'] = places_nearby['standard'][:3]
 places_nearby['community'] = places_nearby['community'][:3]
 project_1 = load_sample_data('get_projects.json')['results'][0]
 project_2 = load_sample_data('get_projects.json')['results'][1]
+search_results = load_sample_data('get_search.json')['results']
 species_count_1 = load_sample_data('get_observation_species_counts.json')['results'][0]
 species_count_2 = load_sample_data('get_observation_species_counts.json')['results'][1]
 taxon_1 = load_sample_data('get_taxa.json')['results'][0]
@@ -75,8 +77,8 @@ def test_format_identifications(input):
 
 def test_format_identifications__align():
     expected_str = (
-        '[155554373]      Species:    60132 (supporting) added on 2021-02-18T20:31:32-06:00 by jkcook\n'
-        '[155554077]      Species:    61340 (supporting) added on 2021-02-18T20:29:06-06:00 by jkcook'
+        '[155554373] Species: 60132         (supporting) added on 2021-02-18T20:31:32-06:00 by jkcook\n'
+        '[155554077] Species: 61340         (supporting) added on 2021-02-18T20:29:06-06:00 by jkcook'
     )
     assert format_identifications([identification_1, identification_2], align=True) == expected_str
 
@@ -92,9 +94,9 @@ def test_format_observation(input):
 
 def test_format_observation__align():
     expected_str = (
-        '[16227955] [  493595]      Species: Lixus bardanae\n'
+        '[16227955] [493595  ] Species: Lixus bardanae\n'
         '    observed on 2018-09-05 by niconoe at 54 rue des Badauds\n'
-        '[57754375] [   48662]      Species: Danaus plexippus (Monarch)\n'
+        '[57754375] [48662   ] Species: Danaus plexippus (Monarch)\n'
         '    observed on 2020-08-27 by samroom at Railway Ave, Wilcox, SK, CA'
     )
     assert format_observations([observation_1, observation_2], align=True) == expected_str
@@ -108,8 +110,8 @@ def test_format_projects(input):
 
 def test_format_projects__align():
     expected_str = (
-        '[    8291] PNW Invasive Plant EDDR\n'
-        '[   19200] King County (WA) Noxious and Invasive Weeds'
+        '[8291    ] PNW Invasive Plant EDDR\n'
+        '[19200   ] King County (WA) Noxious and Invasive Weeds'
     )
     assert format_projects([project_1, project_2], align=True) == expected_str
 
@@ -121,23 +123,43 @@ def test_format_places(input):
 
 
 def test_format_places__align():
-    expected_str = '[   89191] Conservation Area Riversdale\n[   93735] Springbok'
+    expected_str = '[89191   ] Conservation Area Riversdale\n[93735   ] Springbok'
     assert format_places([place_1, place_2], align=True) == expected_str
 
 
 def test_format_places__nearby():
     places_str = """
 Standard:
-[   97394] North America
-[   97395] Asia
-[   97393] Oceania
+[97394   ] North America
+[97395   ] Asia
+[97393   ] Oceania
 
 Community:
-[   11770] Mehedinti
-[  119755] Mahurangi College
-[  150981] Ceap Breatainn
+[11770   ] Mehedinti
+[119755  ] Mahurangi College
+[150981  ] Ceap Breatainn
 """.strip()
     assert format_places(places_nearby, align=True) == places_str
+
+
+def test_format_search_results():
+    expected_str = (
+        '[Taxon] [47792] Order: Odonata (Dragonflies and Damselflies)\n'
+        '[Place] [113562] Odonates of Peninsular India and Sri Lanka\n'
+        '[Project] [9978] Ohio Dragonfly Survey  (Ohio Odonata Survey)\n'
+        '[User] [113886] odonatanb (Gilles Belliveau)'
+    )
+    assert format_search_results(search_results) == expected_str
+
+
+def test_format_search_results__align():
+    expected_str = (
+        '[Taxon  ] [47792   ] Order: Odonata (Dragonflies and Damselflies)\n'
+        '[Place  ] [113562  ] Odonates of Peninsular India and Sri Lanka\n'
+        '[Project] [9978    ] Ohio Dragonfly Survey  (Ohio Odonata Survey)\n'
+        '[User   ] [113886  ] odonatanb (Gilles Belliveau)'
+    )
+    assert format_search_results(search_results, align=True) == expected_str
 
 
 @pytest.mark.parametrize('input', get_variations(species_count_1))
@@ -148,8 +170,8 @@ def test_format_species_counts(input):
 
 def test_format_species_counts__align():
     expected_str = (
-        '[   48484]      Species: Harmonia axyridis (Asian Lady Beetle): 31\n'
-        '[   51702]      Species: Coccinella septempunctata (Seven-spotted Lady Beetle): 19'
+        '[48484   ] Species: Harmonia axyridis (Asian Lady Beetle): 31\n'
+        '[51702   ] Species: Coccinella septempunctata (Seven-spotted Lady Beetle): 19'
     )
     assert format_species_counts([species_count_1, species_count_2], align=True) == expected_str
 
@@ -167,8 +189,8 @@ def test_format_taxon__without_common_name(input):
 
 def test_format_taxa__align():
     expected_str = (
-        '[   70118]      Species: Nicrophorus vespilloides (Lesser Vespillo Burying Beetle)\n'
-        '[  124162]      Species: Temnostoma vespiforme'
+        '[70118   ] Species: Nicrophorus vespilloides (Lesser Vespillo Burying Beetle)\n'
+        '[124162  ] Species: Temnostoma vespiforme'
     )
     assert format_taxa([taxon_1, taxon_2], align=True) == expected_str
 
@@ -184,7 +206,7 @@ def test_format_users(input):
 
 
 def test_format_users__align():
-    expected_str = '[       1] kueda (Ken-ichi Ueda)\n[  886482] niconoe (Nicolas Noé)'
+    expected_str = '[1       ] kueda (Ken-ichi Ueda)\n[886482  ] niconoe (Nicolas Noé)'
     assert format_users([user_1, user_2], align=True) == expected_str
 
 

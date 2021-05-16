@@ -122,6 +122,7 @@ ORDER_DIRECTIONS = ['asc', 'desc']
 PROJECT_TYPES = ['collection', 'umbrella']
 QUALITY_GRADES = ['casual', 'needs_id', 'research']
 SEARCH_PROPERTIES = ['names', 'tags', 'description', 'place']
+SOURCES = ['places', 'projects', 'taxa', 'users']
 
 
 # Multiple-choice request parameters, with keys mapped to their possible choices (non-endpoint-specific)
@@ -149,6 +150,7 @@ MULTIPLE_CHOICE_PARAMS = {
     'rank': RANKS,
     'search_on': SEARCH_PROPERTIES,
     'sound_license': CC_LICENSES,
+    'sources': SOURCES,
     'taxon_geoprivacy': GEOPRIVACY_LEVELS,
     'type': PROJECT_TYPES,
 }

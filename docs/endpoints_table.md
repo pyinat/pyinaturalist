@@ -86,7 +86,7 @@ POST              | /projects/{id}/add                          |
 DELETE            | /projects/{id}/remove                       |
 GET               | /projects/autocomplete                      |
 POST              | /subscriptions/project/{id}/subscribe       |
-GET               | /search                                     |
+GET               | /search                                     | yes
 GET               | /taxa/{id}                                  | yes
 GET               | /taxa                                       | yes
 GET               | /taxa/autocomplete                          | yes

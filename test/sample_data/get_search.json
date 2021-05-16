@@ -1,0 +1,307 @@
+{
+    "total_results": 4,
+    "page": 1,
+    "per_page": 30,
+    "results": [
+        {
+            "score": 9.062307,
+            "type": "Taxon",
+            "matches": [
+                "Odonata",
+                "Odonati",
+                "Odonates",
+                "odonates",
+                "Odonats"
+            ],
+            "record": {
+                "id": 47792,
+                "rank": "order",
+                "rank_level": 40,
+                "iconic_taxon_id": 47158,
+                "ancestor_ids": [
+                    48460,
+                    1,
+                    47120,
+                    372739,
+                    47158,
+                    184884,
+                    47792
+                ],
+                "is_active": true,
+                "min_species_taxon_id": 47792,
+                "name": "Odonata",
+                "parent_id": 184884,
+                "ancestry": "48460/1/47120/372739/47158/184884",
+                "min_species_ancestry": "48460,1,47120,372739,47158,184884,47792",
+                "extinct": false,
+                "created_at": "2008-06-24T23:44:58+00:00",
+                "default_photo": {
+                    "id": 362106,
+                    "license_code": "cc-by-nc-sa",
+                    "attribution": "(c) Vijay Anand Ismavel, some rights reserved (CC BY-NC-SA), uploaded by Dr. Vijay Anand Ismavel MS MCh",
+                    "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/362106/square.jpg?1444643485",
+                    "original_dimensions": {
+                        "height": 1053,
+                        "width": 1579
+                    },
+                    "flags": [],
+                    "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/362106/square.jpg?1444643485",
+                    "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/362106/medium.jpg?1444643485"
+                },
+                "taxon_changes_count": 0,
+                "taxon_schemes_count": 2,
+                "observations_count": 1154269,
+                "photos_locked": false,
+                "universal_search_rank": 1154269,
+                "flag_counts": {
+                    "resolved": 0,
+                    "unresolved": 0
+                },
+                "current_synonymous_taxon_ids": null,
+                "taxon_photos": ["TRUNCATED"],
+                "atlas_id": null,
+                "complete_species_count": 6300,
+                "wikipedia_url": "http://en.wikipedia.org/wiki/Odonata",
+                "complete_rank": "species",
+                "matched_term": "Odonata",
+                "iconic_taxon_name": "Insecta",
+                "preferred_common_name": "Dragonflies and Damselflies"
+            }
+        },
+        {
+            "score": 7.116488,
+            "type": "Place",
+            "matches": [
+                "Odonates of Peninsular India and Sri Lanka"
+            ],
+            "record": {
+                "id": 113562,
+                "uuid": "41b4c009-438e-47df-a0e2-54b3f05a932f",
+                "slug": "odonates-of-peninsular-india-and-sri-lanka",
+                "name": "Odonates of Peninsular India and Sri Lanka",
+                "display_name": "Odonates of Peninsular India and Sri Lanka",
+                "display_name_autocomplete": "Odonates of Peninsular India and Sri Lanka",
+                "place_type": null,
+                "admin_level": null,
+                "bbox_area": 110.9856964778392,
+                "ancestor_place_ids": [
+                    97395,
+                    113562
+                ],
+                "user": {
+                    "id": 269948,
+                    "login": "hopeland",
+                    "spam": false,
+                    "suspended": false,
+                    "created_at": "2016-07-09T07:28:15.128Z"
+                },
+                "geometry_geojson": {
+                    "type": "Polygon",
+                    "coordinates": ["TRUNCATED"]
+                },
+                "bounding_box_geojson": {
+                    "type": "Polygon",
+                    "coordinates": ["TRUNCATED"]
+                },
+                "location": "10.1616628185,78.8619335657",
+                "point_geojson": {
+                    "type": "Point",
+                    "coordinates": [
+                        78.8619335657,
+                        10.1616628185
+                    ]
+                },
+                "without_check_list": null,
+                "observations_count": 130762,
+                "universal_search_rank": 130762,
+                "names": [],
+                "matched_term": "Odonates of Peninsular India and Sri Lanka"
+            }
+        },
+        {
+            "score": 6.9390197,
+            "type": "Project",
+            "matches": [
+                "Odonata"
+            ],
+            "record": {
+                "id": 9978,
+                "title": "Ohio Dragonfly Survey  (Ohio Odonata Survey)",
+                "title_autocomplete": "Ohio Dragonfly Survey  (Ohio Odonata Survey)",
+                "title_exact": "Ohio Dragonfly Survey  (Ohio Odonata Survey)",
+                "hide_title": false,
+                "description": "This project is to update information on the distribution and abundance of Ohio dragonflies and damselflies. It is an update from the first Ohio Odonata Survey which ran from 1991 to 2000.\r\n\r\nThe first survey was entirely based up museum specimens, new collections of specimens, and published articles in peer reviewed journals. Photography has advanced greatly since then, and this site will utilize digital photos to add to scientifically collected specimens.",
+                "slug": "ohio-dragonfly-survey-ohio-odonata-survey",
+                "project_type": "assessment",
+                "banner_color": null,
+                "ancestor_place_ids": null,
+                "place_ids": null,
+                "place_id": 31,
+                "user_id": 395663,
+                "admins": [
+                    {
+                        "id": 175160,
+                        "user_id": 370069,
+                        "project_id": 9978,
+                        "role": "manager"
+                    }
+                ],
+                "rule_place_ids": [
+                    31
+                ],
+                "associated_place_ids": [
+                    97394,
+                    1,
+                    31
+                ],
+                "user_ids": ["TRUNCATED"],
+                "location": null,
+                "geojson": null,
+                "icon": "https://static.inaturalist.org/projects/9978-icon-span2.jpg?1505527521",
+                "icon_file_name": "JewelAppalach9229.jpg",
+                "header_image_url": "https://static.inaturalist.org/projects/9978-cover.jpg?1521571861",
+                "header_image_file_name": "12spot_projectCover.jpg",
+                "header_image_contain": false,
+                "project_observation_fields": [],
+                "terms": "*  Entries must be photos of dragonflies or damselflies taken in Ohio\r\n*  Photos must be identifiable to species. Often 2 or 3 shots show key details such as in field guides extremely helpful.\r\n*  Entries must carry scientific level of data\r\n    -- name of photographer\r\n    -- date photo taken\r\n    -- location as precise as possible.  \r\nMust include:  \r\n    1. County (township if possible)\r\n    2. Site name or description to help pin locaton (can be simple\r\n        like \"State Route 56 at Mad River\" or \"backyard in Athens, Ohio\"  or \"Big Walnut Creek at confluence with Alum Creek\" or something else that will enable to site to located.\r\n   -- GPS coordinates\r\n*  Photos will be vetted and accepted/rejected from the project based upon a) complete data;  b)identifiable photo\r\n",
+                "search_parameters": [
+                    {
+                        "field": "photos",
+                        "value": true,
+                        "value_bool": true
+                    },
+                    {
+                        "field": "quality_grade",
+                        "value": [
+                            "research",
+                            "needs_id"
+                        ],
+                        "value_keyword": [
+                            "research",
+                            "needs_id"
+                        ]
+                    },
+                    {
+                        "field": "taxon_id",
+                        "value": [
+                            47792
+                        ],
+                        "value_number": [
+                            47792
+                        ]
+                    },
+                    {
+                        "field": "place_id",
+                        "value": [
+                            31
+                        ],
+                        "value_number": [
+                            31
+                        ]
+                    }
+                ],
+                "search_parameter_fields": {
+                    "photos": true,
+                    "quality_grade": [
+                        "research",
+                        "needs_id"
+                    ],
+                    "taxon_id": [
+                        47792
+                    ],
+                    "place_id": [
+                        31
+                    ]
+                },
+                "subproject_ids": [],
+                "project_observation_rules": [
+                    {
+                        "id": 13151,
+                        "operator": "wild?",
+                        "operand_type": null,
+                        "operand_id": null
+                    },
+                    {
+                        "id": 14672,
+                        "operator": "georeferenced?",
+                        "operand_type": null,
+                        "operand_id": null
+                    },
+                    {
+                        "id": 14673,
+                        "operator": "has_a_photo?",
+                        "operand_type": null,
+                        "operand_id": null
+                    },
+                    {
+                        "id": 14674,
+                        "operator": "verifiable?",
+                        "operand_type": null,
+                        "operand_id": null
+                    },
+                    {
+                        "id": 14675,
+                        "operator": "in_taxon?",
+                        "operand_type": "Taxon",
+                        "operand_id": 47792
+                    },
+                    {
+                        "id": 14676,
+                        "operator": "observed_in_place?",
+                        "operand_type": "Place",
+                        "operand_id": 31
+                    }
+                ],
+                "rule_preferences": [
+                    {
+                        "field": "quality_grade",
+                        "value": "research,needs_id"
+                    }
+                ],
+                "created_at": "2016-11-30T19:10:05+00:00",
+                "updated_at": "2021-04-16T15:06:43+00:00",
+                "last_post_at": "2021-05-03T21:23:56+00:00",
+                "observations_count": 86452,
+                "universal_search_rank": 86898,
+                "spam": false,
+                "flags": [],
+                "site_features": [],
+                "umbrella_project_ids": [],
+                "prefers_user_trust": false,
+                "observation_requirements_updated_at": null,
+                "matched_term": "Ohio Dragonfly Survey  (Ohio Odonata Survey)",
+                "is_umbrella": false
+            }
+        },
+        {
+            "score": 4.6454225,
+            "type": "User",
+            "matches": [
+                "odonatanb"
+            ],
+            "record": {
+                "id": 113886,
+                "login": "odonatanb",
+                "spam": false,
+                "suspended": false,
+                "created_at": "2015-07-03T23:12:14+00:00",
+                "login_autocomplete": "odonatanb",
+                "login_exact": "odonatanb",
+                "name": "Gilles Belliveau",
+                "name_autocomplete": "Gilles Belliveau",
+                "orcid": null,
+                "icon": "https://static.inaturalist.org/attachments/users/icons/113886/thumb.jpeg?1475548692",
+                "observations_count": 440,
+                "identifications_count": 877,
+                "journal_posts_count": 0,
+                "activity_count": 1317,
+                "species_count": 136,
+                "universal_search_rank": 440,
+                "roles": [],
+                "site_id": 5,
+                "matched_term": "odonatanb",
+                "icon_url": "https://static.inaturalist.org/attachments/users/icons/113886/medium.jpeg?1475548692"
+            }
+        }
+    ]
+}

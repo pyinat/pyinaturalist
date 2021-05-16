@@ -5,10 +5,11 @@ Closes #<issue number>
 * **Endpoint implementations**
   - [ ] e.g., `GET /observations`
 * **Docs**
-  - [ ] Add doctrings + type annotations
-  - [ ] Add usage examples
-  - [ ] Update release notes
+  - [ ] (Optional) add a response formatting function to `pyinaturalist.formatters`
+  - [ ] Add doctrings + type annotations to `pyinaturalist.api_docs`
+  - [ ] Add usage example(s) to API function docstring
+  - [ ] Update release notes in `HISTORY.md`
   - [ ] Verify that docs build correctly in Sphinx
 * **Tests**
-  - [ ] Add sample response data
+  - [ ] Add sample response data to `test/sample_data/`
   - [ ] Add unit tests for new endpoint(s)
