@@ -87,11 +87,11 @@ For example, to get the counts of all your own research-grade observations:
 ```python
 >>> counts = get_observation_species_counts(user_id='my_username', quality_grade='research')
 >>> print(format_species_counts(counts, align=True))
-[   48473]:      Species                 Ganoderma applanatum (Artist's bracket): 4
-[   50310]:      Species                Arisaema triphyllum (Jack-in-the-pulpit): 4
-[   50817]:        Genus                            Auricularia (Wood ear fungi): 3
-[   81599]:      Species                        Silphium perfoliatum (Cup plant): 3
-[  120215]:      Species           Bombus griseocollis (Brown-belted Bumble Bee): 2
+[48473   ]: Species:          Ganoderma applanatum (Artist's bracket): 4
+[50310   ]: Species:         Arisaema triphyllum (Jack-in-the-pulpit): 4
+[50817   ]:   Genus:                     Auricularia (Wood ear fungi): 3
+[81599   ]: Species:                 Silphium perfoliatum (Cup plant): 3
+[120215  ]: Species:    Bombus griseocollis (Brown-belted Bumble Bee): 2
 ...
 ```
 

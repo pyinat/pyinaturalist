@@ -8,7 +8,7 @@ These functions will accept any of the following:
 
 They will also accept the option ``align=True`` to align values where possible.
 """
-# TODO: Use tabulate library for aligning values?
+# TODO: Use tabulate library for aligning values
 from copy import deepcopy
 from logging import getLogger
 from typing import Any, Callable, List, Sequence
@@ -137,7 +137,7 @@ def _format_taxon(taxon: ResponseObject, align: bool = False) -> str:
         return _format_taxon_rank_id(taxon, align=align)
 
     taxon_id = pad(taxon["id"], 8, align)
-    rank = pad(taxon['rank'].title(), 12, align)
+    rank = taxon['rank'].title()
     common_name = taxon.get('preferred_common_name')
     name = f"{taxon['name']}" + (f' ({common_name})' if common_name else '')
 
@@ -146,9 +146,8 @@ def _format_taxon(taxon: ResponseObject, align: bool = False) -> str:
 
 def _format_taxon_rank_id(taxon: ResponseObject, align: bool = False) -> str:
     """Format a taxon that only has a rank and ID"""
-    rank = pad(taxon['rank'].title(), 12, align)
-    taxon_id = pad(taxon['id'], 8, align)
-    return f'{rank}: {taxon_id}'
+    rank_title = f"{taxon['rank'].title()}: {taxon['id']}"
+    return pad(rank_title, 22, align)
 
 
 def format_users(users: ResponseOrObject, align: bool = False) -> str:
@@ -212,5 +211,7 @@ def _format_objects(obj: ResponseOrObject, align: bool, format_func: Callable):
     return '\n'.join(obj_strings)
 
 
-def pad(value: Any, width: int, align: bool):
-    return str(value).rjust(width) if align else value
+def pad(value: Any, width: int, align: bool, right: bool = False):
+    if not align:
+        return value
+    return str(value).rjust(width) if right else str(value).ljust(width)

@@ -423,9 +423,9 @@ def get_observation_observers(**params) -> JsonResponse:
     Example:
         >>> response = get_observation_observers(place_id=72645, order_by='species_count')
         >>> print(format_users(response, align=True))
-        [ 1566366] fossa1211
-        [  674557] schurchin
-        [    5813] fluffberger (Fluff Berger)
+        [1566366 ] fossa1211
+        [674557  ] schurchin
+        [5813    ] fluffberger (Fluff Berger)
 
 
         .. admonition:: Example Response
@@ -459,9 +459,9 @@ def get_observation_identifiers(**params) -> JsonResponse:
     Example:
         >>> response = get_observation_identifiers(place_id=72645)
         >>> print(format_users(response, align=True))
-        [  409010] jdoe42 (Jane Doe)
-        [  691216] jbrown252 (James Brown)
-        [ 3959037] tnsparkleberry
+        [409010  ] jdoe42 (Jane Doe)
+        [691216  ] jbrown252 (James Brown)
+        [3959037 ] tnsparkleberry
 
         .. admonition:: Example Response
             :class: toggle
@@ -540,14 +540,14 @@ def get_places_nearby(**params) -> JsonResponse:
 
         >>> print(format_places(response, align=True))
         Standard:
-        [   97394] North America
-        [   97395] Asia
-        [   97393] Oceania
+        [97394  ] North America
+        [97395  ] Asia
+        [97393  ] Oceania
         ...
         Community:
-        [  166719] Burgenland (accurate border)
-        [   11770] Mehedinti
-        [  119755] Mahurangi College
+        [166719  ] Burgenland (accurate border)
+        [11770   ] Mehedinti
+        [119755  ] Mahurangi College
         ...
 
         .. admonition:: Example Response
@@ -577,10 +577,10 @@ def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
     Example:
         >>> response = get_places_autocomplete('Irkutsk')
         >>> print(format_places(response))
-        [   11803] Irkutsk
-        [   41854] Irkutskiy rayon
-        [  166186] Irkutsk Oblast - ADD
-        [  163077] Irkutsk agglomeration
+        [11803   ] Irkutsk
+        [41854   ] Irkutskiy rayon
+        [166186  ] Irkutsk Oblast - ADD
+        [163077  ] Irkutsk agglomeration
 
         .. admonition:: Example Response
             :class: toggle
@@ -628,9 +628,9 @@ def get_projects(**params) -> JsonResponse:
         Show basic info for projects in response:
 
         >>> print(format_projects(response, align=True))
-        [    8291] PNW Invasive Plant EDDR
-        [   19200] King County (WA) Noxious and Invasive Weeds
-        [  102925] Keechelus/Kachess Invasive Plants
+        [8291    ] PNW Invasive Plant EDDR
+        [19200   ] King County (WA) Noxious and Invasive Weeds
+        [102925  ] Keechelus/Kachess Invasive Plants
         ...
 
 
@@ -787,9 +787,9 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
         Get basic info for taxa in response:
 
         >>> print(format_taxa(response, align=True))
-        [   52747]       Family: Vespidae (Hornets, Paper Wasps, Potter Wasps, and Allies)
-        [   84738]    Subfamily: Vespinae (Hornets and Yellowjackets)
-        [  131878]      Species: Nicrophorus vespillo (Vespillo Burying Beetle)
+        [52747   ]       Family: Vespidae (Hornets, Paper Wasps, Potter Wasps, and Allies)
+        [84738   ]    Subfamily: Vespinae (Hornets and Yellowjackets)
+        [131878  ]      Species: Nicrophorus vespillo (Vespillo Burying Beetle)
 
         If you get unexpected matches, the search likely matched a synonym, either in the form of a
         common name or an alternative classification. Check the ``matched_term`` property for more
@@ -898,10 +898,10 @@ def search(q: str, **params) -> JsonResponse:
 
         >>> response = search(q='odonat')
         >>> print(format_search_results(response, align=True))
-        [  Taxon] [   47792] Order: Odonata (Dragonflies and Damselflies)
-        [  Place] [  113562] Odonates of Peninsular India and Sri Lanka
-        [Project] [    9978] Ohio Dragonfly Survey  (Ohio Odonata Survey)
-        [   User] [  113886] odonatanb (Gilles Belliveau)
+        [Taxon  ] [47792   ] Order: Odonata (Dragonflies and Damselflies)
+        [Place  ] [113562  ] Odonates of Peninsular India and Sri Lanka
+        [Project] [9978    ] Ohio Dragonfly Survey  (Ohio Odonata Survey)
+        [User   ] [113886  ] odonatanb (Gilles Belliveau)
 
 
         .. admonition:: Example Response
