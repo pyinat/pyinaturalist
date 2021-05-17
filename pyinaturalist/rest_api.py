@@ -60,7 +60,7 @@ def get_observations(**params) -> Union[List, str]:
 
     Example:
 
-        >>> get_observations(id=45414404, format='atom')
+        >>> get_observations(id=45414404, response_format='atom')
 
         .. admonition:: Example Response (atom)
             :class: toggle

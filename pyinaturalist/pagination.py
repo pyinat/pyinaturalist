@@ -49,6 +49,7 @@ def paginate_all(api_func: Callable, *args, method: str = 'page', **params) -> J
     Returns:
         Response dict containing combined results, in the same format as ``api_func``
     """
+    params.pop('page', None)
     if method == 'autocomplete':
         return paginate_autocomplete(api_func, *args, **params)
     if method == 'id':

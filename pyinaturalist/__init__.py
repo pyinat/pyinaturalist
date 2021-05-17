@@ -12,5 +12,9 @@ try:
     from pyinaturalist.formatters import *
     from pyinaturalist.rest_api import *
     from pyinaturalist.node_api import *
+
+    # For disambiguation
+    from pyinaturalist.rest_api import get_observations as get_observations_v0
+    from pyinaturalist.node_api import get_observations as get_observations_v1
 except ImportError as e:
     print(e)
