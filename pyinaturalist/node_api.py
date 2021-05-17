@@ -10,7 +10,6 @@ Functions
 .. automodsumm:: pyinaturalist.node_api
     :functions-only:
     :nosignatures:
-    :skip: get_all_observations
 
 """
 from logging import getLogger

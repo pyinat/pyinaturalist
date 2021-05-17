@@ -36,8 +36,7 @@ requests = ">=2.20"
 docutils = { version = "0.16", optional = true }
 m2r2 = { version = ">=0.2.7", optional = true }
 Sphinx = { version = "^4.0.1", optional = true }
-# TODO: Revert to PyPI version once PR for fix is merged in
-sphinx-automodapi = { git = "https://github.com/JWCook/sphinx-automodapi.git", branch = "sphinx-4-compat", optional = true}
+sphinx-automodapi = { version=">=0.13", optional = true}
 sphinx-autodoc-typehints = { version = "^1.11", optional = true }
 sphinx-copybutton = { version = "^0.3", optional = true }
 sphinx-rtd-theme = { version = "0.5.2", optional = true }
