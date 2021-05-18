@@ -4,15 +4,7 @@ from uuid import UUID
 
 import attr
 
-from pyinaturalist.models import (
-    BaseModel,
-    ModelCollection,
-    Taxon,
-    User,
-    aliased_kwarg,
-    created_timestamp,
-    kwarg,
-)
+from pyinaturalist.models import BaseModel, Taxon, User, aliased_kwarg, created_timestamp, kwarg
 
 
 @attr.s
@@ -41,9 +33,3 @@ class Identification(BaseModel):
     user: User = attr.ib(converter=User.from_json, default=None)
 
     # created_at_details: {}
-
-
-class Identifications(ModelCollection):
-    """A collection of identification records"""
-
-    model_cls = Identification

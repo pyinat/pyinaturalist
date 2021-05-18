@@ -1,12 +1,11 @@
 # TODO: Inherit from UserDict so model objects can also be used like dicts?
 #   e.g. support both observation['id'] and observation.id
 import json
-from collections import UserList
 from datetime import datetime, timezone
 from logging import getLogger
 from os.path import expanduser
 from pathlib import Path
-from typing import IO, Dict, Generic, List, Type, TypeVar, Union
+from typing import IO, Dict, List, Union
 
 import attr
 
@@ -40,42 +39,21 @@ class BaseModel:
         else:
             return _load_path_or_obj(value)  # type: ignore
 
-    def to_json(self) -> Dict:
-        return attr.asdict(self)
-
-
-T = TypeVar('T', bound=BaseModel)
-
-
-class ModelCollection(UserList, Generic[T]):
-    """Base class representing a collection of model objects.
-    This is used mainly for initializing from API responses, and some convenience methods that
-    aggregate info from multiple objects.
-    """
-
-    data: List[T] = None
-    model_cls: Type[BaseModel] = None
-
     @classmethod
-    def model_class(cls) -> Type[BaseModel]:
-        """Inspect the class to get the model type"""
-        base = cls.__orig_bases__[0]  # e.g., ModelCollection[FooModel]
-        return base.__args__[0]  # e.g. FooModel
-
-    @classmethod
-    def from_json(cls, value: Union[IO, str, JsonResponse]):
+    def from_json_list(cls, value: Union[IO, str, JsonResponse]) -> List:
         """Initialize from a JSON path, file-like object, or API response"""
         if not value:
-            return cls()
+            return []
         elif isinstance(value, dict) and 'results' in value:
             value = value['results']
         if isinstance(value, list):
-            return cls([cls.model_cls.from_json(item) for item in value])
+            return [cls.from_json(item) for item in value]
+        # TODO: This needs some  work
         else:
-            return cls(_load_path_or_obj(value))  # type: ignore
+            return _load_path_or_obj(value)  # type: ignore
 
-    def to_json(self) -> List[Dict]:
-        return [item.to_json() for item in self.data]
+    def to_json(self) -> Dict:
+        return attr.asdict(self)
 
 
 def _load_path_or_obj(value: Union[IO, Path, str]):

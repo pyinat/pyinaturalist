@@ -3,7 +3,7 @@ from typing import Dict, List
 import attr
 
 from pyinaturalist.constants import API_V1_BASE_URL
-from pyinaturalist.models import BaseModel, ModelCollection, Photo, kwarg
+from pyinaturalist.models import BaseModel, Photo, kwarg
 from pyinaturalist.node_api import get_taxa_by_id
 from pyinaturalist.request_params import RANKS
 
@@ -111,12 +111,6 @@ class Taxon(BaseModel):
     @property
     def url(self) -> str:
         return f'{API_V1_BASE_URL}/taxa/{self.id}'
-
-
-class Taxa(ModelCollection):
-    """A collection of taxon records"""
-
-    model_cls = Taxon
 
 
 def get_rank_idx(rank: str) -> int:

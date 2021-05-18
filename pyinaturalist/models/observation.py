@@ -1,7 +1,6 @@
 # TODO
 from datetime import datetime
 from typing import Dict, List, Optional
-from uuid import UUID
 
 import attr
 
@@ -9,11 +8,7 @@ from pyinaturalist.constants import Coordinates
 from pyinaturalist.models import (
     BaseModel,
     Identification,
-    Identifications,
-    ModelCollection,
     Photo,
-    Photos,
-    Taxa,
     Taxon,
     User,
     created_timestamp,
@@ -70,19 +65,19 @@ class Observation(BaseModel):
     time_observed_at: Optional[datetime] = timestamp
     updated_at: Optional[datetime] = timestamp
     uri: str = kwarg
-    uuid: UUID = attr.ib(converter=UUID, default=None)
+    uuid: str = kwarg
 
     # Nested collections with defaults
     annotations: List = attr.ib(factory=list)
-    comments: List = attr.ib(factory=list)  # TODO: make separate model + condensed format
+    comments: List = attr.ib(factory=list)
     faves: List = attr.ib(factory=list)
     flags: List = attr.ib(factory=list)
-    identifications: ModelCollection[Identification] = attr.ib(
-        converter=Identifications.from_json, factory=list
+    identifications: List[Identification] = attr.ib(
+        converter=Identification.from_json_list, factory=list
     )
     ofvs: List = attr.ib(factory=list)
     outlinks: List = attr.ib(factory=list)
-    photos: ModelCollection[Photo] = attr.ib(converter=Photos.from_json, factory=list)
+    photos: List[Photo] = attr.ib(converter=Photo.from_json_list, factory=list)
     place_ids: List = attr.ib(factory=list)
     preferences: Dict = attr.ib(factory=dict)
     project_ids: List = attr.ib(factory=list)
@@ -127,46 +122,4 @@ class Observation(BaseModel):
 
     # TODO
     # def __str__(self) -> str:
-    #     pass
-
-
-class Observations(ModelCollection):
-    """A collection of observation records with some extra aggregate info"""
-
-    model_cls = Observation
-
-    # @classmethod
-    # def from_csv(cls, path):
-    #     """Load from a CSV export"""
-    #     pass
-
-    @property
-    def identifiers(self) -> List[User]:
-        """Get all unique identifiers"""
-        unique_users = {
-            ident.user.id: ident.user for obs in self.data for ident in obs.identifications
-        }
-        return list(unique_users.values())
-
-    @property
-    def taxa(self) -> Taxa:
-        """Get all unique taxa"""
-        unique_taxa = {obs.taxon.id: obs.taxon for obs in self.data}
-        return Taxa(unique_taxa.values())
-
-    @property
-    def thumbnail_urls(self) -> List[str]:
-        """Get thumbnails for all observation default photos"""
-        return [obs.thumbnail_url for obs in self.data if obs.thumbnail_url]
-
-    @property
-    def users(self) -> List[User]:
-        """Get all unique observers"""
-        unique_users = {obs.user.id: obs.user for obs in self.data}
-        return list(unique_users.values())
-
-    # def to_dataframe(self):
-    #     pass
-
-    # def to_csv(self, filename=None):
     #     pass

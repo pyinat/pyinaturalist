@@ -4,7 +4,7 @@ from typing import List, Tuple
 import attr
 
 from pyinaturalist.constants import PHOTO_BASE_URL, PHOTO_SIZES
-from pyinaturalist.models import BaseModel, ModelCollection, kwarg
+from pyinaturalist.models import BaseModel, kwarg
 from pyinaturalist.request_params import CC_LICENSES
 from pyinaturalist.response_format import format_dimensions, format_license
 
@@ -51,9 +51,3 @@ class Photo(BaseModel):
     def has_cc_license(self) -> bool:
         """Determine if this photo has a Creative Commons license"""
         return self.license_code in CC_LICENSES
-
-
-class Photos(ModelCollection):
-    """A collection of photos"""
-
-    model_cls = Photo
