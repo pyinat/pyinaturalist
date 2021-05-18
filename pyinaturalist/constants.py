@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from os.path import abspath, dirname, join
-from typing import Any, BinaryIO, Dict, Iterable, List, Union
+from typing import Any, BinaryIO, Dict, Iterable, List, Tuple, Union
 
 # iNaturalist URLs
 API_V0_BASE_URL = 'https://www.inaturalist.org'
@@ -9,6 +9,7 @@ API_V2_BASE_URL = 'https://api.inaturalist.org/v2'
 DWC_ARCHIVE_URL = 'http://www.inaturalist.org/observations/gbif-observations-dwca.zip'
 EXPORT_URL = 'https://www.inaturalist.org/observations/export'
 PHOTO_BASE_URL = 'https://static.inaturalist.org/photos'
+PHOTO_INFO_BASE_URL = 'https://www.inaturalist.org/photos'
 
 KEYRING_KEY = '/inaturalist'
 
@@ -21,6 +22,8 @@ REQUESTS_PER_MINUTE = 60
 REQUESTS_PER_DAY = 10000
 LARGE_REQUEST_WARNING = 5000  # Show a warning for queries that will return over this many results
 
+PHOTO_SIZES = ['square', 'small', 'medium', 'large', 'original']
+
 # Toggle dry-run mode: this will run and log mock HTTP requests instead of real ones
 DRY_RUN_ENABLED = False  # Mock all requests, including GET
 DRY_RUN_WRITE_ONLY = False  # Only mock 'write' requests
@@ -32,9 +35,11 @@ DOWNLOAD_DIR = join(PROJECT_DIR, 'downloads')
 SAMPLE_DATA_DIR = join(PROJECT_DIR, 'test', 'sample_data')
 
 # Type aliases
+Coordinates = Tuple[float, float]
 Date = Union[date, datetime, str]
-DateTime = Union[date, datetime, str]
+DateTime = Union[datetime, str]
 DateOrInt = Union[date, datetime, int]
+Dimensions = Tuple[int, int]
 FileOrPath = Union[BinaryIO, str]
 HistogramResponse = Dict[DateOrInt, int]
 IntOrStr = Union[int, str]

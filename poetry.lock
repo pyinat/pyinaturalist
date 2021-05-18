@@ -1248,7 +1248,7 @@ docs = ["docutils", "m2r2", "nbsphinx", "Sphinx", "sphinx-automodapi", "sphinx-a
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "c3cb12aae289cd415dec61b02ba5b8d5287e8607b44e3ed5f932f71d9a51435d"
+content-hash = "d612fbfa70ed40a94f96bc2989707aedbb722d1a9204c4c356bd30d71b25e1bc"
 
 [metadata.files]
 alabaster = [

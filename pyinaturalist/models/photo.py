@@ -1,11 +1,12 @@
-import attr
 from pathlib import Path
 from typing import List, Tuple
 
-from pyinaturalist.models import BaseModel, ModelCollection, kwarg
+import attr
 
-# from naturtag.constants import CC_LICENSES, PHOTO_BASE_URL, PHOTO_INFO_BASE_URL, PHOTO_SIZES
-# from naturtag.validation import format_const, format_dimensions
+from pyinaturalist.constants import PHOTO_BASE_URL, PHOTO_SIZES
+from pyinaturalist.models import BaseModel, ModelCollection, kwarg
+from pyinaturalist.request_params import CC_LICENSES
+from pyinaturalist.response_format import format_dimensions, format_license
 
 
 @attr.s
@@ -14,7 +15,8 @@ class Photo(BaseModel):
 
     attribution: str = kwarg
     flags: List = attr.ib(factory=list)
-    license_code: str = attr.ib(converter=format_const, default=None)  # Enum
+    id: int = kwarg
+    license_code: str = attr.ib(converter=format_license, default=None)  # Enum
     original_dimensions: Tuple[int, int] = attr.ib(converter=format_dimensions, default=(0, 0))
 
     # URLs
@@ -28,7 +30,7 @@ class Photo(BaseModel):
 
     def __attrs_post_init__(self):
         has_url = bool(self.url)
-        self.url = f'{PHOTO_INFO_BASE_URL}/{self.id}'
+        self.url = f'{PHOTO_BASE_URL}/{self.id}'
         if not has_url:
             return
 

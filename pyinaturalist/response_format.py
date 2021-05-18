@@ -1,13 +1,20 @@
 """ Helper functions for formatting API responses """
+# TODO: Should most formatting/converting be handled by attrs converters?
 from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_date
 from dateutil.parser._parser import UnknownTimezoneWarning
 from dateutil.tz import tzoffset
 from logging import getLogger
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional, Union
 from warnings import catch_warnings, simplefilter
 
-from pyinaturalist.constants import HistogramResponse, JsonResponse, ResponseObject
+from pyinaturalist.constants import (
+    Coordinates,
+    Dimensions,
+    HistogramResponse,
+    JsonResponse,
+    ResponseObject,
+)
 
 GENERIC_TIME_FIELDS = ('created_at', 'last_post_at', 'updated_at')
 OBSERVATION_TIME_FIELDS = (
@@ -74,8 +81,8 @@ def convert_all_coordinates(results: List[ResponseObject]) -> List[ResponseObjec
         results: Results from API response; expects coordinates in either 'location' key or
             'latitude' and 'longitude' keys
     """
-    results = [convert_lat_long(result) for result in results]
-    results = [convert_location(result) for result in results]
+    results = [convert_lat_long_dict(result) for result in results]
+    results = [convert_lat_long_list(result) for result in results]
     return results
 
 
@@ -95,28 +102,36 @@ def convert_all_timestamps(results: List[ResponseObject]) -> List[ResponseObject
     return results
 
 
-# Conversion functions
+# Type conversion functions
 # --------------------
 
 
-def convert_lat_long(result: ResponseObject) -> ResponseObject:
-    """Convert a coordinate pair in a response item from strings to floats, if valid"""
+def convert_lat_long_dict(result: ResponseObject) -> ResponseObject:
+    """Convert a coordinate pair dict within a response to floats, if valid"""
     if 'latitude' in result and 'longitude' in result:
         result['latitude'] = try_float(result['latitude'])
         result['longitude'] = try_float(result['longitude'])
     return result
 
 
-def convert_location(result: ResponseObject):
+def convert_lat_long_list(result: ResponseObject):
     """Convert a coordinate pairs in a response item from strings to floats, if valid"""
     # Format inner record if present, e.g. for search results
     if 'record' in result:
-        result['record'] = convert_location(result['record'])
+        result['record'] = convert_lat_long_list(result['record'])
         return result
 
     if ',' in (result.get('location') or ''):
         result['location'] = [try_float(coord) for coord in result['location'].split(',')]
     return result
+
+
+def convert_lat_long_str(value: str) -> Coordinates:
+    """Convert a coordinate pair string to floats, if valid"""
+    if str(value).count(',') != 1:
+        return None
+    lat, long = str(value).split(',')
+    return try_float(lat), try_float(long)
 
 
 def convert_generic_timestamps(result: ResponseObject) -> ResponseObject:
@@ -241,6 +256,26 @@ def try_float(value: Any) -> Optional[float]:
 
 # Formatting Functions
 # --------------------
+
+
+def format_dimensions(dimensions: Union[Dict[str, int], Dimensions]) -> Dimensions:
+    """Slightly simplify 'dimensions' response attribute into ``(width, height)`` tuple"""
+    if isinstance(dimensions, tuple):
+        return dimensions
+    return dimensions.get("width", 0), dimensions.get("height", 0)
+
+
+def format_file_size(value) -> str:
+    """Convert a file size in bytes into a human-readable format"""
+    for unit in ['B', 'KiB', 'MiB', 'GiB']:
+        if abs(value) < 1024.0:
+            return f'{value:.2f}{unit}'
+        value /= 1024.0
+    return f'{value:.2f}TiB'
+
+
+def format_license(value: str) -> str:
+    return str(value).upper().replace('_', '-')
 
 
 def flatten_nested_params(observation: ResponseObject) -> ResponseObject:

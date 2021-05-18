@@ -1,10 +1,11 @@
-import attr
+# TODO
 from datetime import datetime
 from typing import Dict, List, Optional
 from uuid import UUID
 
-from pyinaturalist.node_api import get_observation
+import attr
 
+from pyinaturalist.constants import Coordinates
 from pyinaturalist.models import (
     BaseModel,
     Identification,
@@ -15,14 +16,15 @@ from pyinaturalist.models import (
     Taxa,
     Taxon,
     User,
+    created_timestamp,
     kwarg,
     timestamp,
 )
+from pyinaturalist.node_api import get_observation
+from pyinaturalist.response_format import convert_lat_long_str
 
-# from naturtag.constants import Coordinates
-# from naturtag.validation import convert_coord_pair
-
-coordinate_pair: Coordinates = attr.ib(converter=convert_coord_pair, default=None)
+# TODO
+# coordinate_pair = attr.ib(converter=convert_lat_long_str, default=None)
 
 
 @attr.s
@@ -34,21 +36,22 @@ class Observation(BaseModel):
     Can be constructed from either a full JSON record, a partial JSON record, or just an ID.
     """
 
+    created_at: datetime = created_timestamp
     cached_votes_total: int = kwarg
     captive: bool = kwarg
     comments_count: int = kwarg
     community_taxon_id: int = kwarg
-    created_at: datetime = timestamp
     description: str = kwarg
     faves_count: int = kwarg
     geoprivacy: str = kwarg  # Enum
+    id: int = kwarg
     id_please: bool = kwarg
     identifications_count: int = kwarg
     identifications_most_agree: bool = kwarg
     identifications_most_disagree: bool = kwarg
     identifications_some_agree: bool = kwarg
     license_code: str = kwarg  # Enum
-    location: Coordinates = coordinate_pair
+    location: Coordinates = attr.ib(converter=convert_lat_long_str, default=None)
     map_scale: int = kwarg
     mappable: bool = kwarg
     num_identification_agreements: int = kwarg
@@ -64,8 +67,8 @@ class Observation(BaseModel):
     site_id: int = kwarg
     spam: bool = kwarg
     species_guess: str = kwarg
-    time_observed_at: datetime = timestamp
-    updated_at: datetime = timestamp
+    time_observed_at: Optional[datetime] = timestamp
+    updated_at: Optional[datetime] = timestamp
     uri: str = kwarg
     uuid: UUID = attr.ib(converter=UUID, default=None)
 
@@ -128,7 +131,7 @@ class Observation(BaseModel):
 
 
 class Observations(ModelCollection):
-    """A collection of observation records"""
+    """A collection of observation records with some extra aggregate info"""
 
     model_cls = Observation
 

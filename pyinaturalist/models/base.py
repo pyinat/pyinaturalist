@@ -1,18 +1,23 @@
-import attr
+# TODO: Inherit from UserDict so model objects can also be used like dicts?
+#   e.g. support both observation['id'] and observation.id
 import json
 from collections import UserList
+from datetime import datetime, timezone
 from logging import getLogger
 from os.path import expanduser
 from pathlib import Path
 from typing import IO, Dict, Generic, List, Type, TypeVar, Union
 
+import attr
+
+from pyinaturalist.constants import JsonResponse
 from pyinaturalist.response_format import try_datetime
 
-# from naturtag.constants import JSON
-
+# Some aliases for common attribute types
 aliased_kwarg = attr.ib(default=None, repr=False)
 kwarg = attr.ib(default=None)
 timestamp = attr.ib(converter=try_datetime, default=None)
+created_timestamp = attr.ib(converter=try_datetime, default=datetime.now(timezone.utc))
 logger = getLogger(__name__)
 
 
@@ -20,11 +25,10 @@ logger = getLogger(__name__)
 class BaseModel:
     """Base class for models"""
 
-    id: int = kwarg
     partial: bool = kwarg
 
     @classmethod
-    def from_json(cls, value: JSON, partial=False):
+    def from_json(cls, value: JsonResponse, partial=False):
         """Create a new model object from a JSON path, file-like object, or API response object"""
         # Strip out Nones so we use our default factories instead (e.g. for empty lists)
         if not value:
@@ -59,7 +63,7 @@ class ModelCollection(UserList, Generic[T]):
         return base.__args__[0]  # e.g. FooModel
 
     @classmethod
-    def from_json(cls, value: JSON):
+    def from_json(cls, value: Union[IO, str, JsonResponse]):
         """Initialize from a JSON path, file-like object, or API response"""
         if not value:
             return cls()

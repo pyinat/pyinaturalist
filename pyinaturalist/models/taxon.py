@@ -1,11 +1,11 @@
-import attr
 from typing import Dict, List
 
-from pyinaturalist.node_api import get_taxa_by_id
+import attr
 
-# from naturtag.constants import ATLAS_APP_ICONS, ICONISH_TAXA, TAXON_BASE_URL
-# from naturtag.inat_metadata import get_rank_idx
+from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.models import BaseModel, ModelCollection, Photo, kwarg
+from pyinaturalist.node_api import get_taxa_by_id
+from pyinaturalist.request_params import RANKS
 
 
 def convert_taxon_photos(taxon_photos):
@@ -29,6 +29,7 @@ class Taxon(BaseModel):
     extinct: bool = kwarg
     iconic_taxon_id: int = kwarg
     iconic_taxon_name: str = kwarg
+    id: int = kwarg
     is_active: bool = kwarg
     listed_taxa_count: int = kwarg
     name: str = kwarg
@@ -59,6 +60,7 @@ class Taxon(BaseModel):
     _child_taxa: List = attr.ib(init=False, default=None)
 
     # Add aliases
+    # TODO: User properties instead?
     def __attrs_post_init__(self):
         self.photos = self.taxon_photos
 
@@ -78,32 +80,6 @@ class Taxon(BaseModel):
         return ' | '.join(t.name for t in self.parent_taxa)
 
     @property
-    def icon_path(self) -> str:
-        return get_icon_path(self.iconic_taxon_id)
-
-    @property
-    def uri(self) -> str:
-        return f'{TAXON_BASE_URL}/{self.id}'
-
-    @property
-    def parent_taxa(self) -> List:
-        """Get this taxon's ancestors as Taxon objects (in descending order of rank)"""
-        if self._parent_taxa is None:
-            if not self.ancestors:
-                self.update_from_full_record()
-            self._parent_taxa = [Taxon.from_json(t, partial=True) for t in self.ancestors]
-        return self._parent_taxa
-
-    @property
-    def parent_taxa_ids(self) -> List:
-        return [taxon.id for taxon in self.parent_taxa]
-
-    @property
-    def parent(self):
-        """Return immediate parent, if any"""
-        return self.parent_taxa[-1] if self.parent_taxa else None
-
-    @property
     def child_taxa(self) -> List:
         """Get this taxon's children as Taxon objects (in descending order of rank)"""
 
@@ -119,8 +95,22 @@ class Taxon(BaseModel):
         return self._child_taxa
 
     @property
-    def child_taxa_ids(self) -> List:
-        return [taxon.id for taxon in self.child_taxa]
+    def parent(self):
+        """Return immediate parent, if any"""
+        return self.parent_taxa[-1] if self.parent_taxa else None
+
+    @property
+    def parent_taxa(self) -> List:
+        """Get this taxon's ancestors as Taxon objects (in descending order of rank)"""
+        if self._parent_taxa is None:
+            if not self.ancestors:
+                self.update_from_full_record()
+            self._parent_taxa = [Taxon.from_json(t, partial=True) for t in self.ancestors]
+        return self._parent_taxa
+
+    @property
+    def url(self) -> str:
+        return f'{API_V1_BASE_URL}/taxa/{self.id}'
 
 
 class Taxa(ModelCollection):
@@ -129,8 +119,5 @@ class Taxa(ModelCollection):
     model_cls = Taxon
 
 
-def get_icon_path(taxon_id: int) -> str:
-    """An iconic function to return an icon for an iconic taxon"""
-    if taxon_id not in ICONISH_TAXA:
-        taxon_id = 0
-    return f'{ATLAS_APP_ICONS}/{ICONISH_TAXA[taxon_id]}'
+def get_rank_idx(rank: str) -> int:
+    return RANKS.index(rank) if rank in RANKS else 0

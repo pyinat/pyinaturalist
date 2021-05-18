@@ -1,7 +1,8 @@
-import attr
 from datetime import datetime
 from typing import List
 from uuid import UUID
+
+import attr
 
 from pyinaturalist.models import (
     BaseModel,
@@ -9,8 +10,8 @@ from pyinaturalist.models import (
     Taxon,
     User,
     aliased_kwarg,
+    created_timestamp,
     kwarg,
-    timestamp,
 )
 
 
@@ -19,11 +20,12 @@ class Identification(BaseModel):
     body: str = aliased_kwarg  # Aliased to 'comment'
     category: str = kwarg  # Enum
     comment: str = kwarg
-    created_at: datetime = timestamp
+    created_at: datetime = created_timestamp
     current: bool = kwarg
     current_taxon: bool = kwarg
     disagreement: bool = kwarg
     hidden: bool = kwarg
+    id: int = kwarg
     own_observation: bool = kwarg
     previous_observation_taxon_id: int = kwarg
     spam: bool = kwarg

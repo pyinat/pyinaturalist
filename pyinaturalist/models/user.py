@@ -1,17 +1,19 @@
-import attr
 from datetime import datetime
 from typing import List
 
-from pyinaturalist.models import BaseModel, aliased_kwarg, kwarg, timestamp
+import attr
+
+from pyinaturalist.models import BaseModel, aliased_kwarg, created_timestamp, kwarg
 
 
 @attr.s
 class User(BaseModel):
     activity_count: int = kwarg
-    created_at: datetime = timestamp
+    created_at: datetime = created_timestamp
     display_name: str = kwarg
     icon: str = kwarg
     icon_url: str = kwarg
+    id: int = kwarg
     identifications_count: int = kwarg
     journal_posts_count: int = kwarg
     login: str = aliased_kwarg  # Aliased to 'username'

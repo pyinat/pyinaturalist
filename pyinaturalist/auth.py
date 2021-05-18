@@ -16,8 +16,8 @@ def get_access_token(
     app_secret: str = None,
     user_agent: str = None,
 ) -> str:
-    """Get an access token using the user's iNaturalist username and password.
-    You still need an iNaturalist app to do this.
+    """Get an access token using the user's iNaturalist username and password, using the
+    Resource Owner Password Credentials Flow. Requires registering an iNaturalist app.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#auth
 
@@ -104,7 +104,7 @@ def get_keyring_credentials() -> Dict[str, Optional[str]]:
             'client_secret': get_password(KEYRING_KEY, 'app_secret'),
         }
     except KeyringError as e:
-        logger.warning(str(e))
+        logger.warning(e)
         return {}
 
 
