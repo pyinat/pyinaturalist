@@ -11,15 +11,13 @@ from pyinaturalist.models import (
     Photo,
     Taxon,
     User,
-    created_timestamp,
+    coordinate_pair,
+    datetime_attr,
+    datetime_now_attr,
     kwarg,
-    timestamp,
 )
 from pyinaturalist.node_api import get_observation
-from pyinaturalist.response_format import convert_lat_long_str
-
-# TODO
-# coordinate_pair = attr.ib(converter=convert_lat_long_str, default=None)
+from pyinaturalist.response_format import convert_observation_timestamp
 
 
 @attr.s
@@ -31,7 +29,7 @@ class Observation(BaseModel):
     Can be constructed from either a full JSON record, a partial JSON record, or just an ID.
     """
 
-    created_at: datetime = created_timestamp
+    created_at: datetime = datetime_now_attr
     cached_votes_total: int = kwarg
     captive: bool = kwarg
     comments_count: int = kwarg
@@ -46,7 +44,7 @@ class Observation(BaseModel):
     identifications_most_disagree: bool = kwarg
     identifications_some_agree: bool = kwarg
     license_code: str = kwarg  # Enum
-    location: Coordinates = attr.ib(converter=convert_lat_long_str, default=None)
+    location: Coordinates = coordinate_pair
     map_scale: int = kwarg
     mappable: bool = kwarg
     num_identification_agreements: int = kwarg
@@ -62,8 +60,8 @@ class Observation(BaseModel):
     site_id: int = kwarg
     spam: bool = kwarg
     species_guess: str = kwarg
-    time_observed_at: Optional[datetime] = timestamp
-    updated_at: Optional[datetime] = timestamp
+    observed_on: Optional[datetime] = datetime_attr
+    updated_at: Optional[datetime] = datetime_attr
     uri: str = kwarg
     uuid: str = kwarg
 
@@ -98,11 +96,22 @@ class Observation(BaseModel):
     # geojson: Dict = attr.ib(factory=dict)
     # non_owner_ids: List = attr.ib(factory=list)
     # observation_photos: List[Photo] = attr.ib(converter=Photo.from_dict_list, factory=list)
-    # observed_on: date = timestamp
+    # time_observed_at: Optional[datetime] = timestamp
     # observed_on_details: Dict = attr.ib(factory=dict)
     # observed_on_string: datetime = timestamp
     # observed_time_zone: str = kwarg
     # time_zone_offset: "+01:00"
+
+    def __attrs_post_init__(self):
+        """convert observation timestamps"""
+        if not isinstance(self.created_at, datetime):
+            self.created_at = convert_observation_timestamp(
+                self.created_at_details.get('date'), self.tz_offset, self.tz_name
+            )
+        if not isinstance(self.observed_on, datetime):
+            self.observed_on = convert_observation_timestamp(
+                self.observed_on_string, self.tz_offset, self.tz_name, ignoretz=True
+            )
 
     @classmethod
     def from_id(cls, id: int):

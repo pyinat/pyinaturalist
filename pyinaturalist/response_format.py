@@ -106,6 +106,16 @@ def convert_all_timestamps(results: List[ResponseObject]) -> List[ResponseObject
 # --------------------
 
 
+def convert_lat_long(obj: Union[Dict, List, str]) -> Optional[Coordinates]:
+    """Convert a coordinate pair as a dict, list, or string into a pair of floats, if valid"""
+    if isinstance(obj, str):
+        return try_float_pair(*str(obj).split(','))
+    elif isinstance(obj, list):
+        return try_float_pair(*obj)
+    elif isinstance(obj, dict):
+        return try_float_pair(obj.get('latitude'), obj.get('longitude'))
+
+
 def convert_lat_long_dict(result: ResponseObject) -> ResponseObject:
     """Convert a coordinate pair dict within a response to floats, if valid"""
     if 'latitude' in result and 'longitude' in result:
@@ -126,14 +136,6 @@ def convert_lat_long_list(result: ResponseObject):
     return result
 
 
-def convert_lat_long_str(value: str) -> Coordinates:
-    """Convert a coordinate pair string to floats, if valid"""
-    if str(value).count(',') != 1:
-        return None
-    lat, long = str(value).split(',')
-    return try_float(lat), try_float(long)
-
-
 def convert_generic_timestamps(result: ResponseObject) -> ResponseObject:
     """Replace generic created/updated info that's returned by multiple endpoints.
     **Note:** Compared to observation timestamps, these are generally more reliable. These seem to
@@ -151,6 +153,7 @@ def convert_generic_timestamps(result: ResponseObject) -> ResponseObject:
     return result
 
 
+# TODO: pick either this or attrs version
 def convert_observation_timestamps(result: ResponseObject) -> ResponseObject:
     """Replace observation date/time info with datetime objects"""
     if 'created_at_details' not in result and 'observed_on_string' not in result:
@@ -177,6 +180,14 @@ def convert_observation_timestamps(result: ResponseObject) -> ResponseObject:
     observation['observed_on'] = observed_datetime
 
     return observation
+
+
+def convert_observation_timestamp(
+    timestamp: str, tz_offset: str, tz_name: str, ignoretz: bool = False
+) -> Optional[datetime]:
+    """Alternative version of convert_observation_timestamp to be used as an attrs converter"""
+    dt = try_datetime(timestamp, ignoretz=ignoretz)
+    return convert_offset(dt, tz_offset, tz_name)
 
 
 def convert_offset(
@@ -231,10 +242,12 @@ def parse_offset(tz_offset: str, tz_name: str = None) -> tzoffset:
     return tzoffset(tz_name, delta.total_seconds() * multiplier)
 
 
-def try_datetime(timestamp: str, **kwargs) -> Optional[datetime]:
+def try_datetime(timestamp: Union[datetime, str], **kwargs) -> Optional[datetime]:
     """Parse a timestamp string into a datetime, if valid; return ``None`` otherwise"""
     if isinstance(timestamp, datetime):
         return timestamp
+    if not str(timestamp.strip()):
+        return None
 
     try:
         # Suppress UnknownTimezoneWarning
@@ -242,7 +255,7 @@ def try_datetime(timestamp: str, **kwargs) -> Optional[datetime]:
             simplefilter('ignore', category=UnknownTimezoneWarning)
             return parse_date(timestamp, **kwargs)
     except (AttributeError, TypeError, ValueError) as e:
-        logger.debug(f'Could not parse timestamp: {timestamp}: {str(e)}')
+        logger.debug(f'Could not parse timestamp: {timestamp}: "{str(e)}"')
         return None
 
 

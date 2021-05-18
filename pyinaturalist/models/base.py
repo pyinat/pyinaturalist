@@ -10,13 +10,14 @@ from typing import IO, Dict, List, Union
 import attr
 
 from pyinaturalist.constants import JsonResponse
-from pyinaturalist.response_format import try_datetime
+from pyinaturalist.response_format import convert_lat_long, try_datetime
 
 # Some aliases for common attribute types
 aliased_kwarg = attr.ib(default=None, repr=False)
 kwarg = attr.ib(default=None)
-timestamp = attr.ib(converter=try_datetime, default=None)
-created_timestamp = attr.ib(converter=try_datetime, default=datetime.now(timezone.utc))
+coordinate_pair = attr.ib(converter=convert_lat_long, default=None)
+datetime_attr = attr.ib(converter=try_datetime, default=None)
+datetime_now_attr = attr.ib(converter=try_datetime, default=datetime.now(timezone.utc))
 logger = getLogger(__name__)
 
 
@@ -37,7 +38,7 @@ class BaseModel:
             valid_json = {k: v for k, v in value.items() if k in attr_names and v is not None}
             return cls(**valid_json, partial=partial)  # type: ignore
         else:
-            return _load_path_or_obj(value)  # type: ignore
+            return cls.from_json(_load_path_or_obj(value))  # type: ignore
 
     @classmethod
     def from_json_list(cls, value: Union[IO, str, JsonResponse]) -> List:
@@ -46,11 +47,12 @@ class BaseModel:
             return []
         elif isinstance(value, dict) and 'results' in value:
             value = value['results']
+        elif isinstance(value, dict):
+            value = [value]
         if isinstance(value, list):
             return [cls.from_json(item) for item in value]
-        # TODO: This needs some  work
         else:
-            return _load_path_or_obj(value)  # type: ignore
+            return cls.from_json_list(_load_path_or_obj(value))  # type: ignore
 
     def to_json(self) -> Dict:
         return attr.asdict(self)

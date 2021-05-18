@@ -4,7 +4,7 @@ from uuid import UUID
 
 import attr
 
-from pyinaturalist.models import BaseModel, Taxon, User, aliased_kwarg, created_timestamp, kwarg
+from pyinaturalist.models import BaseModel, Taxon, User, aliased_kwarg, datetime_now_attr, kwarg
 
 
 @attr.s
@@ -12,7 +12,7 @@ class Identification(BaseModel):
     body: str = aliased_kwarg  # Aliased to 'comment'
     category: str = kwarg  # Enum
     comment: str = kwarg
-    created_at: datetime = created_timestamp
+    created_at: datetime = datetime_now_attr
     current: bool = kwarg
     current_taxon: bool = kwarg
     disagreement: bool = kwarg

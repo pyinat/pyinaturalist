@@ -2,14 +2,16 @@
 # flake8: noqa: F401
 # Imported in order of dependencies
 # TODO: Model for Projects
+# TODO: Model for Places
 # TODO: Model for Comments?
 # TODO: Model for Observation Fields?
 from pyinaturalist.models.base import (
     BaseModel,
     aliased_kwarg,
-    created_timestamp,
+    datetime_attr,
+    datetime_now_attr,
+    coordinate_pair,
     kwarg,
-    timestamp,
 )
 from pyinaturalist.models.photo import Photo
 from pyinaturalist.models.taxon import Taxon

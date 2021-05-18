@@ -3,13 +3,13 @@ from typing import List
 
 import attr
 
-from pyinaturalist.models import BaseModel, aliased_kwarg, created_timestamp, kwarg
+from pyinaturalist.models import BaseModel, aliased_kwarg, datetime_now_attr, kwarg
 
 
 @attr.s
 class User(BaseModel):
     activity_count: int = kwarg
-    created_at: datetime = created_timestamp
+    created_at: datetime = datetime_now_attr
     display_name: str = kwarg
     icon: str = kwarg
     icon_url: str = kwarg
