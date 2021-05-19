@@ -246,7 +246,7 @@ def try_datetime(timestamp: Any, **kwargs) -> Optional[datetime]:
     """Parse a timestamp string into a datetime, if valid; return ``None`` otherwise"""
     if isinstance(timestamp, datetime):
         return timestamp
-    if not str(timestamp.strip()):
+    if not timestamp or not str(timestamp).strip():
         return None
 
     try:
@@ -275,6 +275,19 @@ def try_float_pair(*values: Any) -> Optional[Coordinates]:
         return float(values[0]), float(values[1])
     except (TypeError, ValueError):
         return None
+
+
+def try_int(value: Any) -> Optional[float]:
+    """Convert a value to a int, if valid; return ``None`` otherwise"""
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def try_int_or_float(value: Any) -> Union[int, float, None]:
+    """Convert a value to either an int or a float, if valid; return ``None`` otherwise"""
+    return try_int(str(value)) or try_float(str(value))
 
 
 # Formatting Functions
@@ -330,3 +343,9 @@ def format_histogram(response: JsonResponse) -> HistogramResponse:
         return {int(k): v for k, v in histogram.items()}
     else:
         return {parse_date(k): v for k, v in histogram.items()}
+
+
+def safe_split(value: str = None, delimiter: str = '|') -> Optional[List[str]]:
+    if value is None:
+        return None
+    return str(value).split(delimiter)
