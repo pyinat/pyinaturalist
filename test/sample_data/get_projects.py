@@ -12,9 +12,18 @@ from dateutil.tz import tzutc
             'description': 'To identify plants to report to the Pacific Northwest Invasive Plant Council',
             'created_at': datetime(2016, 7, 20, 23, 0, 5, tzinfo=tzutc()),
             'title': 'PNW Invasive Plant EDDR',
-            'banner_color': None,
-            'project_observation_rules': [],
-            'site_features': [],
+            'banner_color': '#4551b7',
+            'project_observation_rules': [
+                {
+                    'operand_id': 90550,
+                    'id': 616862,
+                    'operand_type': 'Project',
+                    'operator': 'in_project?',
+                }
+            ],
+            'site_features': [
+                {'noteworthy': True, 'site_id': 1, 'featured_at': '2021-03-16T16:41:32.477Z'}
+            ],
             'project_observation_fields': [],
             'updated_at': datetime(2020, 12, 21, 18, 11, 26, tzinfo=tzutc()),
             'terms': None,

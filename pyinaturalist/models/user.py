@@ -3,6 +3,7 @@ from typing import List
 
 import attr
 
+from pyinaturalist.constants import JsonResponse
 from pyinaturalist.models import BaseModel, aliased_kwarg, datetime_now_attr, kwarg
 
 
@@ -36,3 +37,24 @@ class User(BaseModel):
     def __attrs_post_init__(self):
         self.username = self.login
         self.display_name = self.name
+
+
+@attr.s
+class ProjectUser(User):
+
+    project_id: int = kwarg
+    project_user_id: int = kwarg
+    role: str = kwarg
+
+    @classmethod
+    def from_project_json(cls, value: JsonResponse, **kwargs):
+        """Flatten out nested values from project user info"""
+        user = value['user']
+        user['project_id'] = value['project_id']
+        user['project_user_id'] = value['id']
+        user['role'] = value['role']
+        return cls.from_json(user, **kwargs)
+
+    @classmethod
+    def from_project_json_list(cls, value: List[JsonResponse], **kwargs):
+        return [cls.from_project_json(project_user, **kwargs) for project_user in value]

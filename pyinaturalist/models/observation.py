@@ -65,17 +65,21 @@ class Observation(BaseModel):
     uri: str = kwarg
     uuid: str = kwarg
 
-    # Nested collections with defaults
+    # Nested model objects
+    identifications: List[Identification] = attr.ib(
+        converter=Identification.from_json_list, factory=list
+    )
+    photos: List[Photo] = attr.ib(converter=Photo.from_json_list, factory=list)
+    taxon: Taxon = attr.ib(converter=Taxon.from_json, default=None)
+    user: User = attr.ib(converter=User.from_json, default=None)
+
+    # Nested collections
     annotations: List = attr.ib(factory=list)
     comments: List = attr.ib(factory=list)
     faves: List = attr.ib(factory=list)
     flags: List = attr.ib(factory=list)
-    identifications: List[Identification] = attr.ib(
-        converter=Identification.from_json_list, factory=list
-    )
     ofvs: List = attr.ib(factory=list)
     outlinks: List = attr.ib(factory=list)
-    photos: List[Photo] = attr.ib(converter=Photo.from_json_list, factory=list)
     place_ids: List = attr.ib(factory=list)
     preferences: Dict = attr.ib(factory=dict)
     project_ids: List = attr.ib(factory=list)
@@ -86,8 +90,6 @@ class Observation(BaseModel):
     reviewed_by: List = attr.ib(factory=list)
     sounds: List = attr.ib(factory=list)
     tags: List = attr.ib(factory=list)
-    taxon: Taxon = attr.ib(converter=Taxon.from_json, default=None)
-    user: User = attr.ib(converter=User.from_json, default=None)
     votes: List = attr.ib(factory=list)
 
     # Additional response fields that are redundant here; just left here for reference
