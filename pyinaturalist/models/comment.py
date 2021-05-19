@@ -15,7 +15,7 @@ class Comment(BaseModel):
     id: int = kwarg
     body: str = kwarg
     uuid: str = kwarg
-    user: User = attr.ib(converter=User.from_json, default=None)
+    user: User = attr.ib(converter=User.from_json, default=None)  # type: ignore
 
     # Redundant attributes
     # created_at_details: {date: 2020-08-28, week: 35, month: 8, hour: 12, year: 2020, day: 28},

@@ -242,7 +242,7 @@ def parse_offset(tz_offset: str, tz_name: str = None) -> tzoffset:
     return tzoffset(tz_name, delta.total_seconds() * multiplier)
 
 
-def try_datetime(timestamp: Union[datetime, str], **kwargs) -> Optional[datetime]:
+def try_datetime(timestamp: Any, **kwargs) -> Optional[datetime]:
     """Parse a timestamp string into a datetime, if valid; return ``None`` otherwise"""
     if isinstance(timestamp, datetime):
         return timestamp
@@ -263,6 +263,16 @@ def try_float(value: Any) -> Optional[float]:
     """Convert a value to a float, if valid; return ``None`` otherwise"""
     try:
         return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def try_float_pair(*values: Any) -> Optional[Coordinates]:
+    """Convert a pair of coordinat values to floats, if both are valid; return ``None`` otherwise"""
+    if len(values) != 2:
+        return None
+    try:
+        return float(values[0]), float(values[1])
     except (TypeError, ValueError):
         return None
 

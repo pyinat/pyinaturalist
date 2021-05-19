@@ -2,7 +2,9 @@
 # flake8: noqa: F401
 # Imported in order of dependencies
 
+# TODO: Fix mypy "unsupported converter false positives
 # TODO: Add formatters as model methods
+# TODO: Unit tests. So many unit tests.
 # TODO: Model for Observation Fields?
 from pyinaturalist.models.base import (
     BaseModel,

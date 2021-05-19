@@ -28,7 +28,7 @@ class Project(BaseModel):
     icon: str = kwarg
     id: int = kwarg
     is_umbrella: bool = kwarg
-    location: Coordinates = coordinate_pair
+    location: Optional[Coordinates] = coordinate_pair
     place_id: int = kwarg
     prefers_user_trust: bool = kwarg
     project_type: str = kwarg
@@ -37,10 +37,12 @@ class Project(BaseModel):
     title: str = kwarg
     updated_at: Optional[datetime] = datetime_attr
     user_id: int = kwarg
-    user: User = attr.ib(converter=User.from_json, default=None)
+
+    # Nested model objects
+    admins: List[ProjectUser] = attr.ib(converter=ProjectUser.from_project_json_list, factory=list)  # type: ignore
+    user: User = attr.ib(converter=User.from_json, default=None)  # type: ignore
 
     # Nested collections
-    admins: List[ProjectUser] = attr.ib(converter=ProjectUser.from_project_json_list, factory=list)
     flags: List = attr.ib(factory=list)  # TODO: Unsure of list type. str?
     project_observation_fields: List = attr.ib(factory=list)  # TODO: Unsure of list type. dict?
     project_observation_rules: List = attr.ib(factory=list)

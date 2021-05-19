@@ -44,7 +44,7 @@ class Observation(BaseModel):
     identifications_most_disagree: bool = kwarg
     identifications_some_agree: bool = kwarg
     license_code: str = kwarg  # Enum
-    location: Coordinates = coordinate_pair
+    location: Optional[Coordinates] = coordinate_pair
     map_scale: int = kwarg
     mappable: bool = kwarg
     num_identification_agreements: int = kwarg
@@ -67,11 +67,11 @@ class Observation(BaseModel):
 
     # Nested model objects
     identifications: List[Identification] = attr.ib(
-        converter=Identification.from_json_list, factory=list
+        converter=Identification.from_json_list, factory=list  # type: ignore
     )
-    photos: List[Photo] = attr.ib(converter=Photo.from_json_list, factory=list)
-    taxon: Taxon = attr.ib(converter=Taxon.from_json, default=None)
-    user: User = attr.ib(converter=User.from_json, default=None)
+    photos: List[Photo] = attr.ib(converter=Photo.from_json_list, factory=list)  # type: ignore
+    taxon: Taxon = attr.ib(converter=Taxon.from_json, default=None)  # type: ignore
+    user: User = attr.ib(converter=User.from_json, default=None)  # type: ignore
 
     # Nested collections
     annotations: List = attr.ib(factory=list)
@@ -92,27 +92,32 @@ class Observation(BaseModel):
     tags: List = attr.ib(factory=list)
     votes: List = attr.ib(factory=list)
 
-    # Additional response fields that are redundant here; just left here for reference
-    # created_at_details: Dict = attr.ib(factory=dict)
+    # Additional attributes from API response that are redundant here; just left here for reference
+    created_at_details: Dict = attr.ib(factory=dict)
     # created_time_zone: str = kwarg
     # geojson: Dict = attr.ib(factory=dict)
     # non_owner_ids: List = attr.ib(factory=list)
     # observation_photos: List[Photo] = attr.ib(converter=Photo.from_dict_list, factory=list)
-    # time_observed_at: Optional[datetime] = timestamp
+    # time_observed_at: Optional[datetime] = datetime_attr
     # observed_on_details: Dict = attr.ib(factory=dict)
-    # observed_on_string: datetime = timestamp
-    # observed_time_zone: str = kwarg
-    # time_zone_offset: "+01:00"
+    observed_on_string: str = kwarg
+    observed_time_zone: str = kwarg
+    time_zone_offset: str = kwarg
 
+    # Convert observation timestamps
+    # TODO: Need access to time fields that we don't need afterward. Either:
+    # A) Change this to a custom init that calls __attrs_init__, or
+    # B: Add both as attrs and set repr=False
     def __attrs_post_init__(self):
-        """convert observation timestamps"""
+        tz_offset = self.time_zone_offset
+        tz_name = self.observed_time_zone
         if not isinstance(self.created_at, datetime):
             self.created_at = convert_observation_timestamp(
-                self.created_at_details.get('date'), self.tz_offset, self.tz_name
+                self.created_at_details.get('date'), tz_offset, tz_name
             )
         if not isinstance(self.observed_on, datetime):
             self.observed_on = convert_observation_timestamp(
-                self.observed_on_string, self.tz_offset, self.tz_name, ignoretz=True
+                self.observed_on_string, tz_offset, tz_name, ignoretz=True
             )
 
     @classmethod

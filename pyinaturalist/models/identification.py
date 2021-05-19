@@ -26,10 +26,14 @@ class Identification(BaseModel):
     uuid: UUID = attr.ib(converter=UUID, default=None)
     vision: bool = kwarg
 
+    # Nested model objects
+    # observation: {}  # TODO: If this is needed, need to lazy load it
+    taxon: Taxon = attr.ib(converter=Taxon.from_json, default=None)  # type: ignore
+    user: User = attr.ib(converter=User.from_json, default=None)  # type: ignore
+
+    # Nesetd collections
     flags: List = attr.ib(factory=list)
     moderator_actions: List = attr.ib(factory=list)
-    # observation: {}  # TODO: If this is needed, need to lazy load it
-    taxon: Taxon = attr.ib(converter=Taxon.from_json, default=None)
-    user: User = attr.ib(converter=User.from_json, default=None)
 
+    # Unused attributes
     # created_at_details: {}

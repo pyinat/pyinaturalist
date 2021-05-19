@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import attr
 
@@ -19,7 +19,7 @@ class Place(BaseModel):
     display_name: str = kwarg
     geometry_geojson: GeoJson = attr.ib(factory=dict)
     id: int = kwarg
-    location: Coordinates = coordinate_pair
+    location: Optional[Coordinates] = coordinate_pair
     name: str = kwarg
     place_type: int = kwarg
     slug: str = kwarg

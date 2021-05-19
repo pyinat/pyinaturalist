@@ -9,7 +9,7 @@ from pyinaturalist.request_params import RANKS
 
 
 def convert_taxon_photos(taxon_photos):
-    return [Photo.from_json(t['photo']) for t in taxon_photos]
+    return Photo.from_json_list([t['photo'] for t in taxon_photos])
 
 
 @attr.s
@@ -43,26 +43,26 @@ class Taxon(BaseModel):
     wikipedia_url: str = kwarg
     preferred_common_name: str = attr.ib(default='')
 
-    # Nested collections with defaults
+    # Nested model objects
+    default_photo: Photo = attr.ib(converter=Photo.from_json, default=None)  # type: ignore
+    taxon_photos: List[Photo] = attr.ib(converter=convert_taxon_photos, factory=list, repr=False)  # type: ignore
+
+    # Nested collections
     ancestor_ids: List[int] = attr.ib(factory=list)
     ancestors: List[Dict] = attr.ib(factory=list)
     children: List[Dict] = attr.ib(factory=list)
     conservation_statuses: List[str] = attr.ib(factory=list)
     current_synonymous_taxon_ids: List[int] = attr.ib(factory=list)
-    default_photo: Photo = attr.ib(converter=Photo.from_json, default=None)
     flag_counts: Dict = attr.ib(factory=dict)
     listed_taxa: List = attr.ib(factory=list)
-    photos: List[Photo] = attr.ib(init=False, default=None)
-    taxon_photos: List[Photo] = attr.ib(converter=convert_taxon_photos, factory=list, repr=False)
 
     # Internal attrs managed by @properties
     _parent_taxa: List = attr.ib(init=False, default=None)
     _child_taxa: List = attr.ib(init=False, default=None)
 
-    # Add aliases
-    # TODO: User properties instead?
-    def __attrs_post_init__(self):
-        self.photos = self.taxon_photos
+    @property
+    def photos(self) -> List[Photo]:
+        return self.taxon_photos
 
     @classmethod
     def from_id(cls, id: int):
