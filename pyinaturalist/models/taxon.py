@@ -3,7 +3,7 @@ from typing import Dict, List
 import attr
 
 from pyinaturalist.constants import API_V1_BASE_URL
-from pyinaturalist.models import BaseModel, Photo, kwarg
+from pyinaturalist.models import BaseModel, Photo, dataclass, kwarg
 from pyinaturalist.node_api import get_taxa_by_id
 from pyinaturalist.request_params import RANKS
 
@@ -12,7 +12,7 @@ def convert_taxon_photos(taxon_photos):
     return Photo.from_json_list([t['photo'] for t in taxon_photos])
 
 
-@attr.s
+@dataclass
 class Taxon(BaseModel):
     """A dataclass containing information about a taxon, matching the schema of
     `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_.

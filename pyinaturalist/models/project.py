@@ -9,13 +9,14 @@ from pyinaturalist.models import (
     ProjectUser,
     User,
     coordinate_pair,
+    dataclass,
     datetime_attr,
     datetime_now_attr,
     kwarg,
 )
 
 
-@attr.s
+@dataclass
 class Project(BaseModel):
     """A dataclass containing information about a project, matching the schema of
     `GET /projects <https://api.inaturalist.org/v1/docs/#!/Projects/get_projects>`_.

@@ -3,10 +3,10 @@ from typing import List
 
 import attr
 
-from pyinaturalist.models import BaseModel, User, datetime_now_attr, kwarg
+from pyinaturalist.models import BaseModel, User, dataclass, datetime_now_attr, kwarg
 
 
-@attr.s
+@dataclass
 class Comment(BaseModel):
     """A dataclass containing information about a comment, matching the schema of observation comments
     from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.

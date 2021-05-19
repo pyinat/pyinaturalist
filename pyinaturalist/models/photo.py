@@ -2,14 +2,13 @@ from typing import List, Optional, Tuple
 
 import attr
 
-
 from pyinaturalist.constants import PHOTO_INFO_BASE_URL, PHOTO_SIZES
-from pyinaturalist.models import BaseModel, kwarg
+from pyinaturalist.models import BaseModel, dataclass, kwarg
 from pyinaturalist.request_params import CC_LICENSES
 from pyinaturalist.response_format import format_dimensions, format_license
 
 
-@attr.s
+@dataclass
 class Photo(BaseModel):
     """A data class containing information about a remote observation photo"""
 

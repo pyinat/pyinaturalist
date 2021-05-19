@@ -12,6 +12,7 @@ from pyinaturalist.models import (
     Taxon,
     User,
     coordinate_pair,
+    dataclass,
     datetime_attr,
     datetime_now_attr,
     kwarg,
@@ -20,7 +21,7 @@ from pyinaturalist.node_api import get_observation
 from pyinaturalist.response_format import convert_observation_timestamp
 
 
-@attr.s
+@dataclass
 class Observation(BaseModel):
     """A dataclass containing information about an observation, matching the schema of
     `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.

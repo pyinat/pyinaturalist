@@ -18,6 +18,17 @@ coordinate_pair = attr.ib(converter=convert_lat_long, default=None)  # type: ign
 datetime_attr = attr.ib(converter=try_datetime, default=None)  # type: ignore
 datetime_now_attr = attr.ib(converter=try_datetime, default=datetime.now(timezone.utc))  # type: ignore
 
+# Attrs options
+dataclass = attr.s(
+    auto_attribs=False,
+    auto_detect=True,
+    collect_by_mro=True,
+    kw_only=True,
+    slots=True,
+    weakref_slot=False,
+)
+
+
 T = TypeVar('T', bound='BaseModel')
 logger = getLogger(__name__)
 

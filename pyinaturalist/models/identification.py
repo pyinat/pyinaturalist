@@ -4,10 +4,10 @@ from uuid import UUID
 
 import attr
 
-from pyinaturalist.models import BaseModel, Taxon, User, datetime_now_attr, kwarg
+from pyinaturalist.models import BaseModel, Taxon, User, dataclass, datetime_now_attr, kwarg
 
 
-@attr.s
+@dataclass
 class Identification(BaseModel):
     """A dataclass containing information about an identification, matching the schema of
     `GET /identifications <https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications>`_.

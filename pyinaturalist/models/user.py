@@ -4,10 +4,10 @@ from typing import List
 import attr
 
 from pyinaturalist.constants import JsonResponse
-from pyinaturalist.models import BaseModel, datetime_now_attr, kwarg
+from pyinaturalist.models import BaseModel, dataclass, datetime_now_attr, kwarg
 
 
-@attr.s
+@dataclass
 class User(BaseModel):
     """A dataclass containing information about an user, matching the schema of
     `GET /users/{id} <https://api.inaturalist.org/v1/docs/#!/Users/get_users_id>`_.
@@ -45,7 +45,7 @@ class User(BaseModel):
         return self.name
 
 
-@attr.s
+@dataclass
 class ProjectUser(User):
     """A :py:class:`.User` with additional project-specific information returned by
     `GET /projects <https://api.inaturalist.org/v1/docs/#!/Projects/get_projects>`_.

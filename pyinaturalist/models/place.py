@@ -3,13 +3,13 @@ from typing import Dict, List, Optional
 import attr
 
 from pyinaturalist.constants import Coordinates
-from pyinaturalist.models import BaseModel, coordinate_pair, kwarg
+from pyinaturalist.models import BaseModel, coordinate_pair, dataclass, kwarg
 
 # TODO: Make a separate model for geojson type? or optionally use `geojson` library?
 GeoJson = Dict
 
 
-@attr.s
+@dataclass
 class Place(BaseModel):
     admin_level: int = kwarg
     ancestor_place_ids: List[str] = attr.ib(factory=list)
