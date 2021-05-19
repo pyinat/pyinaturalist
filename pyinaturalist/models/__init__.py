@@ -8,7 +8,6 @@
 # TODO: Model for Observation Fields?
 from pyinaturalist.models.base import (
     BaseModel,
-    aliased_kwarg,
     datetime_attr,
     datetime_now_attr,
     coordinate_pair,

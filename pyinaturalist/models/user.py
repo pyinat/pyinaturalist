@@ -4,21 +4,24 @@ from typing import List
 import attr
 
 from pyinaturalist.constants import JsonResponse
-from pyinaturalist.models import BaseModel, aliased_kwarg, datetime_now_attr, kwarg
+from pyinaturalist.models import BaseModel, datetime_now_attr, kwarg
 
 
 @attr.s
 class User(BaseModel):
+    """A dataclass containing information about an user, matching the schema of
+    `GET /users/{id} <https://api.inaturalist.org/v1/docs/#!/Users/get_users_id>`_.
+    """
+
     activity_count: int = kwarg
     created_at: datetime = datetime_now_attr
-    display_name: str = kwarg
     icon: str = kwarg
     icon_url: str = kwarg
     id: int = kwarg
     identifications_count: int = kwarg
     journal_posts_count: int = kwarg
-    login: str = aliased_kwarg  # Aliased to 'username'
-    name: str = aliased_kwarg  # Aliased to 'display_name'
+    login: str = kwarg
+    name: str = kwarg
     observations_count: int = kwarg
     orcid: str = kwarg
     roles: List = attr.ib(factory=list)
@@ -26,21 +29,27 @@ class User(BaseModel):
     spam: bool = kwarg
     suspended: bool = kwarg
     universal_search_rank: int = kwarg
-    username: str = kwarg
 
-    # Additional response fields that are used by the web UI but are redundant here
+    # Unused attributes
     # login_autocomplete: str = kwarg
     # login_exact: str = kwarg
     # name_autocomplete: str = kwarg
 
-    # Add aliases
-    def __attrs_post_init__(self):
-        self.username = self.login
-        self.display_name = self.name
+    # Aliases
+    @property
+    def username(self) -> str:
+        return self.login
+
+    @property
+    def display_name(self) -> str:
+        return self.name
 
 
 @attr.s
 class ProjectUser(User):
+    """A :py:class:`.User` with additional project-specific information returned by
+    `GET /projects <https://api.inaturalist.org/v1/docs/#!/Projects/get_projects>`_.
+    """
 
     project_id: int = kwarg
     project_user_id: int = kwarg

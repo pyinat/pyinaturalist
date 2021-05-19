@@ -4,14 +4,17 @@ from uuid import UUID
 
 import attr
 
-from pyinaturalist.models import BaseModel, Taxon, User, aliased_kwarg, datetime_now_attr, kwarg
+from pyinaturalist.models import BaseModel, Taxon, User, datetime_now_attr, kwarg
 
 
 @attr.s
 class Identification(BaseModel):
-    body: str = aliased_kwarg  # Aliased to 'comment'
+    """A dataclass containing information about an identification, matching the schema of
+    `GET /identifications <https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications>`_.
+    """
+
+    body: str = kwarg
     category: str = kwarg  # Enum
-    comment: str = kwarg
     created_at: datetime = datetime_now_attr
     current: bool = kwarg
     current_taxon: bool = kwarg

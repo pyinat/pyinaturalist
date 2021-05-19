@@ -22,9 +22,8 @@ from pyinaturalist.response_format import convert_observation_timestamp
 
 @attr.s
 class Observation(BaseModel):
-    """A data class containing information about an observation, matching the schema of
-    ``GET /observations`` from the iNaturalist API:
-    https://api.inaturalist.org/v1/docs/#!/Observations/get_observations
+    """A dataclass containing information about an observation, matching the schema of
+    `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
 
     Can be constructed from either a full JSON record, a partial JSON record, or just an ID.
     """

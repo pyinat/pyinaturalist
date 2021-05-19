@@ -17,6 +17,10 @@ from pyinaturalist.models import (
 
 @attr.s
 class Project(BaseModel):
+    """A dataclass containing information about a project, matching the schema of
+    `GET /projects <https://api.inaturalist.org/v1/docs/#!/Projects/get_projects>`_.
+    """
+
     banner_color: str = kwarg
     created_at: datetime = datetime_now_attr
     description: str = kwarg

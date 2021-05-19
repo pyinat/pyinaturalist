@@ -13,7 +13,6 @@ from pyinaturalist.constants import JsonResponse
 from pyinaturalist.response_format import convert_lat_long, try_datetime
 
 # Some aliases for common attribute types
-aliased_kwarg = attr.ib(default=None, repr=False)
 kwarg = attr.ib(default=None)
 coordinate_pair = attr.ib(converter=convert_lat_long, default=None)  # type: ignore
 datetime_attr = attr.ib(converter=try_datetime, default=None)  # type: ignore

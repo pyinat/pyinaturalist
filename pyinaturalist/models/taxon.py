@@ -14,8 +14,8 @@ def convert_taxon_photos(taxon_photos):
 
 @attr.s
 class Taxon(BaseModel):
-    """A data class containing information about a taxon, matching the schema of ``GET /taxa``
-    from the iNaturalist API: https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa
+    """A dataclass containing information about a taxon, matching the schema of
+    `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_.
 
     Can be constructed from either a full JSON record, a partial JSON record, or just an ID.
     Examples of partial records include nested ``ancestors``, ``children``, and results from
