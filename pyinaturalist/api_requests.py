@@ -23,20 +23,6 @@ from pyinaturalist.constants import (
 from pyinaturalist.forge_utils import copy_signature
 from pyinaturalist.request_params import prepare_request
 
-# Request rate limits. Only compatible with python 3.7+.
-# TODO: Remove try-except after dropping support for python 3.6
-try:
-    from pyrate_limiter import Duration, Limiter, RequestRate
-
-    REQUEST_RATES = [
-        RequestRate(REQUESTS_PER_SECOND, Duration.SECOND),
-        RequestRate(REQUESTS_PER_MINUTE, Duration.MINUTE),
-        RequestRate(REQUESTS_PER_DAY, Duration.DAY),
-    ]
-    RATE_LIMITER = Limiter(*REQUEST_RATES)
-except ImportError:
-    RATE_LIMITER = None
-
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=requests.Response)
 MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0, 'access_token': ''}
@@ -111,15 +97,30 @@ def put(url: str, **kwargs) -> requests.Response:
 
 # TODO: Handle error 429 if we still somehow exceed the rate limit?
 @contextmanager
-def ratelimit(limiter=RATE_LIMITER, bucket=pyinaturalist.user_agent):
+def ratelimit(bucket=pyinaturalist.user_agent):
     """Add delays in between requests to stay within the rate limits. If pyrate-limiter is
     not installed, this will quietly do nothing.
     """
-    if limiter:
-        with limiter.ratelimit(bucket, delay=True, max_delay=MAX_DELAY):
+    if RATE_LIMITER:
+        with RATE_LIMITER.ratelimit(bucket, delay=True, max_delay=MAX_DELAY):
             yield
     else:
         yield
+
+
+def get_limiter():
+    """Get a rate limiter object, if pyrate-limiter is installed"""
+    try:
+        from pyrate_limiter import Duration, Limiter, RequestRate
+
+        requst_rates = [
+            RequestRate(REQUESTS_PER_SECOND, Duration.SECOND),
+            RequestRate(REQUESTS_PER_MINUTE, Duration.MINUTE),
+            RequestRate(REQUESTS_PER_DAY, Duration.DAY),
+        ]
+        return Limiter(*requst_rates)
+    except ImportError:
+        return None
 
 
 def get_session() -> requests.Session:
@@ -158,3 +159,6 @@ def log_request(*args, **kwargs):
     """Log all relevant information about an HTTP request"""
     kwargs_strs = [f'{k}={v}' for k, v in kwargs.items()]
     logger.info('Request: {}'.format(', '.join(list(args) + kwargs_strs)))
+
+
+RATE_LIMITER = get_limiter()
