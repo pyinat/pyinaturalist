@@ -1,9 +1,9 @@
-from pathlib import Path
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import attr
 
-from pyinaturalist.constants import PHOTO_BASE_URL, PHOTO_SIZES
+
+from pyinaturalist.constants import PHOTO_INFO_BASE_URL, PHOTO_SIZES
 from pyinaturalist.models import BaseModel, kwarg
 from pyinaturalist.request_params import CC_LICENSES
 from pyinaturalist.response_format import format_dimensions, format_license
@@ -18,36 +18,65 @@ class Photo(BaseModel):
     id: int = kwarg
     license_code: str = attr.ib(converter=format_license, default=None)  # Enum
     original_dimensions: Tuple[int, int] = attr.ib(converter=format_dimensions, default=(0, 0))
-
-    # URLs
-    large_url: str = kwarg
-    medium_url: str = kwarg
-    original_url: str = kwarg
-    small_url: str = kwarg
-    square_url: str = kwarg
-    thumbnail_url: str = kwarg
     url: str = kwarg
+    _url_format: str = attr.ib(init=False, repr=False, default=None)
 
     def __attrs_post_init__(self):
-        has_url = bool(self.url)
-        self.url = f'{PHOTO_BASE_URL}/{self.id}'
-        if not has_url:
+        if not self.url:
             return
 
-        # TODO: there are multiple possible base URLs
         # Get a URL format string to get different photo sizes
-        path = Path(self.url.rsplit('?', 1)[0])
-        _url_format = f'{PHOTO_BASE_URL}/{self.id}/{{size}}{path.suffix}'
-
-        # Manually construct any URLs missing from the response (only works for iNat-hosted photos)
         for size in PHOTO_SIZES:
-            if not getattr(self, f'{size}_url') and 'inaturalist.org' in self.url:
-                setattr(self, f'{size}_url', _url_format.format(size=size))
-        self.thumbnail_url = self.square_url
-
-        # Point default URL to info page instead of thumbnail
+            if f'{size}.' in self.url:
+                self._url_format = self.url.replace(size, '{size}')
 
     @property
     def has_cc_license(self) -> bool:
         """Determine if this photo has a Creative Commons license"""
         return self.license_code in CC_LICENSES
+
+    @property
+    def info_url(self) -> str:
+        return f'{PHOTO_INFO_BASE_URL}/self.id'
+
+    @property
+    def large_url(self) -> Optional[str]:
+        return self.url_size('large')
+
+    @property
+    def medium_url(self) -> Optional[str]:
+        return self.url_size('large')
+
+    @property
+    def original_url(self) -> Optional[str]:
+        return self.url_size('original')
+
+    @property
+    def small_url(self) -> Optional[str]:
+        return self.url_size('small')
+
+    @property
+    def square_url(self) -> Optional[str]:
+        return self.url_size('square')
+
+    @property
+    def thumbnail_url(self) -> Optional[str]:
+        return self.url_size('square')
+
+    def url_size(self, size: str) -> Optional[str]:
+        size = size.replace('thumbnail', 'square').replace('thumb', 'square')
+        if not self._url_format or size not in PHOTO_SIZES:
+            return None
+        return self._url_format.format(size=size)
+
+    def open(self, size: str = 'large'):
+        """Download and display the image with the system's default image viewer.
+        Experimental / requires ``pillow``
+        """
+        import requests
+        from PIL import Image
+
+        url = self.url_size(size)
+        if url:
+            img = Image.open(requests.get(url, stream=True).raw)
+            img.show()
