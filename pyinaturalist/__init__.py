@@ -10,6 +10,7 @@ user_agent = DEFAULT_USER_AGENT
 try:
     from pyinaturalist.auth import get_access_token
     from pyinaturalist.formatters import *
+    from pyinaturalist.models import *
     from pyinaturalist.rest_api import *
     from pyinaturalist.node_api import *
 

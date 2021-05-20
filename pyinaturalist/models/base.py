@@ -5,18 +5,23 @@ from datetime import datetime, timezone
 from logging import getLogger
 from os.path import expanduser
 from pathlib import Path
-from typing import IO, Dict, List, Type, TypeVar, Union
+from typing import IO, Dict, List, Optional, Type, TypeVar, Union
 
 import attr
 
 from pyinaturalist.constants import JsonResponse
 from pyinaturalist.response_format import convert_lat_long, try_datetime
 
+
+def utcnow() -> datetime:
+    return datetime.now(timezone.utc)
+
+
 # Some aliases for common attribute types
 kwarg = attr.ib(default=None)
 coordinate_pair = attr.ib(converter=convert_lat_long, default=None)  # type: ignore
 datetime_attr = attr.ib(converter=try_datetime, default=None)  # type: ignore
-datetime_now_attr = attr.ib(converter=try_datetime, default=datetime.now(timezone.utc))  # type: ignore
+datetime_now_attr = attr.ib(converter=try_datetime, factory=utcnow)  # type: ignore
 
 # Attrs options
 dataclass = attr.s(
@@ -38,18 +43,23 @@ class BaseModel:
     """Base class for models"""
 
     partial: bool = kwarg
+    temp_attrs: Optional[List] = None
 
     # Note: when used as converters, mypy will raise a false positive error. See:
     # https://github.com/python/mypy/issues/6172
     # https://github.com/python/mypy/issues/7912
     @classmethod
     def from_json(cls: Type[T], value: JsonResponse, partial=False):
-        """Create a new model object from a JSON path, file-like object, or API response object"""
-        # Strip out Nones so we use our default factories instead (e.g. for empty lists)
+        """Create a new model object from a JSON path, file-like object, or API response object.
+        Omits invalid fields and ``None``s, so we use our default factories instead (e.g. for empty
+        lists)
+        """
         if not value:
             return cls()
         elif isinstance(value, dict):
-            attr_names = attr.fields_dict(cls).keys()
+            attr_names = list(attr.fields_dict(cls).keys())
+            if cls.temp_attrs:
+                attr_names.extend(cls.temp_attrs)
             valid_json = {k: v for k, v in value.items() if k in attr_names and v is not None}
             return cls(**valid_json, partial=partial)  # type: ignore
         else:

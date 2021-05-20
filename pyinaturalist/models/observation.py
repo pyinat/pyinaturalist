@@ -6,8 +6,8 @@ import attr
 
 from pyinaturalist.constants import Coordinates
 from pyinaturalist.models import (
+    ID,
     BaseModel,
-    Identification,
     Photo,
     Taxon,
     User,
@@ -66,9 +66,7 @@ class Observation(BaseModel):
     uuid: str = kwarg
 
     # Nested model objects
-    identifications: List[Identification] = attr.ib(
-        converter=Identification.from_json_list, factory=list  # type: ignore
-    )
+    identifications: List[ID] = attr.ib(converter=ID.from_json_list, factory=list)  # type: ignore
     photos: List[Photo] = attr.ib(converter=Photo.from_json_list, factory=list)  # type: ignore
     taxon: Taxon = attr.ib(converter=Taxon.from_json, default=None)  # type: ignore
     user: User = attr.ib(converter=User.from_json, default=None)  # type: ignore
@@ -93,32 +91,46 @@ class Observation(BaseModel):
     votes: List = attr.ib(factory=list)
 
     # Additional attributes from API response that are redundant here; just left here for reference
-    created_at_details: Dict = attr.ib(factory=dict)
+    # created_at_details: Dict = attr.ib(factory=dict)
     # created_time_zone: str = kwarg
     # geojson: Dict = attr.ib(factory=dict)
     # non_owner_ids: List = attr.ib(factory=list)
     # observation_photos: List[Photo] = attr.ib(converter=Photo.from_dict_list, factory=list)
     # time_observed_at: Optional[datetime] = datetime_attr
     # observed_on_details: Dict = attr.ib(factory=dict)
-    observed_on_string: str = kwarg
-    observed_time_zone: str = kwarg
-    time_zone_offset: str = kwarg
+    # observed_on_string: str = kwarg
+    # observed_time_zone: str = kwarg
+    # time_zone_offset: str = kwarg
 
-    # Convert observation timestamps
-    # TODO: Need access to time fields that we don't need afterward. Either:
-    # A) Change this to a custom init that calls __attrs_init__, or
-    # B: Add both as attrs and set repr=False
-    def __attrs_post_init__(self):
-        tz_offset = self.time_zone_offset
-        tz_name = self.observed_time_zone
-        if not isinstance(self.created_at, datetime):
-            self.created_at = convert_observation_timestamp(
-                self.created_at_details.get('date'), tz_offset, tz_name
+    # Attributes that will only be used during init and then omitted
+    temp_attrs = [
+        'created_at_details',
+        'observed_on_string',
+        'observed_time_zone',
+        'time_zone_offset',
+    ]
+
+    # Convert observation timestamps prior to attrs init
+    def __init__(
+        self,
+        created_at_details: Dict = None,
+        observed_on_string: str = None,
+        observed_time_zone: str = None,
+        time_zone_offset: str = None,
+        **kwargs
+    ):
+        tz_offset = time_zone_offset
+        tz_name = observed_time_zone
+        created_date = (created_at_details or {}).get('date')
+
+        if not isinstance(kwargs.get('created_at'), datetime) and created_date:
+            kwargs['created_at'] = convert_observation_timestamp(created_date, tz_offset, tz_name)
+        if not isinstance(kwargs.get('observed_on'), datetime) and observed_on_string:
+            kwargs['observed_on'] = convert_observation_timestamp(
+                observed_on_string, tz_offset, tz_name, ignoretz=True
             )
-        if not isinstance(self.observed_on, datetime):
-            self.observed_on = convert_observation_timestamp(
-                self.observed_on_string, tz_offset, tz_name, ignoretz=True
-            )
+
+        self.__attrs_init__(**kwargs)  # type: ignore
 
     @classmethod
     def from_id(cls, id: int):

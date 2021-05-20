@@ -40,3 +40,6 @@ class Identification(BaseModel):
 
     # Unused attributes
     # created_at_details: {}
+
+
+ID = Identification
