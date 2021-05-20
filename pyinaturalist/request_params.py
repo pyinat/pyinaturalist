@@ -3,7 +3,7 @@ The main purpose of these functions is to support some python-specific convenien
 them into standard request parameters, along with request validation that makes debugging easier.
 """
 # TODO: It would be nice to put all the multiple-choice options on the models and use attrs validadtors
-# TODO: Move some of this information to constants module?
+# TODO: Move some of this information to constants module or relevant model modules?
 import warnings
 from datetime import date, datetime
 from dateutil.parser import parse as parse_timestamp

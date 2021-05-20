@@ -23,3 +23,8 @@ class Place(BaseModel):
     name: str = kwarg
     place_type: int = kwarg
     slug: str = kwarg
+
+    # TODO: Use results from /places/nearby to set Place.category
+    # @classmethod
+    # def from_json_list(cls, value):
+    #     pass

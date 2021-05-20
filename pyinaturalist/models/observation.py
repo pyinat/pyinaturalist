@@ -1,4 +1,3 @@
-# TODO
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -11,6 +10,7 @@ from pyinaturalist.models import (
     Photo,
     Taxon,
     User,
+    cached_property,
     coordinate_pair,
     dataclass,
     datetime_attr,
@@ -65,11 +65,15 @@ class Observation(BaseModel):
     uri: str = kwarg
     uuid: str = kwarg
 
-    # Nested model objects
-    identifications: List[ID] = attr.ib(converter=ID.from_json_list, factory=list)  # type: ignore
-    photos: List[Photo] = attr.ib(converter=Photo.from_json_list, factory=list)  # type: ignore
-    taxon: Taxon = attr.ib(converter=Taxon.from_json, default=None)  # type: ignore
-    user: User = attr.ib(converter=User.from_json, default=None)  # type: ignore
+    # Lazy-loaded nested model objects
+    _identifications: List[Dict] = attr.ib(factory=list, repr=False)
+    _photos: List[Dict] = attr.ib(factory=list, repr=False)
+    _taxon: Dict = attr.ib(factory=dict, repr=False)
+    _user: Dict = attr.ib(factory=dict, repr=False)
+    _identifications_obj: List[ID] = None  # type: ignore
+    _photos_obj: List[Photo] = None  # type: ignore
+    _taxon_obj: Taxon = None  # type: ignore
+    _user_obj: User = None  # type: ignore
 
     # Nested collections
     annotations: List = attr.ib(factory=list)
@@ -111,13 +115,14 @@ class Observation(BaseModel):
     ]
 
     # Convert observation timestamps prior to attrs init
+    # TODO: better function signature for docs; use forge?
     def __init__(
         self,
         created_at_details: Dict = None,
         observed_on_string: str = None,
         observed_time_zone: str = None,
         time_zone_offset: str = None,
-        **kwargs
+        **kwargs,
     ):
         tz_offset = time_zone_offset
         tz_name = observed_time_zone
@@ -131,6 +136,22 @@ class Observation(BaseModel):
             )
 
         self.__attrs_init__(**kwargs)  # type: ignore
+
+    @cached_property
+    def identifications(self):
+        return ID.from_json_list(self._identifications)
+
+    @cached_property
+    def photos(self):
+        return Photo.from_json_list(self._photos)
+
+    @cached_property
+    def taxon(self):
+        return Taxon.from_json(self._taxon)
+
+    @cached_property
+    def user(self):
+        return User.from_json(self._user)
 
     @classmethod
     def from_id(cls, id: int):

@@ -56,6 +56,6 @@ class Project(BaseModel):
     site_features: List[Dict] = attr.ib(factory=list)
     user_ids: List[int] = attr.ib(factory=list)
 
-    # TODO: Redundant with location. Exclude?
+    # Unused attributes
     # latitude: float = kwarg
     # longitude: float = kwarg

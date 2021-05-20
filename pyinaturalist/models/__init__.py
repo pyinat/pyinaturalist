@@ -2,12 +2,13 @@
 # flake8: noqa: F401
 
 # TODO: Add formatters as model methods
-# TODO: Unit tests. So many unit tests.
+# TODO: Validators for multiple choice fields?
 from pyinaturalist.models.base import (
     BaseModel,
     dataclass,
     datetime_attr,
     datetime_now_attr,
+    cached_property,
     coordinate_pair,
     kwarg,
 )

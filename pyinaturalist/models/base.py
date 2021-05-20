@@ -2,10 +2,11 @@
 #   e.g. support both observation['id'] and observation.id
 import json
 from datetime import datetime, timezone
+from functools import wraps
 from logging import getLogger
 from os.path import expanduser
 from pathlib import Path
-from typing import IO, Dict, List, Optional, Type, TypeVar, Union
+from typing import IO, Callable, Dict, List, Optional, Type, TypeVar, Union
 
 import attr
 
@@ -57,7 +58,7 @@ class BaseModel:
         if not value:
             return cls()
         elif isinstance(value, dict):
-            attr_names = list(attr.fields_dict(cls).keys())
+            attr_names = [a.lstrip('_') for a in attr.fields_dict(cls)]
             if cls.temp_attrs:
                 attr_names.extend(cls.temp_attrs)
             valid_json = {k: v for k, v in value.items() if k in attr_names and v is not None}
@@ -66,7 +67,7 @@ class BaseModel:
             return cls.from_json(_load_path_or_obj(value))  # type: ignore
 
     @classmethod
-    def from_json_list(cls: Type[T], value: Union[IO, str, JsonResponse]) -> List:
+    def from_json_list(cls: Type[T], value: Union[IO, str, JsonResponse, List[JsonResponse]]) -> List:
         """Initialize from a JSON path, file-like object, or API response"""
         if not value:
             return []
@@ -81,6 +82,21 @@ class BaseModel:
 
     def to_json(self) -> Dict:
         return attr.asdict(self)
+
+
+def cached_property(func: Callable) -> property:
+    """Similar to ``@functools.cached_property``, but works for slotted classes. Caches return value
+    of ``func```` to self._<name>_obj. Requires _<name>_obj to be defined for slotted classes.
+    """
+
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        cached_attr = f'_{func.__name__}_obj'
+        if not getattr(self, cached_attr):
+            setattr(self, cached_attr, func(self, *args, **kwargs))
+        return getattr(self, cached_attr)
+
+    return property(wrapper)
 
 
 def _load_path_or_obj(value: Union[IO, Path, str]):

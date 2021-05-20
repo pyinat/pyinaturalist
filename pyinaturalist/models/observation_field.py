@@ -1,9 +1,17 @@
 from datetime import date, datetime
-from typing import List, Union
+from typing import Dict, List, Optional, Union
 
 import attr
 
-from pyinaturalist.models import BaseModel, Taxon, User, dataclass, datetime_now_attr, kwarg
+from pyinaturalist.models import (
+    BaseModel,
+    Taxon,
+    User,
+    cached_property,
+    dataclass,
+    datetime_now_attr,
+    kwarg,
+)
 from pyinaturalist.response_format import safe_split, try_int_or_float
 
 # Mappings from observation field value datatypes to python datatypes
@@ -25,7 +33,7 @@ class ObservationField(BaseModel):
     `GET /observation_fields <https://www.inaturalist.org/pages/api+reference#get-observation_fields>`_.
     """
 
-    allowed_values: List[str] = attr.ib(converter=safe_split, default=None)
+    allowed_values: List[str] = attr.ib(converter=safe_split, factory=list)
     created_at: datetime = datetime_now_attr
     datatype: str = kwarg  # Enum
     description: str = kwarg
@@ -44,27 +52,38 @@ class ObservationFieldValue(BaseModel):
     from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
     """
 
-    id: int = kwarg
-    uuid: str = kwarg
-    field_id: int = kwarg
     datatype: str = kwarg  # Enum
+    field_id: int = kwarg
+    id: int = kwarg
     name: str = kwarg
-    value: OFVValue = kwarg
-    user_id: int = kwarg
     taxon_id: int = kwarg
+    user_id: int = kwarg
+    uuid: str = kwarg
+    value: OFVValue = kwarg
 
-    # Nested model objects
-    taxon: Taxon = attr.ib(converter=Taxon.from_json, default=None)  # type: ignore
-    user: User = attr.ib(converter=User.from_json, default=None)  # type: ignore
+    # Lazy-loaded nested model objects
+    _taxon: Dict = attr.ib(factory=dict, repr=False)
+    _taxon_obj: Taxon = None  # type: ignore
+    _user: Dict = attr.ib(factory=dict, repr=False)
+    _user_obj: User = None  # type: ignore
 
     # Unused attrbiutes
-    name_ci: str = kwarg
-    value_ci: int = kwarg
+    # name_ci: str = kwarg
+    # value_ci: int = kwarg
 
     # Convert value by datatype
     def __attrs_post_init__(self):
-        converter = OFV_DATATYPES[self.datatype]
-        self.value = converter(self.value)
+        if self.datatype in OFV_DATATYPES and self.value is not None:
+            converter = OFV_DATATYPES[self.datatype]
+            self.value = converter(self.value)
+
+    @cached_property
+    def taxon(self) -> Optional[Taxon]:
+        return Taxon.from_json(self._taxon) if self._taxon else None
+
+    @cached_property
+    def user(self) -> Optional[User]:
+        return User.from_json(self._user) if self._user else None
 
 
 # The names are a little verbose, so let's alias them

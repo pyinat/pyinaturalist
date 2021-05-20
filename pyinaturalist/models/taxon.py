@@ -3,13 +3,9 @@ from typing import Dict, List
 import attr
 
 from pyinaturalist.constants import API_V1_BASE_URL
-from pyinaturalist.models import BaseModel, Photo, dataclass, kwarg
+from pyinaturalist.models import BaseModel, Photo, cached_property, dataclass, kwarg
 from pyinaturalist.node_api import get_taxa_by_id
 from pyinaturalist.request_params import RANKS
-
-
-def convert_taxon_photos(taxon_photos):
-    return Photo.from_json_list([t['photo'] for t in taxon_photos])
 
 
 @dataclass
@@ -22,7 +18,6 @@ class Taxon(BaseModel):
     :py:func:`get_taxa_autocomplete`
     """
 
-    ancestry: str = kwarg
     atlas_id: int = kwarg
     complete_rank: str = kwarg
     complete_species_count: int = kwarg
@@ -43,30 +38,63 @@ class Taxon(BaseModel):
     wikipedia_url: str = kwarg
     preferred_common_name: str = attr.ib(default='')
 
-    # Nested model objects
-    default_photo: Photo = attr.ib(converter=Photo.from_json, default=None)  # type: ignore
-    taxon_photos: List[Photo] = attr.ib(converter=convert_taxon_photos, factory=list, repr=False)  # type: ignore
+    # Lazy-loaded nested model objects
+    _ancestors: List[Dict] = attr.ib(factory=list, repr=False)
+    _children: List[Dict] = attr.ib(factory=list, repr=False)
+    _default_photo: Dict = attr.ib(factory=dict, repr=False)
+    _taxon_photos: List[Dict] = attr.ib(factory=list, repr=False)
+    _ancestors_obj: List['Taxon'] = None  # type: ignore
+    _children_obj: List['Taxon'] = None  # type: ignore
+    _default_photo_obj: Photo = None  # type: ignore
+    _taxon_photos_obj: List[Photo] = None  # type: ignore
 
     # Nested collections
     ancestor_ids: List[int] = attr.ib(factory=list)
-    ancestors: List[Dict] = attr.ib(factory=list)
-    children: List[Dict] = attr.ib(factory=list)
     conservation_statuses: List[str] = attr.ib(factory=list)
     current_synonymous_taxon_ids: List[int] = attr.ib(factory=list)
     flag_counts: Dict = attr.ib(factory=dict)
     listed_taxa: List = attr.ib(factory=list)
 
-    # Internal attrs managed by @properties
-    _parent_taxa: List = attr.ib(init=False, default=None)
-    _child_taxa: List = attr.ib(init=False, default=None)
+    # Unused attributes
+    # ancestry: str = kwarg
+
+    @cached_property
+    def ancestors(self) -> List['Taxon']:
+        return self.__class__.from_json_list(self._ancestors)
+
+    @cached_property
+    def children(self) -> List['Taxon']:
+        # Sort children by rank then name
+        children = self.__class__.from_json_list(self._children)
+        children.sort(key=get_rank_name_idx)
+        return children
+
+    @cached_property
+    def default_photo(self) -> Photo:
+        return Photo.from_json(self._default_photo)
+
+    @cached_property
+    def taxon_photos(self) -> List[Photo]:
+        return Photo.from_json_list([t['photo'] for t in self._taxon_photos])
 
     @property
-    def photos(self) -> List[Photo]:
-        return self.taxon_photos
+    def ancestry(self):
+        tokens = [t.name for t in self.ancestors] if self.ancestors else self.ancestor_ids
+        if self.ancestors:
+            return ' | '.join(tokens)
+
+    @property
+    def parent(self):
+        """Return immediate parent, if any"""
+        return self.ancestors[-1] if self.ancestors else None
+
+    @property
+    def url(self) -> str:
+        return f'{API_V1_BASE_URL}/taxa/{self.id}'
 
     @classmethod
     def from_id(cls, id: int):
-        """Lookup and create a new Taxon object from an ID"""
+        """Lookup and create a new Taxon object by ID"""
         r = get_taxa_by_id(id)
         return cls.from_json(r['results'][0])
 
@@ -75,42 +103,9 @@ class Taxon(BaseModel):
         for key in attr.fields_dict(self.__class__).keys():
             setattr(self, key, getattr(t, key))
 
-    @property
-    def ancestry_str(self):
-        return ' | '.join(t.name for t in self.parent_taxa)
 
-    @property
-    def child_taxa(self) -> List:
-        """Get this taxon's children as Taxon objects (in descending order of rank)"""
-
-        def get_child_idx(taxon):
-            return get_rank_idx(taxon.rank), taxon.name
-
-        if self._child_taxa is None:
-            if not self.children:
-                self.update_from_full_record()
-            self._child_taxa = [Taxon.from_id(t['id']) for t in self.children]
-            # Children may be different ranks; sort children by rank then name
-            self._child_taxa.sort(key=get_child_idx)
-        return self._child_taxa
-
-    @property
-    def parent(self):
-        """Return immediate parent, if any"""
-        return self.parent_taxa[-1] if self.parent_taxa else None
-
-    @property
-    def parent_taxa(self) -> List:
-        """Get this taxon's ancestors as Taxon objects (in descending order of rank)"""
-        if self._parent_taxa is None:
-            if not self.ancestors:
-                self.update_from_full_record()
-            self._parent_taxa = [Taxon.from_json(t, partial=True) for t in self.ancestors]
-        return self._parent_taxa
-
-    @property
-    def url(self) -> str:
-        return f'{API_V1_BASE_URL}/taxa/{self.id}'
+def get_rank_name_idx(taxon):
+    return get_rank_idx(taxon.rank), taxon.name
 
 
 def get_rank_idx(rank: str) -> int:

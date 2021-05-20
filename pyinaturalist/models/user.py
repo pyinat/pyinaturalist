@@ -28,12 +28,12 @@ class User(BaseModel):
     site_id: int = kwarg
     spam: bool = kwarg
     suspended: bool = kwarg
-    universal_search_rank: int = kwarg
 
     # Unused attributes
     # login_autocomplete: str = kwarg
     # login_exact: str = kwarg
     # name_autocomplete: str = kwarg
+    # universal_search_rank: int = kwarg
 
     # Aliases
     @property

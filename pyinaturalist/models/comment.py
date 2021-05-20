@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import List
+from typing import Dict, List
 
 import attr
 
-from pyinaturalist.models import BaseModel, User, dataclass, datetime_now_attr, kwarg
+from pyinaturalist.models import BaseModel, User, cached_property, dataclass, datetime_now_attr, kwarg
 
 
 @dataclass
@@ -20,8 +20,13 @@ class Comment(BaseModel):
     moderator_actions: List = attr.ib(factory=list)
     uuid: str = kwarg
 
-    # Nested model objects
-    user: User = attr.ib(converter=User.from_json, default=None)  # type: ignore
+    # Lazy-loaded nested model objects
+    _user: Dict = attr.ib(factory=dict, repr=False)
+    _user_obj: User = None  # type: ignore
 
     # Unused attributes
-    # created_at_details: {date: 2020-08-28, week: 35, month: 8, hour: 12, year: 2020, day: 28},
+    # created_at_details: Dict = attr.ib(factory=dict)
+
+    @cached_property
+    def user(self):
+        return User.from_json(self._user)

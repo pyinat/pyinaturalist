@@ -347,7 +347,7 @@ def format_histogram(response: JsonResponse) -> HistogramResponse:
         return {parse_date(k): v for k, v in histogram.items()}
 
 
-def safe_split(value: str = None, delimiter: str = '|') -> Optional[List[str]]:
-    if value is None:
-        return None
+def safe_split(value: str = None, delimiter: str = '|') -> List[str]:
+    if not value:
+        return []
     return str(value).split(delimiter)

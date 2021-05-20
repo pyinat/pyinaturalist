@@ -1,10 +1,17 @@
 from datetime import datetime
-from typing import List
-from uuid import UUID
+from typing import Dict, List
 
 import attr
 
-from pyinaturalist.models import BaseModel, Taxon, User, dataclass, datetime_now_attr, kwarg
+from pyinaturalist.models import (
+    BaseModel,
+    Taxon,
+    User,
+    cached_property,
+    dataclass,
+    datetime_now_attr,
+    kwarg,
+)
 
 
 @dataclass
@@ -26,13 +33,15 @@ class Identification(BaseModel):
     spam: bool = kwarg
     taxon_change: bool = kwarg  # TODO: confirm type
     taxon_id: int = kwarg
-    uuid: UUID = attr.ib(converter=UUID, default=None)
+    uuid: str = kwarg
     vision: bool = kwarg
 
-    # Nested model objects
-    # observation: {}  # TODO: If this is needed, need to lazy load it
-    taxon: Taxon = attr.ib(converter=Taxon.from_json, default=None)  # type: ignore
-    user: User = attr.ib(converter=User.from_json, default=None)  # type: ignore
+    # Lazy-loaded nested model objects
+    # observation: {}  # TODO: Is this actually needed?
+    _taxon: Dict = attr.ib(factory=dict, repr=False)
+    _taxon_obj: Taxon = None  # type: ignore
+    _user: Dict = attr.ib(factory=dict, repr=False)
+    _user_obj: User = None  # type: ignore
 
     # Nesetd collections
     flags: List = attr.ib(factory=list)
@@ -40,6 +49,14 @@ class Identification(BaseModel):
 
     # Unused attributes
     # created_at_details: {}
+
+    @cached_property
+    def taxon(self):
+        return Taxon.from_json(self._taxon)
+
+    @cached_property
+    def user(self):
+        return User.from_json(self._user)
 
 
 ID = Identification
