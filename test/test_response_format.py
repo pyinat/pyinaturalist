@@ -3,11 +3,29 @@ from datetime import datetime
 from dateutil.tz import tzoffset
 
 from pyinaturalist.response_format import (
+    convert_lat_long,
     convert_observation_timestamps,
     convert_offset,
     format_histogram,
 )
 from test.conftest import load_sample_data
+
+
+@pytest.mark.parametrize(
+    'input, expected_output',
+    [
+        ('1234.5, 6789.0', (1234.5, 6789.0)),
+        ({'latitude': 1234.5, 'longitude': 6789.0}, (1234.5, 6789.0)),
+        (['1234.5', '6789.0'], (1234.5, 6789.0)),
+        ([1234.5, 6789.0], (1234.5, 6789.0)),
+        (None, None),
+        ('1234.5, 6789.0, 000', None),
+        (['1234.5', 'asdf'], None),
+        ({'degrees': 12.3}, None),
+    ],
+)
+def test_convert_lat_long(input, expected_output):
+    assert convert_lat_long(input) == expected_output
 
 
 def test_format_histogram__datetime_keys():
