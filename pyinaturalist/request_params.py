@@ -371,9 +371,7 @@ def is_valid_multiple_choice_option(value: Any, choices: Iterable) -> bool:
     return all([v in choices for v in value])
 
 
-def validate_multiple_choice_param(
-    params: RequestParams, key: str, choices: Iterable
-) -> RequestParams:
+def validate_multiple_choice_param(params: RequestParams, key: str, choices: Iterable) -> RequestParams:
     """Verify that a multiple-choice request parameter contains valid value(s);
     if not, raise an error.
     **Used for endpoint-specific params.**

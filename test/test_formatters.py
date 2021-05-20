@@ -69,9 +69,7 @@ def test_format_controlled_terms__align():
 
 @pytest.mark.parametrize('input', get_variations(identification_1))
 def test_format_identifications(input):
-    expected_str = (
-        '[155554373] Species: 60132 (supporting) added on 2021-02-18T20:31:32-06:00 by jkcook'
-    )
+    expected_str = '[155554373] Species: 60132 (supporting) added on 2021-02-18T20:31:32-06:00 by jkcook'
     assert format_identifications(input) == expected_str
 
 
@@ -110,8 +108,7 @@ def test_format_projects(input):
 
 def test_format_projects__align():
     expected_str = (
-        '[8291    ] PNW Invasive Plant EDDR\n'
-        '[19200   ] King County (WA) Noxious and Invasive Weeds'
+        '[8291    ] PNW Invasive Plant EDDR\n' '[19200   ] King County (WA) Noxious and Invasive Weeds'
     )
     assert format_projects([project_1, project_2], align=True) == expected_str
 

@@ -49,7 +49,9 @@ def _format_identification(ident: ResponseObject, align: bool = False) -> str:
     ident_id = pad(ident['id'], 8, align)
     taxon = _format_taxon(ident['taxon'], align=align)
     category = pad(ident['category'], 10, align)
-    return f"[{ident_id}] {taxon} ({category}) added on {ident['created_at']} by {ident['user']['login']}"
+    return (
+        f"[{ident_id}] {taxon} ({category}) added on {ident['created_at']} by {ident['user']['login']}"
+    )
 
 
 def format_observations(observations: ResponseOrObject, align: bool = False) -> str:
@@ -165,9 +167,7 @@ def _format_user(user: ResponseObject, align: bool = False) -> str:
     return f"[{user_id}] {user['login']}{real_name}"
 
 
-def simplify_observations(
-    observations: ResponseOrObject, align: bool = False
-) -> List[ResponseObject]:
+def simplify_observations(observations: ResponseOrObject, align: bool = False) -> List[ResponseObject]:
     """Flatten out some nested data structures within observation records:
 
     * annotations
