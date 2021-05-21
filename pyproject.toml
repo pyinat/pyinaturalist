@@ -60,6 +60,7 @@ pytest = "^6.2"
 pytest-cov = ">=2.11"
 pytest-xdist = ">=2.2"
 requests-mock = "^1.8"
+rich = ">=10.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
