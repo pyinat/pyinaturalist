@@ -7,6 +7,7 @@ from pyinaturalist.constants import Coordinates, JsonResponse
 from pyinaturalist.models import (
     BaseModel,
     User,
+    cached_model_property,
     coordinate_pair,
     datetime_attr,
     datetime_now_attr,
@@ -65,10 +66,6 @@ class Project(BaseModel):
     updated_at: Optional[datetime] = datetime_attr
     user_id: int = kwarg
 
-    # Nested model objects
-    admins: List[ProjectUser] = field(converter=ProjectUser.from_project_json_list, factory=list)  # type: ignore
-    user: User = field(converter=User.from_json, default=None)  # type: ignore
-
     # Nested collections
     flags: List = field(factory=list)  # TODO: Unsure of list type. str?
     project_observation_fields: List = field(factory=list)  # TODO: Unsure of list type. dict?
@@ -77,6 +74,12 @@ class Project(BaseModel):
     search_parameters: List[Dict] = field(factory=list)
     site_features: List[Dict] = field(factory=list)
     user_ids: List[int] = field(factory=list)
+
+    # Lazy-loaded nested model objects
+    admins: property = cached_model_property(ProjectUser.from_project_json_list, '_admins')
+    _admins: List[Dict] = field(factory=list, repr=False)
+    user: property = cached_model_property(User.from_json, '_user')
+    _user: Dict = field(factory=dict, repr=False)
 
     # Unused attributes
     # latitude: float = kwarg

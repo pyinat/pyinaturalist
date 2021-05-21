@@ -2,11 +2,13 @@
 # flake8: noqa: F401
 
 # TODO: Add formatters as model methods
+# TODO: Add nested model objects to __repr__ methods
 # TODO: Validators for multiple choice fields?
 from pyinaturalist.models.base import (
     BaseModel,
     datetime_attr,
     datetime_now_attr,
+    cached_model_property,
     cached_property,
     coordinate_pair,
     kwarg,

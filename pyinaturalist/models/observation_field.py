@@ -1,9 +1,9 @@
 from datetime import date, datetime
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Union
 
 from attr import define, field
 
-from pyinaturalist.models import BaseModel, Taxon, User, cached_property, datetime_now_attr, kwarg
+from pyinaturalist.models import BaseModel, Taxon, User, cached_model_property, datetime_now_attr, kwarg
 from pyinaturalist.response_format import safe_split, try_int_or_float
 
 # Mappings from observation field value datatypes to python datatypes
@@ -54,10 +54,10 @@ class ObservationFieldValue(BaseModel):
     value: OFVValue = kwarg
 
     # Lazy-loaded nested model objects
+    taxon: property = cached_model_property(Taxon.from_json, '_taxon')
     _taxon: Dict = field(factory=dict, repr=False)
-    _taxon_obj: Taxon = field(default=None, init=False, repr=False)
+    user: property = cached_model_property(User.from_json, '_user')
     _user: Dict = field(factory=dict, repr=False)
-    _user_obj: User = field(default=None, init=False, repr=False)
 
     # Unused attrbiutes
     # name_ci: str = kwarg
@@ -69,18 +69,7 @@ class ObservationFieldValue(BaseModel):
             converter = OFV_DATATYPES[self.datatype]
             self.value = converter(self.value)
 
-    @cached_property
-    def taxon(self) -> Optional[Taxon]:
-        return Taxon.from_json(self._taxon) if self._taxon else None
-
-    @cached_property
-    def user(self) -> Optional[User]:
-        return User.from_json(self._user) if self._user else None
-
 
 # The names are a little verbose, so let's alias them
 OF = ObservationField
 OFV = ObservationFieldValue
-
-
-# def convert_ofv_by_datatype(value, datatype) -> OFVValue

@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from attr import define, field
 
-from pyinaturalist.models import BaseModel, Taxon, User, cached_property, datetime_now_attr, kwarg
+from pyinaturalist.models import BaseModel, Taxon, User, cached_model_property, datetime_now_attr, kwarg
 
 
 @define(auto_attribs=False)
@@ -28,27 +28,19 @@ class Identification(BaseModel):
     uuid: str = kwarg
     vision: bool = kwarg
 
-    # Lazy-loaded nested model objects
-    # observation: {}  # TODO: Is this actually needed?
-    _taxon: Dict = field(factory=dict, repr=False)
-    _taxon_obj: Taxon = field(default=None, init=False, repr=False)
-    _user: Dict = field(factory=dict, repr=False)
-    _user_obj: User = field(default=None, init=False, repr=False)
-
-    # Nesetd collections
+    # Nested collections
     flags: List = field(factory=list)
     moderator_actions: List = field(factory=list)
 
+    # Lazy-loaded nested model objects
+    taxon: property = cached_model_property(Taxon.from_json, '_taxon')
+    _taxon: Dict = field(factory=dict, repr=False)
+    user: property = cached_model_property(User.from_json, '_user')
+    _user: Dict = field(factory=dict, repr=False)
+
     # Unused attributes
     # created_at_details: {}
-
-    @cached_property
-    def taxon(self):
-        return Taxon.from_json(self._taxon)
-
-    @cached_property
-    def user(self):
-        return User.from_json(self._user)
+    # observation: {}  # TODO: Is this actually needed?
 
 
 ID = Identification

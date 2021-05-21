@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from attr import define, field
 
-from pyinaturalist.models import BaseModel, User, cached_property, datetime_now_attr, kwarg
+from pyinaturalist.models import BaseModel, User, cached_model_property, datetime_now_attr, kwarg
 
 
 @define(auto_attribs=False)
@@ -21,12 +21,8 @@ class Comment(BaseModel):
     uuid: str = kwarg
 
     # Lazy-loaded nested model objects
+    user: property = cached_model_property(User.from_json, '_user')
     _user: Dict = field(factory=dict, repr=False)
-    _user_obj: User = field(default=None, init=False, repr=False)
 
     # Unused attributes
     # created_at_details: Dict = field(factory=dict)
-
-    @cached_property
-    def user(self):
-        return User.from_json(self._user)

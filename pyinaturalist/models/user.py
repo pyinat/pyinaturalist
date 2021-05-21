@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import List
 
-
 from attr import define, field
 
 from pyinaturalist.models import BaseModel, datetime_now_attr, kwarg

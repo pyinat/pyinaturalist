@@ -6,7 +6,7 @@ from functools import wraps
 from logging import getLogger
 from os.path import expanduser
 from pathlib import Path
-from typing import IO, Callable, Dict, List, Optional, Type, TypeVar, Union
+from typing import IO, Any, Callable, Dict, List, Optional, Type, TypeVar, Union
 
 from attr import asdict, define, field, fields_dict
 
@@ -75,8 +75,9 @@ class BaseModel:
 
 
 def cached_property(func: Callable) -> property:
-    """Similar to ``@functools.cached_property``, but works for slotted classes. Caches return value
-    of ``func```` to self._<name>_obj. Requires _<name>_obj to be defined for slotted classes.
+    """Similar to ``@functools.cached_property``, but works for slotted classes by not relying on
+    ``__dict__``. Caches the return value of ``func`` to ``self._<name>_obj``.
+    For slotted classes, requires ``_<name>_obj`` to be defined.
     """
 
     @wraps(func)
@@ -87,6 +88,38 @@ def cached_property(func: Callable) -> property:
         return getattr(self, cached_attr)
 
     return property(wrapper)
+
+
+# TODO: return empty list instead of none for List[BaseModel]?
+def cached_model_property(converter: Callable, temp_attr: str) -> property:
+    """Similar to ``@functools.cached_property``, but works for slotted classes by not relying on
+    ``__dict__``. Specifically used for nested model objects, which allows delaying initialization
+    for better performance. How it works:
+
+    1. Define a cached_model_property ``foo`` and a temp attr ``_foo``
+    2. During attrs init, ``_foo`` is set from response JSON
+    3. When ``foo`` is first called, it converts ``_foo`` from JSON into a model object
+    4. When ``foo`` is called again the previously converted ``_foo`` object will be returned
+
+    """
+
+    def wrapper(self):
+        value = getattr(self, temp_attr)
+        if not value:
+            return None
+        if not _is_model_object(value):
+            value = converter(value)
+            setattr(self, temp_attr, value)
+        return value
+
+    return property(wrapper)
+
+
+def _is_model_object(value: Any) -> bool:
+    try:
+        return isinstance(value, BaseModel) or isinstance(value[0], BaseModel)
+    except (AttributeError, KeyError):
+        return False
 
 
 def _load_path_or_obj(value: Union[IO, Path, str]):

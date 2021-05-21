@@ -3,7 +3,7 @@ from typing import Dict, List
 from attr import define, field, fields_dict
 
 from pyinaturalist.constants import API_V1_BASE_URL
-from pyinaturalist.models import BaseModel, Photo, cached_property, kwarg
+from pyinaturalist.models import BaseModel, Photo, cached_model_property, cached_property, kwarg
 from pyinaturalist.node_api import get_taxa_by_id
 from pyinaturalist.request_params import RANKS
 
@@ -38,16 +38,6 @@ class Taxon(BaseModel):
     wikipedia_url: str = kwarg
     preferred_common_name: str = field(default='')
 
-    # Lazy-loaded nested model objects
-    _ancestors: List[Dict] = field(factory=list, repr=False)
-    _children: List[Dict] = field(factory=list, repr=False)
-    _default_photo: Dict = field(factory=dict, repr=False)
-    _taxon_photos: List[Dict] = field(factory=list, repr=False)
-    _ancestors_obj: List['Taxon'] = field(default=None, init=False, repr=False)
-    _children_obj: List['Taxon'] = field(default=None, init=False, repr=False)
-    _default_photo_obj: Photo = field(default=None, init=False, repr=False)
-    _taxon_photos_obj: List[Photo] = field(default=None, init=False, repr=False)
-
     # Nested collections
     ancestor_ids: List[int] = field(factory=list)
     conservation_statuses: List[str] = field(factory=list)
@@ -55,27 +45,33 @@ class Taxon(BaseModel):
     flag_counts: Dict = field(factory=dict)
     listed_taxa: List = field(factory=list)
 
+    # Lazy-loaded nested model objects
+    default_photo: property = cached_model_property(Photo.from_json, '_default_photo')
+    _default_photo: Dict = field(factory=dict, repr=False)
+    taxon_photos: property = cached_model_property(Photo.from_json_list, '_taxon_photos')
+    _taxon_photos: List[Dict] = field(factory=list, repr=False)
+
+    # More model objects, but converters can't be defined here since Taxon isn't created yet
+    _ancestors: List[Dict] = field(factory=list, repr=False)
+    _ancestors_obj: List['Taxon'] = field(default=None, init=False, repr=False)
+    _children: List[Dict] = field(factory=list, repr=False)
+    _children_obj: List['Taxon'] = field(default=None, init=False, repr=False)
+
     # Unused attributes
     # ancestry: str = kwarg
 
     @cached_property
     def ancestors(self) -> List['Taxon']:
-        return self.__class__.from_json_list(self._ancestors)
+        return self.__class__.from_json_list(self._ancestors) if self._ancestors else []
 
     @cached_property
     def children(self) -> List['Taxon']:
+        if not self._children:
+            return []
         # Sort children by rank then name
         children = self.__class__.from_json_list(self._children)
         children.sort(key=get_rank_name_idx)
         return children
-
-    @cached_property
-    def default_photo(self) -> Photo:
-        return Photo.from_json(self._default_photo)
-
-    @cached_property
-    def taxon_photos(self) -> List[Photo]:
-        return Photo.from_json_list([t['photo'] for t in self._taxon_photos])
 
     @property
     def ancestry(self):

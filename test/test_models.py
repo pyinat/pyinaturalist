@@ -4,10 +4,10 @@ from dateutil.tz import tzoffset, tzutc
 from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.models import (
     ID,
-    OF,
     OFV,
     Comment,
     Observation,
+    ObservationField,
     Photo,
     Place,
     Project,
@@ -57,12 +57,12 @@ def test_comment_empty():
 
 
 def test_identification_converters():
-    identification = Comment.from_json(identification_json)
+    identification = ID.from_json(identification_json)
     assert isinstance(identification.user, User) and identification.user.id == 2852555
 
 
 def test_identification_empty():
-    identification = Comment()
+    identification = ID()
     assert isinstance(identification.created_at, datetime)
     assert isinstance(identification.flags, list)
 
@@ -77,6 +77,7 @@ def test_observation_converters():
     assert obs.created_at == datetime(2020, 8, 27, 0, 0, tzinfo=utc)
     assert obs.observed_on == datetime(2020, 8, 27, 8, 57, 22, tzinfo=utc)
 
+    assert isinstance(obs.comments[0], Comment) and obs.comments[0].id == 5326888
     assert isinstance(obs.identifications[0], ID) and obs.identifications[0].id == 126501311
     assert isinstance(obs.photos[0], Photo) and obs.photos[0].id == 92152429
     assert isinstance(obs.taxon, Taxon) and obs.taxon.id == 48662
@@ -86,9 +87,9 @@ def test_observation_converters():
 
 def test_observation_empty():
     obs = Observation()
-    assert obs.uuid is None
     assert isinstance(obs.created_at, datetime)
-    assert isinstance(obs.photos, list)
+    assert obs.photos is None
+    assert obs.uuid is None
 
 
 def test_observation_thumbnail_url():
@@ -101,13 +102,13 @@ def test_observation_thumbnail_url():
 
 
 def test_observation_field_converters():
-    obs_field = OF.from_json(obs_field_json)
+    obs_field = ObservationField.from_json(obs_field_json)
     assert obs_field.allowed_values == ['Male', 'Female', 'Unknown']
     assert obs_field.created_at == datetime(2016, 5, 29, 16, 17, 8, 51000, tzinfo=tzutc())
 
 
 def test_observation_field_empty():
-    obs_field = OF()
+    obs_field = ObservationField()
     assert obs_field.allowed_values == []
     assert isinstance(obs_field.created_at, datetime)
 
@@ -207,7 +208,18 @@ def test_taxon_converters():
 def test_taxon_empty():
     taxon = Taxon()
     assert taxon.preferred_common_name == ''
-    assert isinstance(taxon.taxon_photos, list)
+    assert taxon.ancestors == []
+    assert taxon.children == []
+    assert taxon.default_photo is None
+    assert taxon.taxon_photos is None
+
+
+def test_taxon_taxonomy():
+    taxon = Taxon.from_json(taxon_json)
+    parent = taxon.ancestors[0]
+    child = taxon.children[0]
+    assert isinstance(parent, Taxon) and parent.id == 1
+    assert isinstance(child, Taxon) and child.id == 70115
 
 
 def test_taxon_properties():

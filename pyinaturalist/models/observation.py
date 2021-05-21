@@ -10,12 +10,13 @@ from pyinaturalist.models import (
     Photo,
     Taxon,
     User,
-    cached_property,
+    cached_model_property,
     coordinate_pair,
     datetime_attr,
     datetime_now_attr,
     kwarg,
 )
+from pyinaturalist.models.comment import Comment
 from pyinaturalist.node_api import get_observation
 from pyinaturalist.response_format import convert_observation_timestamp
 
@@ -64,19 +65,8 @@ class Observation(BaseModel):
     uri: str = kwarg
     uuid: str = kwarg
 
-    # Lazy-loaded nested model objects
-    _identifications: List[Dict] = field(factory=list, repr=False)
-    _photos: List[Dict] = field(factory=list, repr=False)
-    _taxon: Dict = field(factory=dict, repr=False)
-    _user: Dict = field(factory=dict, repr=False)
-    _identifications_obj: List[ID] = field(default=None, init=False, repr=False)
-    _photos_obj: List[Photo] = field(default=None, init=False, repr=False)
-    _taxon_obj: Taxon = field(default=None, init=False, repr=False)
-    _user_obj: User = field(default=None, init=False, repr=False)
-
     # Nested collections
     annotations: List = field(factory=list)
-    comments: List = field(factory=list)
     faves: List = field(factory=list)
     flags: List = field(factory=list)
     ofvs: List = field(factory=list)
@@ -92,6 +82,19 @@ class Observation(BaseModel):
     sounds: List = field(factory=list)
     tags: List = field(factory=list)
     votes: List = field(factory=list)
+
+    # Lazy-loaded nested model objects
+    comments: property = cached_model_property(Comment.from_json_list, '_comments')
+    _comments: List[Dict] = field(factory=list, repr=False)
+
+    identifications: property = cached_model_property(ID.from_json_list, '_identifications')
+    _identifications: List[Dict] = field(factory=list, repr=False)
+    photos: property = cached_model_property(Photo.from_json_list, '_photos')
+    _photos: List[Dict] = field(factory=list, repr=False)
+    taxon: property = cached_model_property(Taxon.from_json, '_taxon')
+    _taxon: Dict = field(factory=dict, repr=False)
+    user: property = cached_model_property(User.from_json, '_user')
+    _user: Dict = field(factory=dict, repr=False)
 
     # Additional attributes from API response that are redundant here; just left here for reference
     # created_at_details: Dict = field(factory=dict)
@@ -135,22 +138,6 @@ class Observation(BaseModel):
             )
 
         self.__attrs_init__(**kwargs)  # type: ignore
-
-    @cached_property
-    def identifications(self):
-        return ID.from_json_list(self._identifications)
-
-    @cached_property
-    def photos(self):
-        return Photo.from_json_list(self._photos)
-
-    @cached_property
-    def taxon(self):
-        return Taxon.from_json(self._taxon)
-
-    @cached_property
-    def user(self):
-        return User.from_json(self._user)
 
     @classmethod
     def from_id(cls, id: int):
