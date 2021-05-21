@@ -4,9 +4,6 @@ from os import makedirs, symlink
 from os.path import abspath, dirname, exists, join
 from shutil import copytree, rmtree
 
-# This import is here to preempt a possible circular import bug in nbsphinx 0.8 and/or ipython 7.20
-import prompt_toolkit  # noqa: F401
-
 DOCS_DIR = abspath(dirname(__file__))
 PROJECT_DIR = dirname(DOCS_DIR)
 PACKAGE_DIR = join(PROJECT_DIR, 'pyinaturalist')
@@ -47,6 +44,7 @@ extensions = [
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
     'sphinx_copybutton',
+    'sphinx_rtd_theme',
     'sphinxcontrib.apidoc',
     'm2r2',
     'nbsphinx',
