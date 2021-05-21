@@ -1,24 +1,24 @@
 from typing import List, Optional, Tuple
 
-import attr
+from attr import define, field
 
 from pyinaturalist.constants import PHOTO_INFO_BASE_URL, PHOTO_SIZES
-from pyinaturalist.models import BaseModel, dataclass, kwarg
+from pyinaturalist.models import BaseModel, kwarg
 from pyinaturalist.request_params import CC_LICENSES
 from pyinaturalist.response_format import format_dimensions, format_license
 
 
-@dataclass
+@define(auto_attribs=False)
 class Photo(BaseModel):
     """A data class containing information about a remote observation photo"""
 
     attribution: str = kwarg
-    flags: List = attr.ib(factory=list)
+    flags: List = field(factory=list)
     id: int = kwarg
-    license_code: str = attr.ib(converter=format_license, default=None)  # Enum
-    original_dimensions: Tuple[int, int] = attr.ib(converter=format_dimensions, default=(0, 0))
+    license_code: str = field(converter=format_license, default=None)  # Enum
+    original_dimensions: Tuple[int, int] = field(converter=format_dimensions, default=(0, 0))
     url: str = kwarg
-    _url_format: str = attr.ib(init=False, repr=False, default=None)
+    _url_format: str = field(init=False, repr=False, default=None)
 
     def __attrs_post_init__(self):
         if not self.url:

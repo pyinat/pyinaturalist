@@ -1,22 +1,44 @@
 from datetime import datetime
 from typing import Dict, List, Optional
 
-import attr
+from attr import define, field
 
-from pyinaturalist.constants import Coordinates
+from pyinaturalist.constants import Coordinates, JsonResponse
 from pyinaturalist.models import (
     BaseModel,
-    ProjectUser,
     User,
     coordinate_pair,
-    dataclass,
     datetime_attr,
     datetime_now_attr,
     kwarg,
 )
 
 
-@dataclass
+@define(auto_attribs=False)
+class ProjectUser(User):
+    """A :py:class:`.User` with additional project-specific information returned by
+    `GET /projects <https://api.inaturalist.org/v1/docs/#!/Projects/get_projects>`_.
+    """
+
+    project_id: int = kwarg
+    project_user_id: int = kwarg
+    role: str = kwarg
+
+    @classmethod
+    def from_project_json(cls, value: JsonResponse, **kwargs):
+        """Flatten out nested values from project user info"""
+        user = value['user']
+        user['project_id'] = value['project_id']
+        user['project_user_id'] = value['id']
+        user['role'] = value['role']
+        return cls.from_json(user, **kwargs)
+
+    @classmethod
+    def from_project_json_list(cls, value: List[JsonResponse], **kwargs):
+        return [cls.from_project_json(project_user, **kwargs) for project_user in value]
+
+
+@define(auto_attribs=False)
 class Project(BaseModel):
     """A dataclass containing information about a project, matching the schema of
     `GET /projects <https://api.inaturalist.org/v1/docs/#!/Projects/get_projects>`_.
@@ -44,17 +66,17 @@ class Project(BaseModel):
     user_id: int = kwarg
 
     # Nested model objects
-    admins: List[ProjectUser] = attr.ib(converter=ProjectUser.from_project_json_list, factory=list)  # type: ignore
-    user: User = attr.ib(converter=User.from_json, default=None)  # type: ignore
+    admins: List[ProjectUser] = field(converter=ProjectUser.from_project_json_list, factory=list)  # type: ignore
+    user: User = field(converter=User.from_json, default=None)  # type: ignore
 
     # Nested collections
-    flags: List = attr.ib(factory=list)  # TODO: Unsure of list type. str?
-    project_observation_fields: List = attr.ib(factory=list)  # TODO: Unsure of list type. dict?
-    project_observation_rules: List = attr.ib(factory=list)
-    rule_preferences: List[Dict] = attr.ib(factory=list)
-    search_parameters: List[Dict] = attr.ib(factory=list)
-    site_features: List[Dict] = attr.ib(factory=list)
-    user_ids: List[int] = attr.ib(factory=list)
+    flags: List = field(factory=list)  # TODO: Unsure of list type. str?
+    project_observation_fields: List = field(factory=list)  # TODO: Unsure of list type. dict?
+    project_observation_rules: List = field(factory=list)
+    rule_preferences: List[Dict] = field(factory=list)
+    search_parameters: List[Dict] = field(factory=list)
+    site_features: List[Dict] = field(factory=list)
+    user_ids: List[int] = field(factory=list)
 
     # Unused attributes
     # latitude: float = kwarg

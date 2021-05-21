@@ -1,21 +1,21 @@
 from typing import Dict, List
 
-import attr
+from attr import define, field, fields_dict
 
 from pyinaturalist.constants import API_V1_BASE_URL
-from pyinaturalist.models import BaseModel, Photo, cached_property, dataclass, kwarg
+from pyinaturalist.models import BaseModel, Photo, cached_property, kwarg
 from pyinaturalist.node_api import get_taxa_by_id
 from pyinaturalist.request_params import RANKS
 
 
-@dataclass
+@define(auto_attribs=False)
 class Taxon(BaseModel):
     """A dataclass containing information about a taxon, matching the schema of
     `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_.
 
     Can be constructed from either a full JSON record, a partial JSON record, or just an ID.
     Examples of partial records include nested ``ancestors``, ``children``, and results from
-    :py:func:`get_taxa_autocomplete`
+    :py:func:`get_taxa_autocomplete`.
     """
 
     atlas_id: int = kwarg
@@ -36,24 +36,24 @@ class Taxon(BaseModel):
     taxon_schemes_count: int = kwarg
     wikipedia_summary: str = kwarg
     wikipedia_url: str = kwarg
-    preferred_common_name: str = attr.ib(default='')
+    preferred_common_name: str = field(default='')
 
     # Lazy-loaded nested model objects
-    _ancestors: List[Dict] = attr.ib(factory=list, repr=False)
-    _children: List[Dict] = attr.ib(factory=list, repr=False)
-    _default_photo: Dict = attr.ib(factory=dict, repr=False)
-    _taxon_photos: List[Dict] = attr.ib(factory=list, repr=False)
-    _ancestors_obj: List['Taxon'] = None  # type: ignore
-    _children_obj: List['Taxon'] = None  # type: ignore
-    _default_photo_obj: Photo = None  # type: ignore
-    _taxon_photos_obj: List[Photo] = None  # type: ignore
+    _ancestors: List[Dict] = field(factory=list, repr=False)
+    _children: List[Dict] = field(factory=list, repr=False)
+    _default_photo: Dict = field(factory=dict, repr=False)
+    _taxon_photos: List[Dict] = field(factory=list, repr=False)
+    _ancestors_obj: List['Taxon'] = field(default=None, init=False, repr=False)
+    _children_obj: List['Taxon'] = field(default=None, init=False, repr=False)
+    _default_photo_obj: Photo = field(default=None, init=False, repr=False)
+    _taxon_photos_obj: List[Photo] = field(default=None, init=False, repr=False)
 
     # Nested collections
-    ancestor_ids: List[int] = attr.ib(factory=list)
-    conservation_statuses: List[str] = attr.ib(factory=list)
-    current_synonymous_taxon_ids: List[int] = attr.ib(factory=list)
-    flag_counts: Dict = attr.ib(factory=dict)
-    listed_taxa: List = attr.ib(factory=list)
+    ancestor_ids: List[int] = field(factory=list)
+    conservation_statuses: List[str] = field(factory=list)
+    current_synonymous_taxon_ids: List[int] = field(factory=list)
+    flag_counts: Dict = field(factory=dict)
+    listed_taxa: List = field(factory=list)
 
     # Unused attributes
     # ancestry: str = kwarg
@@ -100,7 +100,7 @@ class Taxon(BaseModel):
 
     def update_from_full_record(self):
         t = Taxon.from_id(self.id)
-        for key in attr.fields_dict(self.__class__).keys():
+        for key in fields_dict(self.__class__).keys():
             setattr(self, key, getattr(t, key))
 
 

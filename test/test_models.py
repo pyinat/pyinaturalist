@@ -2,8 +2,19 @@ from datetime import datetime
 from dateutil.tz import tzoffset, tzutc
 
 from pyinaturalist.constants import API_V1_BASE_URL
-from pyinaturalist.models import ID, OF, OFV, Comment, Observation, Photo, Place, Project, Taxon, User
-from pyinaturalist.models.user import ProjectUser
+from pyinaturalist.models import (
+    ID,
+    OF,
+    OFV,
+    Comment,
+    Observation,
+    Photo,
+    Place,
+    Project,
+    ProjectUser,
+    Taxon,
+    User,
+)
 from test.conftest import load_sample_data
 
 obs_json = load_sample_data('get_observations_node_page1.json')['results'][0]

@@ -1,17 +1,9 @@
 from datetime import date, datetime
 from typing import Dict, List, Optional, Union
 
-import attr
+from attr import define, field
 
-from pyinaturalist.models import (
-    BaseModel,
-    Taxon,
-    User,
-    cached_property,
-    dataclass,
-    datetime_now_attr,
-    kwarg,
-)
+from pyinaturalist.models import BaseModel, Taxon, User, cached_property, datetime_now_attr, kwarg
 from pyinaturalist.response_format import safe_split, try_int_or_float
 
 # Mappings from observation field value datatypes to python datatypes
@@ -27,13 +19,13 @@ OFV_DATATYPES = {
 OFVValue = Union[date, datetime, float, int, str]
 
 
-@dataclass
+@define(auto_attribs=False)
 class ObservationField(BaseModel):
     """A dataclass containing information about an observation field **definition**, matching the schema of
     `GET /observation_fields <https://www.inaturalist.org/pages/api+reference#get-observation_fields>`_.
     """
 
-    allowed_values: List[str] = attr.ib(converter=safe_split, factory=list)
+    allowed_values: List[str] = field(converter=safe_split, factory=list)
     created_at: datetime = datetime_now_attr
     datatype: str = kwarg  # Enum
     description: str = kwarg
@@ -46,7 +38,7 @@ class ObservationField(BaseModel):
     values_count: int = kwarg
 
 
-@dataclass
+@define(auto_attribs=False)
 class ObservationFieldValue(BaseModel):
     """A dataclass containing information about an observation field **value**, matching the schema of ``ofvs``
     from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
@@ -62,10 +54,10 @@ class ObservationFieldValue(BaseModel):
     value: OFVValue = kwarg
 
     # Lazy-loaded nested model objects
-    _taxon: Dict = attr.ib(factory=dict, repr=False)
-    _taxon_obj: Taxon = None  # type: ignore
-    _user: Dict = attr.ib(factory=dict, repr=False)
-    _user_obj: User = None  # type: ignore
+    _taxon: Dict = field(factory=dict, repr=False)
+    _taxon_obj: Taxon = field(default=None, init=False, repr=False)
+    _user: Dict = field(factory=dict, repr=False)
+    _user_obj: User = field(default=None, init=False, repr=False)
 
     # Unused attrbiutes
     # name_ci: str = kwarg

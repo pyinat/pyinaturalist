@@ -8,7 +8,7 @@ from os.path import expanduser
 from pathlib import Path
 from typing import IO, Callable, Dict, List, Optional, Type, TypeVar, Union
 
-import attr
+from attr import asdict, define, field, fields_dict
 
 from pyinaturalist.constants import JsonResponse
 from pyinaturalist.response_format import convert_lat_long, try_datetime
@@ -19,27 +19,17 @@ def utcnow() -> datetime:
 
 
 # Some aliases for common attribute types
-kwarg = attr.ib(default=None)
-coordinate_pair = attr.ib(converter=convert_lat_long, default=None)  # type: ignore
-datetime_attr = attr.ib(converter=try_datetime, default=None)  # type: ignore
-datetime_now_attr = attr.ib(converter=try_datetime, factory=utcnow)  # type: ignore
-
-# Attrs options
-dataclass = attr.s(
-    auto_attribs=False,
-    auto_detect=True,
-    collect_by_mro=True,
-    kw_only=True,
-    slots=True,
-    weakref_slot=False,
-)
+kwarg = field(default=None)
+coordinate_pair = field(converter=convert_lat_long, default=None)  # type: ignore
+datetime_attr = field(converter=try_datetime, default=None)  # type: ignore
+datetime_now_attr = field(converter=try_datetime, factory=utcnow)  # type: ignore
 
 
 T = TypeVar('T', bound='BaseModel')
 logger = getLogger(__name__)
 
 
-@attr.s
+@define(auto_attribs=False)
 class BaseModel:
     """Base class for models"""
 
@@ -58,7 +48,7 @@ class BaseModel:
         if not value:
             return cls()
         elif isinstance(value, dict):
-            attr_names = [a.lstrip('_') for a in attr.fields_dict(cls)]
+            attr_names = [a.lstrip('_') for a in fields_dict(cls)]
             if cls.temp_attrs:
                 attr_names.extend(cls.temp_attrs)
             valid_json = {k: v for k, v in value.items() if k in attr_names and v is not None}
@@ -81,7 +71,7 @@ class BaseModel:
             return cls.from_json_list(_load_path_or_obj(value))  # type: ignore
 
     def to_json(self) -> Dict:
-        return attr.asdict(self)
+        return asdict(self)
 
 
 def cached_property(func: Callable) -> property:

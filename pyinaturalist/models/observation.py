@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict, List, Optional
 
-import attr
+from attr import define, field
 
 from pyinaturalist.constants import Coordinates
 from pyinaturalist.models import (
@@ -12,7 +12,6 @@ from pyinaturalist.models import (
     User,
     cached_property,
     coordinate_pair,
-    dataclass,
     datetime_attr,
     datetime_now_attr,
     kwarg,
@@ -21,7 +20,7 @@ from pyinaturalist.node_api import get_observation
 from pyinaturalist.response_format import convert_observation_timestamp
 
 
-@dataclass
+@define(auto_attribs=False, init=False)
 class Observation(BaseModel):
     """A dataclass containing information about an observation, matching the schema of
     `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
@@ -66,42 +65,42 @@ class Observation(BaseModel):
     uuid: str = kwarg
 
     # Lazy-loaded nested model objects
-    _identifications: List[Dict] = attr.ib(factory=list, repr=False)
-    _photos: List[Dict] = attr.ib(factory=list, repr=False)
-    _taxon: Dict = attr.ib(factory=dict, repr=False)
-    _user: Dict = attr.ib(factory=dict, repr=False)
-    _identifications_obj: List[ID] = None  # type: ignore
-    _photos_obj: List[Photo] = None  # type: ignore
-    _taxon_obj: Taxon = None  # type: ignore
-    _user_obj: User = None  # type: ignore
+    _identifications: List[Dict] = field(factory=list, repr=False)
+    _photos: List[Dict] = field(factory=list, repr=False)
+    _taxon: Dict = field(factory=dict, repr=False)
+    _user: Dict = field(factory=dict, repr=False)
+    _identifications_obj: List[ID] = field(default=None, init=False, repr=False)
+    _photos_obj: List[Photo] = field(default=None, init=False, repr=False)
+    _taxon_obj: Taxon = field(default=None, init=False, repr=False)
+    _user_obj: User = field(default=None, init=False, repr=False)
 
     # Nested collections
-    annotations: List = attr.ib(factory=list)
-    comments: List = attr.ib(factory=list)
-    faves: List = attr.ib(factory=list)
-    flags: List = attr.ib(factory=list)
-    ofvs: List = attr.ib(factory=list)
-    outlinks: List = attr.ib(factory=list)
-    place_ids: List = attr.ib(factory=list)
-    preferences: Dict = attr.ib(factory=dict)
-    project_ids: List = attr.ib(factory=list)
-    project_ids_with_curator_id: List = attr.ib(factory=list)
-    project_ids_without_curator_id: List = attr.ib(factory=list)
-    project_observations: List = attr.ib(factory=list)
-    quality_metrics: List = attr.ib(factory=list)
-    reviewed_by: List = attr.ib(factory=list)
-    sounds: List = attr.ib(factory=list)
-    tags: List = attr.ib(factory=list)
-    votes: List = attr.ib(factory=list)
+    annotations: List = field(factory=list)
+    comments: List = field(factory=list)
+    faves: List = field(factory=list)
+    flags: List = field(factory=list)
+    ofvs: List = field(factory=list)
+    outlinks: List = field(factory=list)
+    place_ids: List = field(factory=list)
+    preferences: Dict = field(factory=dict)
+    project_ids: List = field(factory=list)
+    project_ids_with_curator_id: List = field(factory=list)
+    project_ids_without_curator_id: List = field(factory=list)
+    project_observations: List = field(factory=list)
+    quality_metrics: List = field(factory=list)
+    reviewed_by: List = field(factory=list)
+    sounds: List = field(factory=list)
+    tags: List = field(factory=list)
+    votes: List = field(factory=list)
 
     # Additional attributes from API response that are redundant here; just left here for reference
-    # created_at_details: Dict = attr.ib(factory=dict)
+    # created_at_details: Dict = field(factory=dict)
     # created_time_zone: str = kwarg
-    # geojson: Dict = attr.ib(factory=dict)
-    # non_owner_ids: List = attr.ib(factory=list)
-    # observation_photos: List[Photo] = attr.ib(converter=Photo.from_dict_list, factory=list)
+    # geojson: Dict = field(factory=dict)
+    # non_owner_ids: List = field(factory=list)
+    # observation_photos: List[Photo] = field(converter=Photo.from_dict_list, factory=list)
     # time_observed_at: Optional[datetime] = datetime_attr
-    # observed_on_details: Dict = attr.ib(factory=dict)
+    # observed_on_details: Dict = field(factory=dict)
     # observed_on_string: str = kwarg
     # observed_time_zone: str = kwarg
     # time_zone_offset: str = kwarg

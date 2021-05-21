@@ -1,12 +1,12 @@
 from datetime import datetime
 from typing import Dict, List
 
-import attr
+from attr import define, field
 
-from pyinaturalist.models import BaseModel, User, cached_property, dataclass, datetime_now_attr, kwarg
+from pyinaturalist.models import BaseModel, User, cached_property, datetime_now_attr, kwarg
 
 
-@dataclass
+@define(auto_attribs=False)
 class Comment(BaseModel):
     """A dataclass containing information about a comment, matching the schema of observation comments
     from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
@@ -14,18 +14,18 @@ class Comment(BaseModel):
 
     body: str = kwarg
     created_at: datetime = datetime_now_attr
-    flags: List = attr.ib(factory=list)
+    flags: List = field(factory=list)
     hidden: bool = kwarg
     id: int = kwarg
-    moderator_actions: List = attr.ib(factory=list)
+    moderator_actions: List = field(factory=list)
     uuid: str = kwarg
 
     # Lazy-loaded nested model objects
-    _user: Dict = attr.ib(factory=dict, repr=False)
-    _user_obj: User = None  # type: ignore
+    _user: Dict = field(factory=dict, repr=False)
+    _user_obj: User = field(default=None, init=False, repr=False)
 
     # Unused attributes
-    # created_at_details: Dict = attr.ib(factory=dict)
+    # created_at_details: Dict = field(factory=dict)
 
     @cached_property
     def user(self):

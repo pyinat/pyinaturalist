@@ -1,20 +1,12 @@
 from datetime import datetime
 from typing import Dict, List
 
-import attr
+from attr import define, field
 
-from pyinaturalist.models import (
-    BaseModel,
-    Taxon,
-    User,
-    cached_property,
-    dataclass,
-    datetime_now_attr,
-    kwarg,
-)
+from pyinaturalist.models import BaseModel, Taxon, User, cached_property, datetime_now_attr, kwarg
 
 
-@dataclass
+@define(auto_attribs=False)
 class Identification(BaseModel):
     """A dataclass containing information about an identification, matching the schema of
     `GET /identifications <https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications>`_.
@@ -38,14 +30,14 @@ class Identification(BaseModel):
 
     # Lazy-loaded nested model objects
     # observation: {}  # TODO: Is this actually needed?
-    _taxon: Dict = attr.ib(factory=dict, repr=False)
-    _taxon_obj: Taxon = None  # type: ignore
-    _user: Dict = attr.ib(factory=dict, repr=False)
-    _user_obj: User = None  # type: ignore
+    _taxon: Dict = field(factory=dict, repr=False)
+    _taxon_obj: Taxon = field(default=None, init=False, repr=False)
+    _user: Dict = field(factory=dict, repr=False)
+    _user_obj: User = field(default=None, init=False, repr=False)
 
     # Nesetd collections
-    flags: List = attr.ib(factory=list)
-    moderator_actions: List = attr.ib(factory=list)
+    flags: List = field(factory=list)
+    moderator_actions: List = field(factory=list)
 
     # Unused attributes
     # created_at_details: {}
