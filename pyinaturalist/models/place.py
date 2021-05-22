@@ -5,7 +5,7 @@ from attr import define, field
 from pyinaturalist.constants import Coordinates
 from pyinaturalist.models import BaseModel, coordinate_pair, kwarg
 
-# TODO: Make a separate model for geojson type? or optionally use `geojson` library?
+# TODO: Optionally use `geojson` library for users who want to use place geojson?
 GeoJson = Dict
 
 

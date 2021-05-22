@@ -21,6 +21,6 @@ from pyinaturalist.models.user import User
 from pyinaturalist.models.comment import Comment
 from pyinaturalist.models.identification import ID, Identification
 from pyinaturalist.models.place import Place
-from pyinaturalist.models.project import Project, ProjectUser
-from pyinaturalist.models.observation_field import OF, OFV, ObservationField, ObservationFieldValue
+from pyinaturalist.models.project import Project, ProjectObservationField, POF, ProjectUser
+from pyinaturalist.models.observation_field import ObservationField, OF, ObservationFieldValue, OFV
 from pyinaturalist.models.observation import Observation

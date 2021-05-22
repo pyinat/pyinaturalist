@@ -11,6 +11,7 @@ from pyinaturalist.models import (
     Photo,
     Place,
     Project,
+    ProjectObservationField,
     ProjectUser,
     Taxon,
     User,
@@ -24,6 +25,7 @@ ofv_json_numeric = load_sample_data('get_observation_with_ofvs.json')['results']
 place_json = load_sample_data('get_places_by_id.json')['results'][0]
 places_nearby_json = load_sample_data('get_places_nearby.json')['results']
 project_json = load_sample_data('get_projects.json')['results'][0]
+project_json_obs_fields = load_sample_data('get_projects_obs_fields.json')['results'][0]
 user_json = load_sample_data('get_user_by_id.json')['results'][0]
 user_json_partial = load_sample_data('get_users_autocomplete.json')['results'][0]
 taxon_json = load_sample_data('get_taxa_by_id.json')['results'][0]
@@ -189,6 +191,8 @@ def test_place_from_json_list():
 def test_project_converters():
     project = Project.from_json(project_json)
     assert project.location == (48.777404, -122.306929)
+    assert project.project_observation_rules == project.obs_rules
+    assert project.obs_rules[0]['id'] == 616862
     assert project.search_parameters[0]['field'] == 'quality_grade'
     assert project.user_ids[-1] == 3387092 and len(project.user_ids) == 33
 
@@ -197,12 +201,22 @@ def test_project_converters():
     assert isinstance(project.user, User) and project.user.id == 233188
 
 
+def test_project_with_obs_fields():
+    project = Project.from_json(project_json_obs_fields)
+    obs_field = project.project_observation_fields[0]
+    assert isinstance(obs_field, ProjectObservationField)
+    assert obs_field.id == 30
+    assert obs_field.position == 0
+    assert obs_field.required is False
+
+
 def test_project_empty():
     project = Project()
     assert project.admins == []
     assert isinstance(project.created_at, datetime)
-    assert project.search_parameters == []
+    assert project.location is None
     assert project.project_observation_rules == []
+    assert project.search_parameters == []
     assert project.user is None
 
 

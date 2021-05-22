@@ -1,5 +1,3 @@
-# TODO: Inherit from UserDict so model objects can also be used like dicts?
-#   e.g. support both observation['id'] and observation.id
 import json
 from datetime import datetime, timezone
 from functools import wraps
@@ -90,7 +88,6 @@ def cached_property(func: Callable) -> property:
     return property(wrapper)
 
 
-# TODO: return empty list instead of none for List[BaseModel]?
 def cached_model_property(converter: Callable, temp_attr: str) -> property:
     """Similar to ``@functools.cached_property``, but works for slotted classes by not relying on
     ``__dict__``. Specifically used for nested model objects, which allows delaying initialization
