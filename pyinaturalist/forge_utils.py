@@ -66,9 +66,7 @@ def document_request_params(template_functions: List[TemplateFunction]) -> Calla
     return wrapper
 
 
-def copy_docstrings(
-    target_function: Callable, template_functions: List[TemplateFunction]
-) -> Callable:
+def copy_docstrings(target_function: Callable, template_functions: List[TemplateFunction]) -> Callable:
     """Copy docstrings from one or more template functions to a target function.
     Assumes Google-style docstrings.
 
@@ -119,9 +117,7 @@ def copy_signature(template_function: Callable, include=None, exclude=None) -> C
     return wrapper
 
 
-def copy_signatures(
-    target_function: Callable, template_functions: List[TemplateFunction]
-) -> Callable:
+def copy_signatures(target_function: Callable, template_functions: List[TemplateFunction]) -> Callable:
     """Copy function signatures from one or more template functions to a target function.
 
     Args:

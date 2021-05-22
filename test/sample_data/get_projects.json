@@ -9,9 +9,13 @@
             "description": "To identify plants to report to the Pacific Northwest Invasive Plant Council",
             "created_at": "2016-07-20T23:00:05+00:00",
             "title": "PNW Invasive Plant EDDR",
-            "banner_color": null,
-            "project_observation_rules": [],
-            "site_features": [],
+            "banner_color": "#4551b7",
+            "project_observation_rules": [
+                {"operand_id": 90550, "id": 616862, "operand_type": "Project", "operator": "in_project?"}
+            ],
+            "site_features": [
+                {"noteworthy": true, "site_id": 1, "featured_at": "2021-03-16T16:41:32.477Z"}
+            ],
             "project_observation_fields": [],
             "updated_at": "2020-07-28T20:09:49+00:00",
             "terms": null,

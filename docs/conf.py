@@ -2,9 +2,12 @@
 import sys
 from os import makedirs, symlink
 from os.path import abspath, dirname, exists, join
-from shutil import copytree, rmtree
+from shutil import copy, copytree, rmtree
+
+import prompt_toolkit  # noqa  # avoid potential circular import in nbsphinx
 
 DOCS_DIR = abspath(dirname(__file__))
+MODULE_DOCS_DIR = join(DOCS_DIR, 'modules')
 PROJECT_DIR = dirname(DOCS_DIR)
 PACKAGE_DIR = join(PROJECT_DIR, 'pyinaturalist')
 
@@ -22,7 +25,7 @@ from pyinaturalist import __version__  # noqa: E402
 
 # General information about the project.
 project = 'pyinaturalist'
-copyright = '2021, Nicolas Noé'
+copyright = '2021, Nicolas Noé, Jordan Cook'
 needs_sphinx = '4.0'
 master_doc = 'index'
 source_suffix = ['.rst', '.md']
@@ -75,7 +78,7 @@ copybutton_prompt_is_regexp = True
 # Added here instead of instead of in Makefile so it will be used by ReadTheDocs
 apidoc_module_dir = PACKAGE_DIR
 apidoc_output_dir = 'modules'
-apidoc_excluded_paths = ['api_docs.py']
+apidoc_excluded_paths = ['api_docs.py', 'models/*']
 apidoc_module_first = True
 apidoc_separate_modules = True
 apidoc_toc_file = False
@@ -110,7 +113,13 @@ def setup(app):
     """
     app.connect('builder-inited', setup_external_files)
     app.connect('builder-inited', patch_automodapi)
+    app.connect('build-finished', overwrite_subpackage_doc)
     app.add_css_file('collapsible_container.css')
+
+
+def overwrite_subpackage_doc(app, exception):
+    """This overwrites the auto-generated subpackage doc with a manually formatted one"""
+    copy(join(DOCS_DIR, 'pyinaturalist.models.rst'), MODULE_DOCS_DIR)
 
 
 def setup_external_files(app):

@@ -44,12 +44,8 @@ def test_get_observations(response_format, requests_mock):
     if response_format == 'json':
         assert observations[0]['latitude'] == 50.646894
         assert observations[0]['longitude'] == 4.360086
-        assert observations[0]['created_at'] == datetime(
-            2018, 9, 5, 12, 31, 8, 48000, tzinfo=tzutc()
-        )
-        assert observations[0]['updated_at'] == datetime(
-            2018, 9, 22, 17, 19, 27, 80000, tzinfo=tzutc()
-        )
+        assert observations[0]['created_at'] == datetime(2018, 9, 5, 12, 31, 8, 48000, tzinfo=tzutc())
+        assert observations[0]['updated_at'] == datetime(2018, 9, 22, 17, 19, 27, 80000, tzinfo=tzutc())
     else:
         assert observations == mock_response
 

@@ -2,6 +2,8 @@
 The main purpose of these functions is to support some python-specific conveniences and translate
 them into standard request parameters, along with request validation that makes debugging easier.
 """
+# TODO: It would be nice to put all the multiple-choice options on the models and use attrs validadtors
+# TODO: Move some of this information to constants module or relevant model modules?
 import warnings
 from datetime import date, datetime
 from dateutil.parser import parse as parse_timestamp
@@ -369,9 +371,7 @@ def is_valid_multiple_choice_option(value: Any, choices: Iterable) -> bool:
     return all([v in choices for v in value])
 
 
-def validate_multiple_choice_param(
-    params: RequestParams, key: str, choices: Iterable
-) -> RequestParams:
+def validate_multiple_choice_param(params: RequestParams, key: str, choices: Iterable) -> RequestParams:
     """Verify that a multiple-choice request parameter contains valid value(s);
     if not, raise an error.
     **Used for endpoint-specific params.**

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyinaturalist"
-version = "0.13.0"
+version = "0.14.0"
 description = "iNaturalist API client for python"
 authors = ["Nicolas Noé <nicolas@niconoe.eu>", "Jordan Cook <Jordan.Cook@pioneer.com>"]
 license = "MIT"
@@ -8,7 +8,7 @@ readme = "README.md"
 homepage = "https://github.com/niconoe/pyinaturalist"
 repository = "https://github.com/niconoe/pyinaturalist"
 documentation = "https://pyinaturalist.readthedocs.io"
-keywords = ["inaturalist", "biodiversity", "api-client", "requests"]
+keywords = ["inaturalist", "biodiversity", "api-client", "data-models", "requests"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -26,11 +26,14 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.6"
-keyring = ">=22.3"
+attrs = "^21.2.0"
 python-dateutil = ">=2.0"
+requests = ">=2.20"
+
+# TODO: These could maybe be made optional
+keyring = ">=22.3"  
 python-forge = ">=18.6.0"
 pyrate-limiter = ">=2.3.3"
-requests = ">=2.20"
 
 # Documentation dependencies needed for Readthedocs builds
 docutils = { version = "0.16", optional = true }
@@ -57,6 +60,7 @@ pytest = "^6.2"
 pytest-cov = ">=2.11"
 pytest-xdist = ">=2.2"
 requests-mock = "^1.8"
+rich = ">=10.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -64,7 +68,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 skip-string-normalization = true
-line-length = 100
+line-length = 105
 
 [tool.coverage.html]
 directory = 'test-reports'
@@ -75,9 +79,9 @@ source = ['pyinaturalist']
 
 [tool.isort]
 profile = 'black'
-line_length = 100
+line_length = 105
 skip_gitignore = true
-skip = ['pyinaturalist/__init__.py']
+skip = ['pyinaturalist/__init__.py', 'pyinaturalist/models/__init__.py']
 known_first_party = ['test']
 # Things that are common enough they may as well be grouped with stdlib imports
 extra_standard_library = ['dateutil', 'pytest', 'setuptools']
