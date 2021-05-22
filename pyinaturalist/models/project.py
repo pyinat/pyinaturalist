@@ -88,7 +88,6 @@ class Project(BaseModel):
     user_id: int = kwarg
 
     # Nested collections
-    flags: List = field(factory=list)  # TODO: Unsure of list type. str?
     project_observation_rules: List[Dict] = field(factory=list)
     rule_preferences: List[Dict] = field(factory=list)
     search_parameters: List[Dict] = field(factory=list)
@@ -106,6 +105,7 @@ class Project(BaseModel):
     _user: Dict = field(default=None, repr=False)
 
     # Unused attributes
+    # flags: List = field(factory=list)
     # latitude: float = kwarg
     # longitude: float = kwarg
 

@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 
 from attr import define, field
 
@@ -13,12 +13,14 @@ class Photo(BaseModel):
     """A data class containing information about a remote observation photo"""
 
     attribution: str = kwarg
-    flags: List = field(factory=list)
     id: int = kwarg
     license_code: str = field(converter=format_license, default=None)  # Enum
     original_dimensions: Tuple[int, int] = field(converter=format_dimensions, default=(0, 0))
     url: str = kwarg
     _url_format: str = field(init=False, repr=False, default=None)
+
+    # Unused attributes
+    # flags: List = field(factory=list)
 
     def __attrs_post_init__(self):
         if not self.url:

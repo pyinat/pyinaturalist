@@ -25,13 +25,13 @@ class User(BaseModel):
     orcid: str = kwarg
     roles: List = field(factory=list)
     site_id: int = kwarg
-    spam: bool = kwarg
-    suspended: bool = kwarg
 
     # Unused attributes
     # login_autocomplete: str = kwarg
     # login_exact: str = kwarg
     # name_autocomplete: str = kwarg
+    # spam: bool = kwarg
+    # suspended: bool = kwarg
     # universal_search_rank: int = kwarg
 
     # Aliases

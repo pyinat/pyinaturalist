@@ -51,7 +51,6 @@ def test_comment_empty():
     """We should be able to initialize the model with no args, and get sane defaults"""
     comment = Comment()
     assert isinstance(comment.created_at, datetime)
-    assert comment.flags == []
     assert comment.user is None
 
 
@@ -67,7 +66,6 @@ def test_identification_converters():
 def test_identification_empty():
     identification = ID()
     assert isinstance(identification.created_at, datetime)
-    assert isinstance(identification.flags, list)
     assert identification.taxon is None
     assert identification.user is None
 
@@ -264,7 +262,6 @@ def test_update_from_full_record():
 def test_user_converters():
     user = User.from_json(user_json)
     assert user.identifications_count == 95624
-    assert user.suspended is False
 
 
 def test_user_empty():
@@ -277,7 +274,6 @@ def test_user_partial():
     user = User.from_json(user_json_partial)
     assert user.id == 886482
     assert user.name == 'Nicolas Noé'
-    assert user.suspended is False
 
 
 def test_user_aliases():

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict
 
 from attr import define, field
 
@@ -22,15 +22,10 @@ class Identification(BaseModel):
     id: int = kwarg
     own_observation: bool = kwarg
     previous_observation_taxon_id: int = kwarg
-    spam: bool = kwarg
     taxon_change: bool = kwarg  # TODO: confirm type
     taxon_id: int = kwarg
     uuid: str = kwarg
     vision: bool = kwarg
-
-    # Nested collections
-    flags: List = field(factory=list)
-    moderator_actions: List = field(factory=list)
 
     # Lazy-loaded nested model objects
     taxon: property = cached_model_property(Taxon.from_json, '_taxon')
@@ -40,6 +35,9 @@ class Identification(BaseModel):
 
     # Unused attributes
     # created_at_details: {}
+    # spam: bool = kwarg
+    # flags: List = field(factory=list)
+    # moderator_actions: List = field(factory=list)
     # observation: {}  # TODO: Is this actually needed?
 
 

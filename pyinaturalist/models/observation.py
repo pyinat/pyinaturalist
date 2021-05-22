@@ -58,7 +58,6 @@ class Observation(BaseModel):
     public_positional_accuracy: int = kwarg
     quality_grade: str = kwarg  # Enum
     site_id: int = kwarg
-    spam: bool = kwarg
     species_guess: str = kwarg
     observed_on: Optional[datetime] = datetime_attr
     updated_at: Optional[datetime] = datetime_attr
@@ -68,7 +67,6 @@ class Observation(BaseModel):
     # Nested collections
     annotations: List = field(factory=list)
     faves: List = field(factory=list)
-    flags: List = field(factory=list)
     ofvs: List = field(factory=list)
     outlinks: List = field(factory=list)
     place_ids: List = field(factory=list)
@@ -95,16 +93,18 @@ class Observation(BaseModel):
     user: property = cached_model_property(User.from_json, '_user')
     _user: Dict = field(default=None, repr=False)
 
-    # Additional attributes from API response that are redundant here; just left here for reference
+    # Additional attributes from API response that aren't needed; just left here for reference
     # created_at_details: Dict = field(factory=dict)
     # created_time_zone: str = kwarg
+    # flags: List = field(factory=list)
     # geojson: Dict = field(factory=dict)
     # non_owner_ids: List = field(factory=list)
-    # observation_photos: List[Photo] = field(converter=Photo.from_dict_list, factory=list)
-    # time_observed_at: Optional[datetime] = datetime_attr
     # observed_on_details: Dict = field(factory=dict)
     # observed_on_string: str = kwarg
+    # observation_photos: List[Photo] = field(converter=Photo.from_dict_list, factory=list)
     # observed_time_zone: str = kwarg
+    # spam: bool = kwarg
+    # time_observed_at: Optional[datetime] = datetime_attr
     # time_zone_offset: str = kwarg
 
     # Attributes that will only be used during init and then omitted

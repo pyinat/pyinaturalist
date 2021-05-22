@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict
 
 from attr import define, field
 
@@ -14,10 +14,8 @@ class Comment(BaseModel):
 
     body: str = kwarg
     created_at: datetime = datetime_now_attr
-    flags: List = field(factory=list)
     hidden: bool = kwarg
     id: int = kwarg
-    moderator_actions: List = field(factory=list)
     uuid: str = kwarg
 
     # Lazy-loaded nested model objects
@@ -26,3 +24,5 @@ class Comment(BaseModel):
 
     # Unused attributes
     # created_at_details: Dict = field(factory=dict)
+    # flags: List = field(factory=list)
+    # moderator_actions: List = field(factory=list)
