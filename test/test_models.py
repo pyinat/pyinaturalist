@@ -50,6 +50,7 @@ def test_comment_empty():
     comment = Comment()
     assert isinstance(comment.created_at, datetime)
     assert comment.flags == []
+    assert comment.user is None
 
 
 # Identifications
@@ -65,6 +66,8 @@ def test_identification_empty():
     identification = ID()
     assert isinstance(identification.created_at, datetime)
     assert isinstance(identification.flags, list)
+    assert identification.taxon is None
+    assert identification.user is None
 
 
 # Observations
@@ -88,8 +91,12 @@ def test_observation_converters():
 def test_observation_empty():
     obs = Observation()
     assert isinstance(obs.created_at, datetime)
-    assert obs.photos is None
+    assert obs.comments == []
+    assert obs.identifications == []
+    assert obs.photos == []
     assert obs.uuid is None
+    assert obs.taxon is None
+    assert obs.user is None
 
 
 def test_observation_thumbnail_url():
@@ -131,6 +138,7 @@ def test_observation_field_value_taxon():
 def test_observation_field_value_empty():
     ofv = OFV()
     assert ofv.value is None
+    assert ofv.taxon is None
 
 
 # Photos
@@ -191,9 +199,11 @@ def test_project_converters():
 
 def test_project_empty():
     project = Project()
+    assert project.admins == []
     assert isinstance(project.created_at, datetime)
     assert project.search_parameters == []
     assert project.project_observation_rules == []
+    assert project.user is None
 
 
 # Taxa
@@ -211,7 +221,7 @@ def test_taxon_empty():
     assert taxon.ancestors == []
     assert taxon.children == []
     assert taxon.default_photo is None
-    assert taxon.taxon_photos is None
+    assert taxon.taxon_photos == []
 
 
 def test_taxon_taxonomy():

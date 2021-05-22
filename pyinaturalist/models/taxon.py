@@ -47,7 +47,7 @@ class Taxon(BaseModel):
 
     # Lazy-loaded nested model objects
     default_photo: property = cached_model_property(Photo.from_json, '_default_photo')
-    _default_photo: Dict = field(factory=dict, repr=False)
+    _default_photo: Dict = field(default=None, repr=False)
     taxon_photos: property = cached_model_property(Photo.from_json_list, '_taxon_photos')
     _taxon_photos: List[Dict] = field(factory=list, repr=False)
 

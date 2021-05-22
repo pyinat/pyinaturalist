@@ -106,7 +106,7 @@ def cached_model_property(converter: Callable, temp_attr: str) -> property:
     def wrapper(self):
         value = getattr(self, temp_attr)
         if not value:
-            return None
+            return value
         if not _is_model_object(value):
             value = converter(value)
             setattr(self, temp_attr, value)

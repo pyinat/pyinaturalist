@@ -22,7 +22,7 @@ class Comment(BaseModel):
 
     # Lazy-loaded nested model objects
     user: property = cached_model_property(User.from_json, '_user')
-    _user: Dict = field(factory=dict, repr=False)
+    _user: Dict = field(default=None, repr=False)
 
     # Unused attributes
     # created_at_details: Dict = field(factory=dict)

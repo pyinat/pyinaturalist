@@ -86,15 +86,14 @@ class Observation(BaseModel):
     # Lazy-loaded nested model objects
     comments: property = cached_model_property(Comment.from_json_list, '_comments')
     _comments: List[Dict] = field(factory=list, repr=False)
-
     identifications: property = cached_model_property(ID.from_json_list, '_identifications')
     _identifications: List[Dict] = field(factory=list, repr=False)
     photos: property = cached_model_property(Photo.from_json_list, '_photos')
     _photos: List[Dict] = field(factory=list, repr=False)
     taxon: property = cached_model_property(Taxon.from_json, '_taxon')
-    _taxon: Dict = field(factory=dict, repr=False)
+    _taxon: Dict = field(default=None, repr=False)
     user: property = cached_model_property(User.from_json, '_user')
-    _user: Dict = field(factory=dict, repr=False)
+    _user: Dict = field(default=None, repr=False)
 
     # Additional attributes from API response that are redundant here; just left here for reference
     # created_at_details: Dict = field(factory=dict)

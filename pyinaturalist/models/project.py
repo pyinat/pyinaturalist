@@ -79,7 +79,7 @@ class Project(BaseModel):
     admins: property = cached_model_property(ProjectUser.from_project_json_list, '_admins')
     _admins: List[Dict] = field(factory=list, repr=False)
     user: property = cached_model_property(User.from_json, '_user')
-    _user: Dict = field(factory=dict, repr=False)
+    _user: Dict = field(default=None, repr=False)
 
     # Unused attributes
     # latitude: float = kwarg
