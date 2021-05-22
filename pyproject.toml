@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyinaturalist"
-version = "0.13.0"
+version = "0.14.0"
 description = "iNaturalist API client for python"
 authors = ["Nicolas Noé <nicolas@niconoe.eu>", "Jordan Cook <Jordan.Cook@pioneer.com>"]
 license = "MIT"
@@ -8,7 +8,7 @@ readme = "README.md"
 homepage = "https://github.com/niconoe/pyinaturalist"
 repository = "https://github.com/niconoe/pyinaturalist"
 documentation = "https://pyinaturalist.readthedocs.io"
-keywords = ["inaturalist", "biodiversity", "api-client", "requests"]
+keywords = ["inaturalist", "biodiversity", "api-client", "data-models", "requests"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

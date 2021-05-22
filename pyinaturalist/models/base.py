@@ -41,7 +41,7 @@ class BaseModel:
     def from_json(cls: Type[T], value: JsonResponse, partial=False) -> Optional['BaseModel']:
         """Create a single model object from a JSON path, file-like object, or API response object.
         If multiple objects are present in JSON, only the first will be used.
-        Omits invalid fields and ``None``s, so we use our default factories instead (e.g. for empty
+        Omits invalid fields and ``None``, so we use our default factories instead (e.g. for empty
         lists).
         """
         if not value:

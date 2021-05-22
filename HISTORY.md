@@ -1,5 +1,12 @@
 # History
 
+## 0.14 (2021-TBD)
+[See all Issues & PRs for 0.14](https://github.com/niconoe/pyinaturalist/milestone/5?closed=1)
+
+### API Response Models
+* Added models for all API response types, to support working with typed python objects instead of JSON
+
+-----
 ## 0.13 (2021-05-22)
 [See all Issues & PRs for 0.13](https://github.com/niconoe/pyinaturalist/milestone/4?closed=1)
 
