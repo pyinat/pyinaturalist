@@ -73,12 +73,12 @@ def get_mock_args_for_signature(func):
     return [MagicMock()] * len(required_args)
 
 
-def _sample_data_path(filename):
+def sample_data_path(filename):
     return join(SAMPLE_DATA_DIR, filename)
 
 
 def load_sample_data(filename):
-    with open(_sample_data_path(filename), encoding='utf-8') as fh:
+    with open(sample_data_path(filename), encoding='utf-8') as fh:
         if filename.endswith('json'):
             return json.load(fh)
         else:

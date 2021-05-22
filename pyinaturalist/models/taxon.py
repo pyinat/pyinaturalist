@@ -62,7 +62,7 @@ class Taxon(BaseModel):
 
     @cached_property
     def ancestors(self) -> List['Taxon']:
-        return self.__class__.from_json_list(self._ancestors) if self._ancestors else []
+        return self.__class__.from_json_list(self._ancestors) if self._ancestors else []  # type: ignore
 
     @cached_property
     def children(self) -> List['Taxon']:
@@ -71,13 +71,12 @@ class Taxon(BaseModel):
         # Sort children by rank then name
         children = self.__class__.from_json_list(self._children)
         children.sort(key=get_rank_name_idx)
-        return children
+        return children  # type: ignore
 
     @property
     def ancestry(self):
         tokens = [t.name for t in self.ancestors] if self.ancestors else self.ancestor_ids
-        if self.ancestors:
-            return ' | '.join(tokens)
+        return ' | '.join([str(t) for t in tokens])
 
     @property
     def parent(self):

@@ -38,7 +38,7 @@ class Photo(BaseModel):
 
     @property
     def info_url(self) -> str:
-        return f'{PHOTO_INFO_BASE_URL}/self.id'
+        return f'{PHOTO_INFO_BASE_URL}/{self.id}'
 
     @property
     def large_url(self) -> Optional[str]:
@@ -46,7 +46,7 @@ class Photo(BaseModel):
 
     @property
     def medium_url(self) -> Optional[str]:
-        return self.url_size('large')
+        return self.url_size('medium')
 
     @property
     def original_url(self) -> Optional[str]:

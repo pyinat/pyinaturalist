@@ -38,14 +38,18 @@ class BaseModel:
     # https://github.com/python/mypy/issues/6172
     # https://github.com/python/mypy/issues/7912
     @classmethod
-    def from_json(cls: Type[T], value: JsonResponse, partial=False):
-        """Create a new model object from a JSON path, file-like object, or API response object.
+    def from_json(cls: Type[T], value: JsonResponse, partial=False) -> Optional['BaseModel']:
+        """Create a single model object from a JSON path, file-like object, or API response object.
+        If multiple objects are present in JSON, only the first will be used.
         Omits invalid fields and ``None``s, so we use our default factories instead (e.g. for empty
-        lists)
+        lists).
         """
         if not value:
-            return cls()
-        elif isinstance(value, dict):
+            return None
+        if isinstance(value, dict) and 'results' in value:
+            value = value['results'][0]
+
+        if isinstance(value, dict):
             attr_names = [a.lstrip('_') for a in fields_dict(cls)]
             if cls.temp_attrs:
                 attr_names.extend(cls.temp_attrs)
@@ -55,7 +59,9 @@ class BaseModel:
             return cls.from_json(_load_path_or_obj(value))  # type: ignore
 
     @classmethod
-    def from_json_list(cls: Type[T], value: Union[IO, str, JsonResponse, List[JsonResponse]]) -> List:
+    def from_json_list(
+        cls: Type[T], value: Union[IO, str, JsonResponse, List[JsonResponse]]
+    ) -> List['BaseModel']:
         """Initialize from a JSON path, file-like object, or API response"""
         if not value:
             return []
@@ -63,8 +69,10 @@ class BaseModel:
             value = value['results']
         elif isinstance(value, dict):
             value = [value]  # type: ignore
+
         if isinstance(value, list):
-            return [cls.from_json(item) for item in value]
+            obj_list = [cls.from_json(item) for item in value]
+            return [obj for obj in obj_list if obj]
         else:
             return cls.from_json_list(_load_path_or_obj(value))  # type: ignore
 

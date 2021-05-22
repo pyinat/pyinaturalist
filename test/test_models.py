@@ -1,7 +1,8 @@
+import pytest
 from datetime import datetime
 from dateutil.tz import tzoffset, tzutc
 
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1_BASE_URL, PHOTO_INFO_BASE_URL, PHOTO_SIZES
 from pyinaturalist.models import (
     ID,
     OFV,
@@ -16,7 +17,7 @@ from pyinaturalist.models import (
     Taxon,
     User,
 )
-from test.conftest import load_sample_data
+from test.conftest import load_sample_data, sample_data_path
 
 obs_json = load_sample_data('get_observations_node_page1.json')['results'][0]
 obs_field_json = load_sample_data('get_observation_fields_page1.json')[0]
@@ -35,6 +36,27 @@ comment_json = obs_json['comments'][0]
 identification_json = obs_json['identifications'][0]
 photo_json = taxon_json['taxon_photos'][0]
 photo_json = taxon_json['default_photo']
+
+# Base
+# --------------------
+
+
+def test_from_json_file():
+    obs = Observation.from_json(sample_data_path('get_observation.json'))
+    assert isinstance(obs, Observation)
+    assert obs.id == 16227955
+
+
+def test_from_json_list_file():
+    obs_list = Observation.from_json_list(sample_data_path('get_observations_node_page1.json'))
+    assert isinstance(obs_list, list)
+    assert isinstance(obs_list[0], Observation)
+    assert obs_list[0].id == 57754375
+
+
+def test_from_json_file__empty():
+    assert Observation.from_json(None) is None
+    assert Observation.from_json_list(None) == []
 
 
 # Comments
@@ -147,8 +169,10 @@ def test_observation_field_value_empty():
 
 def test_photo_converters():
     photo = Photo.from_json(photo_json)
+    assert photo.id == 38359335
     assert photo.license_code == 'CC-BY-NC'
     assert photo.original_dimensions == (2048, 1365)
+    assert photo.info_url == f'{PHOTO_INFO_BASE_URL}/38359335'
 
 
 def test_photo_empty():
@@ -156,9 +180,27 @@ def test_photo_empty():
     assert photo.original_dimensions == (0, 0)
 
 
-# TODO
-def test_photo_urls():
-    pass
+def test_photo_license():
+    photo = Photo.from_json(photo_json)
+    assert photo.has_cc_license is True
+    photo.license_code = 'CC0'
+    assert photo.has_cc_license is True
+
+    photo.license_code = None
+    assert photo.has_cc_license is False
+    photo.license_code = 'all rights reserved'
+    assert photo.has_cc_license is False
+
+
+@pytest.mark.parametrize('size', PHOTO_SIZES)
+def test_photo_urls(size):
+    photo = Photo.from_json(photo_json)
+    assert (
+        photo.url_size(size)
+        == getattr(photo, f'{size}_url')
+        == f'https://static.inaturalist.org/photos/38359335/{size}.jpg?1557348751'
+    )
+    assert photo.url_size('embiggened') is None
 
 
 # Places
@@ -246,8 +288,15 @@ def test_taxon_taxonomy():
 
 def test_taxon_properties():
     taxon = Taxon.from_json(taxon_json)
-    assert taxon.ancestry.startswith('Animalia | Arthropoda | Hexapoda | ')
     assert taxon.url == f'{API_V1_BASE_URL}/taxa/70118'
+    assert taxon.ancestry.startswith('Animalia | Arthropoda | Hexapoda | ')
+    assert isinstance(taxon.parent, Taxon) and taxon.parent.id == 53850
+
+
+def test_taxon_properties__partial():
+    taxon = Taxon.from_json(taxon_json_partial)
+    assert taxon.ancestry.startswith('48460 | 1 | 47120 | ')
+    assert taxon.parent is None
 
 
 # TODO
