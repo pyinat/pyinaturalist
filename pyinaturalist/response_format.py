@@ -303,13 +303,14 @@ def format_dimensions(dimensions: Union[Dict[str, int], Dimensions]) -> Dimensio
     return dimensions.get("width", 0), dimensions.get("height", 0)
 
 
-def format_file_size(value) -> str:
-    """Convert a file size in bytes into a human-readable format"""
-    for unit in ['B', 'KiB', 'MiB', 'GiB']:
-        if abs(value) < 1024.0:
-            return f'{value:.2f}{unit}'
-        value /= 1024.0
-    return f'{value:.2f}TiB'
+# TODO: Will be used for Photo model
+# def format_file_size(value) -> str:
+#     """Convert a file size in bytes into a human-readable format"""
+#     for unit in ['B', 'KiB', 'MiB', 'GiB']:
+#         if abs(value) < 1024.0:
+#             return f'{value:.2f}{unit}'
+#         value /= 1024.0
+#     return f'{value:.2f}TiB'
 
 
 def format_license(value: str) -> str:

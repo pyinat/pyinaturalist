@@ -17,15 +17,15 @@ from datetime import datetime
 from os.path import join
 from pprint import pprint
 
-from pyinaturalist.constants import SAMPLE_DATA_DIR
-from pyinaturalist.node_api import get_observation
-from pyinaturalist.rest_api import (
+from pyinaturalist import (
     add_photo_to_observation,
     create_observation,
     delete_observation,
     get_access_token,
+    get_observation,
     update_observation,
 )
+from pyinaturalist.constants import SAMPLE_DATA_DIR
 
 # put_observation_field_values,
 

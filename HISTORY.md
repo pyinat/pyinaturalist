@@ -3,8 +3,11 @@
 ## 0.14 (2021-TBD)
 [See all Issues & PRs for 0.14](https://github.com/niconoe/pyinaturalist/milestone/5?closed=1)
 
-### API Response Models
 * Added models for all API response types, to support working with typed python objects instead of JSON
+* Moved API functions into separate modules by API version and resource type.
+    * All can still be imported via `from pyinaturalist import *`
+    * Imports from `pyinaturalist.rest_api` and `pyinaturalist.node_api` will still work, but are
+      deprecated and will be removed in a future release
 
 -----
 ## 0.13 (2021-05-22)

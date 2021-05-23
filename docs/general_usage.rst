@@ -201,7 +201,6 @@ your API calls. This field can be either something that identifies the project o
 You can either set this globally:
 
     >>> import pyinaturalist
-    >>> from pyinaturalist.node_api import get_observation
     >>>
     >>> pyinaturalist.user_agent = "MyCoolAndroidApp/2.0 (using Pyinaturalist)"
     >>> # From now on, all API calls will use this user-agent.
@@ -209,6 +208,7 @@ You can either set this globally:
 
 To set this for individual requests, all API functions accept an optional ``user_agent`` parameter:
 
+    >>> from pyinaturalist import get_observation
     >>> get_observation(observation_id=16227955, user_agent='Jane Doe <jane.doe@gmail.com>')
 
 If not configured, ``Pyinaturalist/<VERSION>`` will be used.

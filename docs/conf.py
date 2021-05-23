@@ -2,7 +2,7 @@
 import sys
 from os import makedirs, symlink
 from os.path import abspath, dirname, exists, join
-from shutil import copy, copytree, rmtree
+from shutil import copytree, rmtree
 
 
 # Avoid a potential circular import in nbsphinx
@@ -83,7 +83,8 @@ copybutton_prompt_is_regexp = True
 # Added here instead of instead of in Makefile so it will be used by ReadTheDocs
 apidoc_module_dir = PACKAGE_DIR
 apidoc_output_dir = 'modules'
-apidoc_excluded_paths = ['api_docs.py', 'models/*']
+apidoc_excluded_paths = ['api_docs.py', 'node_api.py', 'rest_api.py']
+apidoc_extra_args = ['--templatedir=_templates']
 apidoc_module_first = True
 apidoc_separate_modules = True
 apidoc_toc_file = False
@@ -118,13 +119,7 @@ def setup(app):
     """
     app.connect('builder-inited', setup_external_files)
     app.connect('builder-inited', patch_automodapi)
-    app.connect('build-finished', overwrite_subpackage_doc)
     app.add_css_file('collapsible_container.css')
-
-
-def overwrite_subpackage_doc(app, exception):
-    """This overwrites the auto-generated subpackage doc with a manually formatted one"""
-    copy(join(DOCS_DIR, 'pyinaturalist.models.rst'), MODULE_DOCS_DIR)
 
 
 def setup_external_files(app):

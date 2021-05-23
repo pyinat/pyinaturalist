@@ -4,8 +4,8 @@ from attr import define, field, fields_dict
 
 from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.models import BaseModel, Photo, cached_model_property, cached_property, kwarg
-from pyinaturalist.node_api import get_taxa_by_id
 from pyinaturalist.request_params import RANKS
+from pyinaturalist.v1 import get_taxa_by_id
 
 
 @define(auto_attribs=False)

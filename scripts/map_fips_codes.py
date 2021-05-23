@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from unidecode import unidecode
 
-from pyinaturalist.node_api import get_places_autocomplete
+from pyinaturalist import get_places_autocomplete
 
 DATA_DIR = join(
     dirname(__file__),

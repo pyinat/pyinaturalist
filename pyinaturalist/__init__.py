@@ -11,11 +11,12 @@ try:
     from pyinaturalist.auth import get_access_token
     from pyinaturalist.formatters import *
     from pyinaturalist.models import *
-    from pyinaturalist.rest_api import *
-    from pyinaturalist.node_api import *
+    from pyinaturalist.v0 import *
+    from pyinaturalist.v1 import *
+    from pyinaturalist.v2 import *
 
     # For disambiguation
-    from pyinaturalist.rest_api import get_observations as get_observations_v0
-    from pyinaturalist.node_api import get_observations as get_observations_v1
+    from pyinaturalist.v0 import get_observations as get_observations_v0
+    from pyinaturalist.v1 import get_observations as get_observations_v1
 except ImportError as e:
     print(e)

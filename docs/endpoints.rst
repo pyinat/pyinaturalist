@@ -9,15 +9,15 @@ Note that some endpoints have more than one function associated with them.
 Pyinaturalist functions
 ----------------------------------------
 
-Node-based API
+API v1
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodsumm:: pyinaturalist.node_api
+.. automodsumm:: pyinaturalist.v1
     :functions-only:
     :nosignatures:
 
-Rails-based API
+API v0
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. automodsumm:: pyinaturalist.rest_api
+.. automodsumm:: pyinaturalist.v0
     :functions-only:
     :nosignatures:
 
