@@ -18,15 +18,16 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9, 3.10.0-beta.1]
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: snok/install-poetry@v1.1.4
+      - uses: snok/install-poetry@v1.1.6
         with:
+          version: 1.2.0a1
           virtualenvs-in-project: true
 
       # Cache packages per python version, and reuse until lockfile changes
@@ -51,8 +52,9 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ env.LATEST_PY_VERSION }}
-      - uses: snok/install-poetry@v1.1.4
+      - uses: snok/install-poetry@v1.1.6
         with:
+          version: 1.2.0a1
           virtualenvs-in-project: true
 
       # Cache packages and reuse until lockfile changes
@@ -92,12 +94,13 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ env.LATEST_PY_VERSION }}
-      - uses: snok/install-poetry@v1.1.4
+      - uses: snok/install-poetry@v1.1.6
         with:
+          version: 1.2.0a1
           virtualenvs-in-project: true
 
-      - name: Set pre-release version number                                  
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}                     
+      - name: Set pre-release version number
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         run: poetry version $(poetry version -s).dev${GITHUB_RUN_NUMBER}
       - name: Build and publish to pypi
         run: |
