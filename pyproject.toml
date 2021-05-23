@@ -31,7 +31,7 @@ python-dateutil = ">=2.0"
 requests = ">=2.20"
 
 # TODO: These could maybe be made optional
-keyring = ">=22.3"  
+keyring = ">=22.3"
 python-forge = ">=18.6.0"
 pyrate-limiter = ">=2.3.3"
 
@@ -52,6 +52,7 @@ docs = ["docutils", "m2r2", "nbsphinx", "Sphinx",  "sphinx-automodapi","sphinx-a
 
 [tool.poetry.dev-dependencies]
 black = {version = "21.5b0", python = "^3.6.2"}
+ipython = {version = ">=7.23", python = "^3.7"}
 isort = ">=5.8"
 flake8 = "^3.9"
 mypy = "^0.812"

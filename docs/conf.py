@@ -4,7 +4,12 @@ from os import makedirs, symlink
 from os.path import abspath, dirname, exists, join
 from shutil import copy, copytree, rmtree
 
-import prompt_toolkit  # noqa  # avoid potential circular import in nbsphinx
+
+# Avoid a potential circular import in nbsphinx
+try:
+    import prompt_toolkit  # noqa
+except ImportError:
+    pass
 
 DOCS_DIR = abspath(dirname(__file__))
 MODULE_DOCS_DIR = join(DOCS_DIR, 'modules')
