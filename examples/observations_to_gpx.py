@@ -9,9 +9,8 @@ from logging import getLogger
 
 from gpxpy.gpx import GPX, GPXTrack, GPXTrackPoint, GPXTrackSegment, GPXWaypoint
 
+from pyinaturalist import format_observations, get_observations
 from pyinaturalist.constants import JsonResponse, List
-from pyinaturalist.formatters import format_observations
-from pyinaturalist.node_api import get_all_observations, get_observations  # noqa
 from pyinaturalist.response_format import convert_observation_timestamps
 
 logger = getLogger(__name__)
@@ -86,11 +85,12 @@ if __name__ == "__main__":
         "created_d2": "2020-09-30",  # ...through September 2020 (adjust these dates as needed)
         "geo": True,  # Only get observations with geospatial coordinates
         "geoprivacy": "open",  # Only get observations with public coordinates (not obscured/private)
+        "page": "all",  # Paginate through all response pages
     }
     results = get_observations(**search_params)["results"]
 
     # Paginate through all search results (may take a long time for a large query)
-    # results = get_all_observations(**search_params)
+    # results = get_observations(**search_params)
 
     # Convert and write to GPX file
     observations_to_gpx(results)

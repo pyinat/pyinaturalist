@@ -17,8 +17,8 @@ from pyinaturalist.models import (
     kwarg,
 )
 from pyinaturalist.models.comment import Comment
-from pyinaturalist.node_api import get_observation
 from pyinaturalist.response_format import convert_observation_timestamp
+from pyinaturalist.v1 import get_observation
 
 
 @define(auto_attribs=False, init=False)

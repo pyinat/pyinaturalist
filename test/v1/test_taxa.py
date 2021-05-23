@@ -41,7 +41,7 @@ def test_get_taxa(requests_mock):
         ({'max_rank': 'species', 'rank': 'override_me'}, SPECIES_AND_LOWER),
     ],
 )
-@patch('pyinaturalist.node_api.get')
+@patch('pyinaturalist.v1.taxa.get_v1')
 def test_get_taxa_by_rank_range(
     mock_get,
     params,

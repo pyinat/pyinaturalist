@@ -21,8 +21,7 @@ from pprint import pprint
 import requests
 from bs4 import BeautifulSoup
 
-from pyinaturalist.node_api import get_observation
-from pyinaturalist.rest_api import get_access_token
+from pyinaturalist import get_access_token, get_observation
 
 IGNORE_ATTRIBUTES = ['Associated observations', 'Sizes']
 PHOTO_INFO_BASE_URL = 'https://www.inaturalist.org/photos'

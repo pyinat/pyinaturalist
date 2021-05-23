@@ -77,7 +77,7 @@ def get_observations(**params) -> Union[List, str]:
     """
     response_format = params.pop('response_format', 'json')
     if response_format == 'geojson':
-        raise ValueError('For geojson format, use pyinaturalist.node_api.get_geojson_observations')
+        raise ValueError('For geojson format, use pyinaturalist.v1.get_geojson_observations')
     if response_format not in OBSERVATION_FORMATS:
         raise ValueError('Invalid response format')
     validate_multiple_choice_param(params, 'order_by', REST_OBS_ORDER_BY_PROPERTIES)
