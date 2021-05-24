@@ -61,7 +61,7 @@
   [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
   (per second, minute, and day)
 * Moved `Dockerfile` and `docker-compose.yml` to a separate repo
-  ([inaturalist-notebook](https://github.com/reclosedev/requests-cache/issues/new/choose))
+  ([pyinaturalist-notebook](https://github.com/JWCook/pyinaturalist-notebook))
   and published on Docker Hub
 * Packaging is now handled with Poetry. For users, installation still works the same. For developers,
   see [Contributing Guide](https://github.com/niconoe/pyinaturalist/blob/main/CONTRIBUTING.md) for details.

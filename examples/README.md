@@ -1,11 +1,8 @@
 # Pyinaturalist usage examples
 
 This folder contains some examples of building data visualizations and other neat things using
-iNaturalist data. These are also viewable on
-[readthedocs](https://pyinaturalist.readthedocs.io/en/stable/examples.html)
-
-## Running with Jupyter
-See [inaturalist-notebook](https://github.com/JWCook/inaturalist-notebook) for a Jupyter container with all prerequisites installed.
+iNaturalist data. See [documentation](https://pyinaturalist.readthedocs.io/en/stable/examples.html)
+for more details.
 
 ## Example visualizations
 

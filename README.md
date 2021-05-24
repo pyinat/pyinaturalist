@@ -15,6 +15,7 @@ See full project documentation at https://pyinaturalist.readthedocs.io.
 - [Quickstart](#quickstart)
 - [Next Steps](#next-steps)
 - [Feedback](#feedback)
+- [Related Projects](#related-projects)
 
 ## Features
 
@@ -248,3 +249,8 @@ Also, **PRs are welcome!**
 iNaturalist.org or the California Academy of Sciences. If you have non-python-specific questions
 about iNaturalist, the [iNaturalist Community Forum](https://forum.inaturalist.org/) is the best
 place to start.
+
+## Related Projects
+* [pyinaturalist-open-data](https://github.com/JWCook/pyinaturalist-open-data):  Tools for working with [iNaturalist open data](https://registry.opendata.aws/inaturalist-open-data/)
+* [pyinaturalist-notebook](https://github.com/JWCook/pyinaturalist-notebook): Jupyter notebook Docker image for pyinaturalist
+* [pyinaturalist-convert](https://github.com/JWCook/pyinaturalist-convert): (WIP) Tools to convert observation data to and from multiple formats

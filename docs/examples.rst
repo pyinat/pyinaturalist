@@ -7,7 +7,7 @@ iNaturalist data. These can also be found in the
 Notebooks
 ---------
 Example Jupter notebooks. To run these more easily, see
-`inaturalist-notebook <https://github.com/JWCook/inaturalist-notebook>`_ for a Jupyter container
+`pyinaturalist-notebook <https://github.com/JWCook/pyinaturalist-notebook>`_ for a Jupyter container
 with all prerequisites installed.
 
 .. toctree::
