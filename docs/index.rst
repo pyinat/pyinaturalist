@@ -19,5 +19,5 @@ Contents
     examples
     reference
     contributing
-    authors
+    contributors
     history
