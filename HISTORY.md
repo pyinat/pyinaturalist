@@ -8,6 +8,7 @@
     * All can still be imported via `from pyinaturalist import *`
     * Imports from `pyinaturalist.rest_api` and `pyinaturalist.node_api` will still work, but are
       deprecated and will be removed in a future release
+* Update `create_observation()` and `update_observation()` to use `POST /observation_photos` endpoint to upload photos
 
 -----
 ## 0.13 (2021-05-22)

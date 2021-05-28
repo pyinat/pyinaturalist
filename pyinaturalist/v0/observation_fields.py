@@ -83,7 +83,7 @@ def put_observation_field_values(
         observation_id: ID of the observation receiving this observation field value
         observation_field_id: ID of the observation field for this observation field value
         value: Value for the observation field
-        access_token: access_token: The access token, as returned by :func:`get_access_token()`
+        access_token: The access token, as returned by :func:`get_access_token()`
         user_agent: A user-agent string that will be passed to iNaturalist.
 
     Returns:

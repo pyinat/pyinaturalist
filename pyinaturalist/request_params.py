@@ -316,11 +316,6 @@ def ensure_file_obj(photo: FileOrPath) -> BinaryIO:
     return photo
 
 
-def ensure_file_objs(photos: Iterable[FileOrPath]) -> Iterable[BinaryIO]:
-    """Given one or more file objects and/or paths, read any paths into a file-like object"""
-    return [ensure_file_obj(photo) for photo in ensure_list(photos)]
-
-
 def ensure_list(values: Any):
     """If the value is a string or comma-separated list of values, convert it into a list"""
     if not values:
