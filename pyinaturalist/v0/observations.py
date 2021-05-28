@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import List, Union
 
 from pyinaturalist import api_docs as docs
@@ -11,10 +12,12 @@ from pyinaturalist.request_params import (
     REST_OBS_ORDER_BY_PROPERTIES,
     convert_observation_fields,
     ensure_file_obj,
-    ensure_file_objs,
+    ensure_list,
     validate_multiple_choice_param,
 )
 from pyinaturalist.response_format import convert_all_coordinates, convert_all_timestamps
+
+logger = getLogger(__name__)
 
 
 @document_request_params(
@@ -97,7 +100,7 @@ def get_observations(**params) -> Union[List, str]:
 
 
 @document_request_params([docs._access_token, docs._create_observation])
-def create_observation(access_token: str = None, **params) -> ListResponse:
+def create_observation(access_token: str, **params) -> ListResponse:
     """Create a new observation.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#post-observations
@@ -137,8 +140,9 @@ def create_observation(access_token: str = None, **params) -> ListResponse:
     if 'observation' in params:
         params.update(params.pop('observation'))
     params = convert_observation_fields(params)
-    if 'local_photos' in params:
-        params['local_photos'] = ensure_file_objs(params['local_photos'])
+
+    # Split out photos to upload separately
+    photos = ensure_list(params.pop('local_photos', None))
 
     response = post(
         url=f'{API_V0_BASE_URL}/observations.json',
@@ -146,7 +150,12 @@ def create_observation(access_token: str = None, **params) -> ListResponse:
         access_token=access_token,
     )
     response.raise_for_status()
-    return response.json()
+    response_json = response.json()
+    observation_id = response_json[0]['id']
+
+    for photo in photos:
+        add_photo_to_observation(observation_id, photo=photo, access_token=access_token)
+    return response_json
 
 
 @document_request_params(
@@ -159,7 +168,7 @@ def create_observation(access_token: str = None, **params) -> ListResponse:
 )
 def update_observation(
     observation_id: int,
-    access_token: str = None,
+    access_token: str,
     **params,
 ) -> ListResponse:
     """
@@ -197,15 +206,15 @@ def update_observation(
             error 410 if the observation doesn't exists or belongs to another user.
     """
     # Accept either top-level params (like most other endpoints)
-    # or nested params (like the iNat API actually accepts)
+    # or nested params (like the API accepts)
     if 'observation' in params:
         params.update(params.pop('observation'))
     params = convert_observation_fields(params)
-    if 'local_photos' in params:
-        params['local_photos'] = ensure_file_objs(params['local_photos'])
 
-    # This is the one Boolean parameter that's specified as an int, for some reason.
-    # Also, set it to True if not specified, which seems like much saner default behavior.
+    # Split out photos to upload separately
+    photos = ensure_list(params.pop('local_photos', None))
+
+    # Note: this is the only Boolean parameter that's specified as an int
     if 'ignore_photos' in params:
         params['ignore_photos'] = int(params['ignore_photos'])
     else:
@@ -217,6 +226,9 @@ def update_observation(
         access_token=access_token,
     )
     response.raise_for_status()
+
+    for photo in photos:
+        add_photo_to_observation(observation_id, photo=photo, access_token=access_token)
     return response.json()
 
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# flake8: noqa: F401
 """A partially automated script for testing all observation CRUD endpoints,
 in absence of integration tests.
 iNat credentials must be provided via environment variables.
@@ -14,6 +15,7 @@ python scripts/obs_crud_test.py
 ```
 """
 from datetime import datetime
+from logging import basicConfig
 from os.path import join
 from pprint import pprint
 
@@ -23,13 +25,13 @@ from pyinaturalist import (
     delete_observation,
     get_access_token,
     get_observation,
+    put_observation_field_values,
     update_observation,
 )
 from pyinaturalist.constants import SAMPLE_DATA_DIR
 
-# put_observation_field_values,
-
 SAMPLE_PHOTO = join(SAMPLE_DATA_DIR, 'obs_image.jpg')
+basicConfig(level='INFO')
 
 
 def run_observation_crud_test():
@@ -46,7 +48,10 @@ def create_test_obs(token):
     response = create_observation(
         taxon_id=54327,
         observed_on_string=datetime.now().isoformat(),
-        description='This is a test observation used by pyinaturalist, and will be deleted shortly.',
+        description=(
+            'This is a test observation used for testing [pyinaturalist](https://github.com/niconoe/pyinaturalist), '
+            'and will be deleted shortly.'
+        ),
         tag_list='wasp, Belgium',
         latitude=50.647143,
         longitude=4.360216,
@@ -54,6 +59,7 @@ def create_test_obs(token):
         geoprivacy='open',
         access_token=token,
         observation_fields={297: 1},
+        local_photos=[SAMPLE_PHOTO, SAMPLE_PHOTO],
     )
     test_obs_id = response[0]['id']
     print(f'Created new observation: {test_obs_id}')
@@ -101,7 +107,6 @@ def delete_test_obs(test_obs_id, token):
     response = delete_observation(test_obs_id, token)
     # Empty response is expected
     print('Deleted observation')
-    pprint(response, indent=2)
 
 
 if __name__ == '__main__':

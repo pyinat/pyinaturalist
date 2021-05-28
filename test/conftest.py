@@ -5,10 +5,11 @@ Pytest will also automatically pick up any fixtures defined here.
 import json
 import logging
 import os
+import pytest
 import re
 from inspect import Parameter, getmembers, isfunction, signature
 from os.path import join
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 # If ipdb is installed, register it as the default debugger
 from pyinaturalist.constants import SAMPLE_DATA_DIR
@@ -39,6 +40,13 @@ MOCK_CREDS_OAUTH = {
 # Enable logging for urllib and other external loggers
 logging.basicConfig(level='INFO')
 logging.getLogger('pyinaturalist').setLevel('DEBUG')
+
+
+@pytest.fixture(scope='function', autouse=True)
+def patch_ratelimit():
+    """Disable rate-limiting during test session"""
+    with patch('pyinaturalist.api_requests.ratelimit'):
+        yield
 
 
 def get_module_functions(module):
