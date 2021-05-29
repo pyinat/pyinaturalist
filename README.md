@@ -4,9 +4,12 @@
 [![Documentation Status (stable)](https://img.shields.io/readthedocs/pyinaturalist/stable?label=docs%20%28main%29)](https://pyinaturalist.readthedocs.io/en/stable/)
 [![Documentation Status (latest)](https://img.shields.io/readthedocs/pyinaturalist/latest?label=docs%20%28dev%29)](https://pyinaturalist.readthedocs.io/en/latest/)
 [![Coverage Status](https://coveralls.io/repos/github/niconoe/pyinaturalist/badge.svg?branch=main)](https://coveralls.io/github/niconoe/pyinaturalist?branch=main)
+
 [![PyPI](https://img.shields.io/pypi/v/pyinaturalist?color=blue)](https://pypi.org/project/pyinaturalist)
 [![PyPI - Python Versions](https://img.shields.io/pypi/pyversions/pyinaturalist)](https://pypi.org/project/pyinaturalist)
 [![PyPI - Format](https://img.shields.io/pypi/format/pyinaturalist?color=blue)](https://pypi.org/project/pyinaturalist)
+
+[![Run with Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
 
 Pyinaturalist is an iNaturalist API client for python.
 See full project documentation at https://pyinaturalist.readthedocs.io.

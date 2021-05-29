@@ -6,9 +6,14 @@ iNaturalist data. These can also be found in the
 
 Notebooks
 ---------
-Example Jupter notebooks. To run these more easily, see
-`pyinaturalist-notebook <https://github.com/JWCook/pyinaturalist-notebook>`_ for a Jupyter container
-with all prerequisites installed.
+Example Jupter notebooks. Click the badge below to try them out in your browser using Binder:
+
+.. image:: https://mybinder.org/badge_logo.svg
+ :target: https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples
+
+This uses the
+`pyinaturalist-notebook <https://github.com/JWCook/pyinaturalist-notebook>`_
+Docker image, which you can also use to run these examples on a local Jupyter server.
 
 .. toctree::
     :maxdepth: 2

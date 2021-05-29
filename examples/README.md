@@ -5,6 +5,7 @@ iNaturalist data. See [documentation](https://pyinaturalist.readthedocs.io/en/st
 for more details.
 
 ## Example visualizations
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
 
 ![](images/total_observations_by_iconic_taxon.png)
 

@@ -3,6 +3,7 @@
 ## 0.14 (2021-TBD)
 [See all Issues & PRs for 0.14](https://github.com/niconoe/pyinaturalist/milestone/5?closed=1)
 
+* Set up pyinaturalist-notebook to [runnable with Binder](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
 * Added models for all API response types, to support working with typed python objects instead of JSON
 * Moved API functions into separate modules by API version and resource type.
     * All can still be imported via `from pyinaturalist import *`
