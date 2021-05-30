@@ -11,6 +11,7 @@ from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.request_params import OBSERVATION_FORMATS
 from pyinaturalist.v0 import (
     add_photo_to_observation,
+    add_sound_to_observation,
     create_observation,
     delete_observation,
     get_observations,
@@ -70,10 +71,19 @@ def test_create_observation(requests_mock):
 @patch('pyinaturalist.v0.observations.add_photo_to_observation')
 @patch('pyinaturalist.v0.observations.post')
 def test_create_observation__with_photos(post, mock_add_photo):
-    create_observation(access_token='token', local_photos=['photo_1.jpg', 'photo_2.jpg'])
+    create_observation(access_token='token', photos=['photo_1.jpg', 'photo_2.jpg'])
 
     assert 'local_photos' not in post.call_args[1]['json']['observation']
     assert mock_add_photo.call_count == 2
+
+
+@patch('pyinaturalist.v0.observations.add_sound_to_observation')
+@patch('pyinaturalist.v0.observations.post')
+def test_create_observation__with_sounds(post, mock_add_sound):
+    create_observation(access_token='token', sounds=['sound_1.mp3', 'sound_2.wav'])
+
+    assert 'sounds' not in post.call_args[1]['json']['observation']
+    assert mock_add_sound.call_count == 2
 
 
 def test_create_observation_fail(requests_mock):
@@ -167,7 +177,7 @@ def test_update_observation_not_mine(requests_mock):
 def test_add_photo_to_observation(requests_mock):
     requests_mock.post(
         f'{API_V0_BASE_URL}/observation_photos',
-        json=load_sample_data('add_photo_to_observation.json'),
+        json=load_sample_data('post_observation_photos.json'),
         status_code=200,
     )
 
@@ -175,6 +185,19 @@ def test_add_photo_to_observation(requests_mock):
     assert response['id'] == 1234
     assert response['created_at'] == '2020-09-24T21:06:16.964-05:00'
     assert response['photo']['native_username'] == 'username'
+
+
+def test_add_sound_to_observation(requests_mock):
+    requests_mock.post(
+        f'{API_V0_BASE_URL}/observation_sounds',
+        json=load_sample_data('post_observation_sounds.json'),
+        status_code=200,
+    )
+
+    response = add_sound_to_observation(233946, BytesIO(), access_token='token')
+    assert response['id'] == 233946
+    assert response['created_at'] == '2021-05-30T17:36:40.286-05:00'
+    assert response['sound']['file_content_type'] == 'audio/mpeg'
 
 
 def test_delete_observation(requests_mock):

@@ -2,7 +2,7 @@
 Below is a complete list of iNaturalist API endpoints, and the subset of them that have been
 implemented in pyinaturalist.
 
-### Node-based API
+### v1 API
 For full documentation, see: http://api.inaturalist.org/v1/docs/
 
 Method            | Endpoint                                    | Implemented
@@ -112,7 +112,7 @@ GET               | /points/{zoom}/{x}/{y}.grid.json            |
 POST              | /photos                                     |
 
 
-### Rails-Based API
+### v2 API
 For full documentation, see: https://www.inaturalist.org/pages/api+reference
 
 Method            | Endpoint                                    | Implemented
@@ -140,6 +140,7 @@ POST              | /observation_field_values                   |
 PUT               | /observation_field_values/{id}              | yes
 DELETE            | /observation_field_values/{id}              |
 POST              | /observation_photos                         | yes
+POST              | /observation_sounds                         | yes
 GET               | /places                                     |
 GET               | /projects                                   |
 GET               | /projects/{id}                              |
