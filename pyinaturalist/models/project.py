@@ -6,8 +6,9 @@ from attr import define, field
 from pyinaturalist.constants import Coordinates, JsonResponse
 from pyinaturalist.models import (
     BaseModel,
+    LazyProperty,
     User,
-    cached_model_property,
+    add_lazy_attrs,
     coordinate_pair,
     datetime_attr,
     datetime_now_attr,
@@ -25,17 +26,19 @@ class ProjectObservationField(ObservationField):
     required: bool = kwarg
 
     @classmethod
-    def from_project_json(cls, value: JsonResponse, **kwargs):
+    def from_project_json(cls, value: JsonResponse, **kwargs) -> Optional['ProjectObservationField']:
         """Flatten out nested values"""
         obs_field = value['observation_field']
         obs_field['project_observation_field_id'] = value['id']
         obs_field['position'] = value['position']
         obs_field['required'] = value['required']
-        return cls.from_json(obs_field, **kwargs)
+        return cls.from_json(obs_field, **kwargs)  # type: ignore
 
     @classmethod
-    def from_project_json_list(cls, value: List[JsonResponse], **kwargs):
-        return [cls.from_project_json(pof, **kwargs) for pof in value]
+    def from_project_json_list(
+        cls, value: List[JsonResponse], **kwargs
+    ) -> List['ProjectObservationField']:
+        return [cls.from_project_json(pof, **kwargs) for pof in value]  # type: ignore
 
 
 @define(auto_attribs=False)
@@ -47,20 +50,20 @@ class ProjectUser(User):
     role: str = kwarg
 
     @classmethod
-    def from_project_json(cls, value: JsonResponse, **kwargs):
+    def from_project_json(cls, value: JsonResponse, **kwargs) -> Optional['ProjectUser']:
         """Flatten out nested values"""
         user = value['user']
         user['project_id'] = value['project_id']
         user['project_user_id'] = value['id']
         user['role'] = value['role']
-        return cls.from_json(user, **kwargs)
+        return cls.from_json(user, **kwargs)  # type: ignore
 
     @classmethod
-    def from_project_json_list(cls, value: List[JsonResponse], **kwargs):
-        return [cls.from_project_json(project_user, **kwargs) for project_user in value]
+    def from_project_json_list(cls, value: List[JsonResponse], **kwargs) -> List['ProjectUser']:
+        return [cls.from_project_json(project_user, **kwargs) for project_user in value]  # type: ignore
 
 
-@define(auto_attribs=False)
+@define(auto_attribs=False, field_transformer=add_lazy_attrs)
 class Project(BaseModel):
     """A dataclass containing information about a project, matching the schema of
     `GET /projects <https://api.inaturalist.org/v1/docs/#!/Projects/get_projects>`_.
@@ -95,14 +98,9 @@ class Project(BaseModel):
     user_ids: List[int] = field(factory=list)
 
     # Lazy-loaded nested model objects
-    admins: property = cached_model_property(ProjectUser.from_project_json_list, '_admins')
-    _admins: List[Dict] = field(factory=list, repr=False)
-    project_observation_fields: property = cached_model_property(
-        ProjectObservationField.from_project_json_list, '_project_observation_fields'
-    )
-    _project_observation_fields: List[Dict] = field(factory=list, repr=False)
-    user: property = cached_model_property(User.from_json, '_user')
-    _user: Dict = field(default=None, repr=False)
+    admins: property = LazyProperty(ProjectUser.from_project_json_list)
+    project_observation_fields: property = LazyProperty(ProjectObservationField.from_project_json_list)
+    user: property = LazyProperty(User.from_json)
 
     # Unused attributes
     # flags: List = field(factory=list)

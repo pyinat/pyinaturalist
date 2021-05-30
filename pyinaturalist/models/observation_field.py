@@ -1,9 +1,17 @@
 from datetime import date, datetime
-from typing import Dict, List, Union
+from typing import List, Union
 
 from attr import define, field
 
-from pyinaturalist.models import BaseModel, Taxon, User, cached_model_property, datetime_now_attr, kwarg
+from pyinaturalist.models import (
+    BaseModel,
+    LazyProperty,
+    Taxon,
+    User,
+    add_lazy_attrs,
+    datetime_now_attr,
+    kwarg,
+)
 from pyinaturalist.response_format import safe_split, try_int_or_float
 
 # Mappings from observation field value datatypes to python datatypes
@@ -38,7 +46,7 @@ class ObservationField(BaseModel):
     values_count: int = kwarg
 
 
-@define(auto_attribs=False)
+@define(auto_attribs=False, field_transformer=add_lazy_attrs)
 class ObservationFieldValue(BaseModel):
     """A dataclass containing information about an observation field **value**, matching the schema of ``ofvs``
     from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
@@ -54,10 +62,8 @@ class ObservationFieldValue(BaseModel):
     value: OFVValue = kwarg
 
     # Lazy-loaded nested model objects
-    taxon: property = cached_model_property(Taxon.from_json, '_taxon')
-    _taxon: Dict = field(default=None, repr=False)
-    user: property = cached_model_property(User.from_json, '_user')
-    _user: Dict = field(default=None, repr=False)
+    taxon: property = LazyProperty(Taxon.from_json)
+    user: property = LazyProperty(User.from_json)
 
     # Unused attrbiutes
     # name_ci: str = kwarg

@@ -6,10 +6,10 @@
 # TODO: Validators for multiple choice fields?
 from pyinaturalist.models.base import (
     BaseModel,
+    add_lazy_attrs,
     datetime_attr,
     datetime_now_attr,
-    cached_model_property,
-    cached_property,
+    LazyProperty,
     coordinate_pair,
     get_model_fields,
     kwarg,

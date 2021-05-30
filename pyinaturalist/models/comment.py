@@ -1,12 +1,11 @@
 from datetime import datetime
-from typing import Dict
 
-from attr import define, field
+from attr import define
 
-from pyinaturalist.models import BaseModel, User, cached_model_property, datetime_now_attr, kwarg
+from pyinaturalist.models import BaseModel, LazyProperty, User, add_lazy_attrs, datetime_now_attr, kwarg
 
 
-@define(auto_attribs=False)
+@define(auto_attribs=False, field_transformer=add_lazy_attrs)
 class Comment(BaseModel):
     """A dataclass containing information about a comment, matching the schema of observation comments
     from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
@@ -19,8 +18,7 @@ class Comment(BaseModel):
     uuid: str = kwarg
 
     # Lazy-loaded nested model objects
-    user: property = cached_model_property(User.from_json, '_user')
-    _user: Dict = field(default=None, repr=False)
+    user: property = LazyProperty(User.from_json)
 
     # Unused attributes
     # created_at_details: Dict = field(factory=dict)

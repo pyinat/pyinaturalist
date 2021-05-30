@@ -1,12 +1,19 @@
 from datetime import datetime
-from typing import Dict
 
-from attr import define, field
+from attr import define
 
-from pyinaturalist.models import BaseModel, Taxon, User, cached_model_property, datetime_now_attr, kwarg
+from pyinaturalist.models import (
+    BaseModel,
+    LazyProperty,
+    Taxon,
+    User,
+    add_lazy_attrs,
+    datetime_now_attr,
+    kwarg,
+)
 
 
-@define(auto_attribs=False)
+@define(auto_attribs=False, field_transformer=add_lazy_attrs)
 class Identification(BaseModel):
     """A dataclass containing information about an identification, matching the schema of
     `GET /identifications <https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications>`_.
@@ -28,10 +35,8 @@ class Identification(BaseModel):
     vision: bool = kwarg
 
     # Lazy-loaded nested model objects
-    taxon: property = cached_model_property(Taxon.from_json, '_taxon')
-    _taxon: Dict = field(default=None, repr=False)
-    user: property = cached_model_property(User.from_json, '_user')
-    _user: Dict = field(default=None, repr=False)
+    taxon: property = LazyProperty(Taxon.from_json)
+    user: property = LazyProperty(User.from_json)
 
     # Unused attributes
     # created_at_details: {}
