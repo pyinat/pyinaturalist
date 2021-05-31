@@ -8,7 +8,8 @@ readme = "README.md"
 homepage = "https://github.com/niconoe/pyinaturalist"
 repository = "https://github.com/niconoe/pyinaturalist"
 documentation = "https://pyinaturalist.readthedocs.io"
-keywords = ["inaturalist", "biodiversity", "api-client", "data-models", "requests"]
+keywords = ["inaturalist", "biodiversity", "conservation", "citizen-science", "community-science",
+            "api", "api-client", "data-model", "requests"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
