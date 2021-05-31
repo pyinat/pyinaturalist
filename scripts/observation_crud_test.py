@@ -47,7 +47,7 @@ def run_observation_crud_test():
 def create_test_obs(token):
     response = create_observation(
         taxon_id=54327,
-        observed_on_string=datetime.now().isoformat(),
+        observed_on=datetime.now(),
         description=(
             'This is a test observation used for testing [pyinaturalist](https://github.com/niconoe/pyinaturalist), '
             'and will be deleted shortly.'
@@ -59,7 +59,7 @@ def create_test_obs(token):
         geoprivacy='open',
         access_token=token,
         observation_fields={297: 1},
-        local_photos=[SAMPLE_PHOTO, SAMPLE_PHOTO],
+        photos=[SAMPLE_PHOTO, SAMPLE_PHOTO],
     )
     test_obs_id = response[0]['id']
     print(f'Created new observation: {test_obs_id}')

@@ -171,12 +171,14 @@ def prepare_request(
     ids: MultiInt = None,
     params: RequestParams = None,
     headers: Dict = None,
-) -> Tuple[str, RequestParams, Dict]:
+    json: Dict = None,
+) -> Tuple[str, RequestParams, Dict, Optional[Dict]]:
     """Translate some ``pyinaturalist``-specific params into standard ``requests``
-    params and headers, and other request param preprocessing
+    params and headers, and other request param preprocessing. This is made non-`requests`-specific
+    so it could potentially be reused for `aiohttp` requests.
 
     Returns:
-        Tuple of ``(URL, params, headers)``
+        Tuple of ``(URL, params, headers, data)``
     """
     # Prepare request params
     params = preprocess_request_params(params)
@@ -196,7 +198,14 @@ def prepare_request(
     if ids:
         url = url.rstrip('/') + '/' + validate_ids(ids)
 
-    return url, params, headers
+    # Convert any datetimes to strings in request body
+    if json:
+        headers['Content-type'] = 'application/json'
+        for k, v in json.items():
+            if isinstance(v, (date, datetime)):
+                json[k] = v.isoformat()
+
+    return url, params, headers, json
 
 
 def preprocess_request_params(params: Optional[RequestParams]) -> RequestParams:

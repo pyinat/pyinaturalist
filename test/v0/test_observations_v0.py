@@ -62,10 +62,29 @@ def test_create_observation(requests_mock):
         status_code=200,
     )
 
-    response = create_observation(species_guess='Pieris rapae', access_token='valid token')
+    response = create_observation(
+        species_guess='Pieris rapae', observed_on_string='2021-09-09', access_token='valid token'
+    )
     assert len(response) == 1
     assert response[0]['latitude'] is None
     assert response[0]['taxon_id'] == 55626
+
+
+@patch('pyinaturalist.v0.observations.post')
+def test_create_observation__with_datetime(post, requests_mock):
+    """Just test that request param aliases work. Datetimes are converted to strings separately in
+    request_params.prepare_request().
+    """
+    requests_mock.post(
+        f'{API_V0_BASE_URL}/observations.json',
+        json=load_sample_data('create_observation_result.json'),
+        status_code=200,
+    )
+
+    now = datetime.now()
+    create_observation(species_guess='Pieris rapae', observed_on=now, access_token='valid token')
+    request_params = post.call_args[1]['json']['observation']
+    assert request_params['observed_on_string'] == now
 
 
 @patch('pyinaturalist.v0.observations.upload_photos')
@@ -73,7 +92,8 @@ def test_create_observation(requests_mock):
 def test_create_observation__with_photos(post, mock_upload_photos):
     create_observation(access_token='token', photos=['photo_1.jpg', 'photo_2.jpg'])
 
-    assert 'local_photos' not in post.call_args[1]['json']['observation']
+    request_params = post.call_args[1]['json']['observation']
+    assert 'local_photos' not in request_params
     mock_upload_photos.assert_called_once()
 
 
@@ -82,7 +102,8 @@ def test_create_observation__with_photos(post, mock_upload_photos):
 def test_create_observation__with_sounds(post, mock_upload_sounds):
     create_observation(access_token='token', sounds=['sound_1.mp3', 'sound_2.wav'])
 
-    assert 'sounds' not in post.call_args[1]['json']['observation']
+    request_params = post.call_args[1]['json']['observation']
+    assert 'sounds' not in request_params
     mock_upload_sounds.assert_called_once()
 
 
@@ -130,7 +151,8 @@ def test_update_observation(requests_mock):
 def test_update_observation__with_photos(put, mock_upload_photos):
     update_observation(1234, access_token='token', photos='photo.jpg')
 
-    assert 'local_photos' not in put.call_args[1]['json']['observation']
+    request_params = put.call_args[1]['json']['observation']
+    assert 'local_photos' not in request_params
     mock_upload_photos.assert_called_once()
 
 
@@ -139,7 +161,8 @@ def test_update_observation__with_photos(put, mock_upload_photos):
 def test_update_observation__with_sounds(put, mock_upload_sounds):
     update_observation(1234, access_token='token', sounds='photo.jpg')
 
-    assert 'sounds' not in put.call_args[1]['json']['observation']
+    request_params = put.call_args[1]['json']['observation']
+    assert 'sounds' not in request_params
     mock_upload_sounds.assert_called_once()
 
 

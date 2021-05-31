@@ -3,13 +3,13 @@ Reusable template functions used for API documentation.
 Each template function contains a portion of an endpoint's request parameters, with corresponding
 type annotations and docstrings.
 """
-from typing import Iterable, List
+from typing import List
 
 from pyinaturalist.constants import (
-    Date,
-    DateTime,
-    FileOrPath,
+    AnyDate,
+    AnyDateTime,
     IntOrStr,
+    MultiFile,
     MultiInt,
     MultiIntOrStr,
     MultiStr,
@@ -46,12 +46,12 @@ def _identification_params(
     observation_hrank: str = None,
     without_taxon_id: MultiInt = None,
     without_observation_taxon_id: MultiInt = None,
-    d1: Date = None,
-    d2: Date = None,
-    observation_created_d1: Date = None,
-    observation_created_d2: Date = None,
-    observed_d1: Date = None,
-    observed_d2: Date = None,
+    d1: AnyDate = None,
+    d2: AnyDate = None,
+    observation_created_d1: AnyDate = None,
+    observation_created_d2: AnyDate = None,
+    observed_d1: AnyDate = None,
+    observed_d2: AnyDate = None,
     id_above: int = None,
     id_below: int = None,
 ):
@@ -98,8 +98,8 @@ def _identification_params(
 # Params that are in most observation-related endpoints in both Node and REST APIs
 def _observation_common(
     q: str = None,
-    d1: Date = None,
-    d2: Date = None,
+    d1: AnyDate = None,
+    d2: AnyDate = None,
     day: MultiInt = None,
     month: MultiInt = None,
     year: MultiInt = None,
@@ -112,7 +112,7 @@ def _observation_common(
     taxon_id: MultiInt = None,
     taxon_name: MultiStr = None,
     iconic_taxa: MultiStr = None,
-    updated_since: DateTime = None,
+    updated_since: AnyDateTime = None,
 ):
     """
     q: Search observation properties
@@ -168,10 +168,10 @@ def _observation_node_only(
     without_term_value_id: MultiInt = None,
     acc_above: str = None,
     acc_below: str = None,
-    created_d1: DateTime = None,
-    created_d2: DateTime = None,
-    created_on: Date = None,
-    observed_on: Date = None,
+    created_d1: AnyDateTime = None,
+    created_d2: AnyDateTime = None,
+    created_on: AnyDate = None,
+    observed_on: AnyDate = None,
     unobserved_by_user_id: int = None,
     apply_project_rules_for: str = None,
     cs: str = None,
@@ -277,11 +277,11 @@ def _observation_node_only(
 # Observation params that are only in the REST API
 def _observation_rest_only(
     has: MultiStr = None,
-    on: Date = None,
-    m1: Date = None,
-    m2: Date = None,
-    h1: Date = None,
-    h2: Date = None,
+    on: AnyDate = None,
+    m1: AnyDate = None,
+    m2: AnyDate = None,
+    h1: AnyDate = None,
+    h2: AnyDate = None,
     extra: str = None,
     response_format: str = 'json',
 ):
@@ -315,7 +315,8 @@ def _observation_histogram(
 def _create_observation(
     species_guess: str = None,
     taxon_id: int = None,
-    observed_on_string: Date = None,
+    observed_on: AnyDate = None,
+    observed_on_string: AnyDate = None,
     time_zone: str = None,
     description: str = None,
     tag_list: MultiStr = None,
@@ -330,14 +331,15 @@ def _create_observation(
     flickr_photos: MultiInt = None,
     picasa_photos: MultiStr = None,
     facebook_photos: MultiStr = None,
-    local_photos: Iterable[FileOrPath] = None,
-    photos: Iterable[FileOrPath] = None,
-    sounds: Iterable[FileOrPath] = None,
+    local_photos: MultiFile = None,
+    photos: MultiFile = None,
+    sounds: MultiFile = None,
 ):
     """
     species_guess: Equivalent to the 'What did you see?' field on the observation form.
         iNat will try to choose a single taxon based on this, but it may fail if it's ambuguous
     taxon_id: ID of the taxon to associate with this observation
+    observed_on: Alias for ``observed_on_string``; accepts :py:class:`~datetime.datetime` objects.
     observed_on_string: Date/time of the observation. Time zone will default to the user's
         time zone if not specified.
     time_zone: Time zone the observation was made in

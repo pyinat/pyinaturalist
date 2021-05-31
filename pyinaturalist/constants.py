@@ -36,8 +36,8 @@ SAMPLE_DATA_DIR = join(PROJECT_DIR, 'test', 'sample_data')
 
 # Type aliases
 Coordinates = Tuple[float, float]
-Date = Union[date, datetime, str]
-DateTime = Union[datetime, str]
+AnyDate = Union[date, datetime, str]
+AnyDateTime = Union[datetime, str]
 DateOrInt = Union[date, datetime, int]
 Dimensions = Tuple[int, int]
 FileOrPath = Union[BinaryIO, str]
@@ -49,7 +49,8 @@ ObsFieldValues = Union[Dict, List[Dict]]
 RequestParams = Dict[str, Any]
 ResponseObject = Dict[str, Any]
 ResponseOrObject = Union[JsonResponse, ResponseObject, Iterable[ResponseObject]]
-MultiInt = Union[int, List[int]]
-MultiStr = Union[str, List[str]]
+MultiFile = Union[FileOrPath, Iterable[FileOrPath]]
+MultiInt = Union[int, Iterable[int]]
+MultiStr = Union[str, Iterable[str]]
 MultiIntOrStr = Union[MultiInt, MultiStr]
 TemplateFunction = Any  # Cannot use Callable/Protocol, as these will not allow a mix of signatures
