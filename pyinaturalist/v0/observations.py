@@ -4,7 +4,7 @@ from typing import List, Union
 
 from pyinaturalist import api_docs as docs
 from pyinaturalist.api_requests import delete, get, post, put
-from pyinaturalist.constants import API_V0_BASE_URL, FileOrPath, ListResponse
+from pyinaturalist.constants import API_V0_BASE_URL, ListResponse, MultiFile
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.pagination import add_paginate_all
@@ -141,6 +141,8 @@ def create_observation(access_token: str, **params) -> ListResponse:
     if 'observation' in params:
         params.update(params.pop('observation'))
     params = convert_observation_fields(params)
+    if 'observed_on' in params:
+        params['observed_on_string'] = params.pop('observed_on')
 
     # Split out photos and sounds to upload separately
     photos = ensure_list(params.pop('local_photos', None))
@@ -243,7 +245,7 @@ def update_observation(
 
 def upload_photos(
     observation_id: int,
-    photos: FileOrPath,
+    photos: MultiFile,
     access_token: str,
     user_agent: str = None,
 ) -> ListResponse:
@@ -283,18 +285,21 @@ def upload_photos(
         response = post(
             url=f'{API_V0_BASE_URL}/observation_photos',
             access_token=access_token,
-            data={'observation_photo[observation_id]': observation_id},
+            params={'observation_photo[observation_id]': observation_id},
             files={'file': ensure_file_obj(photo)},
             user_agent=user_agent,
         )
         responses.append(response)
 
+    # Wait until all uploads complete to raise errors for any failed uploads
+    for response in responses:
+        response.raise_for_status()
     return [response.json() for response in responses]
 
 
 def upload_sounds(
     observation_id: int,
-    sounds: FileOrPath,
+    sounds: MultiFile,
     access_token: str,
     user_agent: str = None,
 ) -> ListResponse:
@@ -336,12 +341,15 @@ def upload_sounds(
         response = post(
             url=f'{API_V0_BASE_URL}/observation_sounds',
             access_token=access_token,
-            data={'observation_sounds[observation_id]': observation_id},
+            params={'observation_sound[observation_id]': observation_id},
             files={'file': ensure_file_obj(sound)},
             user_agent=user_agent,
         )
         responses.append(response)
 
+    # Wait until all uploads complete to raise errors for any failed uploads
+    for response in responses:
+        response.raise_for_status()
     return [response.json() for response in responses]
 
 
@@ -367,7 +375,6 @@ def delete_observation(observation_id: int, access_token: str = None, user_agent
     response = delete(
         url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
         access_token=access_token,
-        headers={'Content-type': 'application/json'},
         user_agent=user_agent,
     )
     if response.status_code == 404:

@@ -39,6 +39,7 @@ def request(
     ids: MultiInt = None,
     params: RequestParams = None,
     headers: Dict = None,
+    json: Dict = None,
     session: requests.Session = None,
     **kwargs,
 ) -> requests.Response:
@@ -53,12 +54,22 @@ def request(
         ids: One or more integer IDs used as REST resource(s) to request
         params: Requests parameters
         headers: Request headers
+        json: JSON request body
         session: Existing Session object to use instead of creating a new one
+        kwargs: Additional keyword arguments for :py:meth:`requests.Session.request`
 
     Returns:
         API response
     """
-    url, params, headers = prepare_request(url, access_token, user_agent, ids, params, headers)
+    url, params, headers, json = prepare_request(
+        url,
+        access_token,
+        user_agent,
+        ids,
+        params,
+        headers,
+        json,
+    )
     session = session or get_session()
 
     # Run either real request or mock request depending on settings
@@ -68,7 +79,7 @@ def request(
         return MOCK_RESPONSE
     else:
         with ratelimit():
-            return session.request(method, url, params=params, headers=headers, **kwargs)
+            return session.request(method, url, params=params, headers=headers, json=json, **kwargs)
 
 
 @copy_signature(request, exclude='method')
