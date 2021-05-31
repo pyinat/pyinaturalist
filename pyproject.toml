@@ -44,12 +44,12 @@ Sphinx = { version = "^4.0.1", optional = true }
 sphinx-automodapi = { version=">=0.13", optional = true}
 sphinx-autodoc-typehints = { version = "^1.11", optional = true }
 sphinx-copybutton = { version = "^0.3", optional = true }
-sphinx-rtd-theme = { version = "0.5.2", optional = true }
+sphinx-material = {version = "^0.0.32", optional = true}
 sphinxcontrib-apidoc = { version = "^0.3", optional = true }
 
 [tool.poetry.extras]
-docs = ["docutils", "m2r2", "nbsphinx", "Sphinx",  "sphinx-automodapi","sphinx-autodoc-typehints",
-        "sphinx-copybutton", "sphinx-rtd-theme", "sphinxcontrib-apidoc"]
+docs = ["docutils", "m2r2", "nbsphinx", "Sphinx", "sphinx-automodapi", "sphinx-autodoc-typehints",
+        "sphinx-copybutton", "sphinx-material", "sphinxcontrib-apidoc"]
 
 [tool.poetry.dev-dependencies]
 black = {version = "21.5b0", python = ">=3.6.2, <3.10"}

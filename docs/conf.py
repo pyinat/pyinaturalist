@@ -52,7 +52,7 @@ extensions = [
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
     'sphinx_copybutton',
-    'sphinx_rtd_theme',
+    'sphinx_material',
     'sphinxcontrib.apidoc',
     'm2r2',
     'nbsphinx',
@@ -96,9 +96,20 @@ autodoc_typehints = 'description'
 set_type_checking_flag = True
 
 # HTML theme settings
-pygments_style = 'sphinx'
-html_theme = 'sphinx_rtd_theme'
-# html_theme_options = {}
+html_theme = 'sphinx_material'
+html_show_sphinx = False
+html_theme_options = {
+    'color_primary': 'blue-grey',
+    'color_accent': 'teal',
+    'globaltoc_depth': 3,
+    'globaltoc_includehidden': False,
+    'repo_url': 'https://github.com/niconoe/pyinaturalist',
+    'repo_name': project,
+    'nav_title': project,
+}
+html_sidebars = {'**': ['logo-text.html', 'globaltoc.html', 'localtoc.html', 'searchbox.html']}
+pygments_style = 'friendly'
+# pygments_style = 'material'  # TODO If/when dark mode support is added for sphinx-material
 
 # Favicon & sidebar logo
 # html_logo = 'logo.jpg'
