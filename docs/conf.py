@@ -102,7 +102,7 @@ html_theme = 'sphinx_rtd_theme'
 
 # Favicon & sidebar logo
 # html_logo = 'logo.jpg'
-# html_favicon = 'favicon.ico'
+html_favicon = join('images', 'favicon.ico')
 
 
 def setup(app):
