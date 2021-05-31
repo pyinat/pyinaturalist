@@ -7,12 +7,19 @@
 
 [![PyPI](https://img.shields.io/pypi/v/pyinaturalist?color=blue)](https://pypi.org/project/pyinaturalist)
 [![PyPI - Python Versions](https://img.shields.io/pypi/pyversions/pyinaturalist)](https://pypi.org/project/pyinaturalist)
-[![PyPI - Format](https://img.shields.io/pypi/format/pyinaturalist?color=blue)](https://pypi.org/project/pyinaturalist)
+[![PyPI - Format](https://img.shields.io/pypi/format/pyinaturalist?color=blue)](https://pypi.org/project/pyinaturalist) [![Run with Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
 
-[![Run with Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
+<br />
+[![](docs/images/pyinaturalist_logo.png)](https://pyinaturalist.readthedocs.io)
 
-Pyinaturalist is an iNaturalist API client for python.
-See full project documentation at https://pyinaturalist.readthedocs.io.
+## Summary
+
+[iNaturalist](https://www.inaturalist.org) is a community science platform that helps people
+get involved in the natural world by observing and identifying the living things around them.
+Collectively, the community produces a rich source of global biodiversity data that can be valuable
+to anyone from hobbyists to scientists.
+
+Pyinaturalist aims to make these data easily accessible in the python programming language. 
 
 - [Features](#features)
 - [Quickstart](#quickstart)
@@ -21,22 +28,19 @@ See full project documentation at https://pyinaturalist.readthedocs.io.
 - [Related Projects](#related-projects)
 
 ## Features
+iNaturalist offers an extensive [API](https://api.inaturalist.org/v1) to interact with its data, and pyinaturalist adds
+a number of python-specific conveniences to this, including:
 
-[iNaturalist](https://www.inaturalist.org) offers a rich source of biodiversity data, and an
-extensive API to interact with it. If you want to make use of these data in python, then
-pyinaturalist can help! It adds a number of python-specific conveniences, including:
-
-* **Requests:** Simplified usage with python types and data structures
-* **Responses:** Type conversions to things you would expect in python
-* **Server-Friendly Usage:** Client-side rate-limiting that follows the
-  [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
-* **Typing:** Complete type annotations for request parameters which significantly enhances
-  usability within an IDE, Jupyter notebook, or any other environment with type checking & autocompletion
-* **Docs:** Thorough documentation with example requests and responses
+* **Easier requests:** Complete type annotations for request parameters, and simplified create/update request formats
+* **Convenient responses:** Response data models with type conversions to the things you would expect in python
+* **Docs:** Example requests, responses, scripts, and Jupyter notebooks to help get you started
 * **Security:** Keyring integration for secure credential storage
-* **Testing:** A dry-run mode to preview your requests before potentially modifying data
+* **Server-friendly:** Client-side rate-limiting that follows the
+  [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices),
+  so you can be nice to the iNaturalist servers and not worry about rate-limiting errors
+* **Test-friendly:** A dry-run mode to preview your requests before potentially modifying data
 
-Many of the most relevant API endpoints are included:
+Many of the most relevant API endpoints are included, and more are on the way:
 * **Searching for:**
     * controlled terms
     * identifications
@@ -54,9 +58,10 @@ Many of the most relevant API endpoints are included:
     * observations
     * observation fields
     * observation photos
+    * observation sounds
 
 ## Quickstart
-Following are usage examples for some of the most commonly used features.
+Here are usage examples for some of the most commonly used features.
 
 First, install with pip:
 ```bash
@@ -229,7 +234,7 @@ For more information, see:
   a complete list of endpoints wrapped by pyinaturalist
 * [Examples](https://pyinaturalist.readthedocs.io/en/stable/examples.html):
   data visualizations and other examples of things to do with iNaturalist data
-* [Reference](https://pyinaturalist.readthedocs.io/en/latest/reference.html): API docs
+* [Reference](https://pyinaturalist.readthedocs.io/en/latest/reference.html): Detailed API documentation
 * [Contributing Guide](https://pyinaturalist.readthedocs.io/en/stable/contributing.html):
   development details for anyone interested in contributing to pyinaturalist
 * [History](https://github.com/niconoe/pyinaturalist/blob/dev/HISTORY.md):

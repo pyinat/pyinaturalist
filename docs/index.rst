@@ -1,11 +1,11 @@
 .. _index-page:
 
-.. Omit README link to ReadTheDocs, since we're already on ReadTheDocs!
+.. Omit README table of contents; TODO: Can markdown anchors be converted to rST refs?
 .. mdinclude:: ../README.md
-    :end-line: 11
+    :end-line: 22
 
 .. mdinclude:: ../README.md
-    :start-line: 18
+    :start-line: 28
 
 
 Contents

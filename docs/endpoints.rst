@@ -9,14 +9,14 @@ Note that some endpoints have more than one function associated with them.
 Pyinaturalist functions
 ----------------------------------------
 
-API v1
+v1 API
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodsumm:: pyinaturalist.v1
     :functions-only:
     :nosignatures:
     :skip: get_v1
 
-API v0
+v0 API
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodsumm:: pyinaturalist.v0
     :functions-only:
