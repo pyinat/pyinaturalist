@@ -336,7 +336,7 @@ def upload_sounds(
         response = post(
             url=f'{API_V0_BASE_URL}/observation_sounds',
             access_token=access_token,
-            data={'observation_sounds[observation_id]': observation_id},
+            params={'observation_sound[observation_id]': observation_id},
             files={'file': ensure_file_obj(sound)},
             user_agent=user_agent,
         )
