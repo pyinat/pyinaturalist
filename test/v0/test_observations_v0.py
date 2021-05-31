@@ -70,11 +70,11 @@ def test_create_observation(requests_mock):
 
 @patch('pyinaturalist.v0.observations.upload_photos')
 @patch('pyinaturalist.v0.observations.post')
-def test_create_observation__with_photos(post, mock_upload_photo):
+def test_create_observation__with_photos(post, mock_upload_photos):
     create_observation(access_token='token', photos=['photo_1.jpg', 'photo_2.jpg'])
 
     assert 'local_photos' not in post.call_args[1]['json']['observation']
-    assert mock_upload_photo.call_count == 2
+    mock_upload_photos.assert_called_once()
 
 
 @patch('pyinaturalist.v0.observations.upload_sounds')
@@ -83,7 +83,7 @@ def test_create_observation__with_sounds(post, mock_upload_sounds):
     create_observation(access_token='token', sounds=['sound_1.mp3', 'sound_2.wav'])
 
     assert 'sounds' not in post.call_args[1]['json']['observation']
-    assert mock_upload_sounds.call_count == 2
+    mock_upload_sounds.assert_called_once()
 
 
 def test_create_observation_fail(requests_mock):
@@ -127,11 +127,20 @@ def test_update_observation(requests_mock):
 
 @patch('pyinaturalist.v0.observations.upload_photos')
 @patch('pyinaturalist.v0.observations.put')
-def test_update_observation__local_photo(put, mock_add_photo):
-    update_observation(1234, access_token='token', local_photos='photo.jpg')
+def test_update_observation__with_photos(put, mock_upload_photos):
+    update_observation(1234, access_token='token', photos='photo.jpg')
 
     assert 'local_photos' not in put.call_args[1]['json']['observation']
-    assert mock_add_photo.call_count == 1
+    mock_upload_photos.assert_called_once()
+
+
+@patch('pyinaturalist.v0.observations.upload_sounds')
+@patch('pyinaturalist.v0.observations.put')
+def test_update_observation__with_sounds(put, mock_upload_sounds):
+    update_observation(1234, access_token='token', sounds='photo.jpg')
+
+    assert 'sounds' not in put.call_args[1]['json']['observation']
+    mock_upload_sounds.assert_called_once()
 
 
 def test_update_nonexistent_observation(requests_mock):
@@ -182,9 +191,9 @@ def test_upload_photos(requests_mock):
     )
 
     response = upload_photos(1234, BytesIO(), access_token='token')
-    assert response['id'] == 1234
-    assert response['created_at'] == '2020-09-24T21:06:16.964-05:00'
-    assert response['photo']['native_username'] == 'username'
+    assert response[0]['id'] == 1234
+    assert response[0]['created_at'] == '2020-09-24T21:06:16.964-05:00'
+    assert response[0]['photo']['native_username'] == 'username'
 
 
 def test_upload_sounds(requests_mock):
@@ -195,9 +204,9 @@ def test_upload_sounds(requests_mock):
     )
 
     response = upload_sounds(233946, BytesIO(), access_token='token')
-    assert response['id'] == 233946
-    assert response['created_at'] == '2021-05-30T17:36:40.286-05:00'
-    assert response['sound']['file_content_type'] == 'audio/mpeg'
+    assert response[0]['id'] == 233946
+    assert response[0]['created_at'] == '2021-05-30T17:36:40.286-05:00'
+    assert response[0]['sound']['file_content_type'] == 'audio/mpeg'
 
 
 def test_delete_observation(requests_mock):

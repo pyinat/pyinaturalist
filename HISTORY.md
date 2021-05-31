@@ -5,18 +5,22 @@
 
 ### New Endpoints
 * Added new function for **Observation sounds** endpoint: `upload_sounds()`
-
 ### Modified Endpoints
 * Added a `photos` parameter `create_observation()` and `update_observation()` to upload photos
 * Added a `sounds` parameter `create_observation()` and `update_observation()` to upload sounds
+* Renamed `add_photo_to_observation()` to `upload_photos()`
+  * The alias `rest_api.add_photo_to_observation()` is still available for backwards-compatibility
+* Updated `upload_photos()` to take accept either a single photo or a list of photos, and return a list of responses
+* Updated `upload_sounds()` to take accept either a single sound or a list of sounds, and return a list of responses
+* Updated upload_photos()
 * Moved API functions into separate modules by API version and resource type.
     * All can still be imported via `from pyinaturalist import *`
-    * Imports from `pyinaturalist.rest_api` and `pyinaturalist.node_api` will still work, but are
-      deprecated and will be removed in a future release
+    * Added aliases for backwards-compatibility, so imports from `pyinaturalist.rest_api` and
+      `pyinaturalist.node_api` will still work, but these are deprecated and will be removed in a future release
 
 ### Other Changes
 * Set up pyinaturalist-notebook to [runnable with Binder](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
-* Added models for all API response types, to support working with typed python objects instead of JSON
+* Added data models for all API response types, to support working with typed python objects instead of JSON
 
 -----
 ## 0.13 (2021-05-22)

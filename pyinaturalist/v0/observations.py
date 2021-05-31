@@ -156,10 +156,10 @@ def create_observation(access_token: str, **params) -> ListResponse:
     response_json = response.json()
     observation_id = response_json[0]['id']
 
-    for photo in photos:
-        upload_photos(observation_id, photo=photo, access_token=access_token)
-    for sound in sounds:
-        upload_sounds(observation_id, sound=sound, access_token=access_token)
+    if photos:
+        upload_photos(observation_id, photos, access_token)
+    if sounds:
+        upload_sounds(observation_id, sounds, access_token)
     return response_json
 
 
@@ -234,34 +234,38 @@ def update_observation(
     )
     response.raise_for_status()
 
-    for photo in photos:
-        upload_photos(observation_id, photo=photo, access_token=access_token)
-    for sound in sounds:
-        upload_sounds(observation_id, sound=sound, access_token=access_token)
+    if photos:
+        upload_photos(observation_id, photos, access_token)
+    if sounds:
+        upload_sounds(observation_id, sounds, access_token)
     return response.json()
 
 
 def upload_photos(
     observation_id: int,
-    photo: FileOrPath,
+    photos: FileOrPath,
     access_token: str,
     user_agent: str = None,
-):
+) -> ListResponse:
     """Upload a local photo and assign it to an existing observation.
 
     Example:
 
         >>> token = get_access_token()
-        >>> upload_photo(
+        >>> upload_photos(1234, '~/observations/2020_09_01_14003156.jpg', access_token=token)
+
+        Multiple photos can be uploaded at once:
+
+        >>> upload_photos(
         >>>     1234,
-        >>>     '~/observations/2020_09_01_14003156.jpg',
+        >>>     ['~/observations/2020_09_01_14003156.jpg', '~/observations/2020_09_01_14004223.jpg'],
         >>>     access_token=token,
         >>> )
 
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/post_observation_photos.json
+            .. literalinclude:: ../sample_data/post_observation_photos_list.json
                 :language: javascript
 
     Args:
@@ -271,25 +275,29 @@ def upload_photos(
         user_agent: a user-agent string that will be passed to iNaturalist.
 
     Returns:
-        Information about the newly created photo
+        Information about the uploaded photo(s)
     """
-    response = post(
-        url=f'{API_V0_BASE_URL}/observation_photos',
-        access_token=access_token,
-        data={'observation_photo[observation_id]': observation_id},
-        files={'file': ensure_file_obj(photo)},
-        user_agent=user_agent,
-    )
+    responses = []
 
-    return response.json()
+    for photo in ensure_list(photos):
+        response = post(
+            url=f'{API_V0_BASE_URL}/observation_photos',
+            access_token=access_token,
+            data={'observation_photo[observation_id]': observation_id},
+            files={'file': ensure_file_obj(photo)},
+            user_agent=user_agent,
+        )
+        responses.append(response)
+
+    return [response.json() for response in responses]
 
 
 def upload_sounds(
     observation_id: int,
-    sound: FileOrPath,
+    sounds: FileOrPath,
     access_token: str,
     user_agent: str = None,
-):
+) -> ListResponse:
     """Upload a local photo and assign it to an existing observation.
 
     **API reference:** https://www.inaturalist.org/pages/api+reference#post-observation_photos
@@ -297,17 +305,21 @@ def upload_sounds(
     Example:
 
         >>> token = get_access_token()
-        >>> upload_sound(
-        >>>     1234,
-        >>>     '~/observations/2020_09_01_14003156.mp3',
-        >>>     access_token=token,
-        >>> )
+        >>> upload_sounds(1234, '~/observations/2020_09_01_14003156.mp3', access_token=token)
 
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/post_observation_sounds.json
+            .. literalinclude:: ../sample_data/post_observation_sounds_list.json
                 :language: javascript
+
+        Multiple sounds can be uploaded at once:
+
+        >>> upload_sounds(
+        >>>     1234,
+        >>>     ['~/observations/2020_09_01_14003156.mp3', '~/observations/2020_09_01_14004223.wav'],
+        >>>     access_token=token,
+        >>> )
 
     Args:
         observation_id: the ID of the observation
@@ -316,17 +328,21 @@ def upload_sounds(
         user_agent: a user-agent string that will be passed to iNaturalist.
 
     Returns:
-        Information about the newly created sound file
+        Information about the uploaded sound(s)
     """
-    response = post(
-        url=f'{API_V0_BASE_URL}/observation_sounds',
-        access_token=access_token,
-        data={'observation_sounds[observation_id]': observation_id},
-        files={'file': ensure_file_obj(sound)},
-        user_agent=user_agent,
-    )
+    responses = []
 
-    return response.json()
+    for sound in ensure_list(sounds):
+        response = post(
+            url=f'{API_V0_BASE_URL}/observation_sounds',
+            access_token=access_token,
+            data={'observation_sounds[observation_id]': observation_id},
+            files={'file': ensure_file_obj(sound)},
+            user_agent=user_agent,
+        )
+        responses.append(response)
+
+    return [response.json() for response in responses]
 
 
 @document_request_params([docs._observation_id, docs._access_token])

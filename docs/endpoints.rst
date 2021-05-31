@@ -14,6 +14,7 @@ API v1
 .. automodsumm:: pyinaturalist.v1
     :functions-only:
     :nosignatures:
+    :skip: get_v1
 
 API v0
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
