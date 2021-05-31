@@ -16,3 +16,7 @@ def get_all_observation_fields(**params) -> ListResponse:
     msg = "get_all_observation_fields() is deprecated; please use get_observation_fields(page='all') instead"
     warn(DeprecationWarning(msg))
     return paginate_all(get_observation_fields, method='page', **params)['results']
+
+
+def add_photo_to_observation(*args, **kwargs):
+    return upload_photos(*args, **kwargs)

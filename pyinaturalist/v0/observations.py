@@ -1,3 +1,4 @@
+# TODO: Decide on consistent terminology for POST/PUT endpoints, rename, and add DeprecationWarnings to previous names
 from logging import getLogger
 from typing import List, Union
 
@@ -142,8 +143,8 @@ def create_observation(access_token: str, **params) -> ListResponse:
     params = convert_observation_fields(params)
 
     # Split out photos and sounds to upload separately
-    photos = ensure_list(params.pop('photos', None))
-    photos.extend(ensure_list(params.pop('local_photos', None)))
+    photos = ensure_list(params.pop('local_photos', None))
+    photos.extend(ensure_list(params.pop('photos', None)))  # Alias for 'local_photos'
     sounds = ensure_list(params.pop('sounds', None))
 
     response = post(
@@ -156,9 +157,9 @@ def create_observation(access_token: str, **params) -> ListResponse:
     observation_id = response_json[0]['id']
 
     for photo in photos:
-        add_photo_to_observation(observation_id, photo=photo, access_token=access_token)
+        upload_photos(observation_id, photo=photo, access_token=access_token)
     for sound in sounds:
-        add_sound_to_observation(observation_id, sound=sound, access_token=access_token)
+        upload_sounds(observation_id, sound=sound, access_token=access_token)
     return response_json
 
 
@@ -215,8 +216,10 @@ def update_observation(
         params.update(params.pop('observation'))
     params = convert_observation_fields(params)
 
-    # Split out photos to upload separately
+    # Split out photos and sounds to upload separately
     photos = ensure_list(params.pop('local_photos', None))
+    photos.extend(ensure_list(params.pop('photos', None)))  # Alias for 'local_photos'
+    sounds = ensure_list(params.pop('sounds', None))
 
     # Note: this is the only Boolean parameter that's specified as an int
     if 'ignore_photos' in params:
@@ -232,11 +235,13 @@ def update_observation(
     response.raise_for_status()
 
     for photo in photos:
-        add_photo_to_observation(observation_id, photo=photo, access_token=access_token)
+        upload_photos(observation_id, photo=photo, access_token=access_token)
+    for sound in sounds:
+        upload_sounds(observation_id, sound=sound, access_token=access_token)
     return response.json()
 
 
-def add_photo_to_observation(
+def upload_photos(
     observation_id: int,
     photo: FileOrPath,
     access_token: str,
@@ -244,12 +249,10 @@ def add_photo_to_observation(
 ):
     """Upload a local photo and assign it to an existing observation.
 
-    **API reference:** https://www.inaturalist.org/pages/api+reference#post-observation_photos
-
     Example:
 
         >>> token = get_access_token()
-        >>> add_photo_to_observation(
+        >>> upload_photo(
         >>>     1234,
         >>>     '~/observations/2020_09_01_14003156.jpg',
         >>>     access_token=token,
@@ -281,7 +284,7 @@ def add_photo_to_observation(
     return response.json()
 
 
-def add_sound_to_observation(
+def upload_sounds(
     observation_id: int,
     sound: FileOrPath,
     access_token: str,
@@ -294,7 +297,7 @@ def add_sound_to_observation(
     Example:
 
         >>> token = get_access_token()
-        >>> add_sound_to_observation(
+        >>> upload_sound(
         >>>     1234,
         >>>     '~/observations/2020_09_01_14003156.mp3',
         >>>     access_token=token,

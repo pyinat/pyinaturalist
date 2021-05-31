@@ -13,6 +13,7 @@ def test_v0_imports():
         get_observations,
         put_observation_field_values,
         update_observation,
+        upload_photos,
     )
 
 
