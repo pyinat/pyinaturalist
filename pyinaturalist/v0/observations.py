@@ -1,3 +1,4 @@
+# TODO: Decide on consistent terminology for POST/PUT endpoints, rename, and add DeprecationWarnings to previous names
 from logging import getLogger
 from typing import List, Union
 
@@ -141,8 +142,10 @@ def create_observation(access_token: str, **params) -> ListResponse:
         params.update(params.pop('observation'))
     params = convert_observation_fields(params)
 
-    # Split out photos to upload separately
+    # Split out photos and sounds to upload separately
     photos = ensure_list(params.pop('local_photos', None))
+    photos.extend(ensure_list(params.pop('photos', None)))  # Alias for 'local_photos'
+    sounds = ensure_list(params.pop('sounds', None))
 
     response = post(
         url=f'{API_V0_BASE_URL}/observations.json',
@@ -153,8 +156,10 @@ def create_observation(access_token: str, **params) -> ListResponse:
     response_json = response.json()
     observation_id = response_json[0]['id']
 
-    for photo in photos:
-        add_photo_to_observation(observation_id, photo=photo, access_token=access_token)
+    if photos:
+        upload_photos(observation_id, photos, access_token)
+    if sounds:
+        upload_sounds(observation_id, sounds, access_token)
     return response_json
 
 
@@ -211,8 +216,10 @@ def update_observation(
         params.update(params.pop('observation'))
     params = convert_observation_fields(params)
 
-    # Split out photos to upload separately
+    # Split out photos and sounds to upload separately
     photos = ensure_list(params.pop('local_photos', None))
+    photos.extend(ensure_list(params.pop('photos', None)))  # Alias for 'local_photos'
+    sounds = ensure_list(params.pop('sounds', None))
 
     # Note: this is the only Boolean parameter that's specified as an int
     if 'ignore_photos' in params:
@@ -227,34 +234,38 @@ def update_observation(
     )
     response.raise_for_status()
 
-    for photo in photos:
-        add_photo_to_observation(observation_id, photo=photo, access_token=access_token)
+    if photos:
+        upload_photos(observation_id, photos, access_token)
+    if sounds:
+        upload_sounds(observation_id, sounds, access_token)
     return response.json()
 
 
-def add_photo_to_observation(
+def upload_photos(
     observation_id: int,
-    photo: FileOrPath,
+    photos: FileOrPath,
     access_token: str,
     user_agent: str = None,
-):
+) -> ListResponse:
     """Upload a local photo and assign it to an existing observation.
-
-    **API reference:** https://www.inaturalist.org/pages/api+reference#post-observation_photos
 
     Example:
 
         >>> token = get_access_token()
-        >>> add_photo_to_observation(
+        >>> upload_photos(1234, '~/observations/2020_09_01_14003156.jpg', access_token=token)
+
+        Multiple photos can be uploaded at once:
+
+        >>> upload_photos(
         >>>     1234,
-        >>>     '~/observation_photos/2020_09_01_14003156.jpg',
+        >>>     ['~/observations/2020_09_01_14003156.jpg', '~/observations/2020_09_01_14004223.jpg'],
         >>>     access_token=token,
         >>> )
 
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/add_photo_to_observation.json
+            .. literalinclude:: ../sample_data/post_observation_photos_list.json
                 :language: javascript
 
     Args:
@@ -264,17 +275,74 @@ def add_photo_to_observation(
         user_agent: a user-agent string that will be passed to iNaturalist.
 
     Returns:
-        Information about the newly created photo
+        Information about the uploaded photo(s)
     """
-    response = post(
-        url=f'{API_V0_BASE_URL}/observation_photos',
-        access_token=access_token,
-        data={'observation_photo[observation_id]': observation_id},
-        files={'file': ensure_file_obj(photo)},
-        user_agent=user_agent,
-    )
+    responses = []
 
-    return response.json()
+    for photo in ensure_list(photos):
+        response = post(
+            url=f'{API_V0_BASE_URL}/observation_photos',
+            access_token=access_token,
+            data={'observation_photo[observation_id]': observation_id},
+            files={'file': ensure_file_obj(photo)},
+            user_agent=user_agent,
+        )
+        responses.append(response)
+
+    return [response.json() for response in responses]
+
+
+def upload_sounds(
+    observation_id: int,
+    sounds: FileOrPath,
+    access_token: str,
+    user_agent: str = None,
+) -> ListResponse:
+    """Upload a local photo and assign it to an existing observation.
+
+    **API reference:** https://www.inaturalist.org/pages/api+reference#post-observation_photos
+
+    Example:
+
+        >>> token = get_access_token()
+        >>> upload_sounds(1234, '~/observations/2020_09_01_14003156.mp3', access_token=token)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/post_observation_sounds_list.json
+                :language: javascript
+
+        Multiple sounds can be uploaded at once:
+
+        >>> upload_sounds(
+        >>>     1234,
+        >>>     ['~/observations/2020_09_01_14003156.mp3', '~/observations/2020_09_01_14004223.wav'],
+        >>>     access_token=token,
+        >>> )
+
+    Args:
+        observation_id: the ID of the observation
+        sound: An audio file, file-like object, or path
+        access_token: the access token, as returned by :func:`get_access_token()`
+        user_agent: a user-agent string that will be passed to iNaturalist.
+
+    Returns:
+        Information about the uploaded sound(s)
+    """
+    responses = []
+
+    for sound in ensure_list(sounds):
+        response = post(
+            url=f'{API_V0_BASE_URL}/observation_sounds',
+            access_token=access_token,
+            data={'observation_sounds[observation_id]': observation_id},
+            files={'file': ensure_file_obj(sound)},
+            user_agent=user_agent,
+        )
+        responses.append(response)
+
+    return [response.json() for response in responses]
 
 
 @document_request_params([docs._observation_id, docs._access_token])

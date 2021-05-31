@@ -20,13 +20,13 @@ from os.path import join
 from pprint import pprint
 
 from pyinaturalist import (
-    add_photo_to_observation,
     create_observation,
     delete_observation,
     get_access_token,
     get_observation,
     put_observation_field_values,
     update_observation,
+    upload_photos,
 )
 from pyinaturalist.constants import SAMPLE_DATA_DIR
 
@@ -71,7 +71,7 @@ def create_test_obs(token):
 
 
 def update_test_obs(test_obs_id, token):
-    response = add_photo_to_observation(
+    response = upload_photos(
         test_obs_id,
         photo=SAMPLE_PHOTO,
         access_token=token,

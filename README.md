@@ -143,28 +143,21 @@ response = create_observation(
     longitude=4.360216,
     positional_accuracy=50, # GPS accuracy in meters
     access_token=token,
+    photos=['~/observations/wasp1.jpg', '~/observations/wasp2.jpg']
 )
 
 # Save the new observation ID
 new_observation_id = response[0]['id']
 ```
 
-Next we can [upload a picture](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.rest_api.html#pyinaturalist.rest_api.add_photo_to_observation)
-for this observation:
-```python
-add_photo_to_observation(
-    new_observation_id,
-    access_token=token,
-    photo='/Users/nicolasnoe/vespa.jpg',
-)
-```
-
-And then [update the observation](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.rest_api.html#pyinaturalist.rest_api.update_observation):
+We can then [update the observation](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.rest_api.html#pyinaturalist.rest_api.update_observation) information, photos, or sounds:
 ```python
 update_observation(
     17932425,
     access_token=token,
     description='updated description !',
+    photos='~/observations/wasp_nest.jpg',
+    sounds='~/observations/wasp_nest.mp3',
 )
 ```
 

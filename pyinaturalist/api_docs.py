@@ -331,6 +331,8 @@ def _create_observation(
     picasa_photos: MultiStr = None,
     facebook_photos: MultiStr = None,
     local_photos: Iterable[FileOrPath] = None,
+    photos: Iterable[FileOrPath] = None,
+    sounds: Iterable[FileOrPath] = None,
 ):
     """
     species_guess: Equivalent to the 'What did you see?' field on the observation form.
@@ -356,7 +358,8 @@ def _create_observation(
         their Picasa and iNat accounts connected, and the user must own the photo(s) on Picasa.
     facebook_photos: Facebook photo IDs to add as photos for this observation. User must have
         their Facebook and iNat accounts connected, and the user must own the photo on Facebook.
-    local_photos: Image files, file-like objects, and/or paths for local photos to upload
+    photos: Image files, file-like objects, and/or paths
+    sounds: Sound files, file-like objects, and/or pathss
     """
 
 

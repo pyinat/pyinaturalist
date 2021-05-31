@@ -1,0 +1,20 @@
+[
+  {
+    "id": 233946,
+    "uuid": "d77d4725-5498-4145-8e2b-6e6580df88c6",
+    "created_at": "2021-05-30T17:36:40.286-05:00",
+    "updated_at": "2021-05-30T17:36:40.286-05:00",
+    "sound": {
+      "id": 239936,
+      "license_code": "cc-by-nc",
+      "attribution": "(c) Jordan Cook, some rights reserved (CC BY-NC)",
+      "native_sound_id": null,
+      "secret_token": null,
+      "file_url": "https://static.inaturalist.org/sounds/239936.mp3?1622414199",
+      "file_content_type": "audio/mpeg",
+      "play_local": true,
+      "subtype": null,
+      "flags": []
+    }
+  }
+]

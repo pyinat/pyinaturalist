@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1234,
+    "observation_id": 1234,
+    "photo_id": 1234,
+    "position": null,
+    "created_at": "2020-09-24T21:06:16.964-05:00",
+    "updated_at": "2020-09-24T21:06:16.964-05:00",
+    "old_uuid": null,
+    "uuid": "f4ec883f-e835-4590-ab3e-97900bd454a5",
+    "created_at_utc": "2020-09-25T02:06:16.964Z",
+    "updated_at_utc": "2020-09-25T02:06:16.964Z",
+    "photo": {
+      "id": 1234,
+      "user_id": 1234,
+      "native_photo_id": "1234",
+      "square_url": null,
+      "thumb_url": null,
+      "small_url": null,
+      "medium_url": null,
+      "large_url": null,
+      "created_at": "2020-09-24T21:06:15.212-05:00",
+      "updated_at": "2020-09-24T21:06:15.212-05:00",
+      "native_page_url": null,
+      "native_username": "username",
+      "native_realname": "Firstname Lastname",
+      "license": 2,
+      "subtype": null,
+      "native_original_image_url": null,
+      "uuid": "632dddc1-85ad-4664-8438-de6e0afd7746",
+      "license_name": "Creative Commons Attribution-NonCommercial License",
+      "license_url": "http://creativecommons.org/licenses/by-nc/4.0/",
+      "attribution": "(c) Firstname Lastname, some rights reserved (CC BY-NC)",
+      "type": "LocalPhoto"
+    }
+  }
+]
