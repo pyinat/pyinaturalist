@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from os.path import abspath, dirname, join
-from typing import Any, BinaryIO, Dict, Iterable, List, Tuple, Union
+from pathlib import Path
+from typing import IO, Any, BinaryIO, Dict, Iterable, List, Tuple, Union
 
 # iNaturalist URLs
 API_V0_BASE_URL = 'https://www.inaturalist.org'
@@ -38,6 +39,7 @@ SAMPLE_DATA_DIR = join(PROJECT_DIR, 'test', 'sample_data')
 Coordinates = Tuple[float, float]
 AnyDate = Union[date, datetime, str]
 AnyDateTime = Union[datetime, str]
+AnyFile = Union[IO, Path, str]
 DateOrInt = Union[date, datetime, int]
 Dimensions = Tuple[int, int]
 FileOrPath = Union[BinaryIO, str]
@@ -49,6 +51,7 @@ ObsFieldValues = Union[Dict, List[Dict]]
 RequestParams = Dict[str, Any]
 ResponseObject = Dict[str, Any]
 ResponseOrObject = Union[JsonResponse, ResponseObject, Iterable[ResponseObject]]
+ResponseOrFile = Union[AnyFile, JsonResponse]
 MultiFile = Union[FileOrPath, Iterable[FileOrPath]]
 MultiInt = Union[int, Iterable[int]]
 MultiStr = Union[str, Iterable[str]]

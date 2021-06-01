@@ -190,7 +190,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 name = "commonmark"
 version = "0.9.1"
 description = "Python parser for the CommonMark Markdown spec"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -242,7 +242,7 @@ python-versions = ">=3.6"
 name = "dataclasses"
 version = "0.8"
 description = "A backport of the dataclasses module for Python 3.6"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6, <3.7"
 
@@ -351,7 +351,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "importlib-metadata"
-version = "4.3.1"
+version = "4.4.0"
 description = "Read metadata from Python packages"
 category = "main"
 optional = false
@@ -912,7 +912,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "pyrate-limiter"
-version = "2.3.3"
+version = "2.3.4"
 description = "Python Rate-Limiter using Leaky-Bucket Algorimth Family"
 category = "main"
 optional = false
@@ -1121,7 +1121,7 @@ test = ["fixtures", "mock", "purl", "pytest", "sphinx", "testrepository (>=0.0.1
 name = "rich"
 version = "10.2.2"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6,<4.0"
 
@@ -1483,12 +1483,13 @@ docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "pytest-enabler", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [extras]
+all = ["rich"]
 docs = ["docutils", "m2r2", "nbsphinx", "Sphinx", "sphinx-automodapi", "sphinx-autodoc-typehints", "sphinx-copybutton", "sphinx-material", "sphinxcontrib-apidoc"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "a05661ee31002757b5adfeb8888063bd664844163ae7092a7a9b5558f92d490b"
+content-hash = "ae0e041380d63e93169028eb29a31a79aef9d050f8f847505c456c71de116c8c"
 
 [metadata.files]
 alabaster = [
@@ -1725,8 +1726,8 @@ imagesize = [
     {file = "imagesize-1.2.0.tar.gz", hash = "sha256:b1f6b5a4eab1f73479a50fb79fcf729514a900c341d8503d62a62dbc4127a2b1"},
 ]
 importlib-metadata = [
-    {file = "importlib_metadata-4.3.1-py3-none-any.whl", hash = "sha256:c2e27fa8b6c8b34ebfcd4056ae2ca290e36250d1fbeceec85c1c67c711449fac"},
-    {file = "importlib_metadata-4.3.1.tar.gz", hash = "sha256:2d932ea08814f745863fd20172fe7de4794ad74567db78f2377343e24520a5b6"},
+    {file = "importlib_metadata-4.4.0-py3-none-any.whl", hash = "sha256:960d52ba7c21377c990412aca380bf3642d734c2eaab78a2c39319f67c6a5786"},
+    {file = "importlib_metadata-4.4.0.tar.gz", hash = "sha256:e592faad8de1bda9fe920cf41e15261e7131bcf266c30306eec00e8e225c1dd5"},
 ]
 importlib-resources = [
     {file = "importlib_resources-5.1.4-py3-none-any.whl", hash = "sha256:e962bff7440364183203d179d7ae9ad90cb1f2b74dcb84300e88ecc42dca3351"},
@@ -2000,7 +2001,7 @@ pyparsing = [
     {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
 ]
 pyrate-limiter = [
-    {file = "pyrate-limiter-2.3.3.tar.gz", hash = "sha256:980c97655de8661efe0ee7c43189719947a59b4cfdbc8e5b81d4ca02409b9646"},
+    {file = "pyrate-limiter-2.3.4.tar.gz", hash = "sha256:9fee2a529043ce242303a578c1b406e76f83b83286a966ea723d4864f05748b4"},
 ]
 pyrsistent = [
     {file = "pyrsistent-0.17.3.tar.gz", hash = "sha256:2e636185d9eb976a18a8a8e96efce62f2905fea90041958d8cc2a189756ebf3e"},

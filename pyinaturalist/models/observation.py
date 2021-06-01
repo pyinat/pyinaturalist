@@ -7,10 +7,11 @@ from pyinaturalist.constants import Coordinates
 from pyinaturalist.models import (
     ID,
     BaseModel,
+    LazyProperty,
     Photo,
     Taxon,
     User,
-    cached_model_property,
+    add_lazy_attrs,
     coordinate_pair,
     datetime_attr,
     datetime_now_attr,
@@ -21,7 +22,7 @@ from pyinaturalist.response_format import convert_observation_timestamp
 from pyinaturalist.v1 import get_observation
 
 
-@define(auto_attribs=False, init=False)
+@define(auto_attribs=False, init=False, field_transformer=add_lazy_attrs)
 class Observation(BaseModel):
     """A dataclass containing information about an observation, matching the schema of
     `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
@@ -65,16 +66,16 @@ class Observation(BaseModel):
     uuid: str = kwarg
 
     # Nested collections
-    annotations: List = field(factory=list)
+    annotations: List[Dict] = field(factory=list)  # TODO: Annotation model?
     faves: List = field(factory=list)
-    ofvs: List = field(factory=list)
+    ofvs: List = field(factory=list)  # TODO: Use ObservationFieldValue model
     outlinks: List = field(factory=list)
     place_ids: List = field(factory=list)
     preferences: Dict = field(factory=dict)
     project_ids: List = field(factory=list)
     project_ids_with_curator_id: List = field(factory=list)
     project_ids_without_curator_id: List = field(factory=list)
-    project_observations: List = field(factory=list)
+    project_observations: List[Dict] = field(factory=list)  # TODO: ProjectObservation model?
     quality_metrics: List = field(factory=list)
     reviewed_by: List = field(factory=list)
     sounds: List = field(factory=list)
@@ -82,16 +83,11 @@ class Observation(BaseModel):
     votes: List = field(factory=list)
 
     # Lazy-loaded nested model objects
-    comments: property = cached_model_property(Comment.from_json_list, '_comments')
-    _comments: List[Dict] = field(factory=list, repr=False)
-    identifications: property = cached_model_property(ID.from_json_list, '_identifications')
-    _identifications: List[Dict] = field(factory=list, repr=False)
-    photos: property = cached_model_property(Photo.from_json_list, '_photos')
-    _photos: List[Dict] = field(factory=list, repr=False)
-    taxon: property = cached_model_property(Taxon.from_json, '_taxon')
-    _taxon: Dict = field(default=None, repr=False)
-    user: property = cached_model_property(User.from_json, '_user')
-    _user: Dict = field(default=None, repr=False)
+    comments: property = LazyProperty(Comment.from_json_list)
+    identifications: property = LazyProperty(ID.from_json_list)
+    photos: property = LazyProperty(Photo.from_json_list)
+    taxon: property = LazyProperty(Taxon.from_json)
+    user: property = LazyProperty(User.from_json)
 
     # Additional attributes from API response that aren't needed; just left here for reference
     # created_at_details: Dict = field(factory=dict)
