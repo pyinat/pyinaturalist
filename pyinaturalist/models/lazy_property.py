@@ -1,6 +1,6 @@
 from functools import update_wrapper
 from inspect import signature
-from typing import Callable
+from typing import Callable, List
 
 from attr import Attribute, Factory
 
@@ -48,6 +48,8 @@ class LazyProperty(property):
         # Use either a list factory or default value, depending on the converter's return type
         if _returns_list(converter):
             self.default = Factory(list)
+        print(f'*********** {self.__name__} ********')
+        print('    ', self.default)
 
     def __get__(self, obj, cls):
         """When accessing the value, convert it if it hasn't already been, and cache the converted
@@ -93,4 +95,15 @@ def _is_model_object(value):
 def _returns_list(func: Callable) -> bool:
     """Determine if a function is annotated with a List return type"""
     return_type = signature(func).return_annotation
-    return return_type.__origin__ is list
+    return _get_origin(return_type) in (list, List)
+
+
+def _get_origin(tp):
+    """Get generic origin (for python 3.6 compatibility)"""
+    if getattr(tp, '__origin__', None):
+        return tp.__origin__
+    if hasattr(tp, '_gorg') and hasattr(tp._gorg, '__mro__'):
+        for t in tp._gorg.__mro__:
+            if t.__module__ in ('builtins', '__builtin__') and t is not object:
+                return t
+    return tp
