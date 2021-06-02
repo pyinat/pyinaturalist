@@ -12,6 +12,7 @@ from pyinaturalist.v1 import (
     get_observation_identifiers,
     get_observation_observers,
     get_observation_species_counts,
+    get_observation_taxonomy,
     get_observations,
 )
 from test.conftest import load_sample_data
@@ -208,3 +209,18 @@ def test_get_observation_species_counts__all_pages(sleep, requests_mock):
 def test_get_observation_species_counts__invalid_multiple_choice_params():
     with pytest.raises(ValueError):
         get_observation_species_counts(quality_grade='None', iconic_taxa='slime molds')
+
+
+def test_get_observation_taxonomy(requests_mock):
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/observations/taxonomy',
+        json=load_sample_data('get_observation_taxonomy.json'),
+        status_code=200,
+    )
+    response = get_observation_taxonomy(user_id=12345)
+    first_result = response['results'][0]
+
+    assert response['count_without_taxon'] == 4
+    assert first_result['id'] == 1
+    assert first_result['name'] == 'Animalia'
+    assert first_result['descendant_obs_count'] == 3023

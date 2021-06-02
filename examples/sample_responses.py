@@ -37,6 +37,7 @@ def load_sample_data(filename):
 obs_json = load_sample_data('get_observations_node_page1.json')['results'][0]
 obs_json_ofvs = load_sample_data('get_observation_with_ofvs.json')['results'][0]
 obs_field_json = load_sample_data('get_observation_fields_page1.json')[0]
+obs_taxonomy_json = load_sample_data('get_observation_taxonomy.json')
 place_json = load_sample_data('get_places_by_id.json')['results'][0]
 places_nearby_json = load_sample_data('get_places_nearby.json')['results']
 project_json = load_sample_data('get_projects_obs_fields.json')['results'][0]
@@ -57,6 +58,7 @@ photo_json = taxon_json['default_photo']
 annotation = Annotation.from_json(annotation_json)
 comment = Comment.from_json(comment_json)
 identification = Identification.from_json(identification_json)
+life_list = LifeList.from_taxonomy_json(obs_taxonomy_json)
 observation = Observation.from_json(obs_json)
 observation_with_ofvs = Observation.from_json(obs_json_ofvs)
 observation_field = ObservationField.from_json(obs_field_json)

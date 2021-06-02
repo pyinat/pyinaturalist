@@ -29,10 +29,10 @@ All iNaturalist endpoints
 
 .. note::
 
-    The two iNaturalist APIs expose a combined total of 102 endpoints. Some of these are generally
+    The two iNaturalist APIs expose a combined total of 104+ endpoints. Some of these are generally
     useful and could potentially be added to pyinaturalist, but many others are primarily for
-    internal use by the iNaturalist web application and mobile apps, and are unlikely to be added
-    unless there are specific use cases for them.
+    internal use by iNaturalist.org and its mobile apps, and are unlikely to be added unless
+    specifically requested.
 
 .. mdinclude:: endpoints_table.md
     :start-line: 1

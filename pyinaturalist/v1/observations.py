@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from pyinaturalist import api_docs as docs
 from pyinaturalist.constants import NODE_OBS_ORDER_BY_PROPERTIES, HistogramResponse, JsonResponse
@@ -295,5 +295,31 @@ def get_observation_identifiers(**params) -> JsonResponse:
         'observations/identifiers',
         params=params,
     )
+    r.raise_for_status()
+    return r.json()
+
+
+@add_paginate_all(method='page')
+def get_observation_taxonomy(user_id: Union[int, str], user_agent: str = None) -> JsonResponse:
+    """Get observation counts for all taxa in a full taxonomic tree. In the web UI, these are used
+    for life lists.
+
+    Args:
+        user_id: iNaturalist user ID or username
+
+    Example:
+        >>> response = get_observation_taxonomy(user_id='my_username')
+        ...
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_taxonomy.json
+                :language: JSON
+
+    Returns:
+        Response dict containing taxon records with counts
+    """
+    r = get_v1('observations/taxonomy', params={'user_id': user_id}, user_agent=user_agent)
     r.raise_for_status()
     return r.json()

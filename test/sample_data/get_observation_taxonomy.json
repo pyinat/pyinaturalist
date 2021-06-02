@@ -1,0 +1,100 @@
+{
+  "count_without_taxon": 4,
+  "size": 9,
+  "results": [
+    {
+      "id": 1,
+      "count": 1,
+      "name": "Animalia",
+      "rank": "kingdom",
+      "rank_level": 70,
+      "is_active": true,
+      "parent_id": 48460,
+      "descendant_obs_count": 3023,
+      "direct_obs_count": 1
+    },
+    {
+      "id": 2,
+      "name": "Chordata",
+      "rank": "phylum",
+      "rank_level": 60,
+      "is_active": true,
+      "parent_id": 1,
+      "descendant_obs_count": 447,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 3,
+      "count": 4,
+      "name": "Aves",
+      "rank": "class",
+      "rank_level": 50,
+      "is_active": true,
+      "parent_id": 355675,
+      "descendant_obs_count": 340,
+      "direct_obs_count": 4
+    },
+    {
+      "id": 573,
+      "name": "Galliformes",
+      "rank": "order",
+      "rank_level": 40,
+      "is_active": true,
+      "parent_id": 3,
+      "descendant_obs_count": 4,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 574,
+      "name": "Phasianidae",
+      "rank": "family",
+      "rank_level": 30,
+      "is_active": true,
+      "parent_id": 573,
+      "descendant_obs_count": 4,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 889,
+      "name": "Bonasa",
+      "rank": "genus",
+      "rank_level": 20,
+      "is_active": true,
+      "parent_id": 574,
+      "descendant_obs_count": 2,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 890,
+      "count": 2,
+      "name": "Bonasa umbellus",
+      "rank": "species",
+      "rank_level": 10,
+      "is_active": true,
+      "parent_id": 889,
+      "descendant_obs_count": 2,
+      "direct_obs_count": 2
+    },
+    {
+      "id": 980,
+      "name": "Phasianus",
+      "rank": "genus",
+      "rank_level": 20,
+      "is_active": true,
+      "parent_id": 574,
+      "descendant_obs_count": 2,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 981,
+      "count": 2,
+      "name": "Phasianus colchicus",
+      "rank": "species",
+      "rank_level": 10,
+      "is_active": true,
+      "parent_id": 980,
+      "descendant_obs_count": 2,
+      "direct_obs_count": 2
+    }
+ ]
+}
