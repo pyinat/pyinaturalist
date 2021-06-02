@@ -1,23 +1,23 @@
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from attr import define, field
+from attr import field
 
 from pyinaturalist.constants import Coordinates, JsonResponse
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
     User,
-    add_lazy_attrs,
     coordinate_pair,
     datetime_attr,
     datetime_now_attr,
+    define_model,
     kwarg,
 )
 from pyinaturalist.models.observation_field import ObservationField
 
 
-@define(auto_attribs=False)
+@define_model
 class ProjectObservationField(ObservationField):
     """A :py:class:`.ObservationField` with additional project-specific information"""
 
@@ -41,7 +41,7 @@ class ProjectObservationField(ObservationField):
         return [cls.from_project_json(pof, **kwargs) for pof in value]  # type: ignore
 
 
-@define(auto_attribs=False)
+@define_model
 class ProjectUser(User):
     """A :py:class:`.User` with additional project-specific information"""
 
@@ -63,7 +63,7 @@ class ProjectUser(User):
         return [cls.from_project_json(project_user, **kwargs) for project_user in value]  # type: ignore
 
 
-@define(auto_attribs=False, field_transformer=add_lazy_attrs)
+@define_model
 class Project(BaseModel):
     """A dataclass containing information about a project, matching the schema of
     `GET /projects <https://api.inaturalist.org/v1/docs/#!/Projects/get_projects>`_.
@@ -115,7 +115,3 @@ class Project(BaseModel):
     @property
     def obs_rules(self):
         return self.project_observation_rules
-
-
-# Alias for a rather verbose class name
-POF = ProjectObservationField

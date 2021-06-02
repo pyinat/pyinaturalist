@@ -1,15 +1,15 @@
 from datetime import date, datetime
 from typing import List, Union
 
-from attr import define, field
+from attr import field
 
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
     Taxon,
     User,
-    add_lazy_attrs,
     datetime_now_attr,
+    define_model,
     kwarg,
 )
 from pyinaturalist.response_format import safe_split, try_int_or_float
@@ -27,7 +27,7 @@ OFV_DATATYPES = {
 OFVValue = Union[date, datetime, float, int, str]
 
 
-@define(auto_attribs=False)
+@define_model
 class ObservationField(BaseModel):
     """A dataclass containing information about an observation field **definition**, matching the schema of
     `GET /observation_fields <https://www.inaturalist.org/pages/api+reference#get-observation_fields>`_.
@@ -46,7 +46,7 @@ class ObservationField(BaseModel):
     values_count: int = kwarg
 
 
-@define(auto_attribs=False, field_transformer=add_lazy_attrs)
+@define_model
 class ObservationFieldValue(BaseModel):
     """A dataclass containing information about an observation field **value**, matching the schema of ``ofvs``
     from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
@@ -74,8 +74,3 @@ class ObservationFieldValue(BaseModel):
         if self.datatype in OFV_DATATYPES and self.value is not None:
             converter = OFV_DATATYPES[self.datatype]
             self.value = converter(self.value)
-
-
-# The names are a little verbose, so let's alias them
-OF = ObservationField
-OFV = ObservationFieldValue

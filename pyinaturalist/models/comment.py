@@ -1,11 +1,9 @@
 from datetime import datetime
 
-from attr import define
-
-from pyinaturalist.models import BaseModel, LazyProperty, User, add_lazy_attrs, datetime_now_attr, kwarg
+from pyinaturalist.models import BaseModel, LazyProperty, User, datetime_now_attr, define_model, kwarg
 
 
-@define(auto_attribs=False, field_transformer=add_lazy_attrs)
+@define_model
 class Comment(BaseModel):
     """A dataclass containing information about a comment, matching the schema of observation comments
     from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.

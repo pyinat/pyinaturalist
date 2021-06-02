@@ -1,19 +1,17 @@
 from datetime import datetime
 
-from attr import define
-
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
     Taxon,
     User,
-    add_lazy_attrs,
     datetime_now_attr,
+    define_model,
     kwarg,
 )
 
 
-@define(auto_attribs=False, field_transformer=add_lazy_attrs)
+@define_model
 class Identification(BaseModel):
     """A dataclass containing information about an identification, matching the schema of
     `GET /identifications <https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications>`_.
@@ -44,6 +42,3 @@ class Identification(BaseModel):
     # flags: List = field(factory=list)
     # moderator_actions: List = field(factory=list)
     # observation: {}  # TODO: Is this actually needed?
-
-
-ID = Identification

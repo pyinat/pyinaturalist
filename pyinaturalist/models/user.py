@@ -1,12 +1,12 @@
 from datetime import datetime
 from typing import List
 
-from attr import define, field
+from attr import field
 
-from pyinaturalist.models import BaseModel, datetime_now_attr, kwarg
+from pyinaturalist.models import BaseModel, datetime_now_attr, define_model, kwarg
 
 
-@define(auto_attribs=False)
+@define_model
 class User(BaseModel):
     """A dataclass containing information about an user, matching the schema of
     `GET /users/{id} <https://api.inaturalist.org/v1/docs/#!/Users/get_users_id>`_.

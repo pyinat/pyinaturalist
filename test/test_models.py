@@ -6,6 +6,7 @@ from pyinaturalist.constants import API_V1_BASE_URL, PHOTO_INFO_BASE_URL, PHOTO_
 from pyinaturalist.models import (
     ID,
     OFV,
+    Annotation,
     Comment,
     Observation,
     ObservationField,
@@ -17,12 +18,12 @@ from pyinaturalist.models import (
     Taxon,
     User,
 )
+from pyinaturalist.models.observation_field import ObservationFieldValue
 from test.conftest import load_sample_data, sample_data_path
 
 obs_json = load_sample_data('get_observations_node_page1.json')['results'][0]
+obs_json_ofvs = load_sample_data('get_observation_with_ofvs.json')['results'][0]
 obs_field_json = load_sample_data('get_observation_fields_page1.json')[0]
-ofv_json_taxon = load_sample_data('get_observation_with_ofvs.json')['results'][0]['ofvs'][0]
-ofv_json_numeric = load_sample_data('get_observation_with_ofvs.json')['results'][0]['ofvs'][1]
 place_json = load_sample_data('get_places_by_id.json')['results'][0]
 places_nearby_json = load_sample_data('get_places_nearby.json')['results']
 project_json = load_sample_data('get_projects.json')['results'][0]
@@ -32,8 +33,11 @@ user_json_partial = load_sample_data('get_users_autocomplete.json')['results'][0
 taxon_json = load_sample_data('get_taxa_by_id.json')['results'][0]
 taxon_json_partial = load_sample_data('get_taxa.json')['results'][0]
 
+annotation_json = obs_json_ofvs['annotations'][0]
 comment_json = obs_json['comments'][0]
 identification_json = obs_json['identifications'][0]
+ofv_json_numeric = obs_json_ofvs['ofvs'][1]
+ofv_json_taxon = obs_json_ofvs['ofvs'][0]
 photo_json = taxon_json['taxon_photos'][0]
 photo_json = taxon_json['default_photo']
 
@@ -57,6 +61,28 @@ def test_from_json_list_file():
 def test_from_json_file__empty():
     assert Observation.from_json(None) is None
     assert Observation.from_json_list(None) == []
+
+
+# Annotations
+# --------------------
+
+
+def test_annotation_converters():
+    """Test data type conversions"""
+    annotation = Annotation.from_json(annotation_json)
+    assert isinstance(annotation.user, User) and annotation.user.id == 2115051
+
+
+def test_annotation_empty():
+    """We should be able to initialize the model with no args, and get sane defaults"""
+    annotation = Annotation()
+    assert annotation.votes == []
+    assert annotation.user is None
+
+
+def test_annotation_values():
+    annotation = Annotation.from_json(annotation_json)
+    assert annotation.values == ['1', '2']
 
 
 # Comments
@@ -108,6 +134,14 @@ def test_observation_converters():
     assert isinstance(obs.taxon, Taxon) and obs.taxon.id == 48662
     assert isinstance(obs.user, User) and obs.user.id == 2852555
     assert obs.location == (50.0949055, -104.71929167)
+
+
+def test_observation_with_ofvs():
+    obs = Observation.from_json(obs_json_ofvs)
+    ofv = obs.ofvs[0]
+    assert isinstance(ofv, ObservationFieldValue)
+    assert ofv.id == 14106828
+    assert ofv.user.id == 2115051
 
 
 def test_observation_empty():
