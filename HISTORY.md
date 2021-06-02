@@ -5,6 +5,7 @@
 
 ### New Endpoints
 * Added new function for **Observation sounds** endpoint: `upload_sounds()`
+* Added new function for **Life list** endpoint: `get_observation_taxonomy()`
 
 ### Modified Endpoints
 * Added a `photos` parameter `create_observation()` and `update_observation()` to upload photos
@@ -20,9 +21,26 @@
     * Added aliases for backwards-compatibility, so imports from `pyinaturalist.rest_api` and
       `pyinaturalist.node_api` will still work, but these are deprecated and will be removed in a future release
 
+### Models
+Added data models for all API response types, to support working with typed python objects instead of JSON:
+* Annotation
+* Comment
+* Identification
+* LifeList
+    * LifeListTaxon
+* Observation
+* ObservationField
+    * ObservationFieldValue
+* Photo
+* Place
+* Project
+    * ProjectObservationField
+    * ProjectUser
+* Taxon
+* User
+
 ### Other Changes
 * Set up pyinaturalist-notebook to [runnable with Binder](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
-* Added data models for all API response types, to support working with typed python objects instead of JSON
 
 -----
 ## 0.13 (2021-05-22)

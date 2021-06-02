@@ -14,15 +14,15 @@ DELETE            | /votes/unvote/annotation/{id}               |
 POST              | /comments                                   |
 DELETE            | /comments/{id}                              |
 PUT               | /comments/{id}                              |
-GET               | /controlled_terms                           | yes
-GET               | /controlled_terms/for_taxon                 | yes
+GET               | /controlled_terms                           | ✔️
+GET               | /controlled_terms/for_taxon                 | ✔️
 POST              | /flags                                      |
 DELETE            | /flags/{id}                                 |
 PUT               | /flags/{id}                                 |
 DELETE            | /identifications/{id}                       |
-GET               | /identifications/{id}                       | yes
+GET               | /identifications/{id}                       | ✔️
 PUT               | /identifications/{id}                       |
-GET               | /identifications                            | yes
+GET               | /identifications                            | ✔️
 POST              | /identifications                            |
 GET               | /identifications/categories                 |
 GET               | /identifications/species_counts             |
@@ -42,7 +42,7 @@ DELETE            | /observation_photos/{id}                    |
 PUT               | /observation_photos/{id}                    |
 POST              | /observation_photos                         |
 DELETE            | /observations/{id}                          |
-GET               | /observations/{id}                          | yes
+GET               | /observations/{id}                          | ✔️
 PUT               | /observations/{id}                          |
 POST              | /observations/{id}/fave                     |
 DELETE            | /observations/{id}/unfave                   |
@@ -55,19 +55,20 @@ GET               | /observations/{id}/taxon_summary            |
 POST              | /subscriptions/observation/{id}/subscribe   |
 POST              | /votes/vote/observation/{id}                |
 DELETE            | /votes/unvote/observation/{id}              |
-GET               | /observations                               | yes
+GET               | /observations                               | ✔️
 POST              | /observations                               |
 GET               | /observations/deleted                       |
-GET               | /observations/histogram                     | yes
-GET               | /observations/identifiers                   | yes
-GET               | /observations/observers                     | yes
+GET               | /observations/histogram                     | ✔️
+GET               | /observations/identifiers                   | ✔️
+GET               | /observations/observers                     | ✔️
 GET               | /observations/popular_field_values          |
-GET               | /observations/species_counts                | yes
+GET               | /observations/species_counts                | ✔️
+GET               | /observations/taxonomy                      | ✔️
 GET               | /observations/updates                       |
 PUT               | /observations/{id}/viewed_updates           |
-GET               | /places/{id}                                | yes
-GET               | /places/autocomplete                        | yes
-GET               | /places/nearby                              | yes
+GET               | /places/{id}                                | ✔️
+GET               | /places/autocomplete                        | ✔️
+GET               | /places/nearby                              | ✔️
 GET               | /posts                                      |
 POST              | /posts                                      |
 DELETE            | /posts/{id}                                 |
@@ -76,8 +77,8 @@ GET               | /posts/for_user                             |
 DELETE            | /project_observations/{id}                  |
 PUT               | /project_observations/{id}                  |
 POST              | /project_observations                       |
-GET               | /projects                                   | yes
-GET               | /projects/{id}                              | yes
+GET               | /projects                                   | ✔️
+GET               | /projects/{id}                              | ✔️
 POST              | /projects/{id}/join                         |
 DELETE            | /projects/{id}/leave                        |
 GET               | /projects/{id}/members                      |
@@ -86,14 +87,14 @@ POST              | /projects/{id}/add                          |
 DELETE            | /projects/{id}/remove                       |
 GET               | /projects/autocomplete                      |
 POST              | /subscriptions/project/{id}/subscribe       |
-GET               | /search                                     | yes
-GET               | /taxa/{id}                                  | yes
-GET               | /taxa                                       | yes
-GET               | /taxa/autocomplete                          | yes
-GET               | /users/{id}                                 | yes
+GET               | /search                                     | ✔️
+GET               | /taxa/{id}                                  | ✔️
+GET               | /taxa                                       | ✔️
+GET               | /taxa/autocomplete                          | ✔️
+GET               | /users/{id}                                 | ✔️
 PUT               | /users/{id}                                 |
 GET               | /users/{id}/projects                        |
-GET               | /users/autocomplete                         | yes
+GET               | /users/autocomplete                         | ✔️
 GET               | /users/me                                   |
 DELETE            | /users/{id}/mute                            |
 POST              | /users/{id}/mute                            |
@@ -123,11 +124,11 @@ DELETE            | /comments/{id}                              |
 POST              | /identifications                            |
 PUT               | /identifications/{id}                       |
 DELETE            | /identifications/{id}                       |
-GET               | /observations                               | yes
-POST              | /observations                               | yes
-GET               | /observations/{id}                          | yes
-PUT               | /observations/{id}                          | yes
-DELETE            | /observations/{id}                          | yes
+GET               | /observations                               | ✔️
+POST              | /observations                               | ✔️
+GET               | /observations/{id}                          | ✔️
+PUT               | /observations/{id}                          | ✔️
+DELETE            | /observations/{id}                          | ✔️
 POST              | /observations/{id}/quality/:metric          |
 DELETE            | /observations/{id}/quality/:metric          |
 PUT               | /observations/{id}/viewed_updates           |
@@ -135,12 +136,12 @@ GET               | /observations/:username                     |
 GET               | /observations/project/{id}                  |
 GET               | /observations/taxon_stats                   |
 GET               | /observations/user_stats                    |
-GET               | /observation_fields                         | yes
+GET               | /observation_fields                         | ✔️
 POST              | /observation_field_values                   |
-PUT               | /observation_field_values/{id}              | yes
+PUT               | /observation_field_values/{id}              | ✔️
 DELETE            | /observation_field_values/{id}              |
-POST              | /observation_photos                         | yes
-POST              | /observation_sounds                         | yes
+POST              | /observation_photos                         | ✔️
+POST              | /observation_sounds                         | ✔️
 GET               | /places                                     |
 GET               | /projects                                   |
 GET               | /projects/{id}                              |
