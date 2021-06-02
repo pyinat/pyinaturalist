@@ -5,9 +5,11 @@ from attr import define, field
 
 from pyinaturalist.constants import Coordinates
 from pyinaturalist.models import (
-    ID,
+    Annotation,
     BaseModel,
+    Identification,
     LazyProperty,
+    ObservationFieldValue,
     Photo,
     Taxon,
     User,
@@ -66,9 +68,7 @@ class Observation(BaseModel):
     uuid: str = kwarg
 
     # Nested collections
-    annotations: List[Dict] = field(factory=list)  # TODO: Annotation model?
     faves: List = field(factory=list)
-    ofvs: List = field(factory=list)  # TODO: Use ObservationFieldValue model
     outlinks: List = field(factory=list)
     place_ids: List = field(factory=list)
     preferences: Dict = field(factory=dict)
@@ -83,8 +83,10 @@ class Observation(BaseModel):
     votes: List = field(factory=list)
 
     # Lazy-loaded nested model objects
+    annotations: property = LazyProperty(Annotation.from_json_list)
     comments: property = LazyProperty(Comment.from_json_list)
-    identifications: property = LazyProperty(ID.from_json_list)
+    identifications: property = LazyProperty(Identification.from_json_list)
+    ofvs: property = LazyProperty(ObservationFieldValue.from_json_list)
     photos: property = LazyProperty(Photo.from_json_list)
     taxon: property = LazyProperty(Taxon.from_json)
     user: property = LazyProperty(User.from_json)
