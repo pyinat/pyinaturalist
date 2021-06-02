@@ -38,6 +38,7 @@ from pyinaturalist.v1.observations import (
     get_observation_identifiers,
     get_observation_observers,
     get_observation_species_counts,
+    get_observation_taxonomy,
     get_observations,
 )
 from pyinaturalist.v1.places import get_places_autocomplete, get_places_by_id, get_places_nearby

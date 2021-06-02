@@ -8,6 +8,8 @@ from pyinaturalist.models import (
     OFV,
     Annotation,
     Comment,
+    LifeList,
+    LifeListTaxon,
     Observation,
     ObservationField,
     Photo,
@@ -24,6 +26,7 @@ from test.conftest import load_sample_data, sample_data_path
 obs_json = load_sample_data('get_observations_node_page1.json')['results'][0]
 obs_json_ofvs = load_sample_data('get_observation_with_ofvs.json')['results'][0]
 obs_field_json = load_sample_data('get_observation_fields_page1.json')[0]
+obs_taxonomy_json = load_sample_data('get_observation_taxonomy.json')
 place_json = load_sample_data('get_places_by_id.json')['results'][0]
 places_nearby_json = load_sample_data('get_places_nearby.json')['results']
 project_json = load_sample_data('get_projects.json')['results'][0]
@@ -90,13 +93,11 @@ def test_annotation_values():
 
 
 def test_comment_converters():
-    """Test data type conversions"""
     comment = Comment.from_json(comment_json)
     assert isinstance(comment.user, User) and comment.user.id == 2852555
 
 
 def test_comment_empty():
-    """We should be able to initialize the model with no args, and get sane defaults"""
     comment = Comment()
     assert isinstance(comment.created_at, datetime)
     assert comment.user is None
@@ -116,6 +117,29 @@ def test_identification_empty():
     assert isinstance(identification.created_at, datetime)
     assert identification.taxon is None
     assert identification.user is None
+
+
+# Life Lists
+# --------------------
+
+
+def test_life_list_converters():
+    life_list = LifeList.from_taxonomy_json(obs_taxonomy_json)
+    assert isinstance(life_list.taxa[0], LifeListTaxon) and life_list.taxa[0].id == 1
+
+
+def test_life_list_empty():
+    life_list = LifeList()
+    life_list.taxa == []
+    life_list._taxon_counts is None
+
+
+def test_life_list_count():
+    life_list = LifeList.from_taxonomy_json(obs_taxonomy_json)
+    assert life_list.count(1) == 3023  # Animalia
+    assert life_list.count(981) == 2  # Phasianus colchicus
+    assert life_list.count(-1) == 4  # Observations with no taxon
+    assert life_list.count(9999999) == 0  # Unobserved taxon
 
 
 # Observations

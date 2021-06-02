@@ -12,6 +12,7 @@ from pyinaturalist.models.base import (
     coordinate_pair,
     get_model_fields,
     kwarg,
+    load_json,
     make_attribute,
 )
 from pyinaturalist.models.lazy_property import LazyProperty, add_lazy_attrs
@@ -26,6 +27,7 @@ from pyinaturalist.models.user import User
 from pyinaturalist.models.annotation import Annotation
 from pyinaturalist.models.comment import Comment
 from pyinaturalist.models.identification import Identification
+from pyinaturalist.models.life_list import LifeList, LifeListTaxon
 from pyinaturalist.models.place import Place
 from pyinaturalist.models.project import Project, ProjectObservationField, ProjectUser
 from pyinaturalist.models.observation_field import ObservationField, ObservationFieldValue

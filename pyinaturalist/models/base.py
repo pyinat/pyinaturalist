@@ -8,7 +8,7 @@ from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar, Union
 
 from attr import Attribute, asdict, define, field, fields_dict
 
-from pyinaturalist.constants import AnyFile, ResponseOrFile
+from pyinaturalist.constants import AnyFile, JsonResponse, ResponseOrFile
 from pyinaturalist.response_format import convert_lat_long, try_datetime
 
 FIELD_DEFAULTS = {
@@ -99,8 +99,10 @@ def get_model_fields(obj: Any) -> Iterable[Attribute]:
     return attrs
 
 
-def load_json(value: AnyFile):
+def load_json(value: Union[JsonResponse, AnyFile]):
     """Load JSON from a file path or file-like object"""
+    if isinstance(value, dict):
+        return value
     if isinstance(value, (Path, str)):
         with open(expanduser(str(value))) as f:
             return json.load(f)
