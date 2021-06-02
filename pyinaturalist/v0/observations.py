@@ -4,13 +4,17 @@ from typing import List, Union
 
 from pyinaturalist import api_docs as docs
 from pyinaturalist.api_requests import delete, get, post, put
-from pyinaturalist.constants import API_V0_BASE_URL, ListResponse, MultiFile
+from pyinaturalist.constants import (
+    API_V0_BASE_URL,
+    OBSERVATION_FORMATS,
+    REST_OBS_ORDER_BY_PROPERTIES,
+    ListResponse,
+    MultiFile,
+)
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.pagination import add_paginate_all
 from pyinaturalist.request_params import (
-    OBSERVATION_FORMATS,
-    REST_OBS_ORDER_BY_PROPERTIES,
     convert_observation_fields,
     ensure_file_obj,
     ensure_list,

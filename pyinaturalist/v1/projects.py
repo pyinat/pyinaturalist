@@ -1,8 +1,8 @@
 from pyinaturalist import api_docs as docs
-from pyinaturalist.constants import JsonResponse, MultiInt
+from pyinaturalist.constants import PROJECT_ORDER_BY_PROPERTIES, JsonResponse, MultiInt
 from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.pagination import add_paginate_all
-from pyinaturalist.request_params import PROJECT_ORDER_BY_PROPERTIES, validate_multiple_choice_param
+from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.response_format import convert_all_coordinates, convert_all_timestamps
 from pyinaturalist.v1 import get_v1
 

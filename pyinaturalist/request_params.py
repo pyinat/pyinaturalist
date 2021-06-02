@@ -2,8 +2,7 @@
 The main purpose of these functions is to support some python-specific conveniences and translate
 them into standard request parameters, along with request validation that makes debugging easier.
 """
-# TODO: It would be nice to put all the multiple-choice options on the models and use attrs validadtors
-# TODO: Move some of this information to constants module or relevant model modules?
+# TODO: It would be nice to put all the multiple-choice options on the models and use attrs validators
 import warnings
 from datetime import date, datetime
 from dateutil.parser import parse as parse_timestamp
@@ -15,147 +14,15 @@ from os.path import abspath, expanduser
 from typing import Any, BinaryIO, Dict, Iterable, List, Optional, Tuple
 
 import pyinaturalist
-from pyinaturalist.constants import FileOrPath, MultiInt, RequestParams
-
-# Basic observation attributes to include by default in geojson responses
-DEFAULT_OBSERVATION_ATTRS = [
-    'id',
-    'photo_url',
-    'positional_accuracy',
-    'quality_grade',
-    'taxon_id',
-    'taxon_name',
-    'taxon_common_name',
-    'time_observed_at',
-    'uri',
-]
-
-# All request parameters from both Node API and REST (Rails) API that accept date or datetime strings
-DATETIME_PARAMS = [
-    'created_after',
-    'created_d1',
-    'created_d2',
-    'created_on',
-    'd1',
-    'd2',
-    'newer_than',
-    'observation_created_d1',
-    'observation_created_d2',
-    'observed_d1',
-    'observed_d2',
-    'observed_on',
-    'older_than',
-    'on',
-    'since',
-    'updated_since',  # TODO: test if this one behaves differently in Node API vs REST API
-]
-
-# Response formats supported by GET /observations endpoint
-OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
-
-# Creative Commons license codes
-CC_LICENSES = ['CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0']
-
-# IUCN Conservation status codes; for more info, see: https://www.iucnredlist.org
-CONSERVATION_STATUSES = ['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX']
-
-# Taxon ID and name of main taxa 'categories' that can be filtered on
-ICONIC_TAXA = {
-    0: 'Unknown',
-    1: 'Animalia',
-    3: 'Aves',
-    20978: 'Amphibia',
-    26036: 'Reptilia',
-    40151: 'Mammalia',
-    47178: 'Actinopterygii',
-    47115: 'Mollusca',
-    47119: 'Arachnida',
-    47158: 'Insecta',
-    47126: 'Plantae',
-    47170: 'Fungi',
-    48222: 'Chromista',
-    47686: 'Protozoa',
-}
-
-# Taxonomic ranks that can be filtered on
-RANKS = [
-    'form',
-    'variety',
-    'subspecies',
-    'hybrid',
-    'species',
-    'genushybrid',
-    'subgenus',
-    'genus',
-    'subtribe',
-    'tribe',
-    'supertribe',
-    'subfamily',
-    'family',
-    'epifamily',
-    'superfamily',
-    'infraorder',
-    'suborder',
-    'order',
-    'superorder',
-    'infraclass',
-    'subclass',
-    'class',
-    'superclass',
-    'subphylum',
-    'phylum',
-    'kingdom',
-]
-
-# Endpoint-specific options for multiple choice parameters
-NODE_OBS_ORDER_BY_PROPERTIES = ['created_at', 'id', 'observed_on', 'species_guess', 'votes']
-REST_OBS_ORDER_BY_PROPERTIES = ['date_added', 'observed_on']
-PROJECT_ORDER_BY_PROPERTIES = ['created', 'distance', 'featured', 'recent_posts', 'updated']
-
-# Options for multiple choice parameters (non-endpoint-specific)
-COMMUNITY_ID_STATUSES = ['most_agree', 'most_disagree', 'some_agree']
-EXTRA_PROPERTIES = ['fields', 'identifications', 'projects']
-GEOPRIVACY_LEVELS = ['obscured', 'obscured_private', 'open', 'private']
-HAS_PROPERTIES = ['photo', 'geo']
-HISTOGRAM_DATE_FIELDS = ['created', 'observed']
-HISTOGRAM_INTERVALS = ['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
-ID_CATEGORIES = ['improving', 'supporting', 'leading', 'maverick']
-ORDER_DIRECTIONS = ['asc', 'desc']
-PROJECT_TYPES = ['collection', 'umbrella']
-QUALITY_GRADES = ['casual', 'needs_id', 'research']
-SEARCH_PROPERTIES = ['names', 'tags', 'description', 'place']
-SOURCES = ['places', 'projects', 'taxa', 'users']
-
-
-# Multiple-choice request parameters, with keys mapped to their possible choices (non-endpoint-specific)
-MULTIPLE_CHOICE_PARAMS = {
-    'category': ID_CATEGORIES,
-    'csi': CONSERVATION_STATUSES,
-    'date_field': HISTOGRAM_DATE_FIELDS,
-    'extra': EXTRA_PROPERTIES,
-    'geoprivacy': GEOPRIVACY_LEVELS,
-    'has': HAS_PROPERTIES,
-    'hrank': RANKS,
-    'iconic_taxa': list(ICONIC_TAXA.values()),
-    'identifications': COMMUNITY_ID_STATUSES,
-    'interval': HISTOGRAM_INTERVALS,
-    'license': CC_LICENSES,
-    'lrank': RANKS,
-    'max_rank': RANKS,
-    'min_rank': RANKS,
-    'observation_hrank': RANKS,
-    'observation_lrank': RANKS,
-    'observation_rank': RANKS,
-    'order': ORDER_DIRECTIONS,
-    'photo_license': CC_LICENSES,
-    'quality_grade': QUALITY_GRADES,
-    'rank': RANKS,
-    'search_on': SEARCH_PROPERTIES,
-    'sound_license': CC_LICENSES,
-    'sources': SOURCES,
-    'taxon_geoprivacy': GEOPRIVACY_LEVELS,
-    'type': PROJECT_TYPES,
-}
+from pyinaturalist.constants import *  # noqa: F401, F403  # Imports for backwards-compatibility
+from pyinaturalist.constants import (
+    DATETIME_PARAMS,
+    MULTIPLE_CHOICE_PARAMS,
+    RANKS,
+    FileOrPath,
+    MultiInt,
+    RequestParams,
+)
 
 MULTIPLE_CHOICE_ERROR_MSG = (
     'Parameter "{}" must have one of the following values: {}\n\tValue provided: {}'

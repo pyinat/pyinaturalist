@@ -1,15 +1,11 @@
 from typing import List
 
 from pyinaturalist import api_docs as docs
-from pyinaturalist.constants import HistogramResponse, JsonResponse
+from pyinaturalist.constants import NODE_OBS_ORDER_BY_PROPERTIES, HistogramResponse, JsonResponse
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.pagination import add_paginate_all
-from pyinaturalist.request_params import (
-    DEFAULT_OBSERVATION_ATTRS,
-    NODE_OBS_ORDER_BY_PROPERTIES,
-    validate_multiple_choice_param,
-)
+from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.response_format import (
     as_geojson_feature_collection,
     convert_all_coordinates,
@@ -18,6 +14,19 @@ from pyinaturalist.response_format import (
     format_histogram,
 )
 from pyinaturalist.v1 import get_v1
+
+# Basic observation attributes to include by default in geojson responses
+DEFAULT_OBSERVATION_ATTRS = [
+    'id',
+    'photo_url',
+    'positional_accuracy',
+    'quality_grade',
+    'taxon_id',
+    'taxon_name',
+    'taxon_common_name',
+    'time_observed_at',
+    'uri',
+]
 
 
 def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse:

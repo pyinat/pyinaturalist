@@ -2,9 +2,8 @@ from typing import Optional, Tuple
 
 from attr import field
 
-from pyinaturalist.constants import PHOTO_INFO_BASE_URL, PHOTO_SIZES
+from pyinaturalist.constants import CC_LICENSES, PHOTO_INFO_BASE_URL, PHOTO_SIZES
 from pyinaturalist.models import BaseModel, define_model, kwarg
-from pyinaturalist.request_params import CC_LICENSES
 from pyinaturalist.response_format import format_dimensions, format_license
 
 
