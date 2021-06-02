@@ -1,14 +1,14 @@
 from typing import Dict, List
 
-from attr import define, field, fields_dict
+from attr import field, fields_dict
 
 from pyinaturalist.constants import API_V1_BASE_URL, JsonResponse
-from pyinaturalist.models import BaseModel, LazyProperty, Photo, add_lazy_attrs, kwarg
+from pyinaturalist.models import BaseModel, LazyProperty, Photo, define_model, kwarg
 from pyinaturalist.request_params import RANKS
 from pyinaturalist.v1 import get_taxa_by_id
 
 
-@define(auto_attribs=False, field_transformer=add_lazy_attrs)
+@define_model
 class Taxon(BaseModel):
     """A dataclass containing information about a taxon, matching the schema of
     `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_.

@@ -1,15 +1,15 @@
 from typing import Dict, List, Optional
 
-from attr import define, field
+from attr import field
 
 from pyinaturalist.constants import Coordinates
-from pyinaturalist.models import BaseModel, coordinate_pair, kwarg
+from pyinaturalist.models import BaseModel, coordinate_pair, define_model, kwarg
 
 # TODO: Optionally use `geojson` library for users who want to use place geojson?
 GeoJson = Dict
 
 
-@define(auto_attribs=False)
+@define_model
 class Place(BaseModel):
     admin_level: int = kwarg
     ancestor_place_ids: List[str] = field(factory=list)
