@@ -10,10 +10,6 @@
 [![PyPI - Format](https://img.shields.io/pypi/format/pyinaturalist?color=blue)](https://pypi.org/project/pyinaturalist)
 [![Run with Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
 
-<br />
-
-[![Logo](docs/images/pyinaturalist_logo.png)](https://pyinaturalist.readthedocs.io)
-
 
 ## Summary
 
