@@ -31,12 +31,7 @@ def get_observation_fields(**params) -> JsonResponse:
     Returns:
         Observation fields as a list of dicts
     """
-    response = get(
-        f'{API_V0_BASE_URL}/observation_fields.json',
-        params=params,
-    )
-    response.raise_for_status()
-
+    response = get(f'{API_V0_BASE_URL}/observation_fields.json', params=params)
     obs_fields = response.json()
     obs_fields = convert_all_timestamps(obs_fields)
     return {'results': obs_fields}
@@ -104,6 +99,4 @@ def put_observation_field_values(
         user_agent=user_agent,
         json=payload,
     )
-
-    response.raise_for_status()
     return response.json()

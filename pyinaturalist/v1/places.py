@@ -29,13 +29,12 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
     Returns:
         Response dict containing place records
     """
-    r = get_v1('places', ids=place_id, user_agent=user_agent)
-    r.raise_for_status()
+    response = get_v1('places', ids=place_id, user_agent=user_agent)
 
     # Convert coordinates to floats
-    response = r.json()
-    response['results'] = convert_all_coordinates(response['results'])
-    return response
+    places = response.json()
+    places['results'] = convert_all_coordinates(places['results'])
+    return places
 
 
 @document_request_params([docs._bounding_box, docs._name])
@@ -78,9 +77,8 @@ def get_places_nearby(**params) -> JsonResponse:
     Returns:
         Response dict containing place records, divided into 'standard' and 'community' places.
     """
-    r = get_v1('places/nearby', params=params)
-    r.raise_for_status()
-    return convert_all_place_coordinates(r.json())
+    response = get_v1('places/nearby', params=params)
+    return convert_all_place_coordinates(response.json())
 
 
 @document_request_params([docs._search_query, docs._pagination])
@@ -113,10 +111,9 @@ def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
     Returns:
         Response dict containing place records
     """
-    r = get_v1('places/autocomplete', params={'q': q, **params})
-    r.raise_for_status()
+    response = get_v1('places/autocomplete', params={'q': q, **params})
 
     # Convert coordinates to floats
-    response = r.json()
-    response['results'] = convert_all_coordinates(response['results'])
-    return response
+    places = response.json()
+    places['results'] = convert_all_coordinates(places['results'])
+    return places

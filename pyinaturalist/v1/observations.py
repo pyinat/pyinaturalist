@@ -56,10 +56,9 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
         :py:exc:`.ObservationNotFound` If an invalid observation is specified
     """
 
-    r = get_observations(id=observation_id, user_agent=user_agent)
-    if r['results']:
-        return convert_observation_timestamps(r['results'][0])
-
+    response = get_observations(id=observation_id, user_agent=user_agent)
+    if response['results']:
+        return convert_observation_timestamps(response['results'][0])
     raise ObservationNotFound()
 
 
@@ -113,9 +112,8 @@ def get_observation_histogram(**params) -> HistogramResponse:
         Dict of ``{time_key: observation_count}``. Keys are ints for 'month of year' and\
         'week of year' intervals, and :py:class:`~datetime.datetime` objects for all other intervals.
     """
-    r = get_v1('observations/histogram', params=params)
-    r.raise_for_status()
-    return format_histogram(r.json())
+    response = get_v1('observations/histogram', params=params)
+    return format_histogram(response.json())
 
 
 @document_request_params([*docs._get_observations, docs._pagination, docs._only_id])
@@ -155,10 +153,9 @@ def get_observations(**params) -> JsonResponse:
         Response dict containing observation records
     """
     validate_multiple_choice_param(params, 'order_by', NODE_OBS_ORDER_BY_PROPERTIES)
-    r = get_v1('observations', params=params)
-    r.raise_for_status()
+    response = get_v1('observations', params=params)
 
-    observations = r.json()
+    observations = response.json()
     observations['results'] = convert_all_coordinates(observations['results'])
     observations['results'] = convert_all_timestamps(observations['results'])
 
@@ -190,12 +187,8 @@ def get_observation_species_counts(**params) -> JsonResponse:
     Returns:
         Response dict containing taxon records with counts
     """
-    r = get_v1(
-        'observations/species_counts',
-        params=params,
-    )
-    r.raise_for_status()
-    return r.json()
+    response = get_v1('observations/species_counts', params=params)
+    return response.json()
 
 
 @document_request_params([*docs._get_observations, docs._geojson_properties])
@@ -255,13 +248,8 @@ def get_observation_observers(**params) -> JsonResponse:
         Response dict of observers
     """
     params.setdefault('per_page', 500)
-
-    r = get_v1(
-        'observations/observers',
-        params=params,
-    )
-    r.raise_for_status()
-    return r.json()
+    response = get_v1('observations/observers', params=params)
+    return response.json()
 
 
 @document_request_params([*docs._get_observations, docs._pagination])
@@ -290,13 +278,8 @@ def get_observation_identifiers(**params) -> JsonResponse:
         Response dict of identifiers
     """
     params.setdefault('per_page', 500)
-
-    r = get_v1(
-        'observations/identifiers',
-        params=params,
-    )
-    r.raise_for_status()
-    return r.json()
+    response = get_v1('observations/identifiers', params=params)
+    return response.json()
 
 
 @add_paginate_all(method='page')
@@ -320,6 +303,5 @@ def get_observation_taxonomy(user_id: Union[int, str], user_agent: str = None) -
     Returns:
         Response dict containing taxon records with counts
     """
-    r = get_v1('observations/taxonomy', params={'user_id': user_id}, user_agent=user_agent)
-    r.raise_for_status()
-    return r.json()
+    response = get_v1('observations/taxonomy', params={'user_id': user_id}, user_agent=user_agent)
+    return response.json()

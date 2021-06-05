@@ -44,13 +44,12 @@ def get_projects(**params) -> JsonResponse:
         Response dict containing project records
     """
     validate_multiple_choice_param(params, 'order_by', PROJECT_ORDER_BY_PROPERTIES)
-    r = get_v1('projects', params=params)
-    r.raise_for_status()
+    response = get_v1('projects', params=params)
 
-    response = r.json()
-    response['results'] = convert_all_coordinates(response['results'])
-    response['results'] = convert_all_timestamps(response['results'])
-    return response
+    projects = response.json()
+    projects['results'] = convert_all_coordinates(projects['results'])
+    projects['results'] = convert_all_timestamps(projects['results'])
+    return projects
 
 
 def get_projects_by_id(
@@ -80,15 +79,14 @@ def get_projects_by_id(
     Returns:
         Response dict containing project records
     """
-    r = get_v1(
+    response = get_v1(
         'projects',
         ids=project_id,
         params={'rule_details': rule_details},
         user_agent=user_agent,
     )
-    r.raise_for_status()
 
-    response = r.json()
-    response['results'] = convert_all_coordinates(response['results'])
-    response['results'] = convert_all_timestamps(response['results'])
-    return response
+    projects = response.json()
+    projects['results'] = convert_all_coordinates(projects['results'])
+    projects['results'] = convert_all_timestamps(projects['results'])
+    return projects

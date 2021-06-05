@@ -33,10 +33,8 @@ def get_taxa(**params) -> JsonResponse:
         Response dict containing taxon records
     """
     params = translate_rank_range(params)
-    r = get_v1('taxa', params=params)
-    r.raise_for_status()
-
-    taxa = r.json()
+    response = get_v1('taxa', params=params)
+    taxa = response.json()
     taxa['results'] = convert_all_timestamps(taxa['results'])
     return taxa
 
@@ -69,10 +67,8 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     Returns:
         Response dict containing taxon records
     """
-    r = get_v1('taxa', ids=taxon_id, user_agent=user_agent)
-    r.raise_for_status()
-
-    taxa = r.json()
+    response = get_v1('taxa', ids=taxon_id, user_agent=user_agent)
+    taxa = response.json()
     taxa['results'] = convert_all_timestamps(taxa['results'])
     return taxa
 
@@ -125,6 +121,5 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
         Response dict containing taxon records
     """
     params = translate_rank_range(params)
-    r = get_v1('taxa/autocomplete', params=params)
-    r.raise_for_status()
-    return r.json()
+    response = get_v1('taxa/autocomplete', params=params)
+    return response.json()

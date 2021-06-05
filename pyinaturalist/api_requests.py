@@ -41,6 +41,7 @@ def request(
     headers: Dict = None,
     json: Dict = None,
     session: requests.Session = None,
+    raise_for_status: bool = True,
     **kwargs,
 ) -> requests.Response:
     """Wrapper around :py:func:`requests.request` that supports dry-run mode and rate-limiting,
@@ -79,7 +80,10 @@ def request(
         return MOCK_RESPONSE
     else:
         with ratelimit():
-            return session.request(method, url, params=params, headers=headers, json=json, **kwargs)
+            response = session.request(method, url, params=params, headers=headers, json=json, **kwargs)
+        if raise_for_status:
+            response.raise_for_status()
+        return response
 
 
 @copy_signature(request, exclude='method')

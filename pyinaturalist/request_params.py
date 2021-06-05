@@ -40,9 +40,9 @@ def prepare_request(
     headers: Dict = None,
     json: Dict = None,
 ) -> Tuple[str, RequestParams, Dict, Optional[Dict]]:
-    """Translate some ``pyinaturalist``-specific params into standard ``requests``
-    params and headers, and other request param preprocessing. This is made non-`requests`-specific
-    so it could potentially be reused for `aiohttp` requests.
+    """Translate some ``pyinaturalist``-specific params into standard params and headers,
+    and other request param preprocessing. This is made non-``requests``-specific
+    so it could potentially be reused for ``aiohttp`` requests.
 
     Returns:
         Tuple of ``(URL, params, headers, data)``
@@ -61,7 +61,7 @@ def prepare_request(
         user_agent = params.pop('user_agent')
     headers['User-Agent'] = user_agent or pyinaturalist.user_agent
 
-    # If one or more REST resources are requested by ID, update the request URL accordingly
+    # If one or more resources are requested by ID, valudate and update the request URL accordingly
     if ids:
         url = url.rstrip('/') + '/' + validate_ids(ids)
 

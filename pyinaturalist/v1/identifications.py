@@ -27,10 +27,8 @@ def get_identifications_by_id(identification_id: MultiInt, user_agent: str = Non
     Returns:
         Response dict containing identification records
     """
-    r = get_v1('identifications', ids=identification_id, user_agent=user_agent)
-    r.raise_for_status()
-
-    identifications = r.json()
+    response = get_v1('identifications', ids=identification_id, user_agent=user_agent)
+    identifications = response.json()
     identifications['results'] = convert_all_timestamps(identifications['results'])
     return identifications
 
@@ -62,9 +60,7 @@ def get_identifications(**params) -> JsonResponse:
         Response dict containing identification records
     """
     params = translate_rank_range(params)
-    r = get_v1('identifications', params=params)
-    r.raise_for_status()
-
-    identifications = r.json()
+    response = get_v1('identifications', params=params)
+    identifications = response.json()
     identifications['results'] = convert_all_timestamps(identifications['results'])
     return identifications

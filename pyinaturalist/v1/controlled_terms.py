@@ -51,5 +51,4 @@ def get_controlled_terms(taxon_id: int = None, user_agent: str = None) -> JsonRe
     # controlled_terms/for_taxon returns a 422 if the specified taxon does not exist
     if response.status_code in (404, 422):
         raise TaxonNotFound
-    response.raise_for_status()
     return response.json()
