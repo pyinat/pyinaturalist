@@ -158,7 +158,6 @@ def create_observation(access_token: str, **params) -> ListResponse:
         json={'observation': params},
         access_token=access_token,
     )
-    response.raise_for_status()
     response_json = response.json()
     observation_id = response_json[0]['id']
 
@@ -238,7 +237,6 @@ def update_observation(
         json={'observation': params},
         access_token=access_token,
     )
-    response.raise_for_status()
 
     if photos:
         upload_photos(observation_id, photos, access_token)
@@ -292,6 +290,7 @@ def upload_photos(
             params={'observation_photo[observation_id]': observation_id},
             files={'file': ensure_file_obj(photo)},
             user_agent=user_agent,
+            raise_for_status=False,
         )
         responses.append(response)
 
@@ -348,6 +347,7 @@ def upload_sounds(
             params={'observation_sound[observation_id]': observation_id},
             files={'file': ensure_file_obj(sound)},
             user_agent=user_agent,
+            raise_for_status=False,
         )
         responses.append(response)
 
@@ -380,6 +380,7 @@ def delete_observation(observation_id: int, access_token: str = None, user_agent
         url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
         access_token=access_token,
         user_agent=user_agent,
+        raise_for_status=False,
     )
     if response.status_code == 404:
         raise ObservationNotFound

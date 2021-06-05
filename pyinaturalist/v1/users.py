@@ -31,9 +31,8 @@ def get_user_by_id(user_id: int, user_agent: str = None) -> JsonResponse:
     Returns:
         Response dict containing user record
     """
-    r = get_v1('users', ids=[user_id], user_agent=user_agent)
-    r.raise_for_status()
-    results = r.json()['results']
+    response = get_v1('users', ids=[user_id], user_agent=user_agent)
+    results = response.json()['results']
     if not results:
         return {}
     return convert_generic_timestamps(results[0])
@@ -62,8 +61,7 @@ def get_users_autocomplete(q: str, **params) -> JsonResponse:
     Returns:
         Response dict containing user records
     """
-    r = get_v1('users/autocomplete', params={'q': q, **params})
-    r.raise_for_status()
-    users = r.json()
+    response = get_v1('users/autocomplete', params={'q': q, **params})
+    users = response.json()
     users['results'] = convert_all_timestamps(users['results'])
     return users
