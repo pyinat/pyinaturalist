@@ -156,6 +156,7 @@ DATETIME_PARAMS = [
     'observed_d1',
     'observed_d2',
     'observed_on',
+    'observed_on_string',
     'older_than',
     'on',
     'since',
