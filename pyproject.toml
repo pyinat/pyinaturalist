@@ -56,7 +56,7 @@ docs = ["docutils", "m2r2", "nbsphinx", "Sphinx", "sphinx-automodapi", "sphinx-a
         "sphinx-copybutton", "sphinx-material", "sphinxcontrib-apidoc"]
 
 [tool.poetry.dev-dependencies]
-black = {version = "21.5b0", python = ">=3.6.2, <3.10"}
+black = {version = "21.5b2", python = ">=3.6.2, <3.10"}
 ipython = {version = ">=7.23", python = "^3.7"}
 isort = ">=5.8"
 flake8 = "^3.9"
