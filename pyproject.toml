@@ -40,7 +40,7 @@ pyrate-limiter = ">=2.3.3"
 rich = {version = ">=10.0", optional = true}
 
 # Documentation dependencies needed for Readthedocs builds
-docutils = { version = "0.16", optional = true }
+docutils = { version = "0.17.1", optional = true }
 m2r2 = { version = ">=0.2.7", optional = true }
 nbsphinx = { version = "^0.8.5", optional = true }
 Sphinx = { version = "^4.0.1", optional = true }
