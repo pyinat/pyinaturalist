@@ -1,8 +1,8 @@
 """ Helper functions for formatting API responses """
 # TODO: Should most formatting/converting be handled by attrs converters?
 from datetime import datetime, timedelta
+from dateutil.parser import UnknownTimezoneWarning  # type: ignore  # (missing from type stubs)
 from dateutil.parser import parse as parse_date
-from dateutil.parser._parser import UnknownTimezoneWarning
 from dateutil.tz import tzoffset
 from logging import getLogger
 from typing import Any, Dict, Iterable, List, Optional, Union
