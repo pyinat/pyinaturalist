@@ -40,10 +40,9 @@ pyrate-limiter = ">=2.3.3"
 rich = {version = ">=10.0", optional = true}
 
 # Documentation dependencies needed for Readthedocs builds
-docutils = { version = "0.16", optional = true }
 m2r2 = { version = ">=0.2.7", optional = true }
 nbsphinx = { version = "^0.8.5", optional = true }
-Sphinx = { version = "^4.0.1", optional = true }
+Sphinx = { version = "^4.0.2", optional = true }
 sphinx-automodapi = { version=">=0.13", optional = true}
 sphinx-autodoc-typehints = { version = "^1.11", optional = true }
 sphinx-copybutton = { version = "^0.3", optional = true }
@@ -56,7 +55,7 @@ docs = ["docutils", "m2r2", "nbsphinx", "Sphinx", "sphinx-automodapi", "sphinx-a
         "sphinx-copybutton", "sphinx-material", "sphinxcontrib-apidoc"]
 
 [tool.poetry.dev-dependencies]
-black = {version = "21.5b0", python = ">=3.6.2, <3.10"}
+black = {version = "21.5b2", python = ">=3.6.2, <3.10"}
 ipython = {version = ">=7.23", python = "^3.7"}
 isort = ">=5.8"
 flake8 = "^3.9"
