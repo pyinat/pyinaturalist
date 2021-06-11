@@ -2,10 +2,10 @@
 
 .. Omit README table of contents; TODO: Can markdown anchors be converted to rST refs?
 .. mdinclude:: ../README.md
-    :end-line: 22
+    :end-line: 25
 
 .. mdinclude:: ../README.md
-    :start-line: 28
+    :start-line: 31
 
 
 Contents
