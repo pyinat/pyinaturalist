@@ -3,7 +3,7 @@ function signature modification with docstring modification.
 This module makes ``python-forge`` optional; if not installed, these functions will quietly fail
 without modifying the target functions.
 """
-from inspect import cleandoc
+from inspect import cleandoc, ismethod, signature
 from logging import getLogger
 from typing import Callable, List
 
@@ -12,7 +12,7 @@ from pyinaturalist.constants import TemplateFunction
 logger = getLogger(__name__)
 
 
-def document_request_params(template_functions: List[TemplateFunction]) -> Callable:
+def copy_doc_signature(template_functions: List[TemplateFunction]) -> Callable:
     """Document a function with both docstrings and function signatures from one or more
     template functions.
 
@@ -64,6 +64,10 @@ def document_request_params(template_functions: List[TemplateFunction]) -> Calla
         return func
 
     return wrapper
+
+
+# Alias specifically for API functions
+document_request_params = copy_doc_signature
 
 
 def copy_docstrings(target_function: Callable, template_functions: List[TemplateFunction]) -> Callable:
@@ -124,15 +128,20 @@ def copy_signatures(target_function: Callable, template_functions: List[Template
         target_function: Function to modify
         template_functions: Functions containing params to apply to ``target_function``
     """
-    revision = _get_combined_revision(template_functions)
+    revision = _get_combined_revision(target_function, template_functions)
     return revision(target_function)
 
 
-def _get_combined_revision(template_functions: List[TemplateFunction]):
+def _get_combined_revision(target_function: Callable, template_functions: List[TemplateFunction]):
     """Create a :py:class:`forge.Revision` from the combined parameters of multiple functions"""
     import forge
 
+    # Start with 'self' parameter if this is an instance method
     fparams = {}
+    if 'self' in signature(target_function).parameters or ismethod(target_function):
+        fparams['self'] = forge.self
+
+    # Add and combine parameters from all template functions
     for func in template_functions:
         fparams.update(forge.copy(func).signature.parameters)
     return forge.sign(*fparams.values())
