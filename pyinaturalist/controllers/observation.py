@@ -3,12 +3,18 @@
 from typing import Dict, List
 
 from pyinaturalist import api_docs as docs
-from pyinaturalist.constants import API_V1_BASE_URL, NODE_OBS_ORDER_BY_PROPERTIES
+from pyinaturalist.constants import (
+    API_V1_BASE_URL,
+    NODE_OBS_ORDER_BY_PROPERTIES,
+    HistogramResponse,
+    IntOrStr,
+)
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.forge_utils import document_request_params
-from pyinaturalist.models import Observation, Taxon, User
+from pyinaturalist.models import LifeList, Observation, Taxon, User
 from pyinaturalist.pagination import add_paginate_all
 from pyinaturalist.request_params import validate_multiple_choice_param
+from pyinaturalist.response_format import format_histogram
 
 
 class ObservationController(BaseController):
@@ -54,6 +60,60 @@ class ObservationController(BaseController):
         response = self.client.get(f'{API_V1_BASE_URL}/observations', params=params)
         return Observation.from_json_list(response.json())
 
+    # TODO: Does this need a model with utility functions, or is {datetime: count} sufficient?
+    @document_request_params([*docs._get_observations, docs._observation_histogram])
+    def histogram(self, **params) -> HistogramResponse:
+        """Search observations and return histogram data for the given time interval
+
+        **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_histogram
+
+        **Notes:**
+
+        * Search parameters are the same as :py:func:`.get_observations()`, with the addition of
+        ``date_field`` and ``interval``.
+        * ``date_field`` may be either 'observed' (default) or 'created'.
+        * Observed date ranges can be filtered by parameters ``d1`` and ``d2``
+        * Created date ranges can be filtered by parameters ``created_d1`` and ``created_d2``
+        * ``interval`` may be one of: 'year', 'month', 'week', 'day', 'hour', 'month_of_year', or
+        'week_of_year'; spaces are also allowed instead of underscores, e.g. 'month of year'.
+        * The year, month, week, day, and hour interval options will set default values for ``d1`` and
+        ``created_d1``, to limit the number of groups returned. You can override those values if you
+        want data from a longer or shorter time span.
+        * The 'hour' interval only works with ``date_field='created'``
+
+        Example:
+
+            Get observations per month during 2020 in Austria (place ID 8057)
+
+            >>> response = get_observation_histogram(
+            >>>     interval='month',
+            >>>     d1='2020-01-01',
+            >>>     d2='2020-12-31',
+            >>>     place_id=8057,
+            >>> )
+
+            .. admonition:: Example Response (observations per month of year)
+                :class: toggle
+
+                .. literalinclude:: ../sample_data/get_observation_histogram_month_of_year.py
+
+            .. admonition:: Example Response (observations per month)
+                :class: toggle
+
+                .. literalinclude:: ../sample_data/get_observation_histogram_month.py
+
+            .. admonition:: Example Response (observations per day)
+                :class: toggle
+
+                .. literalinclude:: ../sample_data/get_observation_histogram_day.py
+
+        Returns:
+            Dict of ``{time_key: observation_count}``. Keys are ints for 'month of year' and\
+            'week of year' intervals, and :py:class:`~datetime.datetime` objects for all other intervals.
+        """
+        response = self.client.get(f'{API_V1_BASE_URL}/observations/histogram', params=params)
+        return format_histogram(response.json())
+
     @document_request_params([*docs._get_observations, docs._pagination])
     def identifiers(self, **params) -> Dict[int, User]:
         """Get identifiers of observations matching the search criteria and the count of
@@ -84,6 +144,34 @@ class ObservationController(BaseController):
         results = response.json()['results']
 
         return {r['count']: User.from_json(r['user']) for r in results}
+
+    @add_paginate_all(method='page')
+    def life_list(self, user_id: IntOrStr, user_agent: str = None) -> LifeList:
+        """Get observation counts for all taxa in a full taxonomic tree. In the web UI, these are used
+        for life lists.
+
+        Args:
+            user_id: iNaturalist user ID or username
+
+        Example:
+            >>> response = get_observation_taxonomy(user_id='my_username')
+            ...
+
+            .. admonition:: Example Response
+                :class: toggle
+
+                .. literalinclude:: ../sample_data/get_observation_taxonomy.json
+                    :language: JSON
+
+        Returns:
+            Response dict containing taxon records with counts
+        """
+        response = self.client.get(
+            f'{API_V1_BASE_URL}/observations/taxonomy',
+            params={'user_id': user_id},
+            user_agent=user_agent,
+        )
+        return LifeList.from_taxonomy_json(response.json())
 
     # TODO: Separate model for these results? (maybe a User subclass)
     # TODO: Include species_counts
