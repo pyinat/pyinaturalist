@@ -1,7 +1,7 @@
 # pyinaturalist
 
 [![Build status](https://github.com/niconoe/pyinaturalist/workflows/Build/badge.svg)](https://github.com/niconoe/pyinaturalist/actions)
-[![Documentation Status (stable)](https://img.shields.io/readthedocs/pyinaturalist/stable?label=docs%20%28main%29)](https://pyinaturalist.readthedocs.io/en/stable/)
+[![Documentation Status (stable)](https://img.shields.io/readthedocs/pyinaturalist/stable?label=docs%20%28main%29)](https://pyinaturalist.readthedocs.io)
 [![Documentation Status (latest)](https://img.shields.io/readthedocs/pyinaturalist/latest?label=docs%20%28dev%29)](https://pyinaturalist.readthedocs.io/en/latest/)
 [![Coverage Status](https://coveralls.io/repos/github/niconoe/pyinaturalist/badge.svg?branch=main)](https://coveralls.io/github/niconoe/pyinaturalist?branch=main)
 
@@ -10,15 +10,18 @@
 [![PyPI - Format](https://img.shields.io/pypi/format/pyinaturalist?color=blue)](https://pypi.org/project/pyinaturalist)
 [![Run with Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
 
+<br/>
+
+[![](docs/images/pyinaturalist_logo_med.png)](https://pyinaturalist.readthedocs.io)
 
 ## Summary
-
 [iNaturalist](https://www.inaturalist.org) is a community science platform that helps people
 get involved in the natural world by observing and identifying the living things around them.
 Collectively, the community produces a rich source of global biodiversity data that can be valuable
 to anyone from hobbyists to scientists.
 
-Pyinaturalist aims to make these data easily accessible in the python programming language. 
+**pyinaturalist** is an unofficial client for the [iNaturalist API](https://api.inaturalist.org/v1) that
+aims to make these data easily accessible in the python programming language. 
 
 - [Features](#features)
 - [Quickstart](#quickstart)
@@ -27,11 +30,8 @@ Pyinaturalist aims to make these data easily accessible in the python programmin
 - [Related Projects](#related-projects)
 
 ## Features
-iNaturalist offers an extensive [API](https://api.inaturalist.org/v1) to interact with its data, and pyinaturalist adds
-a number of python-specific conveniences to this, including:
-
 * **Easier requests:** Complete type annotations for request parameters, and simplified create/update request formats
-* **Convenient responses:** Response data models with type conversions to the things you would expect in python
+* **Convenient responses:** Type conversions to the things you would expect in python
 * **Docs:** Example requests, responses, scripts, and Jupyter notebooks to help get you started
 * **Security:** Keyring integration for secure credential storage
 * **Server-friendly:** Client-side rate-limiting that follows the
@@ -245,7 +245,7 @@ If you have any problems, suggestions, or questions about pyinaturalist, please 
 Just [create an issue](https://github.com/niconoe/pyinaturalist/issues/new/choose).
 Also, **PRs are welcome!**
 
-**Note:** pyinaturalist is a volunteer project, not directly affiliated with or endorsed by
+**Note:** pyinaturalist is developed by members of the iNaturalist community, and is not endorsed by
 iNaturalist.org or the California Academy of Sciences. If you have non-python-specific questions
 about iNaturalist, the [iNaturalist Community Forum](https://forum.inaturalist.org/) is the best
 place to start.
