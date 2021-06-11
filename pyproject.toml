@@ -40,10 +40,9 @@ pyrate-limiter = ">=2.3.3"
 rich = {version = ">=10.0", optional = true}
 
 # Documentation dependencies needed for Readthedocs builds
-docutils = { version = "0.16", optional = true }
 m2r2 = { version = ">=0.2.7", optional = true }
 nbsphinx = { version = "^0.8.5", optional = true }
-Sphinx = { version = "^4.0.1", optional = true }
+Sphinx = { version = "^4.0.2", optional = true }
 sphinx-automodapi = { version=">=0.13", optional = true}
 sphinx-autodoc-typehints = { version = "^1.11", optional = true }
 sphinx-copybutton = { version = "^0.3", optional = true }
@@ -56,17 +55,19 @@ docs = ["docutils", "m2r2", "nbsphinx", "Sphinx", "sphinx-automodapi", "sphinx-a
         "sphinx-copybutton", "sphinx-material", "sphinxcontrib-apidoc"]
 
 [tool.poetry.dev-dependencies]
-black = {version = "21.5b0", python = ">=3.6.2, <3.10"}
+black = {version = "21.5b2", python = ">=3.6.2, <3.10"}
 ipython = {version = ">=7.23", python = "^3.7"}
 isort = ">=5.8"
 flake8 = "^3.9"
-mypy = "^0.812"
+mypy = "^0.901"
 pre-commit = {version = "^2.12", python = "^3.6.2"}
 pytest = "^6.2"
 pytest-cov = ">=2.11"
 pytest-xdist = ">=2.2"
 requests-mock = "^1.8"
 rich = ">=10.0"
+types-python-dateutil = ">=0.1.2"
+types-requests = ">=0.1.8"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -91,3 +92,7 @@ skip = ['pyinaturalist/__init__.py', 'pyinaturalist/models/__init__.py']
 known_first_party = ['test']
 # Things that are common enough they may as well be grouped with stdlib imports
 extra_standard_library = ['dateutil', 'pytest', 'setuptools']
+
+[tool.mypy]
+ignore_missing_imports = true
+exclude = "/examples|docs|downloads|dist|build|test/"
