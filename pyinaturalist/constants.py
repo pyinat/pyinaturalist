@@ -9,6 +9,8 @@ API_V1_BASE_URL = 'https://api.inaturalist.org/v1'
 API_V2_BASE_URL = 'https://api.inaturalist.org/v2'
 DWC_ARCHIVE_URL = 'http://www.inaturalist.org/observations/gbif-observations-dwca.zip'
 EXPORT_URL = 'https://www.inaturalist.org/observations/export'
+INAT_REPO = 'https://raw.githubusercontent.com/inaturalist/inaturalist/main'
+ICONIC_TAXA_BASE_URL = f'{INAT_REPO}/app/assets/images/iconic_taxa'
 PHOTO_BASE_URL = 'https://static.inaturalist.org/photos'
 PHOTO_INFO_BASE_URL = 'https://www.inaturalist.org/photos'
 
@@ -61,6 +63,23 @@ ICONIC_TAXA = {
     47170: 'Fungi',
     48222: 'Chromista',
     47686: 'Protozoa',
+}
+# TODO: More emoji for non-iconic taxa?
+ICONIC_EMOJI = {
+    0: '❓',
+    1: '🐾',
+    3: '🐦',
+    20978: '🐸',
+    26036: '🦎',
+    40151: '😺',
+    47178: '🐠',
+    47115: '🐌',
+    47119: '🕷️',
+    47158: '🦋',
+    47126: '🌿',
+    47170: '🍄',
+    48222: '🟢',
+    47686: '🦠',
 }
 
 # Taxonomic ranks that can be filtered on

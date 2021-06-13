@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 from dateutil.tz import tzoffset, tzutc
 
-from pyinaturalist.constants import API_V1_BASE_URL, PHOTO_INFO_BASE_URL, PHOTO_SIZES
+from pyinaturalist.constants import API_V1_BASE_URL, ICONIC_TAXA, PHOTO_INFO_BASE_URL, PHOTO_SIZES
 from pyinaturalist.models import (
     ID,
     OFV,
@@ -349,6 +349,18 @@ def test_taxon_properties():
     assert taxon.url == f'{API_V1_BASE_URL}/taxa/70118'
     assert taxon.ancestry.startswith('Animalia | Arthropoda | Hexapoda | ')
     assert isinstance(taxon.parent, Taxon) and taxon.parent.id == 53850
+
+
+@pytest.mark.parametrize('taxon_id', ICONIC_TAXA.keys())
+def test_taxon_emoji(taxon_id):
+    taxon = Taxon(iconic_taxon_id=taxon_id)
+    assert taxon.emoji is not None
+
+
+@pytest.mark.parametrize('taxon_name', ICONIC_TAXA.values())
+def test_taxon_icon_url(taxon_name):
+    taxon = Taxon(iconic_taxon_name=taxon_name)
+    assert taxon.icon_url is not None
 
 
 def test_taxon_properties__partial():
