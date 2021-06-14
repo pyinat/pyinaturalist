@@ -10,15 +10,24 @@ from pyinaturalist.models import BaseModel, define_model, kwarg, load_json
 class LifeListTaxon(BaseModel):
     """A dataclass containing information about a single taxon in a user's life list"""
 
-    count: int = kwarg
-    descendant_obs_count: int = kwarg
-    direct_obs_count: int = kwarg
+    count: int = field(default=0)
+    descendant_obs_count: int = field(default=0)
+    direct_obs_count: int = field(default=0)
     id: int = kwarg
     is_active: bool = kwarg
     name: str = kwarg
     parent_id: int = kwarg
     rank_level: int = kwarg
     rank: str = kwarg  # Enum
+
+    @property
+    def indent_level(self) -> int:
+        """Indentation level corresponding to this item's rank level"""
+        return int(((70 - self.rank_level) / 5))
+
+    def __str__(self) -> str:
+        padding = " " * self.indent_level
+        return f'[{self.id:<8}] {padding} {self.rank.title()} {self.name}: {self.count}'
 
 
 @define_model
@@ -55,3 +64,6 @@ class LifeList(BaseModel):
     # TODO: Restructure flat taxonomy list into a tree, based on parent_id
     # def tree(self):
     #     pass
+
+    def __str__(self) -> str:
+        return '\n'.join([str(taxon) for taxon in self.taxa])
