@@ -116,7 +116,7 @@ def convert_datetime_params(params: RequestParams) -> RequestParams:
         :py:exc:`dateutil.parser._parser.ParserError` if a date/datetime format is invalid
     """
     for k, v in params.items():
-        if isinstance(v, datetime) or isinstance(v, date):
+        if isinstance(v, (date, datetime)):
             params[k] = _isoformat(v)
         elif v is not None and k in DATETIME_PARAMS:
             params[k] = _isoformat(parse_timestamp(v))

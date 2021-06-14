@@ -88,6 +88,11 @@ def test_annotation_values():
     assert annotation.values == ['1', '2']
 
 
+def test_annotation_str():
+    annotation = Annotation.from_json(annotation_json)
+    assert str(annotation) == '[1] 1|2 (0 votes)'
+
+
 # Comments
 # --------------------
 
@@ -101,6 +106,11 @@ def test_comment_empty():
     comment = Comment()
     assert isinstance(comment.created_at, datetime)
     assert comment.user is None
+
+
+def test_comment_str():
+    comment = Comment.from_json(comment_json)
+    assert str(comment) == 'samroom at 2020-08-28 12:04:18+00:00: Thankyou '
 
 
 # Identifications
@@ -117,6 +127,14 @@ def test_identification_empty():
     assert isinstance(identification.created_at, datetime)
     assert identification.taxon is None
     assert identification.user is None
+
+
+def test_identification_str():
+    identification = ID.from_json(identification_json)
+    assert str(identification) == (
+        '[126501311] Species: Danaus plexippus (Monarch) (improving) added on '
+        '2020-08-27 13:00:51-05:00 by samroom'
+    )
 
 
 # Life Lists
@@ -200,6 +218,11 @@ def test_observation_field_empty():
     assert isinstance(obs_field.created_at, datetime)
 
 
+def test_observation_field_str():
+    obs_field = ObservationField.from_json(obs_field_json)
+    assert str(obs_field) == '[4813] Sex (deer/turkey) (text)'
+
+
 def test_observation_field_value_converters():
     ofv = OFV.from_json(ofv_json_numeric)
     assert ofv.datatype == 'numeric'
@@ -219,6 +242,11 @@ def test_observation_field_value_empty():
     ofv = OFV()
     assert ofv.value is None
     assert ofv.taxon is None
+
+
+def test_observation_field_value_str():
+    ofv = OFV.from_json(ofv_json_taxon)
+    assert str(ofv) == 'Feeding on: 119900'
 
 
 # Photos
@@ -259,6 +287,14 @@ def test_photo_urls(size):
         == f'https://static.inaturalist.org/photos/38359335/{size}.jpg?1557348751'
     )
     assert photo.url_size('embiggened') is None
+
+
+def test_photo_str():
+    photo = Photo.from_json(photo_json)
+    assert str(photo) == (
+        '[38359335] https://static.inaturalist.org/photos/38359335/original.jpg?1557348751 '
+        '(CC-BY-NC, 2048x1365)'
+    )
 
 
 # Places
@@ -399,3 +435,8 @@ def test_user_aliases():
     user = User.from_json(user_json)
     assert user.username == user.login == 'kueda'
     assert user.display_name == user.name == 'Ken-ichi Ueda'
+
+
+def test_user_str():
+    user = User.from_json(user_json)
+    assert str(user) == '[1] kueda (Ken-ichi Ueda)'

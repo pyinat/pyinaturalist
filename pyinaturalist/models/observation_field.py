@@ -45,6 +45,10 @@ class ObservationField(BaseModel):
     uuid: str = kwarg
     values_count: int = kwarg
 
+    def __str__(self) -> str:
+        description = ': {self.description}' if self.description else ''
+        return f'[{self.id}] {self.name} ({self.datatype}){description}'
+
 
 @define_model
 class ObservationFieldValue(BaseModel):
@@ -74,3 +78,6 @@ class ObservationFieldValue(BaseModel):
         if self.datatype in OFV_DATATYPES and self.value is not None:
             converter = OFV_DATATYPES[self.datatype]
             self.value = converter(self.value)
+
+    def __str__(self) -> str:
+        return f'{self.name}: {self.value}'

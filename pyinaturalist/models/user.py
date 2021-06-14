@@ -42,3 +42,7 @@ class User(BaseModel):
     @property
     def display_name(self) -> str:
         return self.name
+
+    def __str__(self) -> str:
+        real_name = f' ({self.name})' if self.name else ''
+        return f"[{self.id}] {self.login}{real_name}"

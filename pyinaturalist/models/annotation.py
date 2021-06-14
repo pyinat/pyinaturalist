@@ -26,3 +26,9 @@ class Annotation(BaseModel):
         if not self.concatenated_attr_val:
             return []
         return self.concatenated_attr_val.split('|')
+
+    def __str__(self) -> str:
+        return (
+            f'[{self.controlled_attribute_id}] {self.concatenated_attr_val} '
+            f'({len(self.votes)} votes)'
+        )

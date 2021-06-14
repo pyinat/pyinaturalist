@@ -108,6 +108,9 @@ class Taxon(BaseModel):
             key = key.lstrip('_')  # Use getters/setters for LazyProperty instead of temp attrs
             setattr(self, key, getattr(t, key))
 
+    def __str__(self) -> str:
+        return f'[{self.id}] {self.full_name}' if self.name else self.full_name
+
 
 # Since these use Taxon classmethods, they must be added after Taxon is defined
 Taxon.ancestors = LazyProperty(Taxon.from_json_list, 'ancestors')

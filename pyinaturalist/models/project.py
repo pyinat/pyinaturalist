@@ -115,3 +115,6 @@ class Project(BaseModel):
     @property
     def obs_rules(self):
         return self.project_observation_rules
+
+    def __str__(self) -> str:
+        return f'[{self.id}] {self.title}'

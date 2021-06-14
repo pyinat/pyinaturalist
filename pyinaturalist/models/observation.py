@@ -148,10 +148,9 @@ class Observation(BaseModel):
             return None
         return self.photos[0].thumbnail_url
 
-    # TODO: Return simplified dict
-    # def simplify(self) -> Dict:
-    #     pass
-
-    # TODO
-    # def __str__(self) -> str:
-    #     pass
+    def __str__(self) -> str:
+        return (
+            f'[{self.id}] {self.taxon.full_name} '
+            f'observed on {self.observed_on} by {self.user.login} '
+            f'at {self.place_guess or self.location}'
+        )

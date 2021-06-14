@@ -42,3 +42,10 @@ class Identification(BaseModel):
     # flags: List = field(factory=list)
     # moderator_actions: List = field(factory=list)
     # observation: {}  # TODO: Is this actually needed?
+
+    def __str__(self) -> str:
+        """Format into a condensed summary: id, what, when, and who"""
+        return (
+            f'[{self.id}] {self.taxon.full_name} ({self.category}) added on {self.created_at} '
+            f'by {self.user.login}'
+        )

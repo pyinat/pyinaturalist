@@ -22,3 +22,6 @@ class Comment(BaseModel):
     # created_at_details: Dict = field(factory=dict)
     # flags: List = field(factory=list)
     # moderator_actions: List = field(factory=list)
+
+    def __str__(self) -> str:
+        return f'{self.user.login} at {self.created_at}: {self.body}'

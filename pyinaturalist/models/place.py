@@ -28,3 +28,6 @@ class Place(BaseModel):
     # @classmethod
     # def from_json_list(cls, value):
     #     pass
+
+    def __str__(self) -> str:
+        return f'[{self.id}] {self.name}'
