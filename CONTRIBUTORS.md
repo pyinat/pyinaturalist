@@ -12,4 +12,5 @@ questions, and other contributions that have helped to improve pyinaturalist:
 * [Sam R](https://github.com/samtreesandbushes)
 * [SDJ Brown](https://github.com/sdjbrown)
 * [Stijn Van Hoey](https://github.com/stijnvanhoey)
+* [Dr. Tom August](https://github.com/AugustT)
 * [Will Kuhn](https://github.com/willkuhn)

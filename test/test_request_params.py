@@ -13,6 +13,7 @@ from pyinaturalist.request_params import (
     convert_pagination_params,
     ensure_file_obj,
     get_interval_ranges,
+    preprocess_request_body,
     preprocess_request_params,
     strip_empty_params,
     validate_ids,
@@ -175,6 +176,15 @@ def test_validate_ids__invalid(value):
 @patch('pyinaturalist.request_params.strip_empty_params')
 def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_strip):
     preprocess_request_params({'id': 1})
+    assert all([mock_bool.called, mock_datetime.called, mock_list.called, mock_strip.called])
+
+
+@patch('pyinaturalist.request_params.convert_bool_params')
+@patch('pyinaturalist.request_params.convert_datetime_params')
+@patch('pyinaturalist.request_params.convert_list_params')
+@patch('pyinaturalist.request_params.strip_empty_params')
+def test_preprocess_request_body(mock_bool, mock_datetime, mock_list, mock_strip):
+    preprocess_request_body({'id': 1})
     assert all([mock_bool.called, mock_datetime.called, mock_list.called, mock_strip.called])
 
 

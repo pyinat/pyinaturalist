@@ -140,19 +140,8 @@ def create_observation(access_token: str, **params) -> ListResponse:
         observation date in the future or a latitude > 90. In that case the exception's
         ``response`` attribute gives more details about the errors.
     """
-    # Accept either top-level params (like most other endpoints)
-    # or nested {'observation': params} (like the iNat API accepts directly)
-    if 'observation' in params:
-        params.update(params.pop('observation'))
-    params = convert_observation_fields(params)
-    if 'observed_on' in params:
-        params['observed_on_string'] = params.pop('observed_on')
 
-    # Split out photos and sounds to upload separately
-    photos = ensure_list(params.pop('local_photos', None))
-    photos.extend(ensure_list(params.pop('photos', None)))  # Alias for 'local_photos'
-    sounds = ensure_list(params.pop('sounds', None))
-
+    params, photos, sounds = _process_observation_params(params)
     response = post(
         url=f'{API_V0_BASE_URL}/observations.json',
         json={'observation': params},
@@ -215,11 +204,24 @@ def update_observation(
         :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an
             error 410 if the observation doesn't exists or belongs to another user.
     """
-    # Accept either top-level params (like most other endpoints)
-    # or nested params (like the API accepts)
-    if 'observation' in params:
-        params.update(params.pop('observation'))
+    params, photos, sounds = _process_observation_params(params)
+    response = put(
+        url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
+        json={'observation': params},
+        access_token=access_token,
+    )
+
+    if photos:
+        upload_photos(observation_id, photos, access_token)
+    if sounds:
+        upload_sounds(observation_id, sounds, access_token)
+    return response.json()
+
+
+def _process_observation_params(params):
     params = convert_observation_fields(params)
+    if params.get('observed_on'):
+        params['observed_on_string'] = params.pop('observed_on')
 
     # Split out photos and sounds to upload separately
     photos = ensure_list(params.pop('local_photos', None))
@@ -232,17 +234,7 @@ def update_observation(
     else:
         params['ignore_photos'] = 1
 
-    response = put(
-        url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
-        json={'observation': params},
-        access_token=access_token,
-    )
-
-    if photos:
-        upload_photos(observation_id, photos, access_token)
-    if sounds:
-        upload_sounds(observation_id, sounds, access_token)
-    return response.json()
+    return params, photos, sounds
 
 
 def upload_photos(

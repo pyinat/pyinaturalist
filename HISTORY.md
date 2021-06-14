@@ -15,6 +15,7 @@
 * Updated `upload_photos()` to take accept either a single photo or a list of photos, and return a list of responses
 * Updated `upload_sounds()` to take accept either a single sound or a list of sounds, and return a list of responses
 * Added alias `observed_on` for `observed_on_string` in `create_observation()`
+* Fixed conversion for datetime parameters in `create_observation()` and `update_observation()`
 * Updated all requests to correctly convert `datetime` objects to strings
 * Moved API functions into separate modules by API version and resource type.
     * All can still be imported via `from pyinaturalist import *`
