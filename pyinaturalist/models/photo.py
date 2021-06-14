@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from attr import field
 
@@ -84,6 +84,19 @@ class Photo(BaseModel):
         if url:
             img = Image.open(requests.get(url, stream=True).raw)
             img.show()
+
+    # Column headers for simplified table format
+    headers = {
+        'ID': 'cyan',
+        'License': 'green',
+        'Dimensions': 'blue',
+        'URL': 'white',
+    }
+
+    @property
+    def row(self) -> List:
+        """Get basic values to display as a row in a table"""
+        return [self.id, self.license_code, self.dimensions_str, self.original_url]
 
     def __str__(self) -> str:
         return f'[{self.id}] {self.original_url} ({self.license_code}, {self.dimensions_str})'

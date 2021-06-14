@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from pyinaturalist.models import (
     BaseModel,
@@ -42,6 +43,28 @@ class Identification(BaseModel):
     # flags: List = field(factory=list)
     # moderator_actions: List = field(factory=list)
     # observation: {}  # TODO: Is this actually needed?
+
+    # Column headers for simplified table format  # TODO: A better place to put these?
+    headers = {
+        'ID': 'cyan',
+        'Taxon ID': 'cyan',
+        'Taxon': 'green',
+        'User': 'magenta',
+        'Category': 'blue',
+        'From CV': 'white',
+    }
+
+    @property
+    def row(self) -> List:
+        """Get basic values to display as a row in a table"""
+        return [
+            self.id,
+            self.taxon.id,
+            self.taxon.full_name,
+            self.user.login,
+            self.category.title(),
+            self.vision,
+        ]
 
     def __str__(self) -> str:
         """Format into a condensed summary: id, what, when, and who"""

@@ -1,4 +1,4 @@
-"Get sample response JSON and model objects of every type to experiment with"
+"Get sample responses of every type to experiment with"
 # flake8: noqa: F401, F403
 import json
 from os.path import join
@@ -42,17 +42,17 @@ place_json = load_sample_data('get_places_by_id.json')['results'][0]
 places_nearby_json = load_sample_data('get_places_nearby.json')['results']
 project_json = load_sample_data('get_projects_obs_fields.json')['results'][0]
 user_json = load_sample_data('get_user_by_id.json')['results'][0]
-user_json_partial = load_sample_data('get_users_autocomplete.json')['results'][0]
+user_json_autocomplete = load_sample_data('get_users_autocomplete.json')['results']
 taxon_json = load_sample_data('get_taxa_by_id.json')['results'][0]
 taxon_json_partial = load_sample_data('get_taxa.json')['results'][0]
-
 annotation_json = obs_json_ofvs['annotations'][0]
 comment_json = obs_json['comments'][0]
 identification_json = obs_json['identifications'][0]
 ofv_json_numeric = obs_json_ofvs['ofvs'][1]
 ofv_json_taxon = obs_json_ofvs['ofvs'][0]
-photo_json = taxon_json['taxon_photos'][0]
-photo_json = taxon_json['default_photo']
+photo_json = taxon_json['taxon_photos'][0]['photo']
+photo_json_partial = taxon_json['default_photo']
+user_json_partial = user_json_autocomplete[0]
 
 # Sample model objects
 annotation = Annotation.from_json(annotation_json)
@@ -64,9 +64,20 @@ observation_with_ofvs = Observation.from_json(obs_json_ofvs)
 observation_field = ObservationField.from_json(obs_field_json)
 ofv = ObservationFieldValue.from_json(ofv_json_numeric)
 photo = Photo.from_json(photo_json)
+photo_partial = Photo.from_json(photo_json_partial)
 place = Place.from_json(place_json)
 places_nearby = Place.from_json_list(places_nearby_json)
 project = Project.from_json(project_json)
-taxon_partial = Taxon.from_json(taxon_json_partial)
 taxon = Taxon.from_json(taxon_json)
+taxon_partial = Taxon.from_json(taxon_json_partial)
 user = User.from_json(user_json)
+
+# Sample tables
+comment_table = Comment.to_table(observation.comments)
+identification_table = Identification.to_table(observation.identifications)
+observation_table = Observation.to_table([observation, observation_with_ofvs])
+photo_table = Photo.to_table([photo, photo_partial, observation.photos[0]])
+place_table = Place.to_table(places_nearby)
+project_table = Project.to_table([project, project, project])
+taxon_table = Taxon.to_table([taxon, observation_with_ofvs.taxon, observation.taxon])
+user_table = User.to_table(User.from_json_list(user_json_autocomplete))

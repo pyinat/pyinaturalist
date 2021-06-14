@@ -1,6 +1,6 @@
 """Base class and utilities for model objects"""
 import json
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from logging import getLogger
 from os.path import expanduser
 from pathlib import Path
@@ -40,7 +40,8 @@ class BaseModel:
     """Base class for models"""
 
     partial: bool = field(default=None, repr=False)
-    temp_attrs: Optional[List] = None
+    temp_attrs: List[str] = []
+    headers: Dict[str, str] = {}
 
     # Note: when using classmethods as converters, mypy will raise a false positive error, hence all
     # the `type: ignore` statements. See:
@@ -69,20 +70,45 @@ class BaseModel:
     def from_json_list(
         cls: Type[T], value: Union[ResponseOrFile, List[ResponseOrFile]]
     ) -> List['BaseModel']:
-        """Initialize from a JSON path, file-like object, or API response"""
+        """Initialize from a JSON path, file-like object, string, or API response"""
         if not value:
             return []
+        # Raw response
         elif isinstance(value, dict) and 'results' in value:
             value = value['results']
-        elif isinstance(value, dict):
+        # Single response record or model object
+        elif isinstance(value, (BaseModel, dict)):
             value = [value]  # type: ignore
-
-        if isinstance(value, list):
+        # JSON string or file
+        if not isinstance(value, list):
+            return cls.from_json_list(load_json(value))  # type: ignore
+        # Otherwise, it should be a list of records ready to load
+        else:
             obj_list = [cls.from_json(item) for item in value]
             return [obj for obj in obj_list if obj]
-        else:
-            return cls.from_json_list(load_json(value))  # type: ignore
 
+    @classmethod
+    def to_table(cls, objects: List['BaseModel']):
+        """Format a list of model objects as a table"""
+        try:
+            from rich.box import SIMPLE_HEAVY
+            from rich.table import Column, Table
+        # If rich isn't installed, just return a basic list of stringified objects
+        except ImportError:
+            return '\n'.join([str(obj) for obj in objects])
+
+        columns = [Column(header, style=style) for header, style in cls.headers.items()]
+        table = Table(*columns, box=SIMPLE_HEAVY, header_style='bold white', row_styles=['dim', 'none'])
+
+        for obj in objects:
+            table.add_row(*[_str(value) for value in obj.row])
+        return table
+
+    @property
+    def row(self) -> List:
+        raise NotImplementedError
+
+    # TODO: Use cattr.unstructure() to handle recursion properly (for nested model objects)?
     def to_json(self) -> Dict:
         return asdict(self)
 
@@ -114,3 +140,9 @@ def load_json(value: Union[JsonResponse, AnyFile]):
 def make_attribute(name, **kwargs):
     kwargs = {**FIELD_DEFAULTS, **kwargs}
     return Attribute(name=name, **kwargs)
+
+
+def _str(value: Any):
+    if isinstance(value, (date, datetime)):
+        return value.strftime('%b %d, %Y')
+    return str(value)

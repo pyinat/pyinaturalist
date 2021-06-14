@@ -106,8 +106,10 @@ def convert_all_timestamps(results: List[ResponseObject]) -> List[ResponseObject
 # --------------------
 
 
-def convert_lat_long(obj: Union[Dict, List, str]) -> Optional[Coordinates]:
+def convert_lat_long(obj: Union[Dict, List, None, str]) -> Optional[Coordinates]:
     """Convert a coordinate pair as a dict, list, or string into a pair of floats, if valid"""
+    if not obj:
+        return None
     if isinstance(obj, str):
         return try_float_pair(*str(obj).split(','))
     elif isinstance(obj, list):

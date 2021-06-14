@@ -2,7 +2,7 @@ from typing import Dict, List
 
 from attr import field, fields_dict
 
-from pyinaturalist.constants import API_V1_BASE_URL, ICONIC_EMOJI, ICONIC_TAXA_BASE_URL, JsonResponse
+from pyinaturalist.constants import ICONIC_EMOJI, ICONIC_TAXA_BASE_URL, INAT_BASE_URL, JsonResponse
 from pyinaturalist.models import BaseModel, LazyProperty, Photo, define_model, kwarg
 from pyinaturalist.request_params import RANKS
 from pyinaturalist.v1 import get_taxa_by_id
@@ -93,7 +93,8 @@ class Taxon(BaseModel):
 
     @property
     def url(self) -> str:
-        return f'{API_V1_BASE_URL}/taxa/{self.id}'
+        """Info URL on iNaturalist.org"""
+        return f'{INAT_BASE_URL}/taxa/{self.id}'
 
     @classmethod
     def from_id(cls, id: int) -> 'Taxon':
@@ -107,6 +108,19 @@ class Taxon(BaseModel):
         for key in fields_dict(self.__class__).keys():
             key = key.lstrip('_')  # Use getters/setters for LazyProperty instead of temp attrs
             setattr(self, key, getattr(t, key))
+
+    # Column headers for simplified table format
+    headers = {
+        'ID': 'cyan',
+        'Rank': 'dodger_blue1',
+        'Scientific name': 'green',
+        'Common name': 'blue',
+    }
+
+    @property
+    def row(self) -> List:
+        """Get basic values to display as a row in a table"""
+        return [self.id, self.rank, f'{self.emoji} {self.name}', self.preferred_common_name]
 
     def __str__(self) -> str:
         return f'[{self.id}] {self.full_name}' if self.name else self.full_name

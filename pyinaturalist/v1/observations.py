@@ -1,7 +1,12 @@
-from typing import List, Union
+from typing import List
 
 from pyinaturalist import api_docs as docs
-from pyinaturalist.constants import NODE_OBS_ORDER_BY_PROPERTIES, HistogramResponse, JsonResponse
+from pyinaturalist.constants import (
+    NODE_OBS_ORDER_BY_PROPERTIES,
+    HistogramResponse,
+    IntOrStr,
+    JsonResponse,
+)
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.pagination import add_paginate_all
@@ -191,6 +196,7 @@ def get_observation_species_counts(**params) -> JsonResponse:
     return response.json()
 
 
+# TODO: Deprecate this and move to pyinaturalist-convert
 @document_request_params([*docs._get_observations, docs._geojson_properties])
 def get_geojson_observations(properties: List[str] = None, **params) -> JsonResponse:
     """Get all observation results combined into a GeoJSON ``FeatureCollection``.
@@ -283,7 +289,7 @@ def get_observation_identifiers(**params) -> JsonResponse:
 
 
 @add_paginate_all(method='page')
-def get_observation_taxonomy(user_id: Union[int, str], user_agent: str = None) -> JsonResponse:
+def get_observation_taxonomy(user_id: IntOrStr, user_agent: str = None) -> JsonResponse:
     """Get observation counts for all taxa in a full taxonomic tree. In the web UI, these are used
     for life lists.
 

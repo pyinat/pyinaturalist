@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 from dateutil.tz import tzoffset, tzutc
 
-from pyinaturalist.constants import API_V1_BASE_URL, ICONIC_TAXA, PHOTO_INFO_BASE_URL, PHOTO_SIZES
+from pyinaturalist.constants import ICONIC_TAXA, INAT_BASE_URL, PHOTO_INFO_BASE_URL, PHOTO_SIZES
 from pyinaturalist.models import (
     ID,
     OFV,
@@ -385,7 +385,7 @@ def test_taxon_taxonomy():
 
 def test_taxon_properties():
     taxon = Taxon.from_json(taxon_json)
-    assert taxon.url == f'{API_V1_BASE_URL}/taxa/70118'
+    assert taxon.url == f'{INAT_BASE_URL}/taxa/70118'
     assert taxon.ancestry.startswith('Animalia | Arthropoda | Hexapoda | ')
     assert isinstance(taxon.parent, Taxon) and taxon.parent.id == 53850
 

@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 
 from attr import field
 
-from pyinaturalist.constants import Coordinates, ResponseOrFile
+from pyinaturalist.constants import INAT_BASE_URL, Coordinates, ResponseOrFile
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
@@ -108,6 +108,24 @@ class Project(BaseModel):
     @property
     def obs_rules(self):
         return self.project_observation_rules
+
+    @property
+    def url(self) -> str:
+        """Info URL on iNaturalist.org"""
+        return f'{INAT_BASE_URL}/projects/{self.id}'
+
+    # Column headers for simplified table format
+    headers = {
+        'ID': 'cyan',
+        'Title': 'green',
+        'Type': 'blue',
+        'URL': 'white',
+    }
+
+    @property
+    def row(self) -> List:
+        """Get basic values to display as a row in a table"""
+        return [self.id, self.title, self.project_type, self.url]
 
     def __str__(self) -> str:
         return f'[{self.id}] {self.title}'
