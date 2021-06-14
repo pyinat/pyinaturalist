@@ -14,7 +14,7 @@ from logging import getLogger
 from typing import Any, Callable, List, Sequence, Type
 
 from pyinaturalist.constants import ResponseObject, ResponseOrObject
-from pyinaturalist.models import BaseModel, Identification, Observation, Project, Taxon, User
+from pyinaturalist.models import BaseModel, Identification, Observation, Place, Project, Taxon, User
 
 __all__ = [
     'format_controlled_terms',
@@ -41,21 +41,6 @@ def _format_controlled_term(term: ResponseObject, **kwargs) -> str:
     return f'{term["id"]}: {term["label"]}\n' + '\n'.join(term_values)
 
 
-def format_places(places: ResponseOrObject, align: bool = False) -> str:
-    """Format place results into a condensed list of IDs and names"""
-    return _format_objects(places, align, _format_place)
-
-
-def _format_place(place: ResponseObject, align: bool = False) -> str:
-    if 'standard' in place and 'community' in place:
-        standard_places = format_places(place['standard'], align)
-        community_places = format_places(place['community'], align)
-        return f'Standard:\n{standard_places}\n\nCommunity:\n{community_places}'
-
-    place_id = pad(place['id'], 8, align)
-    return f"[{place_id}] {place['name']}"
-
-
 def format_search_results(search_results: ResponseOrObject, align: bool = False) -> str:
     """Format search results into a condensed list of values depending on result type"""
     return _format_objects(search_results, align, _format_search_result)
@@ -64,7 +49,7 @@ def format_search_results(search_results: ResponseOrObject, align: bool = False)
 def _format_search_result(result: ResponseObject, align: bool = False) -> str:
     """Format a search result depending on its type"""
     search_formatters = {
-        'Place': _format_place,
+        'Place': format_places,
         'Project': format_projects,
         'Taxon': format_taxa,
         'User': format_users,
@@ -138,6 +123,7 @@ def _format_model_objects(results: Any, cls: Type[BaseModel], **kwargs):
 # TODO: Callable type hinting
 format_identifications = partial(_format_model_objects, cls=Identification)
 format_observations = partial(_format_model_objects, cls=Observation)
+format_places = partial(_format_model_objects, cls=Place)
 format_projects = partial(_format_model_objects, cls=Project)
 format_taxa = partial(_format_model_objects, cls=Taxon)
 format_users = partial(_format_model_objects, cls=User)

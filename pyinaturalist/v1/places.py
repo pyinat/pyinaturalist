@@ -57,16 +57,10 @@ def get_places_nearby(**params) -> JsonResponse:
 
         Show basic info for all places in response:
 
-        >>> print(format_places(response, align=True))
-        Standard:
-        [97394  ] North America
-        [97395  ] Asia
-        [97393  ] Oceania
-        ...
-        Community:
-        [166719  ] Burgenland (accurate border)
-        [11770   ] Mehedinti
-        [119755  ] Mahurangi College
+        >>> print(format_places(response))
+        [97394] North America
+        [97395] Asia
+        [97393] Oceania
         ...
 
         .. admonition:: Example Response
@@ -95,10 +89,10 @@ def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
     Example:
         >>> response = get_places_autocomplete('Irkutsk')
         >>> print(format_places(response))
-        [11803   ] Irkutsk
-        [41854   ] Irkutskiy rayon
-        [166186  ] Irkutsk Oblast - ADD
-        [163077  ] Irkutsk agglomeration
+        [11803] Irkutsk
+        [41854] Irkutskiy rayon
+        [166186] Irkutsk Oblast - ADD
+        [163077] Irkutsk agglomeration
 
         .. admonition:: Example Response
             :class: toggle

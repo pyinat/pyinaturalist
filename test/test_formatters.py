@@ -90,12 +90,9 @@ def test_format_places(input):
 
 def test_format_places__nearby():
     places_str = """
-Standard:
 [97394] North America
 [97395] Asia
 [97393] Oceania
-
-Community:
 [11770] Mehedinti
 [119755] Mahurangi College
 [150981] Ceap Breatainn

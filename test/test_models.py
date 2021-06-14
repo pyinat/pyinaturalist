@@ -303,6 +303,7 @@ def test_photo_str():
 
 def test_place_converters():
     place = Place.from_json(place_json)
+    assert place.category is None
     assert place.location == (-29.665119, 17.88583)
 
 
@@ -313,9 +314,11 @@ def test_place_empty():
     assert place.geometry_geojson == {}
 
 
-# TODO
-def test_place_from_json_list():
-    pass
+def test_places_nearby():
+    """Results from /places/nearby should have an extra 'category' attribute"""
+    places = Place.from_json_list(places_nearby_json)
+    assert places[0].category == 'standard'
+    assert places[-1].category == 'community'
 
 
 # Projects
