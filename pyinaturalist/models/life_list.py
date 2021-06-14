@@ -33,14 +33,14 @@ class LifeList(BaseModel):
     _taxon_counts: Dict[int, int] = field(default=None, init=False, repr=False)
 
     @classmethod
-    def from_taxonomy_json(cls, value: ResponseOrFile, user_id: int = None) -> Optional['LifeList']:
+    def from_json(cls, value: ResponseOrFile, user_id: int = None, **kwargs) -> Optional['LifeList']:
         json_value = load_json(value)
         count_without_taxon = json_value.get('count_without_taxon', 0)
         if 'results' in json_value:
             json_value = json_value['results']
 
         life_list_json = {'taxa': value, 'user_id': user_id, 'count_without_taxon': count_without_taxon}
-        return cls.from_json(life_list_json)  # type: ignore
+        return super(LifeList, cls).from_json(life_list_json)  # type: ignore
 
     def count(self, taxon_id: int) -> int:
         """Get an observation count for the specified taxon and its descendants.

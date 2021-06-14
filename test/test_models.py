@@ -142,7 +142,7 @@ def test_identification_str():
 
 
 def test_life_list_converters():
-    life_list = LifeList.from_taxonomy_json(obs_taxonomy_json)
+    life_list = LifeList.from_json(obs_taxonomy_json)
     assert isinstance(life_list.taxa[0], LifeListTaxon) and life_list.taxa[0].id == 1
 
 
@@ -153,7 +153,7 @@ def test_life_list_empty():
 
 
 def test_life_list_count():
-    life_list = LifeList.from_taxonomy_json(obs_taxonomy_json)
+    life_list = LifeList.from_json(obs_taxonomy_json)
     assert life_list.count(1) == 3023  # Animalia
     assert life_list.count(981) == 2  # Phasianus colchicus
     assert life_list.count(-1) == 4  # Observations with no taxon

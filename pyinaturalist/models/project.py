@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 
 from attr import field
 
-from pyinaturalist.constants import Coordinates, JsonResponse
+from pyinaturalist.constants import Coordinates, ResponseOrFile
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
@@ -14,6 +14,7 @@ from pyinaturalist.models import (
     define_model,
     kwarg,
 )
+from pyinaturalist.models.base import load_json
 from pyinaturalist.models.observation_field import ObservationField
 
 
@@ -26,19 +27,14 @@ class ProjectObservationField(ObservationField):
     required: bool = kwarg
 
     @classmethod
-    def from_project_json(cls, value: JsonResponse, **kwargs) -> Optional['ProjectObservationField']:
+    def from_json(cls, value: ResponseOrFile, **kwargs) -> Optional['ProjectObservationField']:
         """Flatten out nested values"""
-        obs_field = value['observation_field']
-        obs_field['project_observation_field_id'] = value['id']
-        obs_field['position'] = value['position']
-        obs_field['required'] = value['required']
-        return cls.from_json(obs_field, **kwargs)  # type: ignore
-
-    @classmethod
-    def from_project_json_list(
-        cls, value: List[JsonResponse], **kwargs
-    ) -> List['ProjectObservationField']:
-        return [cls.from_project_json(pof, **kwargs) for pof in value]  # type: ignore
+        json_value = load_json(value)
+        obs_field = json_value['observation_field']
+        obs_field['project_observation_field_id'] = json_value['id']
+        obs_field['position'] = json_value['position']
+        obs_field['required'] = json_value['required']
+        return super(ProjectObservationField, cls).from_json(obs_field, **kwargs)  # type: ignore
 
 
 @define_model
@@ -50,17 +46,14 @@ class ProjectUser(User):
     role: str = kwarg
 
     @classmethod
-    def from_project_json(cls, value: JsonResponse, **kwargs) -> Optional['ProjectUser']:
+    def from_json(cls, value: ResponseOrFile, **kwargs) -> Optional['ProjectUser']:
         """Flatten out nested values"""
-        user = value['user']
-        user['project_id'] = value['project_id']
-        user['project_user_id'] = value['id']
-        user['role'] = value['role']
-        return cls.from_json(user, **kwargs)  # type: ignore
-
-    @classmethod
-    def from_project_json_list(cls, value: List[JsonResponse], **kwargs) -> List['ProjectUser']:
-        return [cls.from_project_json(project_user, **kwargs) for project_user in value]  # type: ignore
+        json_value = load_json(value)
+        user = json_value['user']
+        user['project_id'] = json_value['project_id']
+        user['project_user_id'] = json_value['id']
+        user['role'] = json_value['role']
+        return super(ProjectUser, cls).from_json(user, **kwargs)  # type: ignore
 
 
 @define_model
@@ -98,8 +91,8 @@ class Project(BaseModel):
     user_ids: List[int] = field(factory=list)
 
     # Lazy-loaded nested model objects
-    admins: property = LazyProperty(ProjectUser.from_project_json_list)
-    project_observation_fields: property = LazyProperty(ProjectObservationField.from_project_json_list)
+    admins: property = LazyProperty(ProjectUser.from_json_list)
+    project_observation_fields: property = LazyProperty(ProjectObservationField.from_json_list)
     user: property = LazyProperty(User.from_json)
 
     # Unused attributes

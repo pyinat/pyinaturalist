@@ -47,7 +47,7 @@ class BaseModel:
     # https://github.com/python/mypy/issues/6172
     # https://github.com/python/mypy/issues/7912
     @classmethod
-    def from_json(cls: Type[T], value: ResponseOrFile, partial=False) -> Optional['BaseModel']:
+    def from_json(cls: Type[T], value: ResponseOrFile, **kwargs) -> Optional['BaseModel']:
         """Create a single model object from a JSON path, file-like object, or API response object.
         If multiple objects are present in JSON, only the first will be used.
         Omits invalid fields and ``None``, so we use our default factories instead (e.g. for empty
@@ -63,7 +63,7 @@ class BaseModel:
         if cls.temp_attrs:
             attr_names.extend(cls.temp_attrs)
         valid_json = {k: v for k, v in json_value.items() if k in attr_names and v is not None}
-        return cls(**valid_json, partial=partial)  # type: ignore
+        return cls(**valid_json, **kwargs)  # type: ignore
 
     @classmethod
     def from_json_list(
@@ -101,7 +101,7 @@ def get_model_fields(obj: Any) -> Iterable[Attribute]:
 
 def load_json(value: Union[JsonResponse, AnyFile]):
     """Load JSON from a file path or file-like object"""
-    if isinstance(value, dict):
+    if isinstance(value, (dict, list)):
         return value
     if isinstance(value, (Path, str)):
         with open(expanduser(str(value))) as f:
