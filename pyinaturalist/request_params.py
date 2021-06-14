@@ -68,11 +68,20 @@ def prepare_request(
     # Convert any datetimes to strings in request body
     if json:
         headers['Content-type'] = 'application/json'
-        for k, v in json.items():
-            if isinstance(v, (date, datetime)):
-                json[k] = v.isoformat()
+        json = preprocess_request_body(json)
 
     return url, params, headers, json
+
+
+def preprocess_request_body(body: Optional[RequestParams]) -> RequestParams:
+    """Perform type conversions, sanity checks, etc. on JSON-formatted request body"""
+    if not body:
+        return {}
+    if 'observation' in body:
+        body['observation'] = preprocess_request_params(body['observation'])
+    else:
+        body = preprocess_request_params(body)
+    return body
 
 
 def preprocess_request_params(params: Optional[RequestParams]) -> RequestParams:

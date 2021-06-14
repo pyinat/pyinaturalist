@@ -140,12 +140,8 @@ def create_observation(access_token: str, **params) -> ListResponse:
         observation date in the future or a latitude > 90. In that case the exception's
         ``response`` attribute gives more details about the errors.
     """
-    # Accept either top-level params (like most other endpoints)
-    # or nested {'observation': params} (like the iNat API accepts directly)
-    if 'observation' in params:
-        params.update(params.pop('observation'))
     params = convert_observation_fields(params)
-    if 'observed_on' in params:
+    if params.get('observed_on'):
         params['observed_on_string'] = params.pop('observed_on')
 
     # Split out photos and sounds to upload separately
@@ -215,10 +211,6 @@ def update_observation(
         :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an
             error 410 if the observation doesn't exists or belongs to another user.
     """
-    # Accept either top-level params (like most other endpoints)
-    # or nested params (like the API accepts)
-    if 'observation' in params:
-        params.update(params.pop('observation'))
     params = convert_observation_fields(params)
 
     # Split out photos and sounds to upload separately
