@@ -87,14 +87,15 @@ class BaseModel:
         return asdict(self)
 
 
-# TODO: Do we want to print all properties, or just LazyProperties?
 def get_model_fields(obj: Any) -> Iterable[Attribute]:
-    """Add placeholder attributes for model @properties so they get picked up by rich's
+    """Add placeholder attributes for lazy-loaded model properties so they get picked up by rich's
     pretty-printer. Does not change behavior for anything except :py:class:`.BaseModel` subclasses.
     """
+    from pyinaturalist.models import LazyProperty
+
     attrs = list(obj.__attrs_attrs__)
     if isinstance(obj, BaseModel):
-        prop_names = [k for k, v in type(obj).__dict__.items() if isinstance(v, property)]
+        prop_names = [k for k, v in type(obj).__dict__.items() if isinstance(v, LazyProperty)]
         attrs += [make_attribute(p) for p in prop_names]
     return attrs
 
