@@ -1,24 +1,19 @@
+from itertools import groupby
 from typing import Dict, List, Optional
 
 from attr import field
 
 from pyinaturalist.constants import ResponseOrFile
-from pyinaturalist.models import BaseModel, define_model, kwarg, load_json
+from pyinaturalist.models import BaseModel, Taxon, define_model, kwarg, load_json
 
 
 @define_model
-class LifeListTaxon(BaseModel):
+class LifeListTaxon(Taxon):
     """A dataclass containing information about a single taxon in a user's life list"""
 
     count: int = field(default=0)
     descendant_obs_count: int = field(default=0)
     direct_obs_count: int = field(default=0)
-    id: int = kwarg
-    is_active: bool = kwarg
-    name: str = kwarg
-    parent_id: int = kwarg
-    rank_level: int = kwarg
-    rank: str = kwarg  # Enum
 
     @property
     def indent_level(self) -> int:
@@ -61,9 +56,45 @@ class LifeList(BaseModel):
             self._taxon_counts[-1] = self.count_without_taxon
         return self._taxon_counts.get(taxon_id, 0)
 
-    # TODO: Restructure flat taxonomy list into a tree, based on parent_id
-    # def tree(self):
-    #     pass
+    def tree(self):
+        """**Experimental**
+        Organize this life list into a taxonomic tree
+
+        Returns:
+            :py:class:`rich.tree.Tree`
+        """
+        return make_tree(self.taxa)
 
     def __str__(self) -> str:
         return '\n'.join([str(taxon) for taxon in self.taxa])
+
+
+def make_tree(taxa: List[Taxon]):
+    """Organize a list of taxa into a taxonomic tree. Must contain at least one taxon with
+    'Life' (taxon ID 48460) as its parent.
+
+    Returns:
+        :py:class:`rich.tree.Tree`
+    """
+
+    from rich.tree import Tree
+
+    taxa_by_parent_id = _sort_groupby(taxa, key=lambda x: x.parent_id or -1)
+
+    def make_child_tree(node, taxon):
+        """Add a taxon and its children to the specified tree node.
+        Base case: leaf taxon (with no children)
+        Recursive case: non-leaf taxon (with children)
+        """
+        node = node.add(taxon.full_name)
+        for child in taxa_by_parent_id.get(taxon.id, []):
+            node.add(make_child_tree(node, child))
+        return node
+
+    tree_root = {'id': 48460, 'name': 'Life', 'rank': 'State of matter'}
+    return make_child_tree(Tree('life list', expanded=False), Taxon.from_json(tree_root))
+
+
+def _sort_groupby(values, key):
+    """Apply sorting then groupby using the same key"""
+    return {k: list(group) for k, group in groupby(sorted(values, key=key), key=key)}

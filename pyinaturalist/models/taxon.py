@@ -60,6 +60,7 @@ class Taxon(BaseModel):
 
     @property
     def ancestry(self) -> str:
+        """String containing either ancestor names (if available) or IDs"""
         tokens = [t.name for t in self.ancestors] if self.ancestors else self.ancestor_ids
         return ' | '.join([str(t) for t in tokens])
 
@@ -105,7 +106,7 @@ class Taxon(BaseModel):
     def load_full_record(self):
         """Update this Taxon with full taxon info, including ancestors + children"""
         t = Taxon.from_id(self.id)
-        for key in fields_dict(self.__class__).keys():
+        for key in fields_dict(Taxon).keys():
             key = key.lstrip('_')  # Use getters/setters for LazyProperty instead of temp attrs
             setattr(self, key, getattr(t, key))
 
