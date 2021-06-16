@@ -18,6 +18,7 @@ from pyinaturalist.models import (
     ProjectObservation,
     ProjectObservationField,
     ProjectUser,
+    SearchResult,
     Taxon,
     User,
 )
@@ -34,6 +35,7 @@ project_json = load_sample_data('get_projects.json')['results'][0]
 project_json_obs_fields = load_sample_data('get_projects_obs_fields.json')['results'][0]
 user_json = load_sample_data('get_user_by_id.json')['results'][0]
 user_json_partial = load_sample_data('get_users_autocomplete.json')['results'][0]
+search_results_json = load_sample_data('get_search.json')['results']
 taxon_json = load_sample_data('get_taxa_by_id.json')['results'][0]
 taxon_json_partial = load_sample_data('get_taxa.json')['results'][0]
 
@@ -44,6 +46,10 @@ ofv_json_numeric = obs_json_ofvs['ofvs'][1]
 ofv_json_taxon = obs_json_ofvs['ofvs'][0]
 photo_json = taxon_json['taxon_photos'][0]
 photo_json = taxon_json['default_photo']
+search_result_json_taxon = search_results_json[0]
+search_result_json_place = search_results_json[1]
+search_result_json_project = search_results_json[2]
+search_result_json_user = search_results_json[3]
 
 # Base
 # --------------------
@@ -363,6 +369,44 @@ def test_project_empty():
     assert project.project_observation_rules == []
     assert project.search_parameters == []
     assert project.user is None
+
+
+# Search
+# --------------------
+
+
+def test_search_empty():
+    search_result = SearchResult()
+    assert search_result.score == 0
+    assert search_result.matches == []
+    assert search_result.record is None
+
+
+def test_search_place():
+    search_result = SearchResult.from_json(search_result_json_place)
+    assert search_result.score == 7.116488
+    assert isinstance(search_result.record, Place) and search_result.record.id == 113562
+
+
+def test_search_project():
+    search_result = SearchResult.from_json(search_result_json_project)
+    assert search_result.score == 6.9390197
+    assert isinstance(search_result.record, Project) and search_result.record.id == 9978
+
+
+def test_search_taxon():
+    search_result = SearchResult.from_json(search_result_json_taxon)
+    assert search_result.score == 9.062307
+    assert isinstance(search_result.record, Taxon) and search_result.record.id == 47792
+
+
+def test_search_user():
+    search_result = SearchResult.from_json(search_result_json_user)
+    assert search_result.score == 4.6454225
+    assert isinstance(search_result.record, User) and search_result.record.id == 113886
+
+
+SearchResult
 
 
 # Taxa

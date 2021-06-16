@@ -15,6 +15,7 @@ from pyinaturalist.models import (
     Photo,
     Place,
     Project,
+    SearchResult,
     Taxon,
     User,
 )
@@ -41,6 +42,7 @@ obs_taxonomy_json = load_sample_data('get_observation_taxonomy.json')
 place_json = load_sample_data('get_places_by_id.json')['results'][0]
 places_nearby_json = load_sample_data('get_places_nearby.json')['results']
 project_json = load_sample_data('get_projects_obs_fields.json')['results'][0]
+search_json = load_sample_data('get_search.json')
 user_json = load_sample_data('get_user_by_id.json')['results'][0]
 user_json_autocomplete = load_sample_data('get_users_autocomplete.json')['results']
 taxon_json = load_sample_data('get_taxa_by_id.json')['results'][0]
@@ -52,6 +54,7 @@ ofv_json_numeric = obs_json_ofvs['ofvs'][1]
 ofv_json_taxon = obs_json_ofvs['ofvs'][0]
 photo_json = taxon_json['taxon_photos'][0]['photo']
 photo_json_partial = taxon_json['default_photo']
+search_results_json = load_sample_data('get_search.json')['results']
 user_json_partial = user_json_autocomplete[0]
 
 # Sample model objects
@@ -68,6 +71,7 @@ photo_partial = Photo.from_json(photo_json_partial)
 place = Place.from_json(place_json)
 places_nearby = Place.from_json_list(places_nearby_json)
 project = Project.from_json(project_json)
+search_results = SearchResult.from_json_list(search_results_json)
 taxon = Taxon.from_json(taxon_json)
 taxon_partial = Taxon.from_json(taxon_json_partial)
 user = User.from_json(user_json)
@@ -79,5 +83,6 @@ observation_table = Observation.to_table([observation, observation_with_ofvs])
 photo_table = Photo.to_table([photo, photo_partial, observation.photos[0]])
 place_table = Place.to_table(places_nearby)
 project_table = Project.to_table([project, project, project])
+search_results_table = SearchResult.to_table(search_results)
 taxon_table = Taxon.to_table([taxon, observation_with_ofvs.taxon, observation.taxon])
 user_table = User.to_table(User.from_json_list(user_json_autocomplete))

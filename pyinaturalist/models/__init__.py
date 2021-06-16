@@ -37,6 +37,7 @@ from pyinaturalist.models.project import (
 )
 from pyinaturalist.models.observation_field import ObservationField, ObservationFieldValue
 from pyinaturalist.models.observation import Observation
+from pyinaturalist.models.search import SearchResult
 
 
 # Add aliases for some of the longer class names

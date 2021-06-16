@@ -38,6 +38,7 @@ Added data models for all API response types, to support working with typed pyth
     * ProjectObservation
     * ProjectObservationField
     * ProjectUser
+* SearchResult
 * Taxon
 * User
 
