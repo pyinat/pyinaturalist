@@ -19,6 +19,18 @@ from pyinaturalist.models.observation_field import ObservationField
 
 
 @define_model
+class ProjectObservation(ObservationField):
+    """Metadata about an observation that has been added to a project"""
+
+    id: int = kwarg
+    preferences: Dict = field(factory=dict)  # Example: {'allows_curator_coordinate_access': True}
+    project: Dict = field(factory=dict)  # Example: {'id': 24237}
+    user_id: int = kwarg
+    uuid: str = kwarg
+    user: property = LazyProperty(User.from_json)
+
+
+@define_model
 class ProjectObservationField(ObservationField):
     """A :py:class:`.ObservationField` with additional project-specific information"""
 

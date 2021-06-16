@@ -35,6 +35,7 @@ Added data models for all API response types, to support working with typed pyth
 * Photo
 * Place
 * Project
+    * ProjectObservation
     * ProjectObservationField
     * ProjectUser
 * Taxon

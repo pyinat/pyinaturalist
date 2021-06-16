@@ -7,10 +7,12 @@ from pyinaturalist.constants import Coordinates
 from pyinaturalist.models import (
     Annotation,
     BaseModel,
+    Comment,
     Identification,
     LazyProperty,
     ObservationFieldValue,
     Photo,
+    ProjectObservation,
     Taxon,
     User,
     add_lazy_attrs,
@@ -19,7 +21,6 @@ from pyinaturalist.models import (
     datetime_now_attr,
     kwarg,
 )
-from pyinaturalist.models.comment import Comment
 from pyinaturalist.response_format import convert_observation_timestamp
 from pyinaturalist.v1 import get_observation
 
@@ -75,7 +76,6 @@ class Observation(BaseModel):
     project_ids: List = field(factory=list)
     project_ids_with_curator_id: List = field(factory=list)
     project_ids_without_curator_id: List = field(factory=list)
-    project_observations: List[Dict] = field(factory=list)  # TODO: ProjectObservation model?
     quality_metrics: List = field(factory=list)
     reviewed_by: List = field(factory=list)
     sounds: List = field(factory=list)
@@ -88,6 +88,7 @@ class Observation(BaseModel):
     identifications: property = LazyProperty(Identification.from_json_list)
     ofvs: property = LazyProperty(ObservationFieldValue.from_json_list)
     photos: property = LazyProperty(Photo.from_json_list)
+    project_observations: property = LazyProperty(ProjectObservation.from_json_list)
     taxon: property = LazyProperty(Taxon.from_json)
     user: property = LazyProperty(User.from_json)
 

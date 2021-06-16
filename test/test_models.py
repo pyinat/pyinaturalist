@@ -15,6 +15,7 @@ from pyinaturalist.models import (
     Photo,
     Place,
     Project,
+    ProjectObservation,
     ProjectObservationField,
     ProjectUser,
     Taxon,
@@ -175,6 +176,7 @@ def test_observation_converters():
     assert isinstance(obs.photos[0], Photo) and obs.photos[0].id == 92152429
     assert isinstance(obs.taxon, Taxon) and obs.taxon.id == 48662
     assert isinstance(obs.user, User) and obs.user.id == 2852555
+
     assert obs.location == (50.0949055, -104.71929167)
 
 
@@ -184,6 +186,12 @@ def test_observation_with_ofvs():
     assert isinstance(ofv, ObservationFieldValue)
     assert ofv.id == 14106828
     assert ofv.user.id == 2115051
+
+
+def test_project_observations():
+    obs = Observation.from_json(obs_json_ofvs)
+    proj_obs = obs.project_observations[0]
+    assert isinstance(proj_obs, ProjectObservation) and proj_obs.id == 48899479
 
 
 def test_observation_empty():
