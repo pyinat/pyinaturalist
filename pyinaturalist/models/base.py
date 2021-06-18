@@ -65,26 +65,6 @@ class BaseModel:
         """
         return [cls.from_json(item) for item in ensure_list(value)]
 
-    @classmethod
-    def to_table(cls, objects: List['BaseModel']):
-        """Format a list of model objects as a table. If ``rich`` isn't installed or the model
-        doesn't have a table format defined, just return a basic list of stringified objects.
-        """
-        try:
-            from rich.box import SIMPLE_HEAVY
-            from rich.table import Column, Table
-
-            objects[0].row
-        except (ImportError, NotImplementedError):
-            return '\n'.join([str(obj) for obj in objects])
-
-        columns = [Column(header, style=style) for header, style in cls.headers.items()]
-        table = Table(*columns, box=SIMPLE_HEAVY, header_style='bold white', row_styles=['dim', 'none'])
-
-        for obj in objects:
-            table.add_row(*[_str(value) for value in obj.row])
-        return table
-
     @property
     def row(self) -> List:
         raise NotImplementedError
@@ -98,19 +78,6 @@ class BaseModel:
 ModelObjects = Union[BaseModel, Iterable[BaseModel]]
 ResponseOrObject = Union[BaseModel, JsonResponse]
 ResponseOrObjects = Union[ModelObjects, ResponseOrResults]
-
-
-def ensure_model(cls: Type[T], value: ResponseOrObject) -> BaseModel:
-    if not value:
-        return cls()
-    elif isinstance(value, BaseModel):
-        return value
-    else:
-        return cls.from_json(value)
-
-
-def ensure_model_list(cls: Type[T], values: ResponseOrObjects) -> List[BaseModel]:
-    return [ensure_model(cls, obj) for obj in ensure_list(values)]
 
 
 def load_json(value: ResponseOrFile) -> ResponseOrResults:

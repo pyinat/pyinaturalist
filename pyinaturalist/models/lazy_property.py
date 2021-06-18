@@ -67,7 +67,7 @@ class LazyProperty(property):
             return self
 
         value = getattr(obj, self.temp_attr)
-        if value and not _is_model_object(value):
+        if value and not _is_model_object_or_list(value):
             value = self.converter(value)
             setattr(obj, self.temp_attr, value)
         return value
@@ -111,7 +111,7 @@ def make_attribute(name, **kwargs):
     return Attribute(name=name, **kwargs)
 
 
-def _is_model_object(value):
+def _is_model_object_or_list(value):
     try:
         return isinstance(value, BaseModel) or isinstance(value[0], BaseModel)
     except (AttributeError, KeyError, TypeError):

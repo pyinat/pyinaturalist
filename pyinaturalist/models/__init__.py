@@ -1,6 +1,5 @@
 """Dataclasses for modeling iNaturalist API response objects"""
 # flake8: noqa: F401
-# TODO: Add formatters as model methods
 # TODO: Validators for multiple choice fields?
 from typing import Callable
 from attr import define
@@ -46,14 +45,3 @@ ID = Identification
 OF = ObservationField
 OFV = ObservationFieldValue
 POF = ProjectObservationField
-
-
-# If rich is installed, update its pretty-printer to include model @properties. Since this is only
-# cosmetic, it's not a big deal, but it would be preferable to do this without monkey-patching.
-try:
-    from rich import pretty
-
-    pretty._get_attr_fields = get_model_fields
-    pretty.install()
-except ImportError:
-    pass

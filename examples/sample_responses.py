@@ -5,6 +5,7 @@ from os.path import join
 
 from pyinaturalist import *
 from pyinaturalist.constants import SAMPLE_DATA_DIR
+from pyinaturalist.formatters import format_table, pprint
 from pyinaturalist.models import (
     Annotation,
     Comment,
@@ -19,14 +20,6 @@ from pyinaturalist.models import (
     Taxon,
     User,
 )
-
-# Get colorized/formatted output, if `rich` is installed
-try:
-    from rich import pretty
-
-    pretty.install()
-except ImportError:
-    pass
 
 
 def load_sample_data(filename):
@@ -57,6 +50,7 @@ photo_json_partial = taxon_json['default_photo']
 search_results_json = load_sample_data('get_search.json')['results']
 user_json_partial = user_json_autocomplete[0]
 
+
 # Sample model objects
 annotation = Annotation.from_json(annotation_json)
 comment = Comment.from_json(comment_json)
@@ -77,12 +71,12 @@ taxon_partial = Taxon.from_json(taxon_json_partial)
 user = User.from_json(user_json)
 
 # Sample tables
-comment_table = Comment.to_table(observation.comments)
-identification_table = Identification.to_table(observation.identifications)
-observation_table = Observation.to_table([observation, observation_with_ofvs])
-photo_table = Photo.to_table([photo, photo_partial, observation.photos[0]])
-place_table = Place.to_table(places_nearby)
-project_table = Project.to_table([project, project, project])
-search_results_table = SearchResult.to_table(search_results)
-taxon_table = Taxon.to_table([taxon, observation_with_ofvs.taxon, observation.taxon])
-user_table = User.to_table(User.from_json_list(user_json_autocomplete))
+comment_table = format_table(observation.comments)
+identification_table = format_table(observation.identifications)
+observation_table = format_table([observation, observation_with_ofvs])
+photo_table = format_table([photo, photo_partial, observation.photos[0]])
+place_table = format_table(places_nearby)
+project_table = format_table([project, project, project])
+search_results_table = format_table(search_results)
+taxon_table = format_table([taxon, observation_with_ofvs.taxon, observation.taxon])
+user_table = format_table(User.from_json_list(user_json_autocomplete))

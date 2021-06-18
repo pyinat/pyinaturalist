@@ -1,4 +1,4 @@
-# Pyinaturalist usage examples
+# Examples
 
 This folder contains some examples of building data visualizations and other neat things using
 iNaturalist data. See [documentation](https://pyinaturalist.readthedocs.io/en/stable/examples.html)

@@ -10,37 +10,114 @@ These functions will accept any of the following:
 from copy import deepcopy
 from datetime import date, datetime
 from functools import partial
-from logging import getLogger
 from typing import Callable, List, Type
 
 from pyinaturalist.constants import ResponseOrResults, ResponseResult
 from pyinaturalist.converters import ensure_list
 from pyinaturalist.models import (
+    Annotation,
     BaseModel,
+    Comment,
     Identification,
+    LifeList,
     ModelObjects,
     Observation,
+    ObservationField,
+    ObservationFieldValue,
+    Photo,
     Place,
     Project,
+    ResponseOrObjects,
     SearchResult,
     Taxon,
     User,
+    get_model_fields,
 )
 
-# Use rich for pretty-printing, if installed
+# If rich is installed, update its pretty-printer to include model properties
 try:
-    from rich import print
+    from rich import pretty, print
+
+    pretty._get_attr_fields = get_model_fields
+    pretty.install()
 except ImportError:
     pass
 
-logger = getLogger(__name__)
+# Unique response attributes used to auto-detect response types
+UNIQUE_RESPONSE_ATTRS = {
+    'vote_score': Annotation,
+    'disagreement': Identification,
+    'moderator_actions': Comment,  # Subset of ID attrs; if it's not an ID, assume it's a comment
+    'count_without_taxon': LifeList,
+    'captive': Observation,
+    'allowed_values': ObservationField,
+    'field_id': ObservationFieldValue,
+    'original_dimensions': Photo,
+    'place_type': Place,
+    'standard': Place,
+    'project_type': Project,
+    'score': SearchResult,
+    'rank': Taxon,
+    'roles': User,
+}
 
 
-# TODO: A detect_type() function that also allows this to be used for response JSON?
-def pprint(objects: ModelObjects):
-    objects = _ensure_list(objects)
-    cls = objects[0].__class__
-    print(cls.to_table(objects))
+def pprint(values: ResponseOrObjects):
+    """Pretty-print any model object or list into a condensed summary.
+
+    **Experimental:** May also be used on most raw JSON API responses
+    """
+    print(format_table(ensure_model_list(values)))
+
+
+def detect_type(value: ResponseResult) -> Type[BaseModel]:
+    """Attempt to determine the model class corresponding to an API result"""
+    for key, cls in UNIQUE_RESPONSE_ATTRS.items():
+        if key in value:
+            return cls
+
+    raise ValueError(f'Could not detect response type: {value}')
+
+
+def ensure_model_list(values: ResponseOrObjects) -> List[BaseModel]:
+    """If the given values are raw JSON responses, attempt to detect their type and convert to
+    model objects
+    """
+    values = ensure_list(values)
+    if isinstance(values[0], BaseModel):
+        return values
+
+    cls = detect_type(values[0])
+    return [cls.from_json(value) for value in values]
+
+
+def format_table(objects: ModelObjects):
+    """Format model objects as a table. If ``rich`` isn't installed or the model doesn't have a
+    table format defined, just return a basic list of stringified objects.
+    """
+    objects = ensure_list(objects)
+
+    try:
+        from rich.box import SIMPLE_HEAVY
+        from rich.table import Column, Table
+
+        headers = objects[0].headers
+        objects[0].row
+    except (ImportError, NotImplementedError):
+        return '\n'.join([str(obj) for obj in objects])
+
+    # Display any date/datetime values in short format
+    def _str(value):
+        if isinstance(value, (date, datetime)):
+            return value.strftime('%b %d, %Y')
+        return str(value)
+
+    columns = [Column(header, style=style) for header, style in headers.items()]
+    table = Table(*columns, box=SIMPLE_HEAVY, header_style='bold white', row_styles=['dim', 'none'])
+
+    for obj in objects:
+        table.add_row(*[_str(value) for value in obj.row])
+    return table
 
 
 def format_controlled_terms(terms: ResponseOrResults, **kwargs) -> str:
