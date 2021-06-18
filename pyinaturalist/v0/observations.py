@@ -12,15 +12,15 @@ from pyinaturalist.constants import (
     ListResponse,
     MultiFile,
 )
-from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps
-from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.pagination import add_paginate_all
-from pyinaturalist.request_params import (
-    convert_observation_fields,
+from pyinaturalist.converters import (
+    convert_all_coordinates,
+    convert_all_timestamps,
     ensure_file_obj,
     ensure_list,
-    validate_multiple_choice_param,
 )
+from pyinaturalist.exceptions import ObservationNotFound
+from pyinaturalist.pagination import add_paginate_all
+from pyinaturalist.request_params import convert_observation_fields, validate_multiple_choice_param
 
 logger = getLogger(__name__)
 

@@ -9,8 +9,8 @@ from pyinaturalist.constants import (
 from pyinaturalist.converters import (
     convert_all_coordinates,
     convert_all_timestamps,
+    convert_histogram,
     convert_observation_timestamps,
-    format_histogram,
 )
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.pagination import add_paginate_all
@@ -102,7 +102,7 @@ def get_observation_histogram(**params) -> HistogramResponse:
         'week of year' intervals, and :py:class:`~datetime.datetime` objects for all other intervals.
     """
     response = get_v1('observations/histogram', params=params)
-    return format_histogram(response.json())
+    return convert_histogram(response.json())
 
 
 @document_request_params([*docs._get_observations, docs._pagination, docs._only_id])

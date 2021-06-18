@@ -26,7 +26,7 @@ class Photo(BaseModel):
         if not self.url:
             return
 
-        # Get a URL format string to get different photo sizes
+        # Get a URL format string to get different photo sizes. Note: default URL may be any size.
         for size in PHOTO_SIZES:
             if f'{size}.' in self.url:
                 self._url_format = self.url.replace(size, '{size}')

@@ -1,13 +1,17 @@
 """Type conversion utilities"""
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from dateutil.parser import UnknownTimezoneWarning  # type: ignore  # (missing from type stubs)
 from dateutil.parser import parse as parse_date
-from dateutil.tz import tzoffset
+from dateutil.tz import tzlocal, tzoffset
+from io import BytesIO
 from logging import getLogger
-from typing import Any, Dict, List, Optional, Union
+from os.path import abspath, expanduser
+from pathlib import Path
+from typing import IO, Any, Dict, List, Optional, Union
 from warnings import catch_warnings, simplefilter
 
 from pyinaturalist.constants import (
+    AnyFile,
     Coordinates,
     Dimensions,
     HistogramResponse,
@@ -28,7 +32,7 @@ OBSERVATION_TIME_FIELDS = (
 logger = getLogger(__name__)
 
 
-# Wrapper functions to apply conversions to all response objects
+# Wrapper functions to apply conversions to all results in a response
 # --------------------
 
 
@@ -60,8 +64,45 @@ def convert_all_timestamps(results: List[ResponseResult]) -> List[ResponseResult
     return results
 
 
-# Type conversion functions
+def convert_histogram(response: JsonResponse) -> HistogramResponse:
+    """Convert a response containing time series data into a single ``{date: value}`` dict"""
+    # The inner result object's key will be the name of the interval requested
+    interval = next(iter(response['results'].keys()))
+    histogram = response['results'][interval]
+
+    # Convert keys to appropriate type depending on interval
+    if interval in ['month_of_year', 'week_of_year']:
+        return {int(k): v for k, v in histogram.items()}
+    else:
+        return {parse_date(k): v for k, v in histogram.items()}
+
+
+# Type conversion functions for individual results or values
 # --------------------
+
+
+def convert_csv_list(obj: Any) -> str:
+    """Convert list parameters into an API-compatible (comma-delimited) string"""
+    if not obj:
+        return ''
+    elif isinstance(obj, list):
+        return ','.join(map(str, obj))
+    else:
+        return str(obj)
+
+
+def convert_isoformat(value: Union[date, datetime, str]) -> str:
+    """Convert a date, datetime, or timestamps to a string in ISO 8601 format.
+    If it's a datetime and doesn't already have tzinfo, set it to the system's local timezone.
+
+    Raises:
+        :py:exc:`dateutil.parser._parser.ParserError` if a date/datetime format is invalid
+    """
+    if isinstance(value, str):
+        value = parse_date(value)
+    if isinstance(value, datetime) and not value.tzinfo:
+        value = value.replace(tzinfo=tzlocal())
+    return value.isoformat()
 
 
 def convert_lat_long(obj: Union[Dict, List, None, str]) -> Optional[Coordinates]:
@@ -113,7 +154,7 @@ def convert_generic_timestamps(result: ResponseResult) -> ResponseResult:
     return result
 
 
-# TODO: pick either this or attrs version
+# TODO: Replace this with attrs version
 def convert_observation_timestamps(result: ResponseResult) -> ResponseResult:
     """Replace observation date/time info with datetime objects"""
     if 'created_at_details' not in result and 'observed_on_string' not in result:
@@ -204,6 +245,82 @@ def parse_offset(tz_offset: str, tz_name: str = None) -> tzoffset:
     return tzoffset(tz_name, delta.total_seconds() * multiplier)
 
 
+def safe_split(value: Any, delimiter: str = '|') -> List:
+    """Split a pipe-(or other token)-delimited string"""
+    return ensure_list(value, convert_csv=True, delimiter=delimiter)
+
+
+def strip_empty_values(values: Dict) -> Dict:
+    """Remove any dict items with empty or ``None`` values."""
+    return {k: v for k, v in values.items() if v or v in [False, 0, 0.0]}
+
+
+# ?
+# -------------------
+
+
+def ensure_list(value: Any, convert_csv: bool = False, delimiter: str = ',') -> List[Any]:
+    """Convert an object, response, or (optionally) comma-separated string into a list"""
+    if not value:
+        return []
+    elif isinstance(value, dict) and 'results' in value:
+        value = value['results']
+    elif convert_csv and isinstance(value, str) and delimiter in value:
+        return [s.strip() for s in value.split(delimiter)]
+
+    if isinstance(value, (list, tuple, set)):
+        return list(value)
+    else:
+        return [value]
+
+
+def ensure_file_obj(value: AnyFile) -> IO:
+    """Given a file object or path, read it into a file-like object if it's a path"""
+    if isinstance(value, (str, Path)):
+        file_path = abspath(expanduser(value))
+        logger.info(f'Reading from file: {file_path}')
+        with open(file_path, 'rb') as f:
+            return BytesIO(f.read())
+    return value
+
+
+# Formatting functions
+# --------------------
+
+
+def format_dimensions(dimensions: Union[Dict[str, int], Dimensions, None]) -> Dimensions:
+    """Simplify a 'dimensions' dict into a ``(width, height)`` tuple"""
+    if not dimensions:
+        return (0, 0)
+    if isinstance(dimensions, tuple):
+        return dimensions
+    return dimensions.get("width", 0), dimensions.get("height", 0)
+
+
+def format_file_size(n_bytes: int) -> str:
+    """Convert a file size in bytes into a human-readable format"""
+    filesize = float(n_bytes or 0)
+
+    def _format(unit):
+        return f'{int(filesize)} {unit}' if unit == 'bytes' else f'{filesize:.2f} {unit}'
+
+    for unit in ['bytes', 'KB', 'MB', 'GB']:
+        if filesize < 1024 or unit == 'GB':
+            return _format(unit)
+        filesize /= 1024
+
+    return _format(unit)
+
+
+def format_license(value: str) -> str:
+    """Format a Creative Commons license code"""
+    return str(value).upper().replace('_', '-')
+
+
+# 'Safe' conversion functions that return invalid values as None instead of raising an error
+# --------------------
+
+
 def try_datetime(timestamp: Any, **kwargs) -> Optional[datetime]:
     """Parse a timestamp string into a datetime, if valid; return ``None`` otherwise"""
     if isinstance(timestamp, datetime):
@@ -250,47 +367,3 @@ def try_int(value: Any) -> Optional[float]:
 def try_int_or_float(value: Any) -> Union[int, float, None]:
     """Convert a value to either an int or a float, if valid; return ``None`` otherwise"""
     return try_int(str(value)) or try_float(str(value))
-
-
-# Formatting Functions
-# --------------------
-
-
-def format_dimensions(dimensions: Union[Dict[str, int], Dimensions]) -> Dimensions:
-    """Slightly simplify 'dimensions' response attribute into ``(width, height)`` tuple"""
-    if isinstance(dimensions, tuple):
-        return dimensions
-    return dimensions.get("width", 0), dimensions.get("height", 0)
-
-
-# TODO: Will be used for Photo model
-# def format_file_size(value) -> str:
-#     """Convert a file size in bytes into a human-readable format"""
-#     for unit in ['B', 'KiB', 'MiB', 'GiB']:
-#         if abs(value) < 1024.0:
-#             return f'{value:.2f}{unit}'
-#         value /= 1024.0
-#     return f'{value:.2f}TiB'
-
-
-def format_license(value: str) -> str:
-    return str(value).upper().replace('_', '-')
-
-
-def format_histogram(response: JsonResponse) -> HistogramResponse:
-    """Format a response containing time series data into a single ``{date: value}`` dict"""
-    # The inner result object's key will be the name of the interval requested
-    interval = next(iter(response['results'].keys()))
-    histogram = response['results'][interval]
-
-    # Convert keys to appropriate type depending on interval
-    if interval in ['month_of_year', 'week_of_year']:
-        return {int(k): v for k, v in histogram.items()}
-    else:
-        return {parse_date(k): v for k, v in histogram.items()}
-
-
-def safe_split(value: str = None, delimiter: str = '|') -> List[str]:
-    if not value:
-        return []
-    return str(value).split(delimiter)

@@ -6,6 +6,7 @@ type annotations and docstrings.
 from typing import List
 
 from pyinaturalist.constants import (
+    MULTIPLE_CHOICE_PARAMS,
     AnyDate,
     AnyDateTime,
     IntOrStr,
@@ -15,7 +16,6 @@ from pyinaturalist.constants import (
     MultiStr,
     ObsFieldValues,
 )
-from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
 
 # Identifications
 # --------------------

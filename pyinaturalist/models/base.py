@@ -7,16 +7,16 @@ https://github.com/python/mypy/issues/7912
 """
 # TODO: More refactoring and tests for load_json, from_json, and from_json_list
 import json
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 from logging import getLogger
 from os.path import expanduser
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Sequence, Type, TypeVar, Union
+from typing import Dict, Iterable, List, Type, TypeVar, Union
 
 from attr import asdict, define, field, fields_dict
 
 from pyinaturalist.constants import AnyFile, JsonResponse, ResponseOrFile, ResponseOrResults
-from pyinaturalist.converters import convert_lat_long, try_datetime
+from pyinaturalist.converters import convert_lat_long, ensure_list, try_datetime
 
 T = TypeVar('T', bound='BaseModel')
 logger = getLogger(__name__)
@@ -100,18 +100,6 @@ ResponseOrObject = Union[BaseModel, JsonResponse]
 ResponseOrObjects = Union[ModelObjects, ResponseOrResults]
 
 
-# TODO: consolidate with formatters._ensure_list
-def ensure_list(value: Any) -> List[Any]:
-    if not value:
-        return []
-    if isinstance(value, dict) and 'results' in value:
-        value = value['results']
-    if isinstance(value, Sequence):
-        return list(value)
-    else:
-        return [value]
-
-
 def ensure_model(cls: Type[T], value: ResponseOrObject) -> BaseModel:
     if not value:
         return cls()
@@ -140,10 +128,3 @@ def load_json(value: ResponseOrFile) -> ResponseOrResults:
     if 'results' in json_value:
         json_value = json_value['results']
     return json_value
-
-
-def _str(value: Any):
-    """Display datetimes in short format when shown in table output"""
-    if isinstance(value, (date, datetime)):
-        return value.strftime('%b %d, %Y')
-    return str(value)

@@ -1,8 +1,6 @@
 import pytest
 from datetime import date, datetime
 from dateutil.tz import gettz
-from io import BytesIO
-from tempfile import NamedTemporaryFile
 from unittest.mock import patch
 
 from pyinaturalist.request_params import (
@@ -11,11 +9,10 @@ from pyinaturalist.request_params import (
     convert_list_params,
     convert_observation_fields,
     convert_pagination_params,
-    ensure_file_obj,
     get_interval_ranges,
     preprocess_request_body,
     preprocess_request_params,
-    strip_empty_params,
+    strip_empty_values,
     validate_ids,
     validate_multiple_choice_param,
     validate_multiple_choice_params,
@@ -53,7 +50,7 @@ def test_convert_bool_params():
         ('q', 'not a datetime', 'not a datetime'),
     ],
 )
-@patch('pyinaturalist.request_params.tzlocal', return_value=gettz('US/Pacific'))
+@patch('pyinaturalist.converters.tzlocal', return_value=gettz('US/Pacific'))
 def test_convert_datetime_params(tzlocal, param, value, expected):
     converted = convert_datetime_params({param: value})
     assert converted[param] == expected
@@ -84,20 +81,6 @@ def test_convert_pagination_params():
     params = convert_pagination_params({'per_page': 100, 'count_only': False})
     assert params['per_page'] == 100
     assert 'count_only' not in params
-
-
-def test_ensure_file_obj__file_path():
-    with NamedTemporaryFile() as temp:
-        temp.write(b'test content')
-        temp.seek(0)
-
-        file_obj = ensure_file_obj(temp.name)
-        assert file_obj.read() == b'test content'
-
-
-def test_ensure_file_obj__file_obj():
-    file_obj = BytesIO(b'test content')
-    assert ensure_file_obj(file_obj) == file_obj
 
 
 def test_get_interval_ranges__monthly():
@@ -143,7 +126,7 @@ def test_get_interval_ranges__invalid():
 
 
 def test_strip_empty_params():
-    params = strip_empty_params(TEST_PARAMS)
+    params = strip_empty_values(TEST_PARAMS)
     assert len(params) == 6
     assert 'q' not in params and 'locale' not in params
     assert 'is_active' in params and 'only_id' in params
@@ -163,8 +146,7 @@ def test_validate_ids(value, expected):
     assert validate_ids(value) == expected
 
 
-@pytest.mark.parametrize('value', ['NaN', '', None, []])
-def test_validate_ids__invalid(value):
+def test_validate_ids__invalid():
     with pytest.raises(ValueError):
         validate_ids('not a number')
 
@@ -173,7 +155,7 @@ def test_validate_ids__invalid(value):
 @patch('pyinaturalist.request_params.convert_bool_params')
 @patch('pyinaturalist.request_params.convert_datetime_params')
 @patch('pyinaturalist.request_params.convert_list_params')
-@patch('pyinaturalist.request_params.strip_empty_params')
+@patch('pyinaturalist.request_params.strip_empty_values')
 def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_strip):
     preprocess_request_params({'id': 1})
     assert all([mock_bool.called, mock_datetime.called, mock_list.called, mock_strip.called])
@@ -182,7 +164,7 @@ def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_str
 @patch('pyinaturalist.request_params.convert_bool_params')
 @patch('pyinaturalist.request_params.convert_datetime_params')
 @patch('pyinaturalist.request_params.convert_list_params')
-@patch('pyinaturalist.request_params.strip_empty_params')
+@patch('pyinaturalist.request_params.strip_empty_values')
 def test_preprocess_request_body(mock_bool, mock_datetime, mock_list, mock_strip):
     preprocess_request_body({'id': 1})
     assert all([mock_bool.called, mock_datetime.called, mock_list.called, mock_strip.called])

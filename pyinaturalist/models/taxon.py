@@ -2,9 +2,14 @@ from typing import Dict, List
 
 from attr import field, fields_dict
 
-from pyinaturalist.constants import ICONIC_EMOJI, ICONIC_TAXA_BASE_URL, INAT_BASE_URL, JsonResponse
+from pyinaturalist.constants import (
+    ICONIC_EMOJI,
+    ICONIC_TAXA_BASE_URL,
+    INAT_BASE_URL,
+    RANKS,
+    JsonResponse,
+)
 from pyinaturalist.models import BaseModel, LazyProperty, Photo, define_model, kwarg
-from pyinaturalist.request_params import RANKS
 from pyinaturalist.v1 import get_taxa_by_id
 
 

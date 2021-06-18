@@ -6,9 +6,8 @@ from unittest.mock import patch
 
 from requests import HTTPError
 
-from pyinaturalist.constants import API_V0_BASE_URL
+from pyinaturalist.constants import API_V0_BASE_URL, OBSERVATION_FORMATS
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.request_params import OBSERVATION_FORMATS
 from pyinaturalist.v0 import (
     create_observation,
     delete_observation,

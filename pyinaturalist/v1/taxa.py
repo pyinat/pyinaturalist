@@ -3,7 +3,7 @@ from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.constants import JsonResponse, MultiInt
 from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.pagination import add_paginate_all
-from pyinaturalist.request_params import translate_rank_range
+from pyinaturalist.request_params import convert_rank_range
 from pyinaturalist.v1 import get_v1
 
 
@@ -32,7 +32,7 @@ def get_taxa(**params) -> JsonResponse:
     Returns:
         Response dict containing taxon records
     """
-    params = translate_rank_range(params)
+    params = convert_rank_range(params)
     response = get_v1('taxa', params=params)
     taxa = response.json()
     taxa['results'] = convert_all_timestamps(taxa['results'])
@@ -120,6 +120,6 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
     Returns:
         Response dict containing taxon records
     """
-    params = translate_rank_range(params)
+    params = convert_rank_range(params)
     response = get_v1('taxa/autocomplete', params=params)
     return response.json()
