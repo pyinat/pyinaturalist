@@ -1,10 +1,11 @@
+# TODO: Method to preview image in Jupyter
 from typing import List, Optional, Tuple
 
 from attr import field
 
 from pyinaturalist.constants import CC_LICENSES, PHOTO_INFO_BASE_URL, PHOTO_SIZES
+from pyinaturalist.converters import format_dimensions, format_license
 from pyinaturalist.models import BaseModel, define_model, kwarg
-from pyinaturalist.response_format import format_dimensions, format_license
 
 
 @define_model

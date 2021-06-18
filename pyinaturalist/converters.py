@@ -13,7 +13,7 @@ from pyinaturalist.constants import (
     Dimensions,
     HistogramResponse,
     JsonResponse,
-    ResponseObject,
+    ResponseResult,
 )
 
 GENERIC_TIME_FIELDS = ('created_at', 'last_post_at', 'updated_at')
@@ -34,7 +34,7 @@ logger = getLogger(__name__)
 
 
 def as_geojson_feature_collection(
-    results: Iterable[ResponseObject], properties: List[str] = None
+    results: Iterable[ResponseResult], properties: List[str] = None
 ) -> Dict[str, Any]:
     """
     Convert results from an API response into a
@@ -53,7 +53,7 @@ def as_geojson_feature_collection(
     }
 
 
-def as_geojson_feature(result: ResponseObject, properties: List[str] = None) -> ResponseObject:
+def as_geojson_feature(result: ResponseResult, properties: List[str] = None) -> ResponseResult:
     """
     Convert an individual response item to a geojson Feature object, optionally with specific
     response properties included.
@@ -74,7 +74,7 @@ def as_geojson_feature(result: ResponseObject, properties: List[str] = None) -> 
 # --------------------
 
 
-def convert_all_coordinates(results: List[ResponseObject]) -> List[ResponseObject]:
+def convert_all_coordinates(results: List[ResponseResult]) -> List[ResponseResult]:
     """Convert coordinate pairs in response items from strings to floats, if valid
 
     Args:
@@ -95,7 +95,7 @@ def convert_all_place_coordinates(response: JsonResponse) -> JsonResponse:
     return response
 
 
-def convert_all_timestamps(results: List[ResponseObject]) -> List[ResponseObject]:
+def convert_all_timestamps(results: List[ResponseResult]) -> List[ResponseResult]:
     """Replace all date/time info with datetime objects, where possible"""
     results = [convert_generic_timestamps(result) for result in results]
     results = [convert_observation_timestamps(result) for result in results]
@@ -118,7 +118,7 @@ def convert_lat_long(obj: Union[Dict, List, None, str]) -> Optional[Coordinates]
         return try_float_pair(obj.get('latitude'), obj.get('longitude'))
 
 
-def convert_lat_long_dict(result: ResponseObject) -> ResponseObject:
+def convert_lat_long_dict(result: ResponseResult) -> ResponseResult:
     """Convert a coordinate pair dict within a response to floats, if valid"""
     if 'latitude' in result and 'longitude' in result:
         result['latitude'] = try_float(result['latitude'])
@@ -126,7 +126,7 @@ def convert_lat_long_dict(result: ResponseObject) -> ResponseObject:
     return result
 
 
-def convert_lat_long_list(result: ResponseObject):
+def convert_lat_long_list(result: ResponseResult):
     """Convert a coordinate pairs in a response item from strings to floats, if valid"""
     # Format inner record if present, e.g. for search results
     if 'record' in result:
@@ -138,7 +138,7 @@ def convert_lat_long_list(result: ResponseObject):
     return result
 
 
-def convert_generic_timestamps(result: ResponseObject) -> ResponseObject:
+def convert_generic_timestamps(result: ResponseResult) -> ResponseResult:
     """Replace generic created/updated info that's returned by multiple endpoints.
     **Note:** Compared to observation timestamps, these are generally more reliable. These seem to
     be consistently in ISO 8601 format.
@@ -156,7 +156,7 @@ def convert_generic_timestamps(result: ResponseObject) -> ResponseObject:
 
 
 # TODO: pick either this or attrs version
-def convert_observation_timestamps(result: ResponseObject) -> ResponseObject:
+def convert_observation_timestamps(result: ResponseResult) -> ResponseResult:
     """Replace observation date/time info with datetime objects"""
     if 'created_at_details' not in result and 'observed_on_string' not in result:
         return result
@@ -319,7 +319,7 @@ def format_license(value: str) -> str:
     return str(value).upper().replace('_', '-')
 
 
-def flatten_nested_params(observation: ResponseObject) -> ResponseObject:
+def flatten_nested_params(observation: ResponseResult) -> ResponseResult:
     """Extract some nested observation properties to include at the top level;
      this makes it easier to specify these as properties for
      :py:func:`.as_as_geojson_feature_collection`.

@@ -3,8 +3,8 @@ from typing import Dict, List, Union
 from attr import field
 
 from pyinaturalist.constants import INAT_BASE_URL, Coordinates, GeoJson, ResponseOrFile
+from pyinaturalist.converters import convert_lat_long
 from pyinaturalist.models import BaseModel, define_model, kwarg, load_json
-from pyinaturalist.response_format import convert_lat_long
 
 
 def convert_optional_lat_long(obj: Union[Dict, List, None, str]):

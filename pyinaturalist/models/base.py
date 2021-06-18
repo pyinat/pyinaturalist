@@ -9,7 +9,7 @@ from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar, Union
 from attr import Attribute, asdict, define, field, fields_dict
 
 from pyinaturalist.constants import AnyFile, JsonResponse, ResponseOrFile
-from pyinaturalist.response_format import convert_lat_long, try_datetime
+from pyinaturalist.converters import convert_lat_long, try_datetime
 
 FIELD_DEFAULTS = {
     'default': None,
@@ -93,8 +93,11 @@ class BaseModel:
         try:
             from rich.box import SIMPLE_HEAVY
             from rich.table import Column, Table
-        # If rich isn't installed, just return a basic list of stringified objects
-        except ImportError:
+
+            objects[0].row
+        # If rich isn't installed or the model doesn't have a table format defined,
+        # just return a basic list of stringified objects
+        except (ImportError, NotImplementedError):
             return '\n'.join([str(obj) for obj in objects])
 
         columns = [Column(header, style=style) for header, style in cls.headers.items()]

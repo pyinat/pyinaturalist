@@ -3,6 +3,7 @@ from typing import List, Union
 
 from attr import field
 
+from pyinaturalist.converters import safe_split, try_int_or_float
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
@@ -12,7 +13,6 @@ from pyinaturalist.models import (
     define_model,
     kwarg,
 )
-from pyinaturalist.response_format import safe_split, try_int_or_float
 
 # Mappings from observation field value datatypes to python datatypes
 OFV_DATATYPES = {

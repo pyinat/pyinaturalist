@@ -3,9 +3,9 @@ from typing import Any
 from pyinaturalist import api_docs as docs
 from pyinaturalist.api_requests import get, put
 from pyinaturalist.constants import API_V0_BASE_URL, JsonResponse
+from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.pagination import add_paginate_all
-from pyinaturalist.response_format import convert_all_timestamps
 
 
 @document_request_params([docs._search_query, docs._pagination])

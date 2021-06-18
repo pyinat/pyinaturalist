@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 from dateutil.tz import tzoffset
 
-from pyinaturalist.response_format import (
+from pyinaturalist.converters import (
     convert_lat_long,
     convert_observation_timestamps,
     convert_offset,

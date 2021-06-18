@@ -1,9 +1,9 @@
 from pyinaturalist import api_docs as docs
 from pyinaturalist.constants import JsonResponse, MultiInt
+from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.pagination import add_paginate_all
 from pyinaturalist.request_params import translate_rank_range
-from pyinaturalist.response_format import convert_all_timestamps
 from pyinaturalist.v1 import get_v1
 
 

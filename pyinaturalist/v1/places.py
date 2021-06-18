@@ -1,8 +1,8 @@
 from pyinaturalist import api_docs as docs
 from pyinaturalist.constants import JsonResponse, MultiInt
+from pyinaturalist.converters import convert_all_coordinates, convert_all_place_coordinates
 from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.pagination import add_paginate_all
-from pyinaturalist.response_format import convert_all_coordinates, convert_all_place_coordinates
 from pyinaturalist.v1 import get_v1
 
 

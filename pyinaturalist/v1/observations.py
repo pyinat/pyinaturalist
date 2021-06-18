@@ -7,17 +7,17 @@ from pyinaturalist.constants import (
     IntOrStr,
     JsonResponse,
 )
-from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.forge_utils import document_request_params
-from pyinaturalist.pagination import add_paginate_all
-from pyinaturalist.request_params import validate_multiple_choice_param
-from pyinaturalist.response_format import (
+from pyinaturalist.converters import (
     as_geojson_feature_collection,
     convert_all_coordinates,
     convert_all_timestamps,
     convert_observation_timestamps,
     format_histogram,
 )
+from pyinaturalist.exceptions import ObservationNotFound
+from pyinaturalist.forge_utils import document_request_params
+from pyinaturalist.pagination import add_paginate_all
+from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import get_v1
 
 # Basic observation attributes to include by default in geojson responses

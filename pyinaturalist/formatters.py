@@ -13,7 +13,7 @@ from functools import partial
 from logging import getLogger
 from typing import Any, Callable, List, Sequence, Type
 
-from pyinaturalist.constants import ResponseObject, ResponseOrObject
+from pyinaturalist.constants import ResponseOrResult, ResponseResult
 from pyinaturalist.models import (
     BaseModel,
     Identification,
@@ -40,27 +40,27 @@ __all__ = [
 logger = getLogger(__name__)
 
 
-def format_controlled_terms(terms: ResponseOrObject, align: bool = False) -> str:
+def format_controlled_terms(terms: ResponseOrResult, align: bool = False) -> str:
     """Format controlled term results into a condensed list of terms and values"""
     return _format_objects(terms, align, _format_controlled_term)
 
 
-def _format_controlled_term(term: ResponseObject, **kwargs) -> str:
+def _format_controlled_term(term: ResponseResult, **kwargs) -> str:
     term_values = [f'    {value["id"]}: {value["label"]}' for value in term['values']]
     return f'{term["id"]}: {term["label"]}\n' + '\n'.join(term_values)
 
 
-def format_species_counts(species_counts: ResponseOrObject, align: bool = False) -> str:
+def format_species_counts(species_counts: ResponseOrResult, align: bool = False) -> str:
     """Format observation species counts into a condensed list of names and # of observations"""
     return _format_objects(species_counts, align, _format_species_count)
 
 
-def _format_species_count(species_count: ResponseObject, align: bool = False) -> str:
+def _format_species_count(species_count: ResponseResult, align: bool = False) -> str:
     taxon = format_taxa(species_count['taxon'])
     return f'{taxon}: {species_count["count"]}'
 
 
-def simplify_observations(observations: ResponseOrObject, align: bool = False) -> List[ResponseObject]:
+def simplify_observations(observations: ResponseOrResult, align: bool = False) -> List[ResponseResult]:
     """Flatten out some nested data structures within observation records:
 
     * annotations
@@ -89,7 +89,7 @@ def _simplify_observation(obs):
     return obs
 
 
-def _ensure_list(obj: ResponseOrObject) -> List:
+def _ensure_list(obj: ResponseOrResult) -> List:
     if isinstance(obj, dict) and 'results' in obj:
         obj = obj['results']
     if isinstance(obj, Sequence):
@@ -98,7 +98,7 @@ def _ensure_list(obj: ResponseOrObject) -> List:
         return [obj]
 
 
-def _format_objects(obj: ResponseOrObject, align: bool, format_func: Callable):
+def _format_objects(obj: ResponseOrResult, align: bool, format_func: Callable):
     """Generic function to format a response, object, or list of objects"""
     obj_strings = [format_func(t, align=align) for t in _ensure_list(obj)]
     return '\n'.join(obj_strings)

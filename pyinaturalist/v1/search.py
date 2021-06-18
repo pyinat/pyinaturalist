@@ -1,7 +1,7 @@
 from pyinaturalist import api_docs as docs
 from pyinaturalist.constants import JsonResponse
+from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps
 from pyinaturalist.forge_utils import document_request_params
-from pyinaturalist.response_format import convert_all_coordinates, convert_all_timestamps
 from pyinaturalist.v1 import get_v1
 
 

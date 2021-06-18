@@ -20,27 +20,27 @@ from pyinaturalist.v0 import (
 from test.conftest import load_sample_data
 
 
-def get_observations_response(response_format):
-    response_format = response_format.replace('widget', 'js')
-    return load_sample_data(f'get_observations.{response_format}')
+def get_observations_response(converters):
+    converters = converters.replace('widget', 'js')
+    return load_sample_data(f'get_observations.{converters}')
 
 
-@pytest.mark.parametrize('response_format', OBSERVATION_FORMATS)
-def test_get_observations(response_format, requests_mock):
+@pytest.mark.parametrize('converters', OBSERVATION_FORMATS)
+def test_get_observations(converters, requests_mock):
     """Test all supported observation data formats"""
-    mock_response = get_observations_response(response_format)
-    key = 'json' if response_format == 'json' else 'text'
+    mock_response = get_observations_response(converters)
+    key = 'json' if converters == 'json' else 'text'
 
     requests_mock.get(
-        f'{API_V0_BASE_URL}/observations.{response_format}',
+        f'{API_V0_BASE_URL}/observations.{converters}',
         status_code=200,
         **{key: mock_response},
     )
 
-    observations = get_observations(taxon_id=493595, response_format=response_format)
+    observations = get_observations(taxon_id=493595, converters=converters)
 
     # For JSON format, ensure type conversions were performed
-    if response_format == 'json':
+    if converters == 'json':
         assert observations[0]['latitude'] == 50.646894
         assert observations[0]['longitude'] == 4.360086
         assert observations[0]['created_at'] == datetime(2018, 9, 5, 12, 31, 8, 48000, tzinfo=tzutc())
@@ -49,10 +49,10 @@ def test_get_observations(response_format, requests_mock):
         assert observations == mock_response
 
 
-@pytest.mark.parametrize('response_format', ['geojson', 'yaml'])
-def test_get_observations__invalid_format(response_format):
+@pytest.mark.parametrize('converters', ['geojson', 'yaml'])
+def test_get_observations__invalid_format(converters):
     with pytest.raises(ValueError):
-        get_observations(taxon_id=493595, response_format=response_format)
+        get_observations(taxon_id=493595, converters=converters)
 
 
 def test_create_observation(requests_mock):

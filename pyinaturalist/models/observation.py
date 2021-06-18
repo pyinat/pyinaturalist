@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 from attr import define, field
 
 from pyinaturalist.constants import Coordinates
+from pyinaturalist.converters import convert_observation_timestamp
 from pyinaturalist.models import (
     Annotation,
     BaseModel,
@@ -21,7 +22,6 @@ from pyinaturalist.models import (
     datetime_now_attr,
     kwarg,
 )
-from pyinaturalist.response_format import convert_observation_timestamp
 from pyinaturalist.v1 import get_observation
 
 
