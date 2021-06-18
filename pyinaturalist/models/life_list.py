@@ -1,10 +1,10 @@
 from itertools import groupby
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from attr import field
 
-from pyinaturalist.constants import ResponseOrFile
-from pyinaturalist.models import BaseModel, Taxon, define_model, kwarg, load_json
+from pyinaturalist.constants import JsonResponse
+from pyinaturalist.models import BaseModel, Taxon, define_model, kwarg
 
 
 @define_model
@@ -37,11 +37,10 @@ class LifeList(BaseModel):
     _taxon_counts: Dict[int, int] = field(default=None, init=False, repr=False)
 
     @classmethod
-    def from_json(cls, value: ResponseOrFile, user_id: int = None, **kwargs) -> Optional['LifeList']:
-        json_value = load_json(value)
-        count_without_taxon = json_value.get('count_without_taxon', 0)
-        if 'results' in json_value:
-            json_value = json_value['results']
+    def from_json(cls, value: JsonResponse, user_id: int = None, **kwargs) -> BaseModel:
+        count_without_taxon = value.get('count_without_taxon', 0)
+        if 'results' in value:
+            value = value['results']
 
         life_list_json = {'taxa': value, 'user_id': user_id, 'count_without_taxon': count_without_taxon}
         return super(LifeList, cls).from_json(life_list_json)  # type: ignore

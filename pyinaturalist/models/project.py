@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 
 from attr import field
 
-from pyinaturalist.constants import INAT_BASE_URL, Coordinates, ResponseOrFile
+from pyinaturalist.constants import INAT_BASE_URL, Coordinates, JsonResponse
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
@@ -14,7 +14,6 @@ from pyinaturalist.models import (
     define_model,
     kwarg,
 )
-from pyinaturalist.models.base import load_json
 from pyinaturalist.models.observation_field import ObservationField
 
 
@@ -39,13 +38,12 @@ class ProjectObservationField(ObservationField):
     required: bool = kwarg
 
     @classmethod
-    def from_json(cls, value: ResponseOrFile, **kwargs) -> Optional['ProjectObservationField']:
+    def from_json(cls, value: JsonResponse, **kwargs) -> 'ProjectObservationField':
         """Flatten out nested values"""
-        json_value = load_json(value)
-        obs_field = json_value['observation_field']
-        obs_field['project_observation_field_id'] = json_value['id']
-        obs_field['position'] = json_value['position']
-        obs_field['required'] = json_value['required']
+        obs_field = value['observation_field']
+        obs_field['project_observation_field_id'] = value['id']
+        obs_field['position'] = value['position']
+        obs_field['required'] = value['required']
         return super(ProjectObservationField, cls).from_json(obs_field, **kwargs)  # type: ignore
 
 
@@ -58,13 +56,12 @@ class ProjectUser(User):
     role: str = kwarg
 
     @classmethod
-    def from_json(cls, value: ResponseOrFile, **kwargs) -> Optional['ProjectUser']:
+    def from_json(cls, value: JsonResponse, **kwargs) -> 'ProjectUser':
         """Flatten out nested values"""
-        json_value = load_json(value)
-        user = json_value['user']
-        user['project_id'] = json_value['project_id']
-        user['project_user_id'] = json_value['id']
-        user['role'] = json_value['role']
+        user = value['user']
+        user['project_id'] = value['project_id']
+        user['project_user_id'] = value['id']
+        user['role'] = value['role']
         return super(ProjectUser, cls).from_json(user, **kwargs)  # type: ignore
 
 

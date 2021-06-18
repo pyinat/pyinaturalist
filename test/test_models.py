@@ -55,22 +55,21 @@ search_result_json_user = search_results_json[3]
 # --------------------
 
 
+# TODO
+def test_from_json():
+    pass
+
+
 def test_from_json_file():
-    obs = Observation.from_json(sample_data_path('get_observation.json'))
-    assert isinstance(obs, Observation)
-    assert obs.id == 16227955
-
-
-def test_from_json_list_file():
-    obs_list = Observation.from_json_list(sample_data_path('get_observations_node_page1.json'))
+    obs_list = Observation.from_json_file(sample_data_path('get_observations_node_page1.json'))
     assert isinstance(obs_list, list)
     assert isinstance(obs_list[0], Observation)
     assert obs_list[0].id == 57754375
 
 
-def test_from_json_file__empty():
-    assert Observation.from_json(None) is None
-    assert Observation.from_json_list(None) == []
+# TODO
+def test_from_json_list():
+    pass
 
 
 # Annotations

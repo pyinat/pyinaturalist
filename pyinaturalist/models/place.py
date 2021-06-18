@@ -2,9 +2,10 @@ from typing import Dict, List, Union
 
 from attr import field
 
-from pyinaturalist.constants import INAT_BASE_URL, Coordinates, GeoJson, ResponseOrFile
+from pyinaturalist.constants import INAT_BASE_URL, Coordinates, GeoJson, JsonResponse, ResponseOrResults
 from pyinaturalist.converters import convert_lat_long
-from pyinaturalist.models import BaseModel, define_model, kwarg, load_json
+from pyinaturalist.models import BaseModel, define_model, kwarg
+from pyinaturalist.models.base import ensure_list
 
 
 def convert_optional_lat_long(obj: Union[Dict, List, None, str]):
@@ -27,15 +28,16 @@ class Place(BaseModel):
     slug: str = kwarg
 
     @classmethod
-    def from_json(cls, value: ResponseOrFile, category: str = None, **kwargs):
-        json_value = load_json(value)
-        json_value.setdefault('category', category)
-        return super(Place, cls).from_json(json_value)
+    def from_json(cls, value: JsonResponse, category: str = None, **kwargs) -> BaseModel:
+        value.setdefault('category', category)
+        return super(Place, cls).from_json(value)
 
     @classmethod
-    def from_json_list(cls, value: Union[ResponseOrFile, List[ResponseOrFile]], **kwargs):
+    def from_json_list(cls, value: ResponseOrResults, **kwargs) -> List[BaseModel]:
         """Optionally use results from /places/nearby to set Place.category"""
-        json_value = load_json(value)  # type: ignore
+        json_value = dict(ensure_list(value)[0])
+        if 'results' in json_value:
+            json_value = json_value['results']
 
         if 'standard' in json_value and 'community' in json_value:
             places = [cls.from_json(item, category='standard') for item in json_value['standard']]

@@ -6,16 +6,17 @@ from typing import Callable
 from attr import define
 
 from pyinaturalist.models.base import (
+    ModelObjects,
+    ResponseOrObject,
+    ResponseOrObjects,
     BaseModel,
     datetime_attr,
     datetime_now_attr,
     coordinate_pair,
-    get_model_fields,
     kwarg,
     load_json,
-    make_attribute,
 )
-from pyinaturalist.models.lazy_property import LazyProperty, add_lazy_attrs
+from pyinaturalist.models.lazy_property import LazyProperty, add_lazy_attrs, get_model_fields
 
 # attrs class decorator with the most commonly used options
 define_model: Callable = define(auto_attribs=False, field_transformer=add_lazy_attrs)

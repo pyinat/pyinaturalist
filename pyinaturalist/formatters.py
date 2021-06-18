@@ -13,17 +13,25 @@ from functools import partial
 from logging import getLogger
 from typing import Any, Callable, List, Sequence, Type
 
-from pyinaturalist.constants import ResponseOrResult, ResponseResult
+from pyinaturalist.constants import ResponseOrResults, ResponseResult
 from pyinaturalist.models import (
     BaseModel,
     Identification,
+    ModelObjects,
     Observation,
     Place,
     Project,
+    ResponseOrObjects,
     SearchResult,
     Taxon,
     User,
 )
+
+# Use rich for pretty-printing, if installed
+try:
+    from rich import print
+except ImportError:
+    pass
 
 __all__ = [
     'format_controlled_terms',
@@ -40,7 +48,13 @@ __all__ = [
 logger = getLogger(__name__)
 
 
-def format_controlled_terms(terms: ResponseOrResult, align: bool = False) -> str:
+def pprint(objects: ModelObjects):
+    objects = _ensure_list(objects)
+    cls = objects[0].__class__
+    print(cls.to_table(objects))
+
+
+def format_controlled_terms(terms: ResponseOrResults, align: bool = False) -> str:
     """Format controlled term results into a condensed list of terms and values"""
     return _format_objects(terms, align, _format_controlled_term)
 
@@ -50,7 +64,7 @@ def _format_controlled_term(term: ResponseResult, **kwargs) -> str:
     return f'{term["id"]}: {term["label"]}\n' + '\n'.join(term_values)
 
 
-def format_species_counts(species_counts: ResponseOrResult, align: bool = False) -> str:
+def format_species_counts(species_counts: ResponseOrResults, align: bool = False) -> str:
     """Format observation species counts into a condensed list of names and # of observations"""
     return _format_objects(species_counts, align, _format_species_count)
 
@@ -60,7 +74,7 @@ def _format_species_count(species_count: ResponseResult, align: bool = False) ->
     return f'{taxon}: {species_count["count"]}'
 
 
-def simplify_observations(observations: ResponseOrResult, align: bool = False) -> List[ResponseResult]:
+def simplify_observations(observations: ResponseOrResults, align: bool = False) -> List[ResponseResult]:
     """Flatten out some nested data structures within observation records:
 
     * annotations
@@ -89,7 +103,7 @@ def _simplify_observation(obs):
     return obs
 
 
-def _ensure_list(obj: ResponseOrResult) -> List:
+def _ensure_list(obj: ResponseOrObjects) -> List:
     if isinstance(obj, dict) and 'results' in obj:
         obj = obj['results']
     if isinstance(obj, Sequence):
@@ -98,15 +112,15 @@ def _ensure_list(obj: ResponseOrResult) -> List:
         return [obj]
 
 
-def _format_objects(obj: ResponseOrResult, align: bool, format_func: Callable):
-    """Generic function to format a response, object, or list of objects"""
+def _format_objects(obj: ResponseOrResults, align: bool, format_func: Callable):
+    """Generic function to format a response, result, or list of results"""
     obj_strings = [format_func(t, align=align) for t in _ensure_list(obj)]
     return '\n'.join(obj_strings)
 
 
-def _format_model_objects(results: Any, cls: Type[BaseModel], **kwargs):
+def _format_model_objects(obj: ResponseOrResults, cls: Type[BaseModel], **kwargs):
     """Generic function to format a response, object, or list of objects"""
-    objects = cls.from_json_list(results)
+    objects = cls.from_json_list(obj)
     return '\n'.join([str(obj) for obj in objects])
 
 

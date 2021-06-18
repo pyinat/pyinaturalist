@@ -1,25 +1,23 @@
-"""Base class and utilities for model objects"""
+"""Base class and utilities for model objects.
+
+Note: when using classmethods as converters, mypy will raise a false positive error, hence all the
+``type: ignore`` statements in BaseModel subclasses. See:
+https://github.com/python/mypy/issues/6172
+https://github.com/python/mypy/issues/7912
+"""
+# TODO: More refactoring and tests for load_json, from_json, and from_json_list
 import json
 from datetime import date, datetime, timezone
 from logging import getLogger
 from os.path import expanduser
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Type, TypeVar, Union
+from typing import Any, Dict, Iterable, List, Sequence, Type, TypeVar, Union
 
-from attr import Attribute, asdict, define, field, fields_dict
+from attr import asdict, define, field, fields_dict
 
-from pyinaturalist.constants import AnyFile, JsonResponse, ResponseOrFile
+from pyinaturalist.constants import AnyFile, JsonResponse, ResponseOrFile, ResponseOrResults
 from pyinaturalist.converters import convert_lat_long, try_datetime
 
-FIELD_DEFAULTS = {
-    'default': None,
-    'validator': None,
-    'repr': True,
-    'cmp': None,
-    'hash': None,
-    'init': False,
-    'inherited': False,
-}
 T = TypeVar('T', bound='BaseModel')
 logger = getLogger(__name__)
 
@@ -43,60 +41,40 @@ class BaseModel:
     temp_attrs: List[str] = []
     headers: Dict[str, str] = {}
 
-    # Note: when using classmethods as converters, mypy will raise a false positive error, hence all
-    # the `type: ignore` statements. See:
-    # https://github.com/python/mypy/issues/6172
-    # https://github.com/python/mypy/issues/7912
     @classmethod
-    def from_json(cls: Type[T], value: ResponseOrFile, **kwargs) -> Optional['BaseModel']:
-        """Create a single model object from a JSON path, file-like object, or API response object.
-        If multiple objects are present in JSON, only the first will be used.
-        Omits invalid fields and ``None``, so we use our default factories instead (e.g. for empty
-        lists).
+    def from_json(cls: Type[T], value: JsonResponse, **kwargs) -> 'BaseModel':
+        """Initialize a single model object from an API response or response result.
+        Omits any invalid fields and ``None`` values, so we use our default factories instead
+        (e.g. for empty dicts and lists).
         """
-        if value is None or isinstance(value, BaseModel):
-            return value
-        json_value = value if isinstance(value, dict) else load_json(value)
-        if 'results' in json_value:
-            json_value = json_value['results'][0]
-
         attr_names = [a.lstrip('_') for a in fields_dict(cls)]
         if cls.temp_attrs:
             attr_names.extend(cls.temp_attrs)
-        valid_json = {k: v for k, v in json_value.items() if k in attr_names and v is not None}
+        valid_json = {k: v for k, v in value.items() if k in attr_names and v is not None}
         return cls(**valid_json, **kwargs)  # type: ignore
 
     @classmethod
-    def from_json_list(
-        cls: Type[T], value: Union[ResponseOrFile, List[ResponseOrFile]]
-    ) -> List['BaseModel']:
-        """Initialize from a JSON path, file-like object, string, or API response"""
-        if not value:
-            return []
-        # Raw response
-        elif isinstance(value, dict) and 'results' in value:
-            value = value['results']
-        # Single response record or model object
-        elif isinstance(value, (BaseModel, dict)):
-            value = [value]  # type: ignore
-        # JSON string or file
-        if not isinstance(value, list):
-            return cls.from_json_list(load_json(value))  # type: ignore
-        # Otherwise, it should be a list of records ready to load
-        else:
-            obj_list = [cls.from_json(item) for item in value]
-            return [obj for obj in obj_list if obj]
+    def from_json_file(cls: Type[T], value: AnyFile) -> List['BaseModel']:
+        """Initialize a collection of model objects from a JSON string, file path, or file-like object"""
+        return cls.from_json_list(load_json(value))
+
+    @classmethod
+    def from_json_list(cls: Type[T], value: ResponseOrResults) -> List['BaseModel']:
+        """Initialize a collection of model objects from a JSON path, file-like object, string, or
+        API response
+        """
+        return [cls.from_json(item) for item in ensure_list(value)]
 
     @classmethod
     def to_table(cls, objects: List['BaseModel']):
-        """Format a list of model objects as a table"""
+        """Format a list of model objects as a table. If ``rich`` isn't installed or the model
+        doesn't have a table format defined, just return a basic list of stringified objects.
+        """
         try:
             from rich.box import SIMPLE_HEAVY
             from rich.table import Column, Table
 
             objects[0].row
-        # If rich isn't installed or the model doesn't have a table format defined,
-        # just return a basic list of stringified objects
         except (ImportError, NotImplementedError):
             return '\n'.join([str(obj) for obj in objects])
 
@@ -116,36 +94,56 @@ class BaseModel:
         return asdict(self)
 
 
-def get_model_fields(obj: Any) -> Iterable[Attribute]:
-    """Add placeholder attributes for lazy-loaded model properties so they get picked up by rich's
-    pretty-printer. Does not change behavior for anything except :py:class:`.BaseModel` subclasses.
-    """
-    from pyinaturalist.models import LazyProperty
-
-    attrs = list(obj.__attrs_attrs__)
-    if isinstance(obj, BaseModel):
-        prop_names = [k for k, v in type(obj).__dict__.items() if isinstance(v, LazyProperty)]
-        attrs += [make_attribute(p) for p in prop_names]
-    return attrs
+# Type aliases
+ModelObjects = Union[BaseModel, Iterable[BaseModel]]
+ResponseOrObject = Union[BaseModel, JsonResponse]
+ResponseOrObjects = Union[ModelObjects, ResponseOrResults]
 
 
-def load_json(value: Union[JsonResponse, AnyFile]):
-    """Load JSON from a file path or file-like object"""
-    if isinstance(value, (dict, list)):
-        return value
-    if isinstance(value, (Path, str)):
-        with open(expanduser(str(value))) as f:
-            return json.load(f)
+# TODO: consolidate with formatters._ensure_list
+def ensure_list(value: Any) -> List[Any]:
+    if not value:
+        return []
+    if isinstance(value, dict) and 'results' in value:
+        value = value['results']
+    if isinstance(value, Sequence):
+        return list(value)
     else:
-        return json.load(value)
+        return [value]
 
 
-def make_attribute(name, **kwargs):
-    kwargs = {**FIELD_DEFAULTS, **kwargs}
-    return Attribute(name=name, **kwargs)
+def ensure_model(cls: Type[T], value: ResponseOrObject) -> BaseModel:
+    if not value:
+        return cls()
+    elif isinstance(value, BaseModel):
+        return value
+    else:
+        return cls.from_json(value)
+
+
+def ensure_model_list(cls: Type[T], values: ResponseOrObjects) -> List[BaseModel]:
+    return [ensure_model(cls, obj) for obj in ensure_list(values)]
+
+
+def load_json(value: ResponseOrFile) -> ResponseOrResults:
+    """Load a JSON string, file path, or file-like object"""
+    if not value:
+        return {}
+    if isinstance(value, (dict, list)):
+        json_value = value
+    elif isinstance(value, (Path, str)):
+        with open(expanduser(str(value))) as f:
+            json_value = json.load(f)
+    else:
+        json_value = json.load(value)  # type: ignore
+
+    if 'results' in json_value:
+        json_value = json_value['results']
+    return json_value
 
 
 def _str(value: Any):
+    """Display datetimes in short format when shown in table output"""
     if isinstance(value, (date, datetime)):
         return value.strftime('%b %d, %Y')
     return str(value)
