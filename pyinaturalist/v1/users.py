@@ -1,9 +1,9 @@
 from logging import getLogger
 
-from pyinaturalist import api_docs as docs
+from pyinaturalist.api_docs import document_request_params
+from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.constants import JsonResponse
 from pyinaturalist.converters import convert_all_timestamps, convert_generic_timestamps
-from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.v1 import get_v1
 
 logger = getLogger(__name__)

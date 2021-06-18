@@ -1,6 +1,7 @@
 from typing import List
 
-from pyinaturalist import api_docs as docs
+from pyinaturalist.api_docs import document_request_params
+from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.constants import (
     NODE_OBS_ORDER_BY_PROPERTIES,
     HistogramResponse,
@@ -15,7 +16,6 @@ from pyinaturalist.converters import (
     format_histogram,
 )
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.forge_utils import document_request_params
 from pyinaturalist.pagination import add_paginate_all
 from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import get_v1
