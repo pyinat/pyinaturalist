@@ -1,5 +1,3 @@
-from typing import List
-
 from pyinaturalist.api_docs import document_request_params
 from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.constants import (
@@ -9,7 +7,6 @@ from pyinaturalist.constants import (
     JsonResponse,
 )
 from pyinaturalist.converters import (
-    as_geojson_feature_collection,
     convert_all_coordinates,
     convert_all_timestamps,
     convert_observation_timestamps,
@@ -19,19 +16,6 @@ from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.pagination import add_paginate_all
 from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import get_v1
-
-# Basic observation attributes to include by default in geojson responses
-DEFAULT_OBSERVATION_ATTRS = [
-    'id',
-    'photo_url',
-    'positional_accuracy',
-    'quality_grade',
-    'taxon_id',
-    'taxon_name',
-    'taxon_common_name',
-    'time_observed_at',
-    'uri',
-]
 
 
 def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse:
@@ -194,34 +178,6 @@ def get_observation_species_counts(**params) -> JsonResponse:
     """
     response = get_v1('observations/species_counts', params=params)
     return response.json()
-
-
-# TODO: Deprecate this and move to pyinaturalist-convert
-@document_request_params([*docs._get_observations, docs._geojson_properties])
-def get_geojson_observations(properties: List[str] = None, **params) -> JsonResponse:
-    """Get all observation results combined into a GeoJSON ``FeatureCollection``.
-    By default this includes some basic observation properties as GeoJSON ``Feature`` properties.
-    The ``properties`` argument can be used to override these defaults.
-
-    Example:
-        >>> get_geojson_observations(observation_id=16227955, properties=['photo_url'])
-
-        .. admonition:: Example Response
-            :class: toggle
-
-            .. literalinclude:: ../sample_data/get_observations.geojson
-                :language: JSON
-
-    Returns:
-        A ``FeatureCollection`` containing observation results as ``Feature`` dicts.
-    """
-    params['mappable'] = True
-    params['page'] = 'all'
-    response = get_observations(**params)
-    return as_geojson_feature_collection(
-        response['results'],
-        properties=properties if properties is not None else DEFAULT_OBSERVATION_ATTRS,
-    )
 
 
 @document_request_params([*docs._get_observations, docs._pagination])

@@ -1,11 +1,10 @@
-""" Helper functions for formatting API responses """
-# TODO: Should most formatting/converting be handled by attrs converters?
+"""Type conversion utilities"""
 from datetime import datetime, timedelta
 from dateutil.parser import UnknownTimezoneWarning  # type: ignore  # (missing from type stubs)
 from dateutil.parser import parse as parse_date
 from dateutil.tz import tzoffset
 from logging import getLogger
-from typing import Any, Dict, Iterable, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 from warnings import catch_warnings, simplefilter
 
 from pyinaturalist.constants import (
@@ -27,47 +26,6 @@ OBSERVATION_TIME_FIELDS = (
     'time_zone_offset',
 )
 logger = getLogger(__name__)
-
-
-# GeoJSON conversion
-# --------------------
-
-
-def as_geojson_feature_collection(
-    results: Iterable[ResponseResult], properties: List[str] = None
-) -> Dict[str, Any]:
-    """
-    Convert results from an API response into a
-    `geojson FeatureCollection <https://tools.ietf.org/html/rfc7946#section-3.3>`_ object.
-    This is currently only used for observations, but could be used for any other responses with
-    geospatial info.
-
-    Args:
-        results: List of results from API response
-        properties: Whitelist of specific properties to include
-    """
-    results = [flatten_nested_params(obs) for obs in results]
-    return {
-        'type': 'FeatureCollection',
-        'features': [as_geojson_feature(record, properties) for record in results],
-    }
-
-
-def as_geojson_feature(result: ResponseResult, properties: List[str] = None) -> ResponseResult:
-    """
-    Convert an individual response item to a geojson Feature object, optionally with specific
-    response properties included.
-
-    Args:
-        result: A single response item
-        properties: Whitelist of specific properties to include
-    """
-    result['geojson']['coordinates'] = [float(i) for i in result['geojson']['coordinates']]
-    return {
-        'type': 'Feature',
-        'geometry': result['geojson'],
-        'properties': {k: result.get(k) for k in properties or []},
-    }
 
 
 # Wrapper functions to apply conversions to all response objects
@@ -317,24 +275,6 @@ def format_dimensions(dimensions: Union[Dict[str, int], Dimensions]) -> Dimensio
 
 def format_license(value: str) -> str:
     return str(value).upper().replace('_', '-')
-
-
-def flatten_nested_params(observation: ResponseResult) -> ResponseResult:
-    """Extract some nested observation properties to include at the top level;
-     this makes it easier to specify these as properties for
-     :py:func:`.as_as_geojson_feature_collection`.
-
-    Args:
-        observation: A single observation result
-    """
-    taxon = observation.get('taxon', {})
-    photos = observation.get('photos', [{}])
-    observation['taxon_id'] = taxon.get('id')
-    observation['taxon_name'] = taxon.get('name')
-    observation['taxon_rank'] = taxon.get('rank')
-    observation['taxon_common_name'] = taxon.get('preferred_common_name')
-    observation['photo_url'] = photos[0].get('url')
-    return observation
 
 
 def format_histogram(response: JsonResponse) -> HistogramResponse:
