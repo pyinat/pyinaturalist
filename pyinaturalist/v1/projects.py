@@ -28,7 +28,7 @@ def get_projects(**params) -> JsonResponse:
 
         Show basic info for projects in response:
 
-        >>> print(format_projects(response, align=True))
+        >>> pprint(response)
         [8291    ] PNW Invasive Plant EDDR
         [19200   ] King County (WA) Noxious and Invasive Weeds
         [102925  ] Keechelus/Kachess Invasive Plants
@@ -62,7 +62,7 @@ def get_projects_by_id(
     Example:
 
         >>> response = get_projects_by_id([8348, 6432])
-        >>> print(format_projects(response))
+        >>> pprint(response)
         [8348] Tucson High Native and Invasive Species Inventory
         [6432] CBWN Invasive Plants
 

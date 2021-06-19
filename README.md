@@ -130,7 +130,7 @@ token = get_access_token(
 )
 ```
 See
-[Authentication](https://pyinaturalist.readthedocs.io/en/latest/general_usage.html#authentication)
+[Authentication](https://pyinaturalist.readthedocs.io/en/latest/user_guide.html#authentication)
 for additional authentication options, including environment variables, keyrings, and password managers.
 
 Now we can [create a new observation](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.rest_api.html#pyinaturalist.rest_api.create_observation):
@@ -227,8 +227,8 @@ Example usage:
 ## Next Steps
 For more information, see:
 
-* [General Usage](https://pyinaturalist.readthedocs.io/en/latest/general_usage.html):
-  general features that apply to most endpoints
+* [User Guide](https://pyinaturalist.readthedocs.io/en/latest/user_guide.html):
+  introduction and general features that apply to most endpoints
 * [Endpoint Summary](https://pyinaturalist.readthedocs.io/en/latest/endpoints.html):
   a complete list of endpoints wrapped by pyinaturalist
 * [Examples](https://pyinaturalist.readthedocs.io/en/stable/examples.html):

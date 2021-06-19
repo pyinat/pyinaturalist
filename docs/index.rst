@@ -14,7 +14,7 @@ Contents
 .. toctree::
     :maxdepth: 2
 
-    general_usage
+    user_guide
     endpoints
     examples
     reference

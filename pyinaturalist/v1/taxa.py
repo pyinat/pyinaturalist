@@ -17,7 +17,7 @@ def get_taxa(**params) -> JsonResponse:
     Example:
 
         >>> response = get_taxa(q='vespi', rank=['genus', 'family'])
-        >>> print(format_taxa(response))
+        >>> pprint(response)
         [52747] Family: Vespidae (Hornets, Paper Wasps, Potter Wasps, and Allies)
         [92786] Genus: Vespicula
         [646195] Genus: Vespiodes
@@ -92,7 +92,7 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
 
         Get basic info for taxa in response:
 
-        >>> print(format_taxa(response, align=True))
+        >>> pprint(response)
         [52747   ]       Family: Vespidae (Hornets, Paper Wasps, Potter Wasps, and Allies)
         [84738   ]    Subfamily: Vespinae (Hornets and Yellowjackets)
         [131878  ]      Species: Nicrophorus vespillo (Vespillo Burying Beetle)

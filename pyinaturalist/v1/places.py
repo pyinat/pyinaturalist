@@ -14,7 +14,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
 
     Example:
         >>> response = get_places_by_id([67591, 89191])
-        >>> print(format_places(response))
+        >>> pprint(response)
         [89191] Conservation Area Riversdale
         [67591] Riversdale Beach
 
@@ -57,7 +57,7 @@ def get_places_nearby(**params) -> JsonResponse:
 
         Show basic info for all places in response:
 
-        >>> print(format_places(response))
+        >>> pprint(response)
         [97394] North America
         [97395] Asia
         [97393] Oceania
@@ -88,7 +88,7 @@ def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
 
     Example:
         >>> response = get_places_autocomplete('Irkutsk')
-        >>> print(format_places(response))
+        >>> pprint(response)
         [11803] Irkutsk
         [41854] Irkutskiy rayon
         [166186] Irkutsk Oblast - ADD

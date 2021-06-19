@@ -26,7 +26,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
     Example:
 
         >>> response = get_observation(16227955)
-        >>> print(format_observations(response))
+        >>> pprint(response)
         [16227955] [493595] Species: Lixus bardanae observed on 2018-09-05 14:06:00+01:00 by niconoe at 54 rue des Badauds
 
         .. admonition:: Example Response
@@ -128,8 +128,7 @@ def get_observations(**params) -> JsonResponse:
 
         Get basic info for observations in response:
 
-        >>> from pyinaturalist.formatters import format_observations
-        >>> print(format_observations(response))
+        >>> pprint(response)
         '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK'
         '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK'
 
@@ -162,7 +161,7 @@ def get_observation_species_counts(**params) -> JsonResponse:
 
     Example:
         >>> response = get_observation_species_counts(user_login='my_username', quality_grade='research')
-        >>> print(format_species_counts(response))
+        >>> pprint(response)
         [62060] Species: Palomena prasina (Green Shield Bug): 10
         [84804] Species: Graphosoma italicum (European Striped Shield Bug): 8
         [55727] Species: Cymbalaria muralis (Ivy-leaved toadflax): 3
@@ -194,7 +193,7 @@ def get_observation_observers(**params) -> JsonResponse:
 
     Example:
         >>> response = get_observation_observers(place_id=72645, order_by='species_count')
-        >>> print(format_users(response, align=True))
+        >>> pprint(response, align=True)
         [1566366 ] fossa1211
         [674557  ] schurchin
         [5813    ] fluffberger (Fluff Berger)
@@ -225,7 +224,7 @@ def get_observation_identifiers(**params) -> JsonResponse:
 
     Example:
         >>> response = get_observation_identifiers(place_id=72645)
-        >>> print(format_users(response, align=True))
+        >>> pprint(response)
         [409010  ] jdoe42 (Jane Doe)
         [691216  ] jbrown252 (James Brown)
         [3959037 ] tnsparkleberry

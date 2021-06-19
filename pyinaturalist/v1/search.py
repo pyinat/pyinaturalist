@@ -14,7 +14,7 @@ def search(q: str, **params) -> JsonResponse:
     Example:
 
         >>> response = search(q='odonat')
-        >>> print(format_search_results(response, align=True))
+        >>> pprint(response)
         [Taxon  ] [47792   ] Order: Odonata (Dragonflies and Damselflies)
         [Place  ] [113562  ] Odonates of Peninsular India and Sri Lanka
         [Project] [9978    ] Ohio Dragonfly Survey  (Ohio Odonata Survey)
