@@ -8,6 +8,17 @@ This page summarizes how to use the main features of pyinaturalist.
 
 Installation
 ------------
+.. admonition:: Python version compatibility
+    :class: toggle
+
+    pyinaturalist currently requires **python 3.6+**. If you need to use an older version
+    of python, here are the last compatible versions of pyinaturalist:
+
+    * **python 2.7:** pyinaturalist 0.1
+    * **python 3.4:** pyinaturalist 0.10
+    * **python 3.5:** pyinaturalist 0.11
+    * **python 3.6:** still supported, but expected to be dropped in a future release
+
 Install the latest stable version with pip::
 
     pip install pyinaturalist
@@ -21,6 +32,7 @@ If you would like to use the latest development (pre-release) version::
     pip install --pre pyinaturalist
 
 See :ref:`contributing` for details on setup for local development.
+
 
 Imports
 -------
