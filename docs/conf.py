@@ -47,7 +47,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode',
     'sphinx_autodoc_typehints',
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
