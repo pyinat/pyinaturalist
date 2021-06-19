@@ -35,14 +35,12 @@ requests = ">=2.20"
 keyring = ">=22.3"
 python-forge = ">=18.6.0"
 pyrate-limiter = ">=2.3.3"
-
-# TODO: More optional dependencies needed to run examples in docs
-rich = {version = ">=10.0", optional = true}
+rich = ">=10.0"
 
 # Documentation dependencies needed for Readthedocs builds
 m2r2 = { version = ">=0.2.7", optional = true }
 nbsphinx = { version = "^0.8.5", optional = true }
-Sphinx = { version = "^4.0.2", optional = true }
+sphinx = { version = "^4.0.2", optional = true }
 sphinx-automodapi = { version=">=0.13", optional = true}
 sphinx-autodoc-typehints = { version = "^1.11", optional = true }
 sphinx-copybutton = { version = "^0.3", optional = true }
@@ -50,15 +48,15 @@ sphinx-material = {version = "^0.0.32", optional = true}
 sphinxcontrib-apidoc = { version = "^0.3", optional = true }
 
 [tool.poetry.extras]
-all = ["rich"]
-docs = ["docutils", "m2r2", "nbsphinx", "Sphinx", "sphinx-automodapi", "sphinx-autodoc-typehints",
+all = []  # Placeholder for optional dependencies needed to run examples in docs
+docs = ["m2r2", "nbsphinx", "sphinx", "sphinx-automodapi", "sphinx-autodoc-typehints",
         "sphinx-copybutton", "sphinx-material", "sphinxcontrib-apidoc"]
 
 [tool.poetry.dev-dependencies]
 black = {version = "21.6b0", python = ">=3.6.2, <3.10"}
 ipython = {version = ">=7.23", python = "^3.7"}
-isort = ">=5.8"
 flake8 = "^3.9"
+isort = ">=5.8"
 mypy = "^0.901"
 pre-commit = {version = "^2.12", python = "^3.6.2"}
 pytest = "^6.2"
@@ -88,11 +86,11 @@ source = ['pyinaturalist']
 profile = 'black'
 line_length = 105
 skip_gitignore = true
-skip = ['pyinaturalist/__init__.py', 'pyinaturalist/models/__init__.py']
+skip = ['pyinaturalist/__init__.py', 'pyinaturalist/models/__init__.py', 'pyinaturalist/node_api.py']
 known_first_party = ['test']
 # Things that are common enough they may as well be grouped with stdlib imports
 extra_standard_library = ['dateutil', 'pytest', 'setuptools']
 
 [tool.mypy]
 ignore_missing_imports = true
-exclude = "/examples|docs|downloads|dist|build|test/"
+exclude = "examples|docs|downloads|dist|build|test"

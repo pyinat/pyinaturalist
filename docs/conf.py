@@ -62,6 +62,7 @@ nbsphinx_allow_errors = True
 
 # Enable automatic links to other projects' Sphinx docs
 intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
     'requests': ('https://requests.readthedocs.io/en/master/', None),
 }
 

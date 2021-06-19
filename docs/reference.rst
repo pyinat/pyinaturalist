@@ -1,7 +1,7 @@
 .. _reference-docs:
 
-Reference
-=========
+API Reference
+=============
 
 iNaturalist actually provides two APIs:
 

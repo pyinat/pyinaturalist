@@ -3,14 +3,17 @@ from typing import Dict, List, Optional
 
 from attr import define, field
 
-from pyinaturalist.constants import Coordinates
+from pyinaturalist.constants import Coordinates, TableRow
+from pyinaturalist.converters import convert_observation_timestamp
 from pyinaturalist.models import (
     Annotation,
     BaseModel,
+    Comment,
     Identification,
     LazyProperty,
     ObservationFieldValue,
     Photo,
+    ProjectObservation,
     Taxon,
     User,
     add_lazy_attrs,
@@ -19,8 +22,6 @@ from pyinaturalist.models import (
     datetime_now_attr,
     kwarg,
 )
-from pyinaturalist.models.comment import Comment
-from pyinaturalist.response_format import convert_observation_timestamp
 from pyinaturalist.v1 import get_observation
 
 
@@ -75,7 +76,6 @@ class Observation(BaseModel):
     project_ids: List = field(factory=list)
     project_ids_with_curator_id: List = field(factory=list)
     project_ids_without_curator_id: List = field(factory=list)
-    project_observations: List[Dict] = field(factory=list)  # TODO: ProjectObservation model?
     quality_metrics: List = field(factory=list)
     reviewed_by: List = field(factory=list)
     sounds: List = field(factory=list)
@@ -88,6 +88,7 @@ class Observation(BaseModel):
     identifications: property = LazyProperty(Identification.from_json_list)
     ofvs: property = LazyProperty(ObservationFieldValue.from_json_list)
     photos: property = LazyProperty(Photo.from_json_list)
+    project_observations: property = LazyProperty(ProjectObservation.from_json_list)
     taxon: property = LazyProperty(Taxon.from_json)
     user: property = LazyProperty(User.from_json)
 
@@ -148,10 +149,20 @@ class Observation(BaseModel):
             return None
         return self.photos[0].thumbnail_url
 
-    # TODO: Return simplified dict
-    # def simplify(self) -> Dict:
-    #     pass
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Taxon ID': self.taxon.id,
+            'Taxon': self.taxon.full_name,
+            'Observed on': self.observed_on,
+            'User': self.user.login,
+            'Location': self.place_guess or self.location,
+        }
 
-    # TODO
-    # def __str__(self) -> str:
-    #     pass
+    def __str__(self) -> str:
+        return (
+            f'[{self.id}] {self.taxon.full_name} '
+            f'observed on {self.observed_on} by {self.user.login} '
+            f'at {self.place_guess or self.location}'
+        )

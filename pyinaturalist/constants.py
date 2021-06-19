@@ -9,6 +9,9 @@ API_V1_BASE_URL = 'https://api.inaturalist.org/v1'
 API_V2_BASE_URL = 'https://api.inaturalist.org/v2'
 DWC_ARCHIVE_URL = 'http://www.inaturalist.org/observations/gbif-observations-dwca.zip'
 EXPORT_URL = 'https://www.inaturalist.org/observations/export'
+INAT_BASE_URL = API_V0_BASE_URL
+INAT_REPO = 'https://raw.githubusercontent.com/inaturalist/inaturalist/main'
+ICONIC_TAXA_BASE_URL = f'{INAT_REPO}/app/assets/images/iconic_taxa'
 PHOTO_BASE_URL = 'https://static.inaturalist.org/photos'
 PHOTO_INFO_BASE_URL = 'https://www.inaturalist.org/photos'
 
@@ -61,6 +64,23 @@ ICONIC_TAXA = {
     47170: 'Fungi',
     48222: 'Chromista',
     47686: 'Protozoa',
+}
+# TODO: More emoji for non-iconic taxa?
+ICONIC_EMOJI = {
+    0: '❓',
+    1: '🐾',
+    3: '🐦',
+    20978: '🐸',
+    26036: '🦎',
+    40151: '😺',
+    47178: '🐠',
+    47115: '🐌',
+    47119: '🕷️',
+    47158: '🦋',
+    47126: '🌿',
+    47170: '🍄',
+    48222: '🟢',
+    47686: '🦠',
 }
 
 # Taxonomic ranks that can be filtered on
@@ -171,17 +191,19 @@ AnyFile = Union[IO, Path, str]
 DateOrInt = Union[date, datetime, int]
 Dimensions = Tuple[int, int]
 FileOrPath = Union[BinaryIO, str]
+GeoJson = Dict[str, Any]
 HistogramResponse = Dict[DateOrInt, int]
 IntOrStr = Union[int, str]
 JsonResponse = Dict[str, Any]
 ListResponse = List[Dict[str, Any]]
 ObsFieldValues = Union[Dict, List[Dict]]
 RequestParams = Dict[str, Any]
-ResponseObject = Dict[str, Any]
-ResponseOrObject = Union[JsonResponse, ResponseObject, Iterable[ResponseObject]]
+ResponseResult = Dict[str, Any]
+ResponseOrResults = Union[JsonResponse, Iterable[ResponseResult]]
 ResponseOrFile = Union[AnyFile, JsonResponse]
 MultiFile = Union[FileOrPath, Iterable[FileOrPath]]
 MultiInt = Union[int, Iterable[int]]
 MultiStr = Union[str, Iterable[str]]
 MultiIntOrStr = Union[MultiInt, MultiStr]
+TableRow = Dict[str, Any]
 TemplateFunction = Any  # Cannot use Callable/Protocol, as these will not allow a mix of signatures

@@ -1,8 +1,8 @@
-from pyinaturalist import api_docs as docs
+from pyinaturalist.api_docs import document_request_params
+from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.constants import JsonResponse, MultiInt
-from pyinaturalist.forge_utils import document_request_params
+from pyinaturalist.converters import convert_all_coordinates, convert_all_place_coordinates
 from pyinaturalist.pagination import add_paginate_all
-from pyinaturalist.response_format import convert_all_coordinates, convert_all_place_coordinates
 from pyinaturalist.v1 import get_v1
 
 
@@ -14,7 +14,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
 
     Example:
         >>> response = get_places_by_id([67591, 89191])
-        >>> print(format_places(response))
+        >>> pprint(response)
         [89191] Conservation Area Riversdale
         [67591] Riversdale Beach
 
@@ -57,16 +57,10 @@ def get_places_nearby(**params) -> JsonResponse:
 
         Show basic info for all places in response:
 
-        >>> print(format_places(response, align=True))
-        Standard:
-        [97394  ] North America
-        [97395  ] Asia
-        [97393  ] Oceania
-        ...
-        Community:
-        [166719  ] Burgenland (accurate border)
-        [11770   ] Mehedinti
-        [119755  ] Mahurangi College
+        >>> pprint(response)
+        [97394] North America
+        [97395] Asia
+        [97393] Oceania
         ...
 
         .. admonition:: Example Response
@@ -94,11 +88,11 @@ def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
 
     Example:
         >>> response = get_places_autocomplete('Irkutsk')
-        >>> print(format_places(response))
-        [11803   ] Irkutsk
-        [41854   ] Irkutskiy rayon
-        [166186  ] Irkutsk Oblast - ADD
-        [163077  ] Irkutsk agglomeration
+        >>> pprint(response)
+        [11803] Irkutsk
+        [41854] Irkutskiy rayon
+        [166186] Irkutsk Oblast - ADD
+        [163077] Irkutsk agglomeration
 
         .. admonition:: Example Response
             :class: toggle

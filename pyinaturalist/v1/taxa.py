@@ -1,9 +1,9 @@
-from pyinaturalist import api_docs as docs
+from pyinaturalist.api_docs import document_request_params
+from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.constants import JsonResponse, MultiInt
-from pyinaturalist.forge_utils import document_request_params
+from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.pagination import add_paginate_all
-from pyinaturalist.request_params import translate_rank_range
-from pyinaturalist.response_format import convert_all_timestamps
+from pyinaturalist.request_params import convert_rank_range
 from pyinaturalist.v1 import get_v1
 
 
@@ -17,7 +17,7 @@ def get_taxa(**params) -> JsonResponse:
     Example:
 
         >>> response = get_taxa(q='vespi', rank=['genus', 'family'])
-        >>> print(format_taxa(response))
+        >>> pprint(response)
         [52747] Family: Vespidae (Hornets, Paper Wasps, Potter Wasps, and Allies)
         [92786] Genus: Vespicula
         [646195] Genus: Vespiodes
@@ -32,7 +32,7 @@ def get_taxa(**params) -> JsonResponse:
     Returns:
         Response dict containing taxon records
     """
-    params = translate_rank_range(params)
+    params = convert_rank_range(params)
     response = get_v1('taxa', params=params)
     taxa = response.json()
     taxa['results'] = convert_all_timestamps(taxa['results'])
@@ -92,7 +92,7 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
 
         Get basic info for taxa in response:
 
-        >>> print(format_taxa(response, align=True))
+        >>> pprint(response)
         [52747   ]       Family: Vespidae (Hornets, Paper Wasps, Potter Wasps, and Allies)
         [84738   ]    Subfamily: Vespinae (Hornets and Yellowjackets)
         [131878  ]      Species: Nicrophorus vespillo (Vespillo Burying Beetle)
@@ -120,6 +120,6 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
     Returns:
         Response dict containing taxon records
     """
-    params = translate_rank_range(params)
+    params = convert_rank_range(params)
     response = get_v1('taxa/autocomplete', params=params)
     return response.json()

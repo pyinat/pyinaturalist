@@ -2,9 +2,15 @@ from typing import Dict, List
 
 from attr import field, fields_dict
 
-from pyinaturalist.constants import API_V1_BASE_URL, JsonResponse
+from pyinaturalist.constants import (
+    ICONIC_EMOJI,
+    ICONIC_TAXA_BASE_URL,
+    INAT_BASE_URL,
+    RANKS,
+    JsonResponse,
+    TableRow,
+)
 from pyinaturalist.models import BaseModel, LazyProperty, Photo, define_model, kwarg
-from pyinaturalist.request_params import RANKS
 from pyinaturalist.v1 import get_taxa_by_id
 
 
@@ -22,8 +28,8 @@ class Taxon(BaseModel):
     complete_rank: str = kwarg
     complete_species_count: int = kwarg
     extinct: bool = kwarg
-    iconic_taxon_id: int = kwarg
-    iconic_taxon_name: str = kwarg
+    iconic_taxon_id: int = field(default=0)
+    iconic_taxon_name: str = field(default='unknown')
     id: int = kwarg
     is_active: bool = kwarg
     listed_taxa_count: int = kwarg
@@ -60,17 +66,42 @@ class Taxon(BaseModel):
 
     @property
     def ancestry(self) -> str:
+        """String containing either ancestor names (if available) or IDs"""
         tokens = [t.name for t in self.ancestors] if self.ancestors else self.ancestor_ids
         return ' | '.join([str(t) for t in tokens])
 
     @property
+    def emoji(self) -> str:
+        """Get an emoji representing the iconic taxon"""
+        return ICONIC_EMOJI.get(self.iconic_taxon_id, '❓')
+
+    @property
+    def full_name(taxon) -> str:
+        """Taxon rank, scientific name, and common name (if available)"""
+        if not taxon:
+            return 'unknown taxon'
+        if not taxon.name:
+            name = str(taxon.id)
+        else:
+            common_name = taxon.preferred_common_name
+            name = taxon.name + (f' ({common_name})' if common_name else '')
+
+        return f'{taxon.rank.title()}: {name}'
+
+    @property
+    def icon_url(self) -> str:
+        """Get a URL to the iconic taxon's icon"""
+        return f'{ICONIC_TAXA_BASE_URL}/{self.iconic_taxon_name.lower()}-75px.png'
+
+    @property
     def parent(self) -> 'Taxon':
-        """Return immediate parent, if any"""
+        """Get immediate parent, if any"""
         return self.ancestors[-1] if self.ancestors else None
 
     @property
     def url(self) -> str:
-        return f'{API_V1_BASE_URL}/taxa/{self.id}'
+        """Info URL on iNaturalist.org"""
+        return f'{INAT_BASE_URL}/taxa/{self.id}'
 
     @classmethod
     def from_id(cls, id: int) -> 'Taxon':
@@ -81,9 +112,21 @@ class Taxon(BaseModel):
     def load_full_record(self):
         """Update this Taxon with full taxon info, including ancestors + children"""
         t = Taxon.from_id(self.id)
-        for key in fields_dict(self.__class__).keys():
+        for key in fields_dict(Taxon).keys():
             key = key.lstrip('_')  # Use getters/setters for LazyProperty instead of temp attrs
             setattr(self, key, getattr(t, key))
+
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Rank': self.rank,
+            'Scientific name': f'{self.emoji} {self.name}',
+            'Common name': self.preferred_common_name,
+        }
+
+    def __str__(self) -> str:
+        return f'[{self.id}] {self.full_name}' if self.name else self.full_name
 
 
 # Since these use Taxon classmethods, they must be added after Taxon is defined

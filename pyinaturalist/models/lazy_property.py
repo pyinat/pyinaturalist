@@ -1,10 +1,20 @@
 from functools import update_wrapper
 from inspect import signature
-from typing import Callable, List
+from typing import Any, Callable, Iterable, List
 
 from attr import Attribute, Factory
 
-from pyinaturalist.models import BaseModel, make_attribute
+from pyinaturalist.models import BaseModel
+
+FIELD_DEFAULTS = {
+    'default': None,
+    'validator': None,
+    'repr': True,
+    'cmp': None,
+    'hash': None,
+    'init': False,
+    'inherited': False,
+}
 
 
 class LazyProperty(property):
@@ -57,7 +67,7 @@ class LazyProperty(property):
             return self
 
         value = getattr(obj, self.temp_attr)
-        if value and not _is_model_object(value):
+        if value and not _is_model_object_or_list(value):
             value = self.converter(value)
             setattr(obj, self.temp_attr, value)
         return value
@@ -83,7 +93,25 @@ def add_lazy_attrs(cls, fields):
     return list(fields) + [p.get_lazy_attr() for p in lazy_properties]
 
 
-def _is_model_object(value):
+def get_model_fields(obj: Any) -> Iterable[Attribute]:
+    """Add placeholder attributes for lazy-loaded model properties so they get picked up by rich's
+    pretty-printer. Does not change behavior for anything except :py:class:`.BaseModel` subclasses.
+    """
+    from pyinaturalist.models import LazyProperty
+
+    attrs = list(obj.__attrs_attrs__)
+    if isinstance(obj, BaseModel):
+        prop_names = [k for k, v in type(obj).__dict__.items() if isinstance(v, LazyProperty)]
+        attrs += [make_attribute(p) for p in prop_names]
+    return attrs
+
+
+def make_attribute(name, **kwargs):
+    kwargs = {**FIELD_DEFAULTS, **kwargs}
+    return Attribute(name=name, **kwargs)
+
+
+def _is_model_object_or_list(value):
     try:
         return isinstance(value, BaseModel) or isinstance(value[0], BaseModel)
     except (AttributeError, KeyError, TypeError):

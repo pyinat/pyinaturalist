@@ -1,173 +1,189 @@
-"""Extra functions to help preview response content, not used directly by API functions.
+"""Utilities for formatting API responses and model objects, for convenience/readability when exploring data.
+Not used directly by API functions.
 
 These functions will accept any of the following:
 
 * A JSON response
 * A list of response objects
 * A single response object
-
-They will also accept the option ``align=True`` to align values where possible.
 """
-# TODO: Use tabulate library for aligning values
 from copy import deepcopy
-from logging import getLogger
-from typing import Any, Callable, List, Sequence
+from datetime import date, datetime
+from functools import partial
+from typing import Callable, List, Type
 
-from pyinaturalist.constants import ResponseObject, ResponseOrObject
+from pyinaturalist.constants import ResponseOrResults, ResponseResult
+from pyinaturalist.converters import ensure_list
+from pyinaturalist.models import (
+    Annotation,
+    BaseModel,
+    Comment,
+    Identification,
+    LifeList,
+    Observation,
+    ObservationField,
+    ObservationFieldValue,
+    Photo,
+    Place,
+    Project,
+    ResponseOrObjects,
+    SearchResult,
+    Taxon,
+    User,
+    get_model_fields,
+)
 
-__all__ = [
-    'format_controlled_terms',
-    'format_identifications',
-    'format_observations',
-    'format_places',
-    'format_projects',
-    'format_search_results',
-    'format_species_counts',
-    'format_taxa',
-    'format_users',
-    'simplify_observations',
-]
-logger = getLogger(__name__)
+# If rich is installed, update its pretty-printer to include model properties
+try:
+    from rich import pretty, print
+
+    pretty._get_attr_fields = get_model_fields
+    pretty.install()
+except ImportError:
+    pass
 
 
-def format_controlled_terms(terms: ResponseOrObject, align: bool = False) -> str:
+# Default colors for table headers
+HEADER_COLORS = {
+    'Category': 'violet',
+    'Comment': 'green',
+    'Common name': 'blue',
+    'Count': 'blue',
+    'Created at': 'blue',
+    'Description': 'green',
+    'Dimensions': 'blue',
+    'Display name': 'violet',
+    'From CV': 'white',
+    'ID count': 'blue',
+    'ID': 'cyan',
+    'Latitude': 'blue',
+    'License': 'green',
+    'Location': 'white',
+    'Longitude': 'blue',
+    'Name': 'magenta',
+    'Obs. count': 'blue',
+    'Observed on': 'blue',
+    'Rank': 'violet',
+    'Scientific name': 'green',
+    'Score': 'green',
+    'Taxon ID': 'cyan',
+    'Taxon': 'green',
+    'Title': 'green',
+    'Type': 'blue',
+    'URL': 'white',
+    'User': 'magenta',
+    'Username': 'magenta',
+    'Value': 'green',
+    'Votes': 'blue',
+}
+
+# Unique response attributes used to auto-detect response types
+UNIQUE_RESPONSE_ATTRS = {
+    'vote_score': Annotation,
+    'disagreement': Identification,
+    'moderator_actions': Comment,  # Subset of ID attrs; if it's not an ID, assume it's a comment
+    'count_without_taxon': LifeList,
+    'captive': Observation,
+    'allowed_values': ObservationField,
+    'field_id': ObservationFieldValue,
+    'original_dimensions': Photo,
+    'place_type': Place,
+    'standard': Place,
+    'project_type': Project,
+    'score': SearchResult,
+    'rank': Taxon,
+    'roles': User,
+}
+
+
+def pprint(values: ResponseOrObjects):
+    """Pretty-print any model object or list into a condensed summary.
+
+    **Experimental:** May also be used on most raw JSON API responses
+    """
+    print(format_table(values))
+
+
+def detect_type(value: ResponseResult) -> Type[BaseModel]:
+    """Attempt to determine the model class corresponding to an API result"""
+    for key, cls in UNIQUE_RESPONSE_ATTRS.items():
+        if key in value:
+            return cls
+
+    raise ValueError(f'Could not detect response type: {value}')
+
+
+def ensure_model_list(values: ResponseOrObjects) -> List[BaseModel]:
+    """If the given values are raw JSON responses, attempt to detect their type and convert to
+    model objects
+    """
+    if isinstance(values, LifeList):
+        return values.taxa  # type: ignore
+    values = ensure_list(values)
+    if isinstance(values[0], BaseModel):
+        return values
+
+    cls = detect_type(values[0])
+    return [cls.from_json(value) for value in values]
+
+
+def format_table(values: ResponseOrObjects):
+    """Format model objects as a table. If ``rich`` isn't installed or the model doesn't have a
+    table format defined, just return a basic list of stringified objects.
+    """
+    values = ensure_model_list(values)
+
+    try:
+        from rich.box import SIMPLE_HEAVY
+        from rich.table import Column, Table
+
+        headers = {k: HEADER_COLORS.get(k, '') for k in values[0].row.keys()}
+    except (ImportError, NotImplementedError):
+        return '\n'.join([str(obj) for obj in values])
+
+    # Display any date/datetime values in short format
+    def _str(value):
+        if isinstance(value, (date, datetime)):
+            return value.strftime('%b %d, %Y')
+        return str(value) if value is not None else ''
+
+    columns = [Column(header, style=style) for header, style in headers.items()]
+    table = Table(*columns, box=SIMPLE_HEAVY, header_style='bold white', row_styles=['dim', 'none'])
+
+    for obj in values:
+        table.add_row(*[_str(value) for value in obj.row.values()])
+    return table
+
+
+def format_controlled_terms(terms: ResponseOrResults, **kwargs) -> str:
     """Format controlled term results into a condensed list of terms and values"""
-    return _format_objects(terms, align, _format_controlled_term)
+    return _format_results(terms, _format_controlled_term)
 
 
-def _format_controlled_term(term: ResponseObject, **kwargs) -> str:
+def _format_controlled_term(term: ResponseResult, **kwargs) -> str:
     term_values = [f'    {value["id"]}: {value["label"]}' for value in term['values']]
     return f'{term["id"]}: {term["label"]}\n' + '\n'.join(term_values)
 
 
-def format_identifications(identifications: ResponseOrObject, align: bool = False) -> str:
-    """Format identification results into a condensed summary: id, what, when, and who"""
-    return _format_objects(identifications, align, _format_identification)
-
-
-def _format_identification(ident: ResponseObject, align: bool = False) -> str:
-    ident_id = pad(ident['id'], 8, align)
-    taxon = _format_taxon(ident['taxon'], align=align)
-    category = pad(ident['category'], 10, align)
-    return (
-        f"[{ident_id}] {taxon} ({category}) added on {ident['created_at']} by {ident['user']['login']}"
-    )
-
-
-def format_observations(observations: ResponseOrObject, align: bool = False) -> str:
-    """Format observation results into a condensed summary: id, what, when, who, and where"""
-    return _format_objects(observations, align, _format_observation)
-
-
-def _format_observation(obs: ResponseObject, align: bool = False) -> str:
-    taxon_str = _format_taxon(obs.get('taxon') or {}, align=align)
-    location = obs.get('place_guess') or obs.get('location')
-    obs_id = f"{obs['id']:>8}" if align else f"{obs['id']}"
-    separator = '\n    ' if align else ' '
-
-    return (
-        f"[{obs_id}] {taxon_str}{separator}"
-        f"observed on {obs['observed_on']} by {obs['user']['login']} at {location}"
-    )
-
-
-def format_places(places: ResponseOrObject, align: bool = False) -> str:
-    """Format place results into a condensed list of IDs and names"""
-    return _format_objects(places, align, _format_place)
-
-
-def _format_place(place: ResponseObject, align: bool = False) -> str:
-    if 'standard' in place and 'community' in place:
-        standard_places = format_places(place['standard'], align)
-        community_places = format_places(place['community'], align)
-        return f'Standard:\n{standard_places}\n\nCommunity:\n{community_places}'
-
-    place_id = pad(place['id'], 8, align)
-    return f"[{place_id}] {place['name']}"
-
-
-def format_projects(projects: ResponseOrObject, align: bool = False) -> str:
-    """Format project results into a condensed list of IDs and titles"""
-    return _format_objects(projects, align, _format_project)
-
-
-def _format_project(project: ResponseObject, align: bool = False) -> str:
-    project_id = pad(project['id'], 8, align)
-    return f"[{project_id}] {project['title']}"
-
-
-def format_search_results(search_results: ResponseOrObject, align: bool = False) -> str:
-    """Format search results into a condensed list of values depending on result type"""
-    return _format_objects(search_results, align, _format_search_result)
-
-
-def _format_search_result(result: ResponseObject, align: bool = False) -> str:
-    """Format a search result depending on its type"""
-    search_formatters = {
-        'Place': _format_place,
-        'Project': _format_project,
-        'Taxon': _format_taxon,
-        'User': _format_user,
-    }
-    formatter = search_formatters[result['type']]
-    record_str = formatter(result['record'], align)
-    type_str = pad(result['type'], 7, align)
-    return f'[{type_str}] {record_str}'
-
-
-def format_species_counts(species_counts: ResponseOrObject, align: bool = False) -> str:
+def format_species_counts(species_counts: ResponseOrResults, **kwargs) -> str:
     """Format observation species counts into a condensed list of names and # of observations"""
-    return _format_objects(species_counts, align, _format_species_count)
+    return _format_results(species_counts, _format_species_count)
 
 
-def _format_species_count(species_count: ResponseObject, align: bool = False) -> str:
-    taxon = _format_taxon(species_count['taxon'], align=align)
+def _format_species_count(species_count: ResponseResult, **kwargs) -> str:
+    taxon = format_taxa(species_count['taxon'])
     return f'{taxon}: {species_count["count"]}'
 
 
-def format_taxa(taxa: ResponseOrObject, align: bool = False) -> str:
-    """Format taxon results into a single string containing taxon ID, rank, and name
-    (including common name, if available).
-    """
-    return _format_objects(taxa, align, _format_taxon)
+# TODO: Replace remaining functions that use this with _format_model_objects (requires more model changes)
+def _format_results(obj: ResponseOrResults, format_func: Callable):
+    """Generic function to format a response, result, or list of results"""
+    obj_strings = [format_func(t) for t in ensure_list(obj)]
+    return '\n'.join(obj_strings)
 
 
-def _format_taxon(taxon: ResponseObject, align: bool = False) -> str:
-    if not taxon:
-        return 'unknown taxon'
-    if 'name' not in taxon:
-        return _format_taxon_rank_id(taxon, align=align)
-
-    taxon_id = pad(taxon["id"], 8, align)
-    rank = taxon['rank'].title()
-    common_name = taxon.get('preferred_common_name')
-    name = f"{taxon['name']}" + (f' ({common_name})' if common_name else '')
-
-    return f'[{taxon_id}] {rank}: {name}'
-
-
-def _format_taxon_rank_id(taxon: ResponseObject, align: bool = False) -> str:
-    """Format a taxon that only has a rank and ID"""
-    rank_title = f"{taxon['rank'].title()}: {taxon['id']}"
-    return pad(rank_title, 22, align)
-
-
-def format_users(users: ResponseOrObject, align: bool = False) -> str:
-    """Format user results into a condensed list of IDs, usernames, and real names"""
-    return _format_objects(users, align, _format_user)
-
-
-def _format_user(user: ResponseObject, align: bool = False) -> str:
-    # Response object may contain a nested 'user' object
-    if 'user' in user:
-        user = user['user']
-
-    user_id = pad(user['id'], 8, align)
-    real_name = f" ({user['name']})" if user.get('name') else ''
-    return f"[{user_id}] {user['login']}{real_name}"
-
-
-def simplify_observations(observations: ResponseOrObject, align: bool = False) -> List[ResponseObject]:
+# TODO: This maybe belongs in a different module
+def simplify_observations(observations: ResponseOrResults, align: bool = False) -> List[ResponseResult]:
     """Flatten out some nested data structures within observation records:
 
     * annotations
@@ -175,7 +191,7 @@ def simplify_observations(observations: ResponseOrObject, align: bool = False) -
     * identifications
     * non-owner IDs
     """
-    return [_simplify_observation(o) for o in _ensure_list(observations)]
+    return [_simplify_observation(o) for o in ensure_list(observations)]
 
 
 def _simplify_observation(obs):
@@ -196,22 +212,17 @@ def _simplify_observation(obs):
     return obs
 
 
-def _ensure_list(obj: ResponseOrObject) -> List:
-    if isinstance(obj, dict) and 'results' in obj:
-        obj = obj['results']
-    if isinstance(obj, Sequence):
-        return list(obj)
-    else:
-        return [obj]
-
-
-def _format_objects(obj: ResponseOrObject, align: bool, format_func: Callable):
+def _format_model_objects(obj: ResponseOrResults, cls: Type[BaseModel], **kwargs):
     """Generic function to format a response, object, or list of objects"""
-    obj_strings = [format_func(t, align=align) for t in _ensure_list(obj)]
-    return '\n'.join(obj_strings)
+    objects = cls.from_json_list(obj)
+    return '\n'.join([str(obj) for obj in objects])
 
 
-def pad(value: Any, width: int, align: bool, right: bool = False):
-    if not align:
-        return value
-    return str(value).rjust(width) if right else str(value).ljust(width)
+# TODO: Figure out type annotations for these. Or just replace with pprint()?
+format_identifications = partial(_format_model_objects, cls=Identification)
+format_observations = partial(_format_model_objects, cls=Observation)
+format_places = partial(_format_model_objects, cls=Place)
+format_projects = partial(_format_model_objects, cls=Project)
+format_search_results = partial(_format_model_objects, cls=SearchResult)
+format_taxa = partial(_format_model_objects, cls=Taxon)
+format_users = partial(_format_model_objects, cls=User)

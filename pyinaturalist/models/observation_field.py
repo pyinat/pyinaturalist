@@ -3,6 +3,8 @@ from typing import List, Union
 
 from attr import field
 
+from pyinaturalist.constants import TableRow
+from pyinaturalist.converters import safe_split, try_int_or_float
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
@@ -12,7 +14,6 @@ from pyinaturalist.models import (
     define_model,
     kwarg,
 )
-from pyinaturalist.response_format import safe_split, try_int_or_float
 
 # Mappings from observation field value datatypes to python datatypes
 OFV_DATATYPES = {
@@ -45,6 +46,19 @@ class ObservationField(BaseModel):
     uuid: str = kwarg
     values_count: int = kwarg
 
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Type': self.datatype,
+            'Name': self.name,
+            'Description': self.description,
+        }
+
+    def __str__(self) -> str:
+        description = ': {self.description}' if self.description else ''
+        return f'[{self.id}] {self.name} ({self.datatype}){description}'
+
 
 @define_model
 class ObservationFieldValue(BaseModel):
@@ -74,3 +88,15 @@ class ObservationFieldValue(BaseModel):
         if self.datatype in OFV_DATATYPES and self.value is not None:
             converter = OFV_DATATYPES[self.datatype]
             self.value = converter(self.value)
+
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Type': self.datatype,
+            'Name': self.name,
+            'Value': self.value,
+        }
+
+    def __str__(self) -> str:
+        return f'{self.name}: {self.value}'

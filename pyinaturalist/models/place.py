@@ -1,12 +1,22 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Union
 
 from attr import field
 
-from pyinaturalist.constants import Coordinates
-from pyinaturalist.models import BaseModel, coordinate_pair, define_model, kwarg
+from pyinaturalist.constants import (
+    INAT_BASE_URL,
+    Coordinates,
+    GeoJson,
+    JsonResponse,
+    ResponseOrResults,
+    TableRow,
+)
+from pyinaturalist.converters import convert_lat_long
+from pyinaturalist.models import BaseModel, define_model, kwarg
+from pyinaturalist.models.base import ensure_list
 
-# TODO: Optionally use `geojson` library for users who want to use place geojson?
-GeoJson = Dict
+
+def convert_optional_lat_long(obj: Union[Dict, List, None, str]):
+    return convert_lat_long(obj) or (0, 0)
 
 
 @define_model
@@ -19,12 +29,45 @@ class Place(BaseModel):
     display_name: str = kwarg
     geometry_geojson: GeoJson = field(factory=dict)
     id: int = kwarg
-    location: Optional[Coordinates] = coordinate_pair
+    location: Coordinates = field(converter=convert_optional_lat_long, default=None)
     name: str = kwarg
     place_type: int = kwarg
     slug: str = kwarg
 
-    # TODO: Use results from /places/nearby to set Place.category
-    # @classmethod
-    # def from_json_list(cls, value):
-    #     pass
+    @classmethod
+    def from_json(cls, value: JsonResponse, category: str = None, **kwargs) -> BaseModel:
+        value.setdefault('category', category)
+        return super(Place, cls).from_json(value)
+
+    @classmethod
+    def from_json_list(cls, value: ResponseOrResults, **kwargs) -> List[BaseModel]:
+        """Optionally use results from /places/nearby to set Place.category"""
+        json_value = dict(ensure_list(value)[0])
+        if 'results' in json_value:
+            json_value = json_value['results']
+
+        if 'standard' in json_value and 'community' in json_value:
+            places = [cls.from_json(item, category='standard') for item in json_value['standard']]
+            places += [cls.from_json(item, category='community') for item in json_value['community']]
+            return places
+        else:
+            return super(Place, cls).from_json_list(json_value)
+
+    @property
+    def url(self) -> str:
+        """Info URL on iNaturalist.org"""
+        return f'{INAT_BASE_URL}/places/{self.id}'
+
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Latitude': f'{self.location[0]:9.4f}',
+            'Longitude': f'{self.location[1]:9.4f}',
+            'Name': self.name,
+            'Category': self.category,
+            'URL': self.url,
+        }
+
+    def __str__(self) -> str:
+        return f'[{self.id}] {self.name}'

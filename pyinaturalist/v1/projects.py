@@ -1,9 +1,9 @@
-from pyinaturalist import api_docs as docs
+from pyinaturalist.api_docs import document_request_params
+from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.constants import PROJECT_ORDER_BY_PROPERTIES, JsonResponse, MultiInt
-from pyinaturalist.forge_utils import document_request_params
+from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps
 from pyinaturalist.pagination import add_paginate_all
 from pyinaturalist.request_params import validate_multiple_choice_param
-from pyinaturalist.response_format import convert_all_coordinates, convert_all_timestamps
 from pyinaturalist.v1 import get_v1
 
 
@@ -28,7 +28,7 @@ def get_projects(**params) -> JsonResponse:
 
         Show basic info for projects in response:
 
-        >>> print(format_projects(response, align=True))
+        >>> pprint(response)
         [8291    ] PNW Invasive Plant EDDR
         [19200   ] King County (WA) Noxious and Invasive Weeds
         [102925  ] Keechelus/Kachess Invasive Plants
@@ -62,7 +62,7 @@ def get_projects_by_id(
     Example:
 
         >>> response = get_projects_by_id([8348, 6432])
-        >>> print(format_projects(response))
+        >>> pprint(response)
         [8348] Tucson High Native and Invasive Species Inventory
         [6432] CBWN Invasive Plants
 

@@ -1,9 +1,9 @@
-from pyinaturalist import api_docs as docs
+from pyinaturalist.api_docs import document_request_params
+from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.constants import JsonResponse, MultiInt
-from pyinaturalist.forge_utils import document_request_params
+from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.pagination import add_paginate_all
-from pyinaturalist.request_params import translate_rank_range
-from pyinaturalist.response_format import convert_all_timestamps
+from pyinaturalist.request_params import convert_rank_range
 from pyinaturalist.v1 import get_v1
 
 
@@ -59,7 +59,7 @@ def get_identifications(**params) -> JsonResponse:
     Returns:
         Response dict containing identification records
     """
-    params = translate_rank_range(params)
+    params = convert_rank_range(params)
     response = get_v1('identifications', params=params)
     identifications = response.json()
     identifications['results'] = convert_all_timestamps(identifications['results'])

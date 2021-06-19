@@ -3,6 +3,7 @@ from typing import List
 
 from attr import field
 
+from pyinaturalist.constants import INAT_BASE_URL, TableRow
 from pyinaturalist.models import BaseModel, datetime_now_attr, define_model, kwarg
 
 
@@ -42,3 +43,22 @@ class User(BaseModel):
     @property
     def display_name(self) -> str:
         return self.name
+
+    @property
+    def url(self) -> str:
+        """Info URL on iNaturalist.org"""
+        return f'{INAT_BASE_URL}/users/{self.id}'
+
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Username': self.username,
+            'Display name': self.display_name,
+            'Obs. count': self.observations_count,
+            'ID count': self.identifications_count,
+        }
+
+    def __str__(self) -> str:
+        real_name = f' ({self.name})' if self.name else ''
+        return f"[{self.id}] {self.login}{real_name}"

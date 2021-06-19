@@ -1,32 +1,21 @@
-from typing import List, Union
-
-from pyinaturalist import api_docs as docs
-from pyinaturalist.constants import NODE_OBS_ORDER_BY_PROPERTIES, HistogramResponse, JsonResponse
-from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.forge_utils import document_request_params
-from pyinaturalist.pagination import add_paginate_all
-from pyinaturalist.request_params import validate_multiple_choice_param
-from pyinaturalist.response_format import (
-    as_geojson_feature_collection,
+from pyinaturalist.api_docs import document_request_params
+from pyinaturalist.api_docs import templates as docs
+from pyinaturalist.constants import (
+    NODE_OBS_ORDER_BY_PROPERTIES,
+    HistogramResponse,
+    IntOrStr,
+    JsonResponse,
+)
+from pyinaturalist.converters import (
     convert_all_coordinates,
     convert_all_timestamps,
+    convert_histogram,
     convert_observation_timestamps,
-    format_histogram,
 )
+from pyinaturalist.exceptions import ObservationNotFound
+from pyinaturalist.pagination import add_paginate_all
+from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import get_v1
-
-# Basic observation attributes to include by default in geojson responses
-DEFAULT_OBSERVATION_ATTRS = [
-    'id',
-    'photo_url',
-    'positional_accuracy',
-    'quality_grade',
-    'taxon_id',
-    'taxon_name',
-    'taxon_common_name',
-    'time_observed_at',
-    'uri',
-]
 
 
 def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse:
@@ -37,7 +26,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
     Example:
 
         >>> response = get_observation(16227955)
-        >>> print(format_observations(response))
+        >>> pprint(response)
         [16227955] [493595] Species: Lixus bardanae observed on 2018-09-05 14:06:00+01:00 by niconoe at 54 rue des Badauds
 
         .. admonition:: Example Response
@@ -113,7 +102,7 @@ def get_observation_histogram(**params) -> HistogramResponse:
         'week of year' intervals, and :py:class:`~datetime.datetime` objects for all other intervals.
     """
     response = get_v1('observations/histogram', params=params)
-    return format_histogram(response.json())
+    return convert_histogram(response.json())
 
 
 @document_request_params([*docs._get_observations, docs._pagination, docs._only_id])
@@ -139,8 +128,7 @@ def get_observations(**params) -> JsonResponse:
 
         Get basic info for observations in response:
 
-        >>> from pyinaturalist.formatters import format_observations
-        >>> print(format_observations(response))
+        >>> pprint(response)
         '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK'
         '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK'
 
@@ -173,7 +161,7 @@ def get_observation_species_counts(**params) -> JsonResponse:
 
     Example:
         >>> response = get_observation_species_counts(user_login='my_username', quality_grade='research')
-        >>> print(format_species_counts(response))
+        >>> pprint(response)
         [62060] Species: Palomena prasina (Green Shield Bug): 10
         [84804] Species: Graphosoma italicum (European Striped Shield Bug): 8
         [55727] Species: Cymbalaria muralis (Ivy-leaved toadflax): 3
@@ -191,33 +179,6 @@ def get_observation_species_counts(**params) -> JsonResponse:
     return response.json()
 
 
-@document_request_params([*docs._get_observations, docs._geojson_properties])
-def get_geojson_observations(properties: List[str] = None, **params) -> JsonResponse:
-    """Get all observation results combined into a GeoJSON ``FeatureCollection``.
-    By default this includes some basic observation properties as GeoJSON ``Feature`` properties.
-    The ``properties`` argument can be used to override these defaults.
-
-    Example:
-        >>> get_geojson_observations(observation_id=16227955, properties=['photo_url'])
-
-        .. admonition:: Example Response
-            :class: toggle
-
-            .. literalinclude:: ../sample_data/get_observations.geojson
-                :language: JSON
-
-    Returns:
-        A ``FeatureCollection`` containing observation results as ``Feature`` dicts.
-    """
-    params['mappable'] = True
-    params['page'] = 'all'
-    response = get_observations(**params)
-    return as_geojson_feature_collection(
-        response['results'],
-        properties=properties if properties is not None else DEFAULT_OBSERVATION_ATTRS,
-    )
-
-
 @document_request_params([*docs._get_observations, docs._pagination])
 def get_observation_observers(**params) -> JsonResponse:
     """Get observers of observations matching the search criteria and the count of
@@ -232,7 +193,7 @@ def get_observation_observers(**params) -> JsonResponse:
 
     Example:
         >>> response = get_observation_observers(place_id=72645, order_by='species_count')
-        >>> print(format_users(response, align=True))
+        >>> pprint(response, align=True)
         [1566366 ] fossa1211
         [674557  ] schurchin
         [5813    ] fluffberger (Fluff Berger)
@@ -263,7 +224,7 @@ def get_observation_identifiers(**params) -> JsonResponse:
 
     Example:
         >>> response = get_observation_identifiers(place_id=72645)
-        >>> print(format_users(response, align=True))
+        >>> pprint(response)
         [409010  ] jdoe42 (Jane Doe)
         [691216  ] jbrown252 (James Brown)
         [3959037 ] tnsparkleberry
@@ -283,7 +244,7 @@ def get_observation_identifiers(**params) -> JsonResponse:
 
 
 @add_paginate_all(method='page')
-def get_observation_taxonomy(user_id: Union[int, str], user_agent: str = None) -> JsonResponse:
+def get_observation_taxonomy(user_id: IntOrStr, user_agent: str = None) -> JsonResponse:
     """Get observation counts for all taxa in a full taxonomic tree. In the web UI, these are used
     for life lists.
 

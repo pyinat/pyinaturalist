@@ -1,9 +1,9 @@
 from logging import getLogger
 
-from pyinaturalist import api_docs as docs
+from pyinaturalist.api_docs import document_request_params
+from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.constants import JsonResponse
-from pyinaturalist.forge_utils import document_request_params
-from pyinaturalist.response_format import convert_all_timestamps, convert_generic_timestamps
+from pyinaturalist.converters import convert_all_timestamps, convert_generic_timestamps
 from pyinaturalist.v1 import get_v1
 
 logger = getLogger(__name__)
@@ -20,7 +20,7 @@ def get_user_by_id(user_id: int, user_agent: str = None) -> JsonResponse:
     Example:
 
         >>> response = get_user_by_id(123456)
-        >>> print(format_users(response))
+        >>> pprint(response)
         [1234] my_username
 
         .. admonition:: Example Response
@@ -49,7 +49,7 @@ def get_users_autocomplete(q: str, **params) -> JsonResponse:
     Example:
 
         >>> response = get_taxa_autocomplete(q='my_userna')
-        >>> print(format_users(response))
+        >>> pprint(response)
         [1234] my_username
         [12345] my_username_2
 

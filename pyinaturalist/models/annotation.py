@@ -2,6 +2,7 @@ from typing import List
 
 from attr import field
 
+from pyinaturalist.constants import TableRow
 from pyinaturalist.models import BaseModel, LazyProperty, User, define_model, kwarg
 
 
@@ -26,3 +27,18 @@ class Annotation(BaseModel):
         if not self.concatenated_attr_val:
             return []
         return self.concatenated_attr_val.split('|')
+
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.controlled_attribute_id,
+            'Value': ', '.join(self.values),
+            'Votes': self.vote_score,
+            'User': self.user.login,
+        }
+
+    def __str__(self) -> str:
+        return (
+            f'[{self.controlled_attribute_id}] {self.concatenated_attr_val} '
+            f'({len(self.votes)} votes)'
+        )

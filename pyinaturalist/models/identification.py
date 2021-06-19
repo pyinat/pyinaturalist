@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from pyinaturalist.constants import TableRow
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
@@ -41,4 +42,22 @@ class Identification(BaseModel):
     # spam: bool = kwarg
     # flags: List = field(factory=list)
     # moderator_actions: List = field(factory=list)
-    # observation: {}  # TODO: Is this actually needed?
+    # observation: {}
+
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Taxon ID': self.taxon.id,
+            'Taxon': self.taxon.full_name,
+            'User': self.user.login,
+            'Category': self.category.title(),
+            'From CV': self.vision,
+        }
+
+    def __str__(self) -> str:
+        """Format into a condensed summary: id, what, when, and who"""
+        return (
+            f'[{self.id}] {self.taxon.full_name} ({self.category}) added on {self.created_at} '
+            f'by {self.user.login}'
+        )

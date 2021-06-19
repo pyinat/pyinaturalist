@@ -21,9 +21,12 @@
     * All can still be imported via `from pyinaturalist import *`
     * Added aliases for backwards-compatibility, so imports from `pyinaturalist.rest_api` and
       `pyinaturalist.node_api` will still work, but these are deprecated and will be removed in a future release
+* Deprecated `get_geojson_observations()` (moved to join other observation conversion tools in `pyinaturalist-convert`)
 
 ### Models
-Added data models for all API response types, to support working with typed python objects instead of JSON:
+Added data models for all API response types, to support working with typed python objects instead of JSON.
+
+Models:
 * Annotation
 * Comment
 * Identification
@@ -35,12 +38,27 @@ Added data models for all API response types, to support working with typed pyth
 * Photo
 * Place
 * Project
+    * ProjectObservation
     * ProjectObservationField
     * ProjectUser
+* SearchResult
 * Taxon
 * User
 
+Model features:
+* Type conversions
+* Lazy initialization
+* Basic formatters
+* Table formatters
+
 ### Other Changes
+* Consolidated response formatting into a single `pprint()` function (instead of one per resource type)
+* Refactored and reorganized the following internal utility modules (see API docs for details):
+    * `api_docs`
+    * `converters`
+    * `formatters`
+    * `request_params`
+* Added `examples/sample_responses.py`, containint response JSON, model objects, and tables of every type to experiment with
 * Set up pyinaturalist-notebook to [runnable with Binder](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
 
 -----
@@ -74,22 +92,11 @@ Added data models for all API response types, to support working with typed pyth
 * Removed `node_api.get_all_observation_species_counts()`, since this was only added recently
 * Updated `rest_api.get_observation_fields()` to return a dict with `'results'` for consistency with other endpoints
 
-### Response Formatting
-* Removed `minify` option from `get_taxa_autocomplete`
-* Added the following response formatting functions to `pyinaturalist.formatters`:
-    * `format_controlled_terms()`
-    * `format_identifications()`
-    * `format_observations()`
-    * `format_places()`
-    * `format_projects()`
-    * `format_species_counts()`
-    * `format_taxa()`
-    * `format_users()`
-    * `simplify_observations()`
-
 ### Other Changes
+* Added response formatting functions to `pyinaturalist.formatters`
 * All API functions and formatters can now be imported from the top-level package, e.g.
   `from pyinaturalist import *`
+* Removed `minify` option from `get_taxa_autocomplete`
 * Published [pyinaturalist on conda-forge](https://anaconda.org/conda-forge/pyinaturalist)
 * Added global rate-limiting to stay within the rates suggested in
   [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)

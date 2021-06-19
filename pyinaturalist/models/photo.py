@@ -1,10 +1,11 @@
+# TODO: Method to preview image in Jupyter
 from typing import Optional, Tuple
 
 from attr import field
 
-from pyinaturalist.constants import CC_LICENSES, PHOTO_INFO_BASE_URL, PHOTO_SIZES
+from pyinaturalist.constants import CC_LICENSES, PHOTO_INFO_BASE_URL, PHOTO_SIZES, TableRow
+from pyinaturalist.converters import format_dimensions, format_license
 from pyinaturalist.models import BaseModel, define_model, kwarg
-from pyinaturalist.response_format import format_dimensions, format_license
 
 
 @define_model
@@ -25,10 +26,14 @@ class Photo(BaseModel):
         if not self.url:
             return
 
-        # Get a URL format string to get different photo sizes
+        # Get a URL format string to get different photo sizes. Note: default URL may be any size.
         for size in PHOTO_SIZES:
             if f'{size}.' in self.url:
                 self._url_format = self.url.replace(size, '{size}')
+
+    @property
+    def dimensions_str(self) -> str:
+        return f'{self.original_dimensions[0]}x{self.original_dimensions[1]}'
 
     @property
     def has_cc_license(self) -> bool:
@@ -80,3 +85,15 @@ class Photo(BaseModel):
         if url:
             img = Image.open(requests.get(url, stream=True).raw)
             img.show()
+
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'License': self.license_code,
+            'Dimensions': self.dimensions_str,
+            'URL': self.original_url,
+        }
+
+    def __str__(self) -> str:
+        return f'[{self.id}] {self.original_url} ({self.license_code}, {self.dimensions_str})'

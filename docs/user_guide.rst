@@ -1,6 +1,10 @@
-General Usage
-=============
-This page contains usage information that applies to most or all pyinaturalist functions.
+User Guide
+==========
+This page summarizes how to use the main features of pyinaturalist.
+
+.. contents::
+    :local:  
+    :depth: 1
 
 Installation
 ------------
@@ -18,6 +22,121 @@ If you would like to use the latest development (pre-release) version::
 
 See :ref:`contributing` for details on setup for local development.
 
+Imports
+-------
+All of the main features can be imported from the top-level ``pyinaturalist`` namespace:
+
+    >>> from pyinaturalist import Taxon, get_observations, pprint  # etc.
+
+Or to just import everything (convenient for scripts and notebooks, but less so for applications):
+
+    >>> from pyinaturalist import *
+
+Requests
+--------
+Requests generally follow the same format as the `API <https://api.inaturalist.org/v1>`_
+and `search URLs <https://forum.inaturalist.org/t/how-to-use-inaturalists-search-urls-wiki>`_.
+
+For example, if you wanted to search observations by user, the following API request::
+
+    https://api.inaturalist.org/v1/observations?user_id=tiwane%2Cjdmore
+
+And search URL::
+
+    https://www.inaturalist.org/observations?user_id=tiwane,jdmore
+
+Are equivalent to the following pyinaturalist search:
+
+    >>> get_observations(user_id=['tiwane', 'jdmore'])
+
+There are some optional conveniences you can use, for example:
+
+* Python lists instead of comma-separated strings
+* Python booleans instead of JS-style boolean strings or 1/0
+* Python file-like objects or file paths for photo and sound uploads
+* Python :py:class:`~datetime.date` and :py:class:`~datetime.datetime` objects instead of date/time strings
+* Some simplified data formats for create and update requests
+* Simplified pagination
+* Validation for multiple-choice parameters (for example, ``quality_grade``)
+
+And more, depending on the function.
+See the :ref:`reference` section for a complete list of functions available.
+
+Responses
+---------
+API responses are returned as JSON, with some python type conversions applied (similar to the request
+type conversions mentioned above). Example response data is shown in the documentation for each request
+function. For example, here's what an observation response looks like:
+
+.. admonition:: Observation response JSON
+    :class: toggle
+
+        .. literalinclude:: sample_data/get_observations_node.py
+
+Previewing Responses
+^^^^^^^^^^^^^^^^^^^^
+These responses can contain large amounts of response attributes, making it somewhat cumbersome if you
+just want to quickly preview results (for example, in a Jupyter notebook or REPL).
+For that purpose, a handy :py:func:`~pyinaturalist.formatters.pprint` function is included that will
+format and print responses and model objects as a condensed, colorized table.
+
+**Examples:**
+
+.. admonition:: Example observation table
+    :class: toggle
+
+    >>> from pyinaturalist import get_observations, pprint
+    >>> observations = get_observations(user_id='niconoe', per_page=5)
+    >>> pprint(observations)
+    ID         Taxon ID   Taxon                                                  Observed on    User      Location                        
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 
+    82974075   61546      Species: Nemophora degeerella (Yellow-barred Longhorn) Jun 14, 2021   niconoe   1428 Braine-l'Alleud, Belgique                                                                                  
+    82827577   48201      Family: Scarabaeidae (Scarabs)                         Jun 13, 2021   niconoe   1428 Braine-l'Alleud, Belgique  
+    82826778   48201      Family: Scarabaeidae (Scarabs)                         Jun 13, 2021   niconoe   1428 Braine-l'Alleud, Belgique  
+    82696354   209660     Species: Chrysolina americana (Rosemary Beetle)        Jun 12, 2021   niconoe   1420 Braine-l'Alleud, Belgique  
+    82696334   472617     Species: Tomocerus vulgaris                            Jun 07, 2021   niconoe   1428 Braine-l'Alleud, Belgique  
+                                 
+
+.. admonition:: Example place table
+    :class: toggle
+
+    >>> from pyinaturalist import get_places, pprint
+    >>> places = get_places_autocomplete('Vale')
+    >>> pprint(places)
+     ID       Latitude    Longitude   Name                  Category   URL                                        
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 
+    96877      49.5189     -2.5190   Vale                             https://www.inaturalist.org/places/96877   
+    21951     -16.8960    -40.8349   Fronteira dos Vales              https://www.inaturalist.org/places/21951   
+    23663      -6.3677    -41.8001   Valença do Piauí                 https://www.inaturalist.org/places/23663   
+    24222     -27.2220    -53.6338   Pinheirinho do Vale              https://www.inaturalist.org/places/24222   
+    24374     -29.8309    -52.1121   Vale Verde                       https://www.inaturalist.org/places/24374   
+    24442     -10.3841    -62.0939   Vale do Paraíso                  https://www.inaturalist.org/places/24442   
+    103902     44.7355     27.5412   Valea Ciorii                     https://www.inaturalist.org/places/103902  
+    103905     44.7529     26.8481   Valea Macrisului                 https://www.inaturalist.org/places/103905  
+    105015     44.6805     24.0224   Valea Mare                       https://www.inaturalist.org/places/105015  
+    104268     46.7917     27.0905   Valea Ursului                    https://www.inaturalist.org/places/104268        
+
+
+.. admonition:: Example place table (with terminal colors)
+    :class: toggle
+
+    .. figure:: images/pprint_table.png
+
+
+Models
+------
+Data models (:py:mod:`pyinaturalist.models`) are included for all API response types. These allow
+working with typed python objects instead of raw JSON. These are not used by default in the API query
+functions, but you can easily use them as follows:
+
+.. admonition:: Convert observation response JSON to Observation objects
+    :class: toggle
+
+    >>> from pyinaturalist import Observation, get_observations
+    >>> response = get_observations(user_id='my_username)
+    >>> observations = Observation.from_json_list(response)
+
+In a future release, these models will be fully integrated with the API query functions.
 
 Pagination
 ----------
@@ -146,7 +265,6 @@ macOS and Linux systems. See this guide for setup info:
 <https://avaldes.co/2020/01/28/secret-service-keepassxc.html>`_.
 
 .. figure:: images/password_manager_keying.png
-   :alt: map to buried treasure
 
    Credentials storage with keyring + KeePassXC
 

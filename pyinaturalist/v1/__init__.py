@@ -32,7 +32,6 @@ def get_v1(endpoint: str, **kwargs) -> Response:
 from pyinaturalist.v1.controlled_terms import get_controlled_terms
 from pyinaturalist.v1.identifications import get_identifications, get_identifications_by_id
 from pyinaturalist.v1.observations import (
-    get_geojson_observations,
     get_observation,
     get_observation_histogram,
     get_observation_identifiers,

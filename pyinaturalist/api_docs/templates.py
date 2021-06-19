@@ -6,6 +6,7 @@ type annotations and docstrings.
 from typing import List
 
 from pyinaturalist.constants import (
+    MULTIPLE_CHOICE_PARAMS,
     AnyDate,
     AnyDateTime,
     IntOrStr,
@@ -15,7 +16,6 @@ from pyinaturalist.constants import (
     MultiStr,
     ObsFieldValues,
 )
-from pyinaturalist.request_params import MULTIPLE_CHOICE_PARAMS
 
 # Identifications
 # --------------------
@@ -283,7 +283,7 @@ def _observation_rest_only(
     h1: AnyDate = None,
     h2: AnyDate = None,
     extra: str = None,
-    response_format: str = 'json',
+    converters: str = 'json',
 ):
     """
     has: Catch-all for some boolean selectors. This can be used multiple times, e.g.
@@ -298,7 +298,7 @@ def _observation_rest_only(
         **'fields'** returns observation field values,
         **'observation_photos'** returns information about the photos' relationship with the
         observation, like their order.
-    response_format: A supported response format to return
+    converters: A supported response format to return
     """
 
 

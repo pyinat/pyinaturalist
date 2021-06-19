@@ -1,7 +1,7 @@
-from pyinaturalist import api_docs as docs
+from pyinaturalist.api_docs import document_request_params
+from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.constants import JsonResponse
-from pyinaturalist.forge_utils import document_request_params
-from pyinaturalist.response_format import convert_all_coordinates, convert_all_timestamps
+from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps
 from pyinaturalist.v1 import get_v1
 
 
@@ -14,7 +14,7 @@ def search(q: str, **params) -> JsonResponse:
     Example:
 
         >>> response = search(q='odonat')
-        >>> print(format_search_results(response, align=True))
+        >>> pprint(response)
         [Taxon  ] [47792   ] Order: Odonata (Dragonflies and Damselflies)
         [Place  ] [113562  ] Odonates of Peninsular India and Sri Lanka
         [Project] [9978    ] Ohio Dragonfly Survey  (Ohio Odonata Survey)

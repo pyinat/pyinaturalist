@@ -2,7 +2,8 @@
 from logging import getLogger
 from typing import List, Union
 
-from pyinaturalist import api_docs as docs
+from pyinaturalist.api_docs import document_request_params
+from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.api_requests import delete, get, post, put
 from pyinaturalist.constants import (
     API_V0_BASE_URL,
@@ -11,16 +12,15 @@ from pyinaturalist.constants import (
     ListResponse,
     MultiFile,
 )
-from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.forge_utils import document_request_params
-from pyinaturalist.pagination import add_paginate_all
-from pyinaturalist.request_params import (
-    convert_observation_fields,
+from pyinaturalist.converters import (
+    convert_all_coordinates,
+    convert_all_timestamps,
     ensure_file_obj,
     ensure_list,
-    validate_multiple_choice_param,
 )
-from pyinaturalist.response_format import convert_all_coordinates, convert_all_timestamps
+from pyinaturalist.exceptions import ObservationNotFound
+from pyinaturalist.pagination import add_paginate_all
+from pyinaturalist.request_params import convert_observation_fields, validate_multiple_choice_param
 
 logger = getLogger(__name__)
 
@@ -43,7 +43,7 @@ def get_observations(**params) -> Union[List, str]:
 
     Example:
 
-        >>> get_observations(id=45414404, response_format='atom')
+        >>> get_observations(id=45414404, converters='atom')
 
         .. admonition:: Example Response (atom)
             :class: toggle
@@ -83,19 +83,19 @@ def get_observations(**params) -> Union[List, str]:
     Returns:
         Return type will be ``dict`` for the ``json`` response format, and ``str`` for all others.
     """
-    response_format = params.pop('response_format', 'json')
-    if response_format == 'geojson':
+    converters = params.pop('converters', 'json')
+    if converters == 'geojson':
         raise ValueError('For geojson format, use pyinaturalist.v1.get_geojson_observations')
-    if response_format not in OBSERVATION_FORMATS:
+    if converters not in OBSERVATION_FORMATS:
         raise ValueError('Invalid response format')
     validate_multiple_choice_param(params, 'order_by', REST_OBS_ORDER_BY_PROPERTIES)
 
     response = get(
-        f'{API_V0_BASE_URL}/observations.{response_format}',
+        f'{API_V0_BASE_URL}/observations.{converters}',
         params=params,
     )
 
-    if response_format == 'json':
+    if converters == 'json':
         observations = response.json()
         observations = convert_all_coordinates(observations)
         observations = convert_all_timestamps(observations)

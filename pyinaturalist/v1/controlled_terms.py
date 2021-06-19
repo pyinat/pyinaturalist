@@ -16,7 +16,7 @@ def get_controlled_terms(taxon_id: int = None, user_agent: str = None) -> JsonRe
     Example:
 
         >>> response = get_controlled_terms()
-        >>> print(format_controlled_terms(response))
+        >>> pprint(response)
         1: Life Stage
             2: Adult
             3: Teneral
