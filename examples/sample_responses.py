@@ -30,7 +30,7 @@ def load_sample_data(filename):
 # Sample JSON
 obs_json = load_sample_data('get_observations_node_page1.json')['results'][0]
 obs_json_ofvs = load_sample_data('get_observation_with_ofvs.json')['results'][0]
-obs_field_json = load_sample_data('get_observation_fields_page1.json')[0]
+obs_fields_json = load_sample_data('get_observation_fields_page1.json')
 obs_taxonomy_json = load_sample_data('get_observation_taxonomy.json')
 place_json = load_sample_data('get_places_by_id.json')['results'][0]
 places_nearby_json = load_sample_data('get_places_nearby.json')['results']
@@ -43,6 +43,7 @@ taxon_json_partial = load_sample_data('get_taxa.json')['results'][0]
 annotation_json = obs_json_ofvs['annotations'][0]
 comment_json = obs_json['comments'][0]
 identification_json = obs_json['identifications'][0]
+obs_field_json = obs_fields_json[0]
 ofv_json_numeric = obs_json_ofvs['ofvs'][1]
 ofv_json_taxon = obs_json_ofvs['ofvs'][0]
 photo_json = taxon_json['taxon_photos'][0]['photo']
@@ -71,9 +72,13 @@ taxon_partial = Taxon.from_json(taxon_json_partial)
 user = User.from_json(user_json)
 
 # Sample tables
+annotation_table = format_table(observation_with_ofvs.annotations)
 comment_table = format_table(observation.comments)
 identification_table = format_table(observation.identifications)
+life_list_table = format_table(life_list)
 observation_table = format_table([observation, observation_with_ofvs])
+obs_field_table = format_table(ObservationField.from_json_list(obs_fields_json))
+ofv_table = format_table(observation_with_ofvs.ofvs)
 photo_table = format_table([photo, photo_partial, observation.photos[0]])
 place_table = format_table(places_nearby)
 project_table = format_table([project, project, project])

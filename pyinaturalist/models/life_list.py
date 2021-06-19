@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from attr import field
 
-from pyinaturalist.constants import JsonResponse
+from pyinaturalist.constants import JsonResponse, TableRow
 from pyinaturalist.models import BaseModel, Taxon, define_model, kwarg
 
 
@@ -19,6 +19,15 @@ class LifeListTaxon(Taxon):
     def indent_level(self) -> int:
         """Indentation level corresponding to this item's rank level"""
         return int(((70 - self.rank_level) / 5))
+
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Rank': self.rank,
+            'Name': self.name,
+            'Count': self.count,
+        }
 
     def __str__(self) -> str:
         padding = " " * self.indent_level

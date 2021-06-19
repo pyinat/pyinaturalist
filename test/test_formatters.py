@@ -1,5 +1,8 @@
 import pytest
 
+from rich.console import Console
+from rich.table import Table
+
 from pyinaturalist.formatters import (
     format_controlled_terms,
     format_identifications,
@@ -8,10 +11,13 @@ from pyinaturalist.formatters import (
     format_projects,
     format_search_results,
     format_species_counts,
+    format_table,
     format_taxa,
     format_users,
+    pprint,
     simplify_observations,
 )
+from pyinaturalist.models import LifeList
 from test.conftest import load_sample_data
 
 controlled_term_1 = load_sample_data('get_controlled_terms.json')['results'][0]
@@ -20,6 +26,7 @@ identification_1 = load_sample_data('get_identifications.json')['results'][0]
 identification_2 = load_sample_data('get_identifications.json')['results'][1]
 observation_1 = load_sample_data('get_observation.json')['results'][0]
 observation_2 = load_sample_data('get_observations_node_page1.json')['results'][0]
+obs_taxonomy_json = load_sample_data('get_observation_taxonomy.json')
 place_1 = load_sample_data('get_places_by_id.json')['results'][1]
 place_2 = load_sample_data('get_places_autocomplete.json')['results'][0]
 places_nearby = load_sample_data('get_places_nearby.json')['results']
@@ -34,6 +41,24 @@ taxon_1 = load_sample_data('get_taxa.json')['results'][0]
 taxon_2 = load_sample_data('get_taxa.json')['results'][2]
 user_1 = load_sample_data('get_user_by_id.json')['results'][0]
 user_2 = load_sample_data('get_users_autocomplete.json')['results'][0]
+
+comments = observation_2['comments']
+life_list = LifeList.from_json(obs_taxonomy_json)
+photo = taxon_1['default_photo']
+
+RESPONSES = [
+    comments,
+    [identification_1, identification_2],
+    [observation_1, observation_2],
+    [photo, photo],
+    [place_1, place_2],
+    places_nearby,
+    [project_1, project_2],
+    search_results,
+    [taxon_1, taxon_2],
+    [user_1, user_2],
+    life_list,
+]
 
 
 def get_variations(response_object):
@@ -54,6 +79,31 @@ controlled_term_str_2 = """
     11: Male
     20: Cannot Be Determined
 """.strip()
+
+
+# TODO: More thorough tests for table content
+@pytest.mark.parametrize('response', RESPONSES)
+def test_format_table(response):
+    table = format_table(response)
+    assert isinstance(table, Table)
+
+    def _get_id(value):
+        return str(value.get('id') or value.get('record', {}).get('id'))
+
+    # Just make sure at least object IDs show up in the table
+    console = Console()
+    rendered_table = '\n'.join([str(line) for line in console.render_lines(table)])
+    if isinstance(response, list):
+        assert all([_get_id(value) in rendered_table for value in response])
+
+    # for obj in response:
+    #     assert all([value in rendered_table for value in obj.row.values()])
+
+
+# TODO: Test content written to stdout. For now, just make sure it doesn't explode.
+@pytest.mark.parametrize('response', RESPONSES)
+def test_pprint(response):
+    pprint(response)
 
 
 @pytest.mark.parametrize('input', get_variations(controlled_term_1))

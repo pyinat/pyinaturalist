@@ -20,7 +20,6 @@ from pyinaturalist.models import (
     Comment,
     Identification,
     LifeList,
-    ModelObjects,
     Observation,
     ObservationField,
     ObservationFieldValue,
@@ -49,7 +48,9 @@ HEADER_COLORS = {
     'Category': 'violet',
     'Comment': 'green',
     'Common name': 'blue',
+    'Count': 'blue',
     'Created at': 'blue',
+    'Description': 'green',
     'Dimensions': 'blue',
     'Display name': 'violet',
     'From CV': 'white',
@@ -72,6 +73,8 @@ HEADER_COLORS = {
     'URL': 'white',
     'User': 'magenta',
     'Username': 'magenta',
+    'Value': 'green',
+    'Votes': 'blue',
 }
 
 # Unique response attributes used to auto-detect response types
@@ -98,7 +101,7 @@ def pprint(values: ResponseOrObjects):
 
     **Experimental:** May also be used on most raw JSON API responses
     """
-    print(format_table(ensure_model_list(values)))
+    print(format_table(values))
 
 
 def detect_type(value: ResponseResult) -> Type[BaseModel]:
@@ -114,6 +117,8 @@ def ensure_model_list(values: ResponseOrObjects) -> List[BaseModel]:
     """If the given values are raw JSON responses, attempt to detect their type and convert to
     model objects
     """
+    if isinstance(values, LifeList):
+        return values.taxa  # type: ignore
     values = ensure_list(values)
     if isinstance(values[0], BaseModel):
         return values
@@ -122,19 +127,19 @@ def ensure_model_list(values: ResponseOrObjects) -> List[BaseModel]:
     return [cls.from_json(value) for value in values]
 
 
-def format_table(objects: ModelObjects):
+def format_table(values: ResponseOrObjects):
     """Format model objects as a table. If ``rich`` isn't installed or the model doesn't have a
     table format defined, just return a basic list of stringified objects.
     """
-    objects = ensure_list(objects)
+    values = ensure_model_list(values)
 
     try:
         from rich.box import SIMPLE_HEAVY
         from rich.table import Column, Table
 
-        headers = {k: HEADER_COLORS.get(k, '') for k in objects[0].row.keys()}
+        headers = {k: HEADER_COLORS.get(k, '') for k in values[0].row.keys()}
     except (ImportError, NotImplementedError):
-        return '\n'.join([str(obj) for obj in objects])
+        return '\n'.join([str(obj) for obj in values])
 
     # Display any date/datetime values in short format
     def _str(value):
@@ -145,7 +150,7 @@ def format_table(objects: ModelObjects):
     columns = [Column(header, style=style) for header, style in headers.items()]
     table = Table(*columns, box=SIMPLE_HEAVY, header_style='bold white', row_styles=['dim', 'none'])
 
-    for obj in objects:
+    for obj in values:
         table.add_row(*[_str(value) for value in obj.row.values()])
     return table
 
