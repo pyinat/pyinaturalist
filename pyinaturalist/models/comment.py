@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import List
 
+from pyinaturalist.constants import TableRow
 from pyinaturalist.models import BaseModel, LazyProperty, User, datetime_now_attr, define_model, kwarg
 
 
@@ -24,18 +24,14 @@ class Comment(BaseModel):
     # flags: List = field(factory=list)
     # moderator_actions: List = field(factory=list)
 
-    # Column headers for simplified table format
-    headers = {
-        'ID': 'cyan',
-        'User': 'magenta',
-        'Created at': 'blue',
-        'Comment': 'green',
-    }
-
     @property
-    def row(self) -> List:
-        """Get basic values to display as a row in a table"""
-        return [self.id, self.user.login, self.created_at, self.body]
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'User': self.user.login,
+            'Created at': self.created_at,
+            'Comment': self.body,
+        }
 
     def __str__(self) -> str:
         return f'{self.user.login} at {self.created_at}: {self.body}'

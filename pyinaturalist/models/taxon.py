@@ -8,6 +8,7 @@ from pyinaturalist.constants import (
     INAT_BASE_URL,
     RANKS,
     JsonResponse,
+    TableRow,
 )
 from pyinaturalist.models import BaseModel, LazyProperty, Photo, define_model, kwarg
 from pyinaturalist.v1 import get_taxa_by_id
@@ -115,18 +116,14 @@ class Taxon(BaseModel):
             key = key.lstrip('_')  # Use getters/setters for LazyProperty instead of temp attrs
             setattr(self, key, getattr(t, key))
 
-    # Column headers for simplified table format
-    headers = {
-        'ID': 'cyan',
-        'Rank': 'dodger_blue1',
-        'Scientific name': 'green',
-        'Common name': 'blue',
-    }
-
     @property
-    def row(self) -> List:
-        """Get basic values to display as a row in a table"""
-        return [self.id, self.rank, f'{self.emoji} {self.name}', self.preferred_common_name]
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Rank': self.rank,
+            'Scientific name': f'{self.emoji} {self.name}',
+            'Common name': self.preferred_common_name,
+        }
 
     def __str__(self) -> str:
         return f'[{self.id}] {self.full_name}' if self.name else self.full_name

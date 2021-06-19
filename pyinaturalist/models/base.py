@@ -15,7 +15,7 @@ from typing import Dict, Iterable, List, Type, TypeVar, Union
 
 from attr import asdict, define, field, fields_dict
 
-from pyinaturalist.constants import AnyFile, JsonResponse, ResponseOrFile, ResponseOrResults
+from pyinaturalist.constants import AnyFile, JsonResponse, ResponseOrFile, ResponseOrResults, TableRow
 from pyinaturalist.converters import convert_lat_long, ensure_list, try_datetime
 
 T = TypeVar('T', bound='BaseModel')
@@ -66,7 +66,8 @@ class BaseModel:
         return [cls.from_json(item) for item in ensure_list(value)]
 
     @property
-    def row(self) -> List:
+    def row(self) -> TableRow:
+        """Get values and headers to display as a row in a table"""
         raise NotImplementedError
 
     # TODO: Use cattr.unstructure() to handle recursion properly (for nested model objects)?

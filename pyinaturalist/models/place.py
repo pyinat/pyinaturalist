@@ -2,7 +2,14 @@ from typing import Dict, List, Union
 
 from attr import field
 
-from pyinaturalist.constants import INAT_BASE_URL, Coordinates, GeoJson, JsonResponse, ResponseOrResults
+from pyinaturalist.constants import (
+    INAT_BASE_URL,
+    Coordinates,
+    GeoJson,
+    JsonResponse,
+    ResponseOrResults,
+    TableRow,
+)
 from pyinaturalist.converters import convert_lat_long
 from pyinaturalist.models import BaseModel, define_model, kwarg
 from pyinaturalist.models.base import ensure_list
@@ -47,28 +54,20 @@ class Place(BaseModel):
             return super(Place, cls).from_json_list(json_value)
 
     @property
-    def centroid(self) -> str:
-        """Formatted centroid coordinates"""
-        return f'({self.location[0]:.5f}, {self.location[1]:.5f})'
-
-    @property
     def url(self) -> str:
         """Info URL on iNaturalist.org"""
         return f'{INAT_BASE_URL}/places/{self.id}'
 
-    # Column headers for simplified table format
-    headers = {
-        'ID': 'cyan',
-        'Name': 'green',
-        'Centroid': 'blue',
-        'Category': 'magenta',
-        'URL': 'white',
-    }
-
     @property
-    def row(self) -> List:
-        """Get basic values to display as a row in a table"""
-        return [self.id, self.name, self.centroid, self.category or '', self.url]
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Latitude': f'{self.location[0]:9.4f}',
+            'Longitude': f'{self.location[1]:9.4f}',
+            'Name': self.name,
+            'Category': self.category,
+            'URL': self.url,
+        }
 
     def __str__(self) -> str:
         return f'[{self.id}] {self.name}'

@@ -205,4 +205,5 @@ MultiFile = Union[FileOrPath, Iterable[FileOrPath]]
 MultiInt = Union[int, Iterable[int]]
 MultiStr = Union[str, Iterable[str]]
 MultiIntOrStr = Union[MultiInt, MultiStr]
+TableRow = Dict[str, Any]
 TemplateFunction = Any  # Cannot use Callable/Protocol, as these will not allow a mix of signatures

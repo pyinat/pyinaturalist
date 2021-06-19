@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 
 from attr import define, field
 
-from pyinaturalist.constants import Coordinates
+from pyinaturalist.constants import Coordinates, TableRow
 from pyinaturalist.converters import convert_observation_timestamp
 from pyinaturalist.models import (
     Annotation,
@@ -149,27 +149,16 @@ class Observation(BaseModel):
             return None
         return self.photos[0].thumbnail_url
 
-    # Column headers for simplified table format  # TODO: A better place to put these?
-    headers = {
-        'ID': 'cyan',
-        'Taxon ID': 'cyan',
-        'Taxon': 'green',
-        'Observed on': 'blue',
-        'User': 'magenta',
-        'Location': 'white',
-    }
-
     @property
-    def row(self) -> List:
-        """Get basic values to display as a row in a table"""
-        return [
-            self.id,
-            self.taxon.id,
-            self.taxon.full_name,
-            self.observed_on,
-            self.user.login,
-            self.place_guess or self.location,
-        ]
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Taxon ID': self.taxon.id,
+            'Taxon': self.taxon.full_name,
+            'Observed on': self.observed_on,
+            'User': self.user.login,
+            'Location': self.place_guess or self.location,
+        }
 
     def __str__(self) -> str:
         return (

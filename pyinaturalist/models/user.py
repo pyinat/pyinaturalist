@@ -3,7 +3,7 @@ from typing import List
 
 from attr import field
 
-from pyinaturalist.constants import INAT_BASE_URL
+from pyinaturalist.constants import INAT_BASE_URL, TableRow
 from pyinaturalist.models import BaseModel, datetime_now_attr, define_model, kwarg
 
 
@@ -49,19 +49,15 @@ class User(BaseModel):
         """Info URL on iNaturalist.org"""
         return f'{INAT_BASE_URL}/users/{self.id}'
 
-    # Column headers for simplified table format
-    headers = {
-        'ID': 'cyan',
-        'Username': 'magenta',
-        'Display name': 'violet',
-        'Obs. count': 'blue',
-        'ID count': 'blue',
-    }
-
     @property
-    def row(self) -> List:
-        """Get basic values to display as a row in a table"""
-        return [self.id, self.login, self.name, self.observations_count, self.identifications_count]
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Username': self.username,
+            'Display name': self.display_name,
+            'Obs. count': self.observations_count,
+            'ID count': self.identifications_count,
+        }
 
     def __str__(self) -> str:
         real_name = f' ({self.name})' if self.name else ''

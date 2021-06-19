@@ -1,9 +1,9 @@
 # TODO: Method to preview image in Jupyter
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 
 from attr import field
 
-from pyinaturalist.constants import CC_LICENSES, PHOTO_INFO_BASE_URL, PHOTO_SIZES
+from pyinaturalist.constants import CC_LICENSES, PHOTO_INFO_BASE_URL, PHOTO_SIZES, TableRow
 from pyinaturalist.converters import format_dimensions, format_license
 from pyinaturalist.models import BaseModel, define_model, kwarg
 
@@ -86,18 +86,14 @@ class Photo(BaseModel):
             img = Image.open(requests.get(url, stream=True).raw)
             img.show()
 
-    # Column headers for simplified table format
-    headers = {
-        'ID': 'cyan',
-        'License': 'green',
-        'Dimensions': 'blue',
-        'URL': 'white',
-    }
-
     @property
-    def row(self) -> List:
-        """Get basic values to display as a row in a table"""
-        return [self.id, self.license_code, self.dimensions_str, self.original_url]
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'License': self.license_code,
+            'Dimensions': self.dimensions_str,
+            'URL': self.original_url,
+        }
 
     def __str__(self) -> str:
         return f'[{self.id}] {self.original_url} ({self.license_code}, {self.dimensions_str})'

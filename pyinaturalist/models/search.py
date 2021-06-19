@@ -2,6 +2,7 @@ from typing import List, Union
 
 from attr import field
 
+from pyinaturalist.constants import TableRow
 from pyinaturalist.models import BaseModel, Place, Project, Taxon, User, define_model, kwarg
 
 SEARCH_RESULT_TYPES = {cls.__name__: cls for cls in [Place, Project, Taxon, User]}
@@ -31,18 +32,14 @@ class SearchResult(BaseModel):
         name_attr = SEARCH_RESULT_TITLES[self.type]
         return getattr(self.record, name_attr)
 
-    # Column headers for simplified table format
-    headers = {
-        'Type': 'cyan',
-        'Score': 'green',
-        'ID': 'blue',
-        'Name': 'magenta',
-    }
-
     @property
-    def row(self) -> List:
-        """Get basic values to display as a row in a table"""
-        return [self.type, f'{self.score:.2f}', self.record.id, self.record_name]
+    def row(self) -> TableRow:
+        return {
+            'ID': self.record.id,
+            'Type': self.type,
+            'Score': f'{self.score:.2f}',
+            'Name': self.record_name,
+        }
 
     def __str__(self) -> str:
         return f'[{self.type}] {self.record}'

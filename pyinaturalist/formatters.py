@@ -43,6 +43,37 @@ try:
 except ImportError:
     pass
 
+
+# Default colors for table headers
+HEADER_COLORS = {
+    'Category': 'violet',
+    'Comment': 'green',
+    'Common name': 'blue',
+    'Created at': 'blue',
+    'Dimensions': 'blue',
+    'Display name': 'violet',
+    'From CV': 'white',
+    'ID count': 'blue',
+    'ID': 'cyan',
+    'Latitude': 'blue',
+    'License': 'green',
+    'Location': 'white',
+    'Longitude': 'blue',
+    'Name': 'magenta',
+    'Obs. count': 'blue',
+    'Observed on': 'blue',
+    'Rank': 'violet',
+    'Scientific name': 'green',
+    'Score': 'green',
+    'Taxon ID': 'cyan',
+    'Taxon': 'green',
+    'Title': 'green',
+    'Type': 'blue',
+    'URL': 'white',
+    'User': 'magenta',
+    'Username': 'magenta',
+}
+
 # Unique response attributes used to auto-detect response types
 UNIQUE_RESPONSE_ATTRS = {
     'vote_score': Annotation,
@@ -101,8 +132,7 @@ def format_table(objects: ModelObjects):
         from rich.box import SIMPLE_HEAVY
         from rich.table import Column, Table
 
-        headers = objects[0].headers
-        objects[0].row
+        headers = {k: HEADER_COLORS.get(k, '') for k in objects[0].row.keys()}
     except (ImportError, NotImplementedError):
         return '\n'.join([str(obj) for obj in objects])
 
@@ -110,13 +140,13 @@ def format_table(objects: ModelObjects):
     def _str(value):
         if isinstance(value, (date, datetime)):
             return value.strftime('%b %d, %Y')
-        return str(value)
+        return str(value) if value is not None else ''
 
     columns = [Column(header, style=style) for header, style in headers.items()]
     table = Table(*columns, box=SIMPLE_HEAVY, header_style='bold white', row_styles=['dim', 'none'])
 
     for obj in objects:
-        table.add_row(*[_str(value) for value in obj.row])
+        table.add_row(*[_str(value) for value in obj.row.values()])
     return table
 
 

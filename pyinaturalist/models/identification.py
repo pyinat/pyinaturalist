@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import List
 
+from pyinaturalist.constants import TableRow
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
@@ -42,29 +42,18 @@ class Identification(BaseModel):
     # spam: bool = kwarg
     # flags: List = field(factory=list)
     # moderator_actions: List = field(factory=list)
-    # observation: {}  # TODO: Is this actually needed?
-
-    # Column headers for simplified table format  # TODO: A better place to put these?
-    headers = {
-        'ID': 'cyan',
-        'Taxon ID': 'cyan',
-        'Taxon': 'green',
-        'User': 'magenta',
-        'Category': 'blue',
-        'From CV': 'white',
-    }
+    # observation: {}
 
     @property
-    def row(self) -> List:
-        """Get basic values to display as a row in a table"""
-        return [
-            self.id,
-            self.taxon.id,
-            self.taxon.full_name,
-            self.user.login,
-            self.category.title(),
-            self.vision,
-        ]
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Taxon ID': self.taxon.id,
+            'Taxon': self.taxon.full_name,
+            'User': self.user.login,
+            'Category': self.category.title(),
+            'From CV': self.vision,
+        }
 
     def __str__(self) -> str:
         """Format into a condensed summary: id, what, when, and who"""
