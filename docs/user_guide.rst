@@ -155,24 +155,75 @@ Note that this replaces the ``get_all_*()`` functions from pyinaturalist<=0.12.
 
 Authentication
 --------------
-For any endpoints that create, update, or delete data, you will need to authenticate using credentials for an
-`iNaturalist Application <https://www.inaturalist.org/oauth/applications/new>`_.
-
-See `iNaturalist documentation <https://www.inaturalist.org/pages/api+reference#auth>`_
-for more details on authentication, and see :py:func:`.get_access_token` for pyinaturalist usage info and examples.
+For any endpoints that create, update, or delete data, you will need to authenticate using an
+OAuth2 access token. This requires both your iNaturalist username and password, and separate
+"application" credentials.
 
 .. note::
-
     Read-only requests generally don't require authentication; however, if you want to access
     private data visible only to your user (for example, obscured or private coordinates),
     you will need to use an access token.
 
-In addition to :py:func:`.get_access_token` arguments, there are some other options for
-providing credentials:
+**Summary:**
+
+1. Create an iNaturalist application
+2. Use :py:func:`.get_access_token` with your user + application credentials to get an access token
+3. Pass that access token to any API request function that uses it
+
+Creating an Application
+^^^^^^^^^^^^^^^^^^^^^^^
+.. admonition:: Why do I need to create an application?
+    :class: toggle
+
+    iNaturalist uses OAuth2, which provides several different methods (or "flows") to access the site.
+    For example, on the `login page <https://www.inaturalist.org/login>`_, you have the option of logging
+    in with a username/password, or with an external provider (Google, Facebook, etc.):
+
+    .. figure:: images/inat-user-login.png
+        :alt: Login form
+
+    Outside of iNaturalist.org, anything else that uses the API to create or modify data is considered
+    an "application," even if you're just running some scripts on your own computer.
+    
+    See `iNaturalist documentation <https://www.inaturalist.org/pages/api+reference#auth>`_
+    for more details on authentication.
+
+First, go to `New Application <https://www.inaturalist.org/oauth/applications/new>`_ and fill out the
+following pieces of information:
+
+* **Name:** Any name you want to come up with. For example, if this is associated with a GitHub repo,
+  you can use your repo name.
+* **Description:** A brief description of what you'll be using this for. For example,
+  *"Data access for my own observations"*.
+* **Confidential:** ✔️ This should be checked.
+* **URL and Redirect URI:** Just enter the URL to your GitHub repo, if you have one; otherwise any
+  placeholder like "https://www.inaturalist.org" will work.
+
+.. figure:: images/inat-new-application.png
+    :alt: New Application form
+
+You should then see a screen like this, which will show your new application ID and secret. These will
+only be shown once, so save them somewhere secure, preferably in a password manager.
+
+.. figure:: images/inat-new-application-complete.png
+    :alt: Completed application form
+
+Basic Usage
+^^^^^^^^^^^
+There are a few different ways you can pass your credentials to iNaturalist. First, you can pass
+them as keyword arguments to :py:func:`.get_access_token`:
+
+    >>> from pyinaturalist import get_access_token
+    >>> access_token = get_access_token(
+    >>>     username='my_inaturalist_username',  # Username you use to login to iNaturalist.org
+    >>>     password='my_inaturalist_password',  # Password you use to login to iNaturalist.org
+    >>>     app_id='33f27dc63bdf27f4ca6cd95dd',  # OAuth2 application ID 
+    >>>     app_secret='bbce628be722bfe2abde4',  # OAuth2 application secret
+    >>> )
 
 Environment Variables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-You may provide credentials via environment variables instead of arguments. The
+You can also provide credentials via environment variables instead of arguments. The
 environment variable names are the keyword arguments in uppercase, prefixed with ``INAT_``:
 
 * ``INAT_USERNAME``
@@ -186,40 +237,40 @@ environment variable names are the keyword arguments in uppercase, prefixed with
     :class: toggle
 
     >>> import os
-    >>> os.environ['INAT_USERNAME'] = 'my_username'
-    >>> os.environ['INAT_PASSWORD'] = 'my_password'
-    >>> os.environ['INAT_APP_ID'] = '33f27dc63bdf27f4ca6cd95dd9dcd5df'
-    >>> os.environ['INAT_APP_SECRET'] = 'bbce628be722bfe2abd5fc566ba83de4'
+    >>> os.environ['INAT_USERNAME'] = 'my_inaturalist_username'
+    >>> os.environ['INAT_PASSWORD'] = 'my_inaturalist_password'
+    >>> os.environ['INAT_APP_ID'] = '33f27dc63bdf27f4ca6cd95df'
+    >>> os.environ['INAT_APP_SECRET'] = 'bbce628be722bfe283de4'
 
 .. admonition:: Set environment variables in a POSIX shell (bash, etc.):
     :class: toggle
 
     .. code-block:: bash
 
-        export INAT_USERNAME="my_username"
-        export INAT_PASSWORD="my_password"
-        export INAT_APP_ID="33f27dc63bdf27f4ca6cd95dd9dcd5df"
-        export INAT_APP_SECRET="bbce628be722bfe2abd5fc566ba83de4"
+        export INAT_USERNAME="my_inaturalist_username"
+        export INAT_PASSWORD="my_inaturalist_password"
+        export INAT_APP_ID="33f27dc63bdf27f4ca6cd95df"
+        export INAT_APP_SECRET="bbce628be722bfe283de4"
 
 .. admonition:: Set environment variables in a Windows shell:
     :class: toggle
 
     .. code-block:: bat
 
-        set INAT_USERNAME="my_username"
-        set INAT_PASSWORD="my_password"
-        set INAT_APP_ID="33f27dc63bdf27f4ca6cd95dd9dcd5df"
-        set INAT_APP_SECRET="bbce628be722bfe2abd5fc566ba83de4"
+        set INAT_USERNAME="my_inaturalist_username"
+        set INAT_PASSWORD="my_inaturalist_password"
+        set INAT_APP_ID="33f27dc63bdf27f4ca6cd95df"
+        set INAT_APP_SECRET="bbce628be722bfe283de4"
 
 .. admonition:: Set environment variables in PowerShell:
     :class: toggle
 
     .. code-block:: powershell
 
-        $Env:INAT_USERNAME="my_username"
-        $Env:INAT_PASSWORD="my_password"
-        $Env:INAT_APP_ID="33f27dc63bdf27f4ca6cd95dd9dcd5df"
-        $Env:INAT_APP_SECRET="bbce628be722bfe2abd5fc566ba83de4"
+        $Env:INAT_USERNAME="my_inaturalist_username"
+        $Env:INAT_PASSWORD="my_inaturalist_password"
+        $Env:INAT_APP_ID="33f27dc63bdf27f4ca6cd95df"
+        $Env:INAT_APP_SECRET="bbce628be722bfe283de4"
 
 Note that in any shell, these environment variables will only be set for your current shell
 session. I.e., you can't set them in one terminal and then access them in another.
@@ -245,10 +296,10 @@ To store your credentials in the keyring, run :py:func:`.set_keyring_credentials
 
     >>> from pyinaturalist.auth import set_keyring_credentials
     >>> set_keyring_credentials(
-    >>>     username='my_username',
-    >>>     password='my_password',
-    >>>     app_id='33f27dc63bdf27f4ca6cd95dd9dcd5df',
-    >>>     app_secret='bbce628be722bfe2abd5fc566ba83de4',
+    >>>     username='my_inaturalist_username',
+    >>>     password='my_inaturalist_password',
+    >>>     app_id='33f27dc63bdf27f4ca6cd95df',
+    >>>     app_secret='bbce628be722bfe283de4',
     >>> )
 
 Afterward, you can call :py:func:`.get_access_token` without any arguments, and your credentials
