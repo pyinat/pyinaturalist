@@ -28,5 +28,6 @@ Also see :ref:`endpoints` for an overview of which iNaturalist endpoints are cur
 .. toctree::
     :caption: Additional Utility Modules
     :glob:
+    :maxdepth: 1
 
     modules/pyinaturalist.[!vm]*
