@@ -113,7 +113,7 @@ GET               | /points/{zoom}/{x}/{y}.grid.json            |
 POST              | /photos                                     |
 
 
-### v2 API
+### v0 API
 For full documentation, see: https://www.inaturalist.org/pages/api+reference
 
 Method            | Endpoint                                    | Implemented

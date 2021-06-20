@@ -35,7 +35,7 @@ datetime_now_attr = field(converter=try_datetime, factory=utcnow)  # type: ignor
 
 @define(auto_attribs=False)
 class BaseModel:
-    """Base class for models"""
+    """Base class for data models"""
 
     partial: bool = field(default=None, repr=False)
     temp_attrs: List[str] = []

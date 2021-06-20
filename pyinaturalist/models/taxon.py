@@ -19,9 +19,8 @@ class Taxon(BaseModel):
     """A dataclass containing information about a taxon, matching the schema of
     `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_.
 
-    Can be constructed from either a full JSON record, a partial JSON record, or just an ID.
-    Examples of partial records include nested ``ancestors``, ``children``, and results from
-    :py:func:`get_taxa_autocomplete`.
+    Can be constructed from either a full or partial JSON record. Examples of partial records
+    include nested ``ancestors``, ``children``, and results from :py:func:`get_taxa_autocomplete`.
     """
 
     atlas_id: int = kwarg

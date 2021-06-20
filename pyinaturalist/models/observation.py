@@ -27,10 +27,8 @@ from pyinaturalist.v1 import get_observation
 
 @define(auto_attribs=False, init=False, field_transformer=add_lazy_attrs)
 class Observation(BaseModel):
-    """A dataclass containing information about an observation, matching the schema of
+    """An observation, based the schema of
     `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
-
-    Can be constructed from either a full JSON record, a partial JSON record, or just an ID.
     """
 
     created_at: datetime = datetime_now_attr

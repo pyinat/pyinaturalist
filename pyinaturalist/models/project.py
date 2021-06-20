@@ -31,7 +31,7 @@ class ProjectObservation(ObservationField):
 
 @define_model
 class ProjectObservationField(ObservationField):
-    """A :py:class:`.ObservationField` with additional project-specific information"""
+    """An :py:class:`.ObservationField` with additional project-specific information"""
 
     project_observation_field_id: int = kwarg
     position: int = kwarg

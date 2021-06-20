@@ -15,8 +15,8 @@ Contents
     :maxdepth: 2
 
     user_guide
-    endpoints
     examples
+    endpoints
     reference
     contributing
     contributors
