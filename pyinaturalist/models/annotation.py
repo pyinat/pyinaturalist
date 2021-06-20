@@ -8,7 +8,7 @@ from pyinaturalist.models import BaseModel, LazyProperty, User, define_model, kw
 
 @define_model
 class Annotation(BaseModel):
-    """A dataclass containing information about an annotation, matching the schema of annotations
+    """An annotation, e.g. a controlled term value applied by a user to an observation. Based on the schema of annotations
     from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
     """
 

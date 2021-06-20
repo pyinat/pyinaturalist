@@ -9,7 +9,7 @@ from pyinaturalist.models import BaseModel, Taxon, define_model, kwarg
 
 @define_model
 class LifeListTaxon(Taxon):
-    """A dataclass containing information about a single taxon in a user's life list"""
+    """A single taxon in a user's life list"""
 
     count: int = field(default=0)
     descendant_obs_count: int = field(default=0)
@@ -36,9 +36,7 @@ class LifeListTaxon(Taxon):
 
 @define_model
 class LifeList(BaseModel):
-    """A dataclass containing information about a user's life list, based on the schema of
-    ``GET /observations/taxonomy``
-    """
+    """A user's life list, based on the schema of ``GET /observations/taxonomy``"""
 
     count_without_taxon: int = field(default=0)
     taxa: List[LifeListTaxon] = field(factory=list, converter=LifeListTaxon.from_json_list)
