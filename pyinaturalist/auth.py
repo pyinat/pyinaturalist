@@ -27,10 +27,10 @@ def get_access_token(
 
         With direct keyword arguments:
 
-        >>> from pyinaturalist.auth import get_access_token
+        >>> from pyinaturalist import get_access_token
         >>> access_token = get_access_token(
-        >>>     username='my_username',
-        >>>     password='my_password',
+        >>>     username='my_inaturalist_username',
+        >>>     password='my_inaturalist_password',
         >>>     app_id='33f27dc63bdf27f4ca6cd95dd9dcd5df',
         >>>     app_secret='bbce628be722bfe2abd5fc566ba83de4',
         >>> )
@@ -49,10 +49,10 @@ def get_access_token(
         >>> )
 
     Args:
-        username: iNaturalist username
-        password: iNaturalist password
-        app_id: iNaturalist application ID
-        app_secret: iNaturalist application secret
+        username: iNaturalist username (same as the one you use to login on inaturalist.org)
+        password: iNaturalist password (same as the one you use to login on inaturalist.org)
+        app_id: OAuth2 application ID
+        app_secret: OAuth2 application secret
         user_agent: a user-agent string that will be passed to iNaturalist.
 
     Raises:

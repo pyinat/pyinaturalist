@@ -21,6 +21,11 @@ def convert_optional_lat_long(obj: Union[Dict, List, None, str]):
 
 @define_model
 class Place(BaseModel):
+    """A curated or community-contributed place, based on the schema of
+    `GET /places/{id} <https://api.inaturalist.org/v1/docs/#!/Places/get_places_id>`_ and
+    `GET /places/nearby <https://api.inaturalist.org/v1/docs/#!/Places/get_places_nearby>`_.
+    """
+
     admin_level: int = kwarg
     ancestor_place_ids: List[str] = field(factory=list)
     bbox_area: float = kwarg

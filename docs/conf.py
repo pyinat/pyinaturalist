@@ -47,7 +47,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode',
     'sphinx_autodoc_typehints',
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
@@ -107,6 +106,8 @@ html_theme_options = {
     'repo_url': 'https://github.com/niconoe/pyinaturalist',
     'repo_name': project,
     'nav_title': project,
+    'version_dropdown': True,
+    'version_json': '_static/versions.json',
 }
 html_sidebars = {'**': ['logo-text.html', 'globaltoc.html', 'localtoc.html', 'searchbox.html']}
 pygments_style = 'friendly'

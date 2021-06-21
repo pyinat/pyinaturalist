@@ -196,7 +196,7 @@ from the results above:
 Just one last example. There is a [taxon autocomplete](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.node_api.html#pyinaturalist.node_api.get_taxa_autocomplete)
 text search endpoint, which is a bit more niche, and is intended for autocomplete interfaces like
 the one on iNaturalist.org:
-![Taxon autocompletion on iNaturalist.org](docs/images/taxon_autocomplete.png)
+![Taxon autocompletion on iNaturalist.org](docs/images/inat-taxon-autocomplete.png)
 
 But it also provides an easy way to search the iNaturalist taxonomy database by taxon name.
 Here is a quick example that will run searches from console input:

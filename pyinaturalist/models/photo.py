@@ -10,7 +10,9 @@ from pyinaturalist.models import BaseModel, define_model, kwarg
 
 @define_model
 class Photo(BaseModel):
-    """A data class containing information about a remote observation photo"""
+    """An observation photo, based on the schema of photos from
+    `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
+    """
 
     attribution: str = kwarg
     id: int = kwarg

@@ -1,4 +1,11 @@
-"""Dataclasses for modeling iNaturalist API response objects"""
+"""Dataclasses for modeling iNaturalist API response objects
+
+.. automodsumm:: pyinaturalist.models
+    :classes-only:
+    :nosignatures:
+    :skip: BaseModel,LazyProperty
+
+"""
 # flake8: noqa: F401
 # TODO: Validators for multiple choice fields?
 from typing import Callable
@@ -42,6 +49,5 @@ from pyinaturalist.models.search import SearchResult
 
 # Add aliases for some of the longer class names
 ID = Identification
-OF = ObservationField
+OFD = ObservationField
 OFV = ObservationFieldValue
-POF = ProjectObservationField
