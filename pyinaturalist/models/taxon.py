@@ -16,32 +16,32 @@ from pyinaturalist.v1 import get_taxa_by_id
 
 @define_model
 class Taxon(BaseModel):
-    """A dataclass containing information about a taxon, matching the schema of
+    """An iNaturalist taxon, based on the schema of
     `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_.
 
     Can be constructed from either a full or partial JSON record. Examples of partial records
-    include nested ``ancestors``, ``children``, and results from :py:func:`get_taxa_autocomplete`.
+    include nested ``ancestors``, ``children``, and results from :py:func:`.get_taxa_autocomplete`.
     """
 
     atlas_id: int = kwarg
     complete_rank: str = kwarg
     complete_species_count: int = kwarg
     extinct: bool = kwarg
-    iconic_taxon_id: int = field(default=0)
-    iconic_taxon_name: str = field(default='unknown')
-    id: int = kwarg
+    iconic_taxon_id: int = field(default=0)  #: ID of the iconic taxon or taxon "category"
+    iconic_taxon_name: str = field(default='unknown')  #: Name of the iconic taxon or taxon "category"
+    id: int = kwarg  #: Taxon ID
     is_active: bool = kwarg
     listed_taxa_count: int = kwarg
-    name: str = kwarg
+    name: str = kwarg  #: Taxon name
     observations_count: int = kwarg
-    parent_id: int = kwarg
-    rank: str = kwarg
-    rank_level: int = kwarg
+    parent_id: int = kwarg  #: Taxon ID of immediate ancestor
+    rank: str = kwarg  #: Taxon rank (species, genus, etc.)
+    rank_level: int = kwarg  # Rank number for easier comparison between ranks (kingdom=higest)
     taxon_changes_count: int = kwarg
     taxon_schemes_count: int = kwarg
-    wikipedia_summary: str = kwarg
-    wikipedia_url: str = kwarg
-    preferred_common_name: str = field(default='')
+    wikipedia_summary: str = kwarg  # Taxon summary from Wikipedia article, if available
+    wikipedia_url: str = kwarg  # URL to Wikipedia article for the taxon, if available
+    preferred_common_name: str = field(default='')  # Common name for the current locale, if any
 
     # Nested collections
     ancestor_ids: List[int] = field(factory=list)
