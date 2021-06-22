@@ -45,6 +45,7 @@ exclude_patterns = ['_build', 'modules/pyinaturalist.rst']
 # Sphinx extension modules
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
     'sphinx_autodoc_typehints',
@@ -70,8 +71,11 @@ napoleon_google_docstring = True
 napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = False
 
-# Options for automodapi
+# Options for autosummary and automodapi
+automodapi_inheritance_diagram = False
 automodsumm_inherited_members = False
+autosummary_generate = True
+autosummary_generate_overwrite = False
 autosummary_imported_members = False
 numpydoc_show_class_members = False
 
@@ -80,10 +84,9 @@ copybutton_prompt_text = r'>>> |\.\.\. |\$ '
 copybutton_prompt_is_regexp = True
 
 # Use apidoc to auto-generate rst sources
-# Added here instead of instead of in Makefile so it will be used by ReadTheDocs
 apidoc_module_dir = PACKAGE_DIR
 apidoc_output_dir = 'modules'
-apidoc_excluded_paths = ['api_docs.py', 'node_api.py', 'rest_api.py']
+apidoc_excluded_paths = ['api_docs/*', 'node_api.py', 'rest_api.py']
 apidoc_extra_args = ['--templatedir=_templates']
 apidoc_module_first = True
 apidoc_separate_modules = True
@@ -103,9 +106,10 @@ html_theme_options = {
     'color_accent': 'teal',
     'globaltoc_depth': 3,
     'globaltoc_includehidden': False,
+    'master_doc': False,
+    'nav_title': project,
     'repo_url': 'https://github.com/niconoe/pyinaturalist',
     'repo_name': project,
-    'nav_title': project,
     'version_dropdown': True,
     'version_json': '_static/versions.json',
 }
@@ -132,6 +136,7 @@ def setup(app):
     """
     app.connect('builder-inited', setup_external_files)
     app.connect('builder-inited', patch_automodapi)
+    app.add_css_file('style.css')
     app.add_css_file('collapsible_container.css')
 
 
@@ -141,7 +146,7 @@ def setup_external_files(app):
     """
     make_symlink(IMAGE_DIR_SRC, IMAGE_DIR_SYMLINK)
     make_symlink(DATA_DIR_SRC, DATA_DIR_SYMLINK)
-    # Unfortunately this can't by symlinked; nbsphinx will insert image links relative to this dir
+    # Unfortunately this can't be symlinked; nbsphinx will insert image links relative to this dir
     rmtree(NOTEBOOK_DIR_COPY, ignore_errors=True)
     copytree(NOTEBOOK_DIR_SRC, NOTEBOOK_DIR_COPY)
 
