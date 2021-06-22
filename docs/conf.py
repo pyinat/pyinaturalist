@@ -74,8 +74,8 @@ napoleon_include_special_with_doc = False
 # Options for autosummary and automodapi
 automodapi_inheritance_diagram = False
 automodsumm_inherited_members = False
-# autosummary_generate = True
-# autosummary_generate_overwrite = True
+autosummary_generate = True
+autosummary_generate_overwrite = False
 autosummary_imported_members = False
 numpydoc_show_class_members = False
 
@@ -136,6 +136,7 @@ def setup(app):
     """
     app.connect('builder-inited', setup_external_files)
     app.connect('builder-inited', patch_automodapi)
+    app.add_css_file('style.css')
     app.add_css_file('collapsible_container.css')
 
 
