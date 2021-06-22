@@ -19,35 +19,47 @@
 {{- pkgname | e | heading }}
 {% endif %}
 
-{%- if modulefirst and not is_namespace %}
+{%- if not is_namespace %}
 {{ automodule(pkgname, automodule_options) }}
 {% endif %}
+
+{%- if pkgname.endswith('.models') %}
+Classes
+-------
+{% for submodule in submodules %}
+.. automodsumm:: {{ submodule }}
+    :classes-only:
+    :nosignatures:
+
+{%- endfor %}
+{%- endif %}
 
 {%- if subpackages %}
 Subpackages
 -----------
-
 {{ toctree(subpackages) }}
 {% endif %}
 
 {%- if submodules %}
 Submodules
 ----------
-{% if separatemodules %}
 {{ toctree(submodules) }}
-{% else %}
-{%- for submodule in submodules %}
-{% if show_headings %}
-{{- [submodule, "module"] | join(" ") | e | heading(2) }}
-{% endif %}
-{{ automodule(submodule, automodule_options) }}
-{% endfor %}
-{%- endif %}
+
+
+{%- if not pkgname.endswith('.models') %}
+
+Functions
+---------
+{% for submodule in submodules %}
+
+{{ submodule }}
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodsumm:: {{ submodule }}
+    :functions-only:
+    :nosignatures:
+
+{%- endfor %}
 {%- endif %}
 
-{%- if not modulefirst and not is_namespace %}
-Module contents
----------------
-
-{{ automodule(pkgname, automodule_options) }}
-{% endif %}
+{%- endif %}
