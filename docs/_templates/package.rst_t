@@ -27,11 +27,12 @@
 Classes
 -------
 {% for submodule in submodules %}
+
 .. automodsumm:: {{ submodule }}
     :classes-only:
     :nosignatures:
 
-{%- endfor %}
+{% endfor %}
 {%- endif %}
 
 {%- if subpackages %}
