@@ -3,14 +3,6 @@ Functions to access the iNaturalist API v1
 See: http://api.inaturalist.org/v1/docs/
 
 Most recent API version tested: 1.3.0
-
-Functions
----------
-
-.. automodsumm:: pyinaturalist.v1
-    :functions-only:
-    :nosignatures:
-
 """
 # flake8: noqa: F401, F403
 from requests import Response

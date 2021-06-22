@@ -1,11 +1,4 @@
-"""Dataclasses for modeling iNaturalist API response objects
-
-.. automodsumm:: pyinaturalist.models
-    :classes-only:
-    :nosignatures:
-    :skip: BaseModel,LazyProperty
-
-"""
+"""Dataclasses for modeling iNaturalist API response objects"""
 # flake8: noqa: F401
 # TODO: Validators for multiple choice fields?
 from typing import Callable

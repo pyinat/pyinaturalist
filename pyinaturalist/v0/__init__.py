@@ -1,14 +1,6 @@
 """
 Functions to access the original (v0) iNaturalist API
 See: https://www.inaturalist.org/pages/api+reference
-
-Functions
----------
-
-.. automodsumm:: pyinaturalist.v0
-    :functions-only:
-    :nosignatures:
-
 """
 # flake8: noqa: F401, F403
 

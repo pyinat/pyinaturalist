@@ -57,16 +57,16 @@ def put_observation_field_values(
     **API reference:** https://www.inaturalist.org/pages/api+reference#put-observation_field_values-id
 
     Example:
-            >>> # First find an observation field by name, if the ID is unknown
-            >>> response = get_observation_fields('vespawatch_id')
-            >>> observation_field_id = response[0]['id']
-            >>>
-            >>> put_observation_field_values(
-            >>>     observation_id=7345179,
-            >>>     observation_field_id=observation_field_id,
-            >>>     value=250,
-            >>>     access_token=token,
-            >>> )
+        >>> # First find an observation field by name, if the ID is unknown
+        >>> response = get_observation_fields('vespawatch_id')
+        >>> observation_field_id = response[0]['id']
+        >>>
+        >>> put_observation_field_values(
+        >>>     observation_id=7345179,
+        >>>     observation_field_id=observation_field_id,
+        >>>     value=250,
+        >>>     access_token=token,
+        >>> )
 
         .. admonition:: Example Response
             :class: toggle
