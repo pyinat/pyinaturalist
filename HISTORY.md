@@ -58,6 +58,7 @@ Model features:
     * `converters`
     * `formatters`
     * `request_params`
+* Added a default response timeout of 5 seconds
 * Added `examples/sample_responses.py`, containint response JSON, model objects, and tables of every type to experiment with
 * Set up pyinaturalist-notebook to [runnable with Binder](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
 

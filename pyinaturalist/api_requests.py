@@ -42,6 +42,7 @@ def request(
     json: Dict = None,
     session: requests.Session = None,
     raise_for_status: bool = True,
+    timeout: float = 5,
     **kwargs,
 ) -> requests.Response:
     """Wrapper around :py:func:`requests.request` that supports dry-run mode and rate-limiting,
@@ -57,6 +58,8 @@ def request(
         headers: Request headers
         json: JSON request body
         session: Existing Session object to use instead of creating a new one
+        timeout: Time (in seconds) to wait for a response from the server; if exceeded, a
+            :py:exc:`requests.exceptions.Timeout` will be raised.
         kwargs: Additional keyword arguments for :py:meth:`requests.Session.request`
 
     Returns:
@@ -80,7 +83,9 @@ def request(
         return MOCK_RESPONSE
     else:
         with ratelimit():
-            response = session.request(method, url, params=params, headers=headers, json=json, **kwargs)
+            response = session.request(
+                method, url, params=params, headers=headers, json=json, timeout=timeout, **kwargs
+            )
         if raise_for_status:
             response.raise_for_status()
         return response
