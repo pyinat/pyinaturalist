@@ -22,6 +22,7 @@ def test_http_methods(mock_request, http_func, http_method):
         params={'key': 'value'},
         headers={'Accept': 'application/json', 'User-Agent': pyinaturalist.user_agent},
         json=None,
+        timeout=5,
     )
 
 
