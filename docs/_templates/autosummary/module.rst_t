@@ -32,7 +32,7 @@
 
    .. autosummary::
       :toctree:
-      :template: autosummary_class.rst_t
+      :template: autosummary/class.rst_t
    {% for item in classes %}
       {{ item }}
    {%- endfor %}
@@ -57,7 +57,7 @@
 
 .. autosummary::
    :toctree:
-   :template: autosummary_module.rst_t
+   :template: autosummary/module.rst_t
    :recursive:
 {% for item in modules %}
    {{ item }}
