@@ -24,7 +24,7 @@ define_model: Callable = define(auto_attribs=False, field_transformer=add_lazy_a
 from pyinaturalist.models.photo import Photo
 from pyinaturalist.models.taxon import Taxon
 from pyinaturalist.models.user import User
-from pyinaturalist.models.annotation import Annotation
+from pyinaturalist.models.controlled_term import Annotation, ControlledTerm, ControlledTermValue
 from pyinaturalist.models.comment import Comment
 from pyinaturalist.models.identification import Identification
 from pyinaturalist.models.life_list import LifeList, LifeListTaxon

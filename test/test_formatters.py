@@ -48,6 +48,7 @@ photo = taxon_1['default_photo']
 
 RESPONSES = [
     comments,
+    [controlled_term_1, controlled_term_2],
     [identification_1, identification_2],
     [observation_1, observation_2],
     [photo, photo],
@@ -64,21 +65,6 @@ RESPONSES = [
 def get_variations(response_object):
     """Formatting functions should accept any of these variations"""
     return [{'results': [response_object]}, [response_object], response_object]
-
-
-controlled_term_str_1 = """
-12: Plant Phenology
-    21: No Evidence of Flowering
-    13: Flowering
-    14: Fruiting
-    15: Flower Budding
-""".strip()
-controlled_term_str_2 = """
-9: Sex
-    10: Female
-    11: Male
-    20: Cannot Be Determined
-""".strip()
 
 
 # TODO: More thorough tests for table content
@@ -108,7 +94,10 @@ def test_pprint(response):
 
 @pytest.mark.parametrize('input', get_variations(controlled_term_1))
 def test_format_controlled_terms(input):
-    assert format_controlled_terms(input) == controlled_term_str_1
+    assert (
+        format_controlled_terms(input)
+        == '[12] Plant Phenology: No Evidence of Flowering, Flowering, Fruiting, Flower Budding'
+    )
 
 
 @pytest.mark.parametrize('input', get_variations(identification_1))

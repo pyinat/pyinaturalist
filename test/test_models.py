@@ -1,3 +1,10 @@
+"""Things to test for each model:
+
+* Data type conversions
+* We should be able to initialize the model with no args, and get sane defaults
+* Any additional properties or aliases on the model
+* Test formatting in the model's __str__ method
+"""
 import pytest
 from datetime import datetime
 from dateutil.tz import tzoffset, tzutc
@@ -8,6 +15,8 @@ from pyinaturalist.models import (
     OFV,
     Annotation,
     Comment,
+    ControlledTerm,
+    ControlledTermValue,
     LifeList,
     LifeListTaxon,
     Observation,
@@ -25,6 +34,7 @@ from pyinaturalist.models import (
 from pyinaturalist.models.observation_field import ObservationFieldValue
 from test.conftest import load_sample_data, sample_data_path
 
+controlled_term_json = load_sample_data('get_controlled_terms.json')['results'][0]
 obs_json = load_sample_data('get_observations_node_page1.json')['results'][0]
 obs_json_ofvs = load_sample_data('get_observation_with_ofvs.json')['results'][0]
 obs_field_json = load_sample_data('get_observation_fields_page1.json')[0]
@@ -41,6 +51,7 @@ taxon_json_partial = load_sample_data('get_taxa.json')['results'][0]
 
 annotation_json = obs_json_ofvs['annotations'][0]
 comment_json = obs_json['comments'][0]
+controlled_term_value_json = controlled_term_json['values'][0]
 identification_json = obs_json['identifications'][0]
 ofv_json_numeric = obs_json_ofvs['ofvs'][1]
 ofv_json_taxon = obs_json_ofvs['ofvs'][0]
@@ -72,18 +83,16 @@ def test_from_json_list():
     pass
 
 
-# Annotations
+# Controlled Terms
 # --------------------
 
 
 def test_annotation_converters():
-    """Test data type conversions"""
     annotation = Annotation.from_json(annotation_json)
     assert isinstance(annotation.user, User) and annotation.user.id == 2115051
 
 
 def test_annotation_empty():
-    """We should be able to initialize the model with no args, and get sane defaults"""
     annotation = Annotation()
     assert annotation.votes == []
     assert annotation.user is None
@@ -97,6 +106,40 @@ def test_annotation_values():
 def test_annotation_str():
     annotation = Annotation.from_json(annotation_json)
     assert str(annotation) == '[1] 1|2 (0 votes)'
+
+
+def test_controlled_term_converters():
+    controlled_term = ControlledTerm.from_json(controlled_term_json)
+    value = controlled_term.values[0]
+    assert controlled_term.taxon_ids == [47126]
+    assert isinstance(value, ControlledTermValue) and value.id == 21
+
+
+def test_controlled_term_empty():
+    controlled_term = ControlledTerm()
+    assert controlled_term.taxon_ids == []
+    assert controlled_term.values == []
+
+
+def test_controlled_term_properties():
+    controlled_term = ControlledTerm.from_json(controlled_term_json)
+    assert (
+        controlled_term.value_labels == 'No Evidence of Flowering, Flowering, Fruiting, Flower Budding'
+    )
+
+
+def test_controlled_term_str():
+    controlled_term = ControlledTerm.from_json(controlled_term_json)
+    assert (
+        str(controlled_term)
+        == '[12] Plant Phenology: No Evidence of Flowering, Flowering, Fruiting, Flower Budding'
+    )
+
+
+def test_controlled_term_value():
+    controlled_term_value = ControlledTermValue.from_json(controlled_term_value_json)
+    assert controlled_term_value.taxon_ids == [47125]
+    assert str(controlled_term_value) == '[21] No Evidence of Flowering'
 
 
 # Comments

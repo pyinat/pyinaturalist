@@ -10,6 +10,8 @@ from examples.sample_responses import *
 RESPONSES = {
     'annotation': annotation_json,
     'comment': comment_json,
+    'controlled_term': controlled_term_json[0],
+    'controlled_term_value': controlled_term_value_json[0],
     'identification': identification_json,
     'observation_field': obs_field_json,
     'observation': obs_json,

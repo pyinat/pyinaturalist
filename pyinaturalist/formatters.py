@@ -18,6 +18,8 @@ from pyinaturalist.models import (
     Annotation,
     BaseModel,
     Comment,
+    ControlledTerm,
+    ControlledTermValue,
     Identification,
     LifeList,
     Observation,
@@ -56,6 +58,7 @@ HEADER_COLORS = {
     'From CV': 'white',
     'ID count': 'blue',
     'ID': 'cyan',
+    'Label': 'green',
     'Latitude': 'blue',
     'License': 'green',
     'Location': 'white',
@@ -82,6 +85,8 @@ UNIQUE_RESPONSE_ATTRS = {
     'vote_score': Annotation,
     'disagreement': Identification,
     'moderator_actions': Comment,  # Subset of ID attrs; if it's not an ID, assume it's a comment
+    'multivalued': ControlledTerm,
+    'blocking': ControlledTermValue,
     'count_without_taxon': LifeList,
     'captive': Observation,
     'allowed_values': ObservationField,
@@ -155,16 +160,6 @@ def format_table(values: ResponseOrObjects):
     return table
 
 
-def format_controlled_terms(terms: ResponseOrResults, **kwargs) -> str:
-    """Format controlled term results into a condensed list of terms and values"""
-    return _format_results(terms, _format_controlled_term)
-
-
-def _format_controlled_term(term: ResponseResult, **kwargs) -> str:
-    term_values = [f'    {value["id"]}: {value["label"]}' for value in term['values']]
-    return f'{term["id"]}: {term["label"]}\n' + '\n'.join(term_values)
-
-
 def format_species_counts(species_counts: ResponseOrResults, **kwargs) -> str:
     """Format observation species counts into a condensed list of names and # of observations"""
     return _format_results(species_counts, _format_species_count)
@@ -219,6 +214,7 @@ def _format_model_objects(obj: ResponseOrResults, cls: Type[BaseModel], **kwargs
 
 
 # TODO: Figure out type annotations for these. Or just replace with pprint()?
+format_controlled_terms = partial(_format_model_objects, cls=ControlledTerm)
 format_identifications = partial(_format_model_objects, cls=Identification)
 format_observations = partial(_format_model_objects, cls=Observation)
 format_places = partial(_format_model_objects, cls=Place)
