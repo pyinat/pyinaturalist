@@ -27,7 +27,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.6"
-attrs = "^21.2.0"
+attrs = ">=21.2.0"
 python-dateutil = ">=2.0"
 requests = ">=2.20"
 
@@ -38,7 +38,7 @@ pyrate-limiter = ">=2.3.3"
 rich = ">=10.0"
 
 # Documentation dependencies needed for Readthedocs builds
-m2r2 = { version = ">=0.2.7", optional = true }
+m2r2 = { version = ">=0.2.8", optional = true }
 nbsphinx = { version = "^0.8.5", optional = true }
 sphinx = { version = "^4.0.2", optional = true }
 sphinx-automodapi = { version=">=0.13", optional = true}
