@@ -1,4 +1,24 @@
-# Documentation build configuration file, created by sphinx-quickstart
+"""Summary of documentation components:
+
+* ``forge`` is used to define and reuse documentation for API request parameters
+* ``apidoc`` is used to generate rst sources for **modules**
+* ``autosummary`` + ``automodapi`` to generate rst sources for **packages, classes, and summaries**
+* ``intersphinx`` is used to insert links to other projects' docs
+* Jinja templates provide some additional customization:
+    * Show a class summary for ``pyinaturalist.models`` package
+    * Show a function summary for ``pyinaturalist.v*`` packages
+    * Show a function summary for all modules except ``pyinaturalist.models.*``
+* Some Sphinx builder hooks copy some content so it can be accessed relative to ``docs`` dir
+* Some CSS adds collapsible drop-down container
+* Additional CSS is added to customize function-level docs
+* A version dropdown (to switch to docs for older versions) is added with ``sphinx-material``, and
+  versions are listed in ``static/versions.json``
+
+TODO:
+
+* Customization for package-level docs that can be done with module docstrings instead of templates?
+* Automatically generate list of versions for version dropdown?
+"""
 import sys
 from os import makedirs, symlink
 from os.path import abspath, dirname, exists, join
@@ -71,19 +91,15 @@ napoleon_google_docstring = True
 napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = False
 
-# Options for autosummary and automodapi
-automodapi_inheritance_diagram = False
-automodsumm_inherited_members = False
-autosummary_generate = True
-autosummary_generate_overwrite = False
-autosummary_imported_members = False
-numpydoc_show_class_members = False
-
 # Strip prompt text when copying code blocks with copy button
 copybutton_prompt_text = r'>>> |\.\.\. |\$ '
 copybutton_prompt_is_regexp = True
 
-# Use apidoc to auto-generate rst sources
+# Move type hint info to function description instead of signature
+autodoc_typehints = 'description'
+set_type_checking_flag = True
+
+# apidoc settings
 apidoc_module_dir = PACKAGE_DIR
 apidoc_output_dir = 'modules'
 apidoc_excluded_paths = ['api_docs/*', 'node_api.py', 'rest_api.py']
@@ -92,11 +108,13 @@ apidoc_module_first = True
 apidoc_separate_modules = True
 apidoc_toc_file = False
 
-# Move type hint info to function description instead of signature;
-# since we have some really long signatures, the default (`autodoc_typehints = 'signature'`)
-# becomes unreadable because all params + types get crammed into a single line.
-autodoc_typehints = 'description'
-set_type_checking_flag = True
+# autosummary + automodapi settings
+automodapi_inheritance_diagram = False
+automodsumm_inherited_members = False
+autosummary_generate = True
+autosummary_generate_overwrite = False
+autosummary_imported_members = False
+numpydoc_show_class_members = False
 
 # HTML theme settings
 html_theme = 'sphinx_material'
@@ -115,7 +133,9 @@ html_theme_options = {
 }
 html_sidebars = {'**': ['logo-text.html', 'globaltoc.html', 'localtoc.html', 'searchbox.html']}
 pygments_style = 'friendly'
-# pygments_style = 'material'  # TODO If/when dark mode support is added for sphinx-material
+
+# TODO If/when dark mode support is added for sphinx-material
+# pygments_style = 'material'
 
 # Favicon & sidebar logo
 # html_logo = 'logo.jpg'
