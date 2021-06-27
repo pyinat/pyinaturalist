@@ -33,13 +33,13 @@ def get_taxa(**params) -> JsonResponse:
         Response dict containing taxon records
     """
     params = convert_rank_range(params)
-    response = get_v1('taxa', params=params)
+    response = get_v1('taxa', **params)
     taxa = response.json()
     taxa['results'] = convert_all_timestamps(taxa['results'])
     return taxa
 
 
-def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
+def get_taxa_by_id(taxon_id: MultiInt, **params) -> JsonResponse:
     """Get one or more taxa by ID.
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa_id
@@ -67,7 +67,7 @@ def get_taxa_by_id(taxon_id: MultiInt, user_agent: str = None) -> JsonResponse:
     Returns:
         Response dict containing taxon records
     """
-    response = get_v1('taxa', ids=taxon_id, user_agent=user_agent)
+    response = get_v1('taxa', ids=taxon_id, **params)
     taxa = response.json()
     taxa['results'] = convert_all_timestamps(taxa['results'])
     return taxa
@@ -121,5 +121,5 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
         Response dict containing taxon records
     """
     params = convert_rank_range(params)
-    response = get_v1('taxa/autocomplete', params=params)
+    response = get_v1('taxa/autocomplete', **params)
     return response.json()

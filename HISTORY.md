@@ -8,6 +8,7 @@
 * Added new function for **Life list** endpoint: `get_observation_taxonomy()`
 
 ### Modified Endpoints
+* Added support for passing a `requests.Session` object to all API request functions
 * Added a `photos` parameter `create_observation()` and `update_observation()` to upload photos
 * Added a `sounds` parameter `create_observation()` and `update_observation()` to upload sounds
 * Renamed `add_photo_to_observation()` to `upload_photos()`

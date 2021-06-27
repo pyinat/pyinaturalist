@@ -49,17 +49,17 @@ def test_get_taxa_by_rank_range(
 ):
     # Make sure custom rank params result in the correct 'rank' param value
     get_taxa(**params)
-    kwargs = mock_get.call_args[1]
-    requested_rank = kwargs['params']['rank']
+    params = mock_get.call_args[1]
+    requested_rank = params['rank']
     assert requested_rank == expected_ranks
 
 
 # This is just a spot test of a case in which boolean params should be converted
-@patch('pyinaturalist.api_requests.requests.Session.request')
+@patch('pyinaturalist.api_requests.Session.request')
 def test_get_taxa_by_name_and_is_active(request):
     get_taxa(q='Lixus bardanae', is_active=False)
-    request_kwargs = request.call_args[1]
-    assert request_kwargs['params'] == {'q': 'Lixus bardanae', 'is_active': 'false'}
+    params = request.call_args[1]['params']
+    assert params['q'] == 'Lixus bardanae' and params['is_active'] == 'false'
 
 
 def test_get_taxa_by_id(requests_mock):

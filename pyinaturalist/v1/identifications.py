@@ -7,7 +7,7 @@ from pyinaturalist.request_params import convert_rank_range
 from pyinaturalist.v1 import get_v1
 
 
-def get_identifications_by_id(identification_id: MultiInt, user_agent: str = None) -> JsonResponse:
+def get_identifications_by_id(identification_id: MultiInt, **params) -> JsonResponse:
     """Get one or more identification records by ID.
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications_id
@@ -27,7 +27,7 @@ def get_identifications_by_id(identification_id: MultiInt, user_agent: str = Non
     Returns:
         Response dict containing identification records
     """
-    response = get_v1('identifications', ids=identification_id, user_agent=user_agent)
+    response = get_v1('identifications', ids=identification_id, **params)
     identifications = response.json()
     identifications['results'] = convert_all_timestamps(identifications['results'])
     return identifications
@@ -60,7 +60,7 @@ def get_identifications(**params) -> JsonResponse:
         Response dict containing identification records
     """
     params = convert_rank_range(params)
-    response = get_v1('identifications', params=params)
+    response = get_v1('identifications', **params)
     identifications = response.json()
     identifications['results'] = convert_all_timestamps(identifications['results'])
     return identifications
