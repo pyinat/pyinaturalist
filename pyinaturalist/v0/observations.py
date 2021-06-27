@@ -90,11 +90,7 @@ def get_observations(**params) -> Union[List, str]:
         raise ValueError('Invalid response format')
     validate_multiple_choice_param(params, 'order_by', REST_OBS_ORDER_BY_PROPERTIES)
 
-    response = get(
-        f'{API_V0_BASE_URL}/observations.{converters}',
-        params=params,
-    )
-
+    response = get(f'{API_V0_BASE_URL}/observations.{converters}', **params)
     if converters == 'json':
         observations = response.json()
         observations = convert_all_coordinates(observations)
@@ -141,11 +137,13 @@ def create_observation(access_token: str, **params) -> ListResponse:
         ``response`` attribute gives more details about the errors.
     """
 
-    params, photos, sounds = _process_observation_params(params)
+    params, photos, sounds, user_agent, session = _process_observation_params(params)
     response = post(
         url=f'{API_V0_BASE_URL}/observations.json',
         json={'observation': params},
         access_token=access_token,
+        user_agent=user_agent,
+        session=session,
     )
     response_json = response.json()
     observation_id = response_json[0]['id']
@@ -165,11 +163,7 @@ def create_observation(access_token: str, **params) -> ListResponse:
         docs._update_observation,
     ]
 )
-def update_observation(
-    observation_id: int,
-    access_token: str,
-    **params,
-) -> ListResponse:
+def update_observation(observation_id: int, access_token: str, **params) -> ListResponse:
     """
     Update a single observation.
 
@@ -204,11 +198,13 @@ def update_observation(
         :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an
             error 410 if the observation doesn't exists or belongs to another user.
     """
-    params, photos, sounds = _process_observation_params(params)
+    params, photos, sounds, user_agent, session = _process_observation_params(params)
     response = put(
         url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
         json={'observation': params},
         access_token=access_token,
+        user_agent=user_agent,
+        session=session,
     )
 
     if photos:
@@ -234,15 +230,12 @@ def _process_observation_params(params):
     else:
         params['ignore_photos'] = 1
 
-    return params, photos, sounds
+    user_agent = params.pop('user_agent', None)
+    session = params.pop('session', None)
+    return params, photos, sounds, user_agent, session
 
 
-def upload_photos(
-    observation_id: int,
-    photos: MultiFile,
-    access_token: str,
-    user_agent: str = None,
-) -> ListResponse:
+def upload_photos(observation_id: int, photos: MultiFile, access_token: str, **params) -> ListResponse:
     """Upload a local photo and assign it to an existing observation.
 
     Example:
@@ -268,7 +261,6 @@ def upload_photos(
         observation_id: the ID of the observation
         photo: An image file, file-like object, or path
         access_token: the access token, as returned by :func:`get_access_token()`
-        user_agent: a user-agent string that will be passed to iNaturalist.
 
     Returns:
         Information about the uploaded photo(s)
@@ -279,10 +271,10 @@ def upload_photos(
         response = post(
             url=f'{API_V0_BASE_URL}/observation_photos',
             access_token=access_token,
-            params={'observation_photo[observation_id]': observation_id},
             files={'file': ensure_file_obj(photo)},
-            user_agent=user_agent,
             raise_for_status=False,
+            **{'observation_photo[observation_id]': observation_id},
+            **params,
         )
         responses.append(response)
 
@@ -292,15 +284,8 @@ def upload_photos(
     return [response.json() for response in responses]
 
 
-def upload_sounds(
-    observation_id: int,
-    sounds: MultiFile,
-    access_token: str,
-    user_agent: str = None,
-) -> ListResponse:
-    """Upload a local photo and assign it to an existing observation.
-
-    **API reference:** https://www.inaturalist.org/pages/api+reference#post-observation_photos
+def upload_sounds(observation_id: int, sounds: MultiFile, access_token: str, **params) -> ListResponse:
+    """Upload a local sound file and assign it to an existing observation.
 
     Example:
 
@@ -325,7 +310,6 @@ def upload_sounds(
         observation_id: the ID of the observation
         sound: An audio file, file-like object, or path
         access_token: the access token, as returned by :func:`get_access_token()`
-        user_agent: a user-agent string that will be passed to iNaturalist.
 
     Returns:
         Information about the uploaded sound(s)
@@ -336,10 +320,10 @@ def upload_sounds(
         response = post(
             url=f'{API_V0_BASE_URL}/observation_sounds',
             access_token=access_token,
-            params={'observation_sound[observation_id]': observation_id},
             files={'file': ensure_file_obj(sound)},
-            user_agent=user_agent,
             raise_for_status=False,
+            **{'observation_sound[observation_id]': observation_id},
+            **params,
         )
         responses.append(response)
 
@@ -350,7 +334,7 @@ def upload_sounds(
 
 
 @document_request_params([docs._observation_id, docs._access_token])
-def delete_observation(observation_id: int, access_token: str = None, user_agent: str = None):
+def delete_observation(observation_id: int, access_token: str = None, **params):
     """
     Delete an observation.
 
@@ -371,8 +355,8 @@ def delete_observation(observation_id: int, access_token: str = None, user_agent
     response = delete(
         url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
         access_token=access_token,
-        user_agent=user_agent,
         raise_for_status=False,
+        **params,
     )
     if response.status_code == 404:
         raise ObservationNotFound

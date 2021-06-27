@@ -53,7 +53,7 @@ def get_access_token(
         password: iNaturalist password (same as the one you use to login on inaturalist.org)
         app_id: OAuth2 application ID
         app_secret: OAuth2 application secret
-        user_agent: a user-agent string that will be passed to iNaturalist.
+        user_agent: A custom user-agent string to provide to the iNaturalist API
 
     Raises:
         :py:exc:`requests.HTTPError` (401) if credentials are invalid

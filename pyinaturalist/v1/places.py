@@ -6,7 +6,7 @@ from pyinaturalist.pagination import add_paginate_all
 from pyinaturalist.v1 import get_v1
 
 
-def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse:
+def get_places_by_id(place_id: MultiInt, **params) -> JsonResponse:
     """
     Get one or more places by ID.
 
@@ -29,7 +29,7 @@ def get_places_by_id(place_id: MultiInt, user_agent: str = None) -> JsonResponse
     Returns:
         Response dict containing place records
     """
-    response = get_v1('places', ids=place_id, user_agent=user_agent)
+    response = get_v1('places', ids=place_id, **params)
 
     # Convert coordinates to floats
     places = response.json()
@@ -71,7 +71,7 @@ def get_places_nearby(**params) -> JsonResponse:
     Returns:
         Response dict containing place records, divided into 'standard' and 'community' places.
     """
-    response = get_v1('places/nearby', params=params)
+    response = get_v1('places/nearby', **params)
     return convert_all_place_coordinates(response.json())
 
 
@@ -99,13 +99,10 @@ def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
 
             .. literalinclude:: ../sample_data/get_places_autocomplete.py
 
-    Args:
-        q: Name must begin with this value
-
     Returns:
         Response dict containing place records
     """
-    response = get_v1('places/autocomplete', params={'q': q, **params})
+    response = get_v1('places/autocomplete', q=q, **params)
 
     # Convert coordinates to floats
     places = response.json()

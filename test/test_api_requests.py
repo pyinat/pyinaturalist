@@ -13,9 +13,9 @@ from pyinaturalist.api_requests import MOCK_RESPONSE, delete, get, post, put, ra
     'http_func, http_method',
     [(delete, 'DELETE'), (get, 'GET'), (post, 'POST'), (put, 'PUT')],
 )
-@patch('pyinaturalist.api_requests.requests.Session.request')
+@patch('pyinaturalist.api_requests.Session.request')
 def test_http_methods(mock_request, http_func, http_method):
-    http_func('https://url', params={'key': 'value'})
+    http_func('https://url', key='value', session=None)
     mock_request.assert_called_with(
         http_method,
         'https://url',
@@ -45,11 +45,19 @@ def test_http_methods(mock_request, http_func, http_method):
         ),
     ],
 )
-@patch('pyinaturalist.api_requests.requests.Session.request')
+@patch('pyinaturalist.api_requests.Session.request')
 def test_request_headers(mock_request, input_kwargs, expected_headers):
     request('GET', 'https://url', **input_kwargs)
     request_kwargs = mock_request.call_args[1]
     assert request_kwargs['headers'] == expected_headers
+
+
+@patch('pyinaturalist.api_requests.get_session')
+def test_request_session(mock_get_session):
+    mock_session = MagicMock()
+    request('GET', 'https://url', session=mock_session)
+    mock_session.request.assert_called()
+    mock_get_session.assert_not_called()
 
 
 # Test relevant combinations of dry-run settings and HTTP methods
@@ -85,7 +93,7 @@ def test_request_headers(mock_request, input_kwargs, expected_headers):
     ],
 )
 @patch('pyinaturalist.api_requests.getenv')
-@patch('pyinaturalist.api_requests.requests.Session.request')
+@patch('pyinaturalist.api_requests.Session.request')
 def test_request_dry_run(
     mock_request,
     mock_getenv,

@@ -9,7 +9,7 @@ from pyinaturalist.v1 import get_v1
 logger = getLogger(__name__)
 
 
-def get_user_by_id(user_id: int, user_agent: str = None) -> JsonResponse:
+def get_user_by_id(user_id: int, **params) -> JsonResponse:
     """Get a user by ID.
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Users/get_users_id
@@ -31,7 +31,7 @@ def get_user_by_id(user_id: int, user_agent: str = None) -> JsonResponse:
     Returns:
         Response dict containing user record
     """
-    response = get_v1('users', ids=[user_id], user_agent=user_agent)
+    response = get_v1('users', ids=[user_id], **params)
     results = response.json()['results']
     if not results:
         return {}
@@ -61,7 +61,7 @@ def get_users_autocomplete(q: str, **params) -> JsonResponse:
     Returns:
         Response dict containing user records
     """
-    response = get_v1('users/autocomplete', params={'q': q, **params})
+    response = get_v1('users/autocomplete', q=q, **params)
     users = response.json()
     users['results'] = convert_all_timestamps(users['results'])
     return users

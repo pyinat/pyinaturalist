@@ -31,7 +31,7 @@ def get_observation_fields(**params) -> JsonResponse:
     Returns:
         Observation fields as a list of dicts
     """
-    response = get(f'{API_V0_BASE_URL}/observation_fields.json', params=params)
+    response = get(f'{API_V0_BASE_URL}/observation_fields.json', **params)
     obs_fields = response.json()
     obs_fields = convert_all_timestamps(obs_fields)
     return {'results': obs_fields}
@@ -42,7 +42,7 @@ def put_observation_field_values(
     observation_field_id: int,
     value: Any,
     access_token: str,
-    user_agent: str = None,
+    **kwargs,
 ) -> JsonResponse:
     # TODO: Also implement a put_or_update_observation_field_values() that deletes then recreates the field_value?
     # TODO: Return some meaningful exception if it fails because the field is already set.
@@ -79,13 +79,11 @@ def put_observation_field_values(
         observation_field_id: ID of the observation field for this observation field value
         value: Value for the observation field
         access_token: The access token, as returned by :func:`get_access_token()`
-        user_agent: A user-agent string that will be passed to iNaturalist.
 
     Returns:
         The newly updated field value record
     """
-
-    payload = {
+    json_body = {
         'observation_field_value': {
             'observation_id': observation_id,
             'observation_field_id': observation_field_id,
@@ -96,7 +94,7 @@ def put_observation_field_values(
     response = put(
         f'{API_V0_BASE_URL}/observation_field_values/{observation_field_id}',
         access_token=access_token,
-        user_agent=user_agent,
-        json=payload,
+        json=json_body,
+        **kwargs,
     )
     return response.json()
