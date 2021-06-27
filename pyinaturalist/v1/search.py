@@ -29,7 +29,7 @@ def search(q: str, **params) -> JsonResponse:
     Returns:
         Response dict containing search results
     """
-    response = get_v1('search', params={'q': q, **params})
+    response = get_v1('search', q=q, **params)
     search_results = response.json()
     search_results['results'] = convert_all_timestamps(search_results['results'])
     search_results['results'] = convert_all_coordinates(search_results['results'])

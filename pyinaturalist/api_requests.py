@@ -6,11 +6,9 @@ from os import getenv
 from typing import Dict
 from unittest.mock import Mock
 
-import requests
+from requests import Response, Session
 
 import pyinaturalist
-
-# from pyinaturalist.exceptions import TooManyRequests
 from pyinaturalist.api_docs import copy_signature
 from pyinaturalist.constants import (
     MAX_DELAY,
@@ -24,7 +22,7 @@ from pyinaturalist.constants import (
 from pyinaturalist.request_params import prepare_request
 
 # Mock response content to return in dry-run mode
-MOCK_RESPONSE = Mock(spec=requests.Response)
+MOCK_RESPONSE = Mock(spec=Response)
 MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0, 'access_token': ''}
 
 logger = getLogger(__name__)
@@ -37,14 +35,13 @@ def request(
     access_token: str = None,
     user_agent: str = None,
     ids: MultiInt = None,
-    params: RequestParams = None,
     headers: Dict = None,
     json: Dict = None,
-    session: requests.Session = None,
+    session: Session = None,
     raise_for_status: bool = True,
     timeout: float = 5,
-    **kwargs,
-) -> requests.Response:
+    **params: RequestParams,
+) -> Response:
     """Wrapper around :py:func:`requests.request` that supports dry-run mode and rate-limiting,
     and adds appropriate headers.
 
@@ -52,15 +49,14 @@ def request(
         method: HTTP method
         url: Request URL
         access_token: access_token: the access token, as returned by :func:`get_access_token()`
-        user_agent: a user-agent string that will be passed to iNaturalist
+        user_agent: A custom user-agent string to provide to the iNaturalist API
         ids: One or more integer IDs used as REST resource(s) to request
-        params: Requests parameters
         headers: Request headers
         json: JSON request body
         session: Existing Session object to use instead of creating a new one
         timeout: Time (in seconds) to wait for a response from the server; if exceeded, a
             :py:exc:`requests.exceptions.Timeout` will be raised.
-        kwargs: Additional keyword arguments for :py:meth:`requests.Session.request`
+        params: All other keyword arguments are interpreted as request parameters
 
     Returns:
         API response
@@ -79,12 +75,12 @@ def request(
     # Run either real request or mock request depending on settings
     if is_dry_run_enabled(method):
         logger.debug('Dry-run mode enabled; mocking request')
-        log_request(method, url, params=params, headers=headers, **kwargs)
+        log_request(method, url, params=params, headers=headers)
         return MOCK_RESPONSE
     else:
         with ratelimit():
             response = session.request(
-                method, url, params=params, headers=headers, json=json, timeout=timeout, **kwargs
+                method, url, params=params, headers=headers, json=json, timeout=timeout
             )
         if raise_for_status:
             response.raise_for_status()
@@ -92,25 +88,25 @@ def request(
 
 
 @copy_signature(request, exclude='method')
-def delete(url: str, **kwargs) -> requests.Response:
+def delete(url: str, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.delete` that supports dry-run mode and rate-limiting"""
     return request('DELETE', url, **kwargs)
 
 
 @copy_signature(request, exclude='method')
-def get(url: str, **kwargs) -> requests.Response:
+def get(url: str, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.get` that supports dry-run mode and rate-limiting"""
     return request('GET', url, **kwargs)
 
 
 @copy_signature(request, exclude='method')
-def post(url: str, **kwargs) -> requests.Response:
+def post(url: str, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.post` that supports dry-run mode and rate-limiting"""
     return request('POST', url, **kwargs)
 
 
 @copy_signature(request, exclude='method')
-def put(url: str, **kwargs) -> requests.Response:
+def put(url: str, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.put` that supports dry-run mode and rate-limiting"""
     return request('PUT', url, **kwargs)
 
@@ -143,14 +139,14 @@ def get_limiter():
         return None
 
 
-def get_session() -> requests.Session:
+def get_session() -> Session:
     """Get a Session object that will be reused across requests to take advantage of connection
     pooling. This is especially relevant for large paginated requests. If used in a multi-threaded
     context (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), a separate session
     is used for each thread.
     """
     if not hasattr(thread_local, "session"):
-        thread_local.session = requests.Session()
+        thread_local.session = Session()
     return thread_local.session
 
 

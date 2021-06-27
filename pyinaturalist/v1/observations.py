@@ -18,7 +18,7 @@ from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import get_v1
 
 
-def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse:
+def get_observation(observation_id: int, **params) -> JsonResponse:
     """Get details about a single observation by ID
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_id
@@ -35,8 +35,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
             .. literalinclude:: ../sample_data/get_observation.py
 
     Args:
-        observation_id: Observation ID
-        user_agent: a user-agent string that will be passed to iNaturalist.
+        observation_id: Get the observation with this ID. Only a single value is allowed.
 
     Returns:
         A dict with details on the observation
@@ -45,7 +44,7 @@ def get_observation(observation_id: int, user_agent: str = None) -> JsonResponse
         :py:exc:`.ObservationNotFound` If an invalid observation is specified
     """
 
-    response = get_observations(id=observation_id, user_agent=user_agent)
+    response = get_observations(id=observation_id, **params)
     if response['results']:
         return convert_observation_timestamps(response['results'][0])
     raise ObservationNotFound()
@@ -101,7 +100,7 @@ def get_observation_histogram(**params) -> HistogramResponse:
         Dict of ``{time_key: observation_count}``. Keys are ints for 'month of year' and\
         'week of year' intervals, and :py:class:`~datetime.datetime` objects for all other intervals.
     """
-    response = get_v1('observations/histogram', params=params)
+    response = get_v1('observations/histogram', **params)
     return convert_histogram(response.json())
 
 
@@ -141,7 +140,7 @@ def get_observations(**params) -> JsonResponse:
         Response dict containing observation records
     """
     validate_multiple_choice_param(params, 'order_by', NODE_OBS_ORDER_BY_PROPERTIES)
-    response = get_v1('observations', params=params)
+    response = get_v1('observations', **params)
 
     observations = response.json()
     observations['results'] = convert_all_coordinates(observations['results'])
@@ -175,7 +174,7 @@ def get_observation_species_counts(**params) -> JsonResponse:
     Returns:
         Response dict containing taxon records with counts
     """
-    response = get_v1('observations/species_counts', params=params)
+    response = get_v1('observations/species_counts', **params)
     return response.json()
 
 
@@ -209,7 +208,7 @@ def get_observation_observers(**params) -> JsonResponse:
         Response dict of observers
     """
     params.setdefault('per_page', 500)
-    response = get_v1('observations/observers', params=params)
+    response = get_v1('observations/observers', **params)
     return response.json()
 
 
@@ -239,12 +238,12 @@ def get_observation_identifiers(**params) -> JsonResponse:
         Response dict of identifiers
     """
     params.setdefault('per_page', 500)
-    response = get_v1('observations/identifiers', params=params)
+    response = get_v1('observations/identifiers', **params)
     return response.json()
 
 
 @add_paginate_all(method='page')
-def get_observation_taxonomy(user_id: IntOrStr, user_agent: str = None) -> JsonResponse:
+def get_observation_taxonomy(user_id: IntOrStr, **params) -> JsonResponse:
     """Get observation counts for all taxa in a full taxonomic tree. In the web UI, these are used
     for life lists.
 
@@ -264,5 +263,5 @@ def get_observation_taxonomy(user_id: IntOrStr, user_agent: str = None) -> JsonR
     Returns:
         Response dict containing taxon records with counts
     """
-    response = get_v1('observations/taxonomy', params={'user_id': user_id}, user_agent=user_agent)
+    response = get_v1('observations/taxonomy', user_id=user_id, **params)
     return response.json()

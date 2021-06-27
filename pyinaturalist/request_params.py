@@ -51,16 +51,12 @@ def prepare_request(
     # Prepare request params
     params = preprocess_request_params(params)
 
-    # Prepare user and authentication headers
+    # Prepare user-agent and authentication headers
     headers = headers or {}
+    headers['User-Agent'] = user_agent or pyinaturalist.user_agent
     headers['Accept'] = 'application/json'
     if access_token:
         headers['Authorization'] = f'Bearer {access_token}'
-
-    # Allow user agent to be passed either in params or as a separate kwarg
-    if 'user_agent' in params:
-        user_agent = params.pop('user_agent')
-    headers['User-Agent'] = user_agent or pyinaturalist.user_agent
 
     # If one or more resources are requested by ID, valudate and update the request URL accordingly
     if ids:

@@ -7,6 +7,8 @@ from inspect import cleandoc, ismethod, signature
 from logging import getLogger
 from typing import Callable, List
 
+from requests import Session
+
 from pyinaturalist.constants import TemplateFunction
 
 logger = getLogger(__name__)
@@ -49,7 +51,7 @@ def copy_doc_signature(template_functions: List[TemplateFunction]) -> Callable:
         template_functions: Template functions containing docstrings and params to apply to the
             wrapped function
     """
-    template_functions += [_user_agent]
+    template_functions += [_user_agent, _session]
 
     def wrapper(func):
         # Modify docstring
@@ -147,8 +149,14 @@ def _get_combined_revision(target_function: Callable, template_functions: List[T
     return forge.sign(*fparams.values())
 
 
-# Param template that's added to every function signature by default
+# Param templates that are added to every function signature by default
 def _user_agent(user_agent: str = None):
     """
     user_agent: A custom user-agent string to provide to the iNaturalist API
+    """
+
+
+def _session(session: Session = None):
+    """
+    session: Allows managing your own `Session object <https://docs.python-requests.org/en/latest/user/advanced/>`_
     """

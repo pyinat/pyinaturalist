@@ -44,7 +44,7 @@ def get_projects(**params) -> JsonResponse:
         Response dict containing project records
     """
     validate_multiple_choice_param(params, 'order_by', PROJECT_ORDER_BY_PROPERTIES)
-    response = get_v1('projects', params=params)
+    response = get_v1('projects', **params)
 
     projects = response.json()
     projects['results'] = convert_all_coordinates(projects['results'])
@@ -52,9 +52,7 @@ def get_projects(**params) -> JsonResponse:
     return projects
 
 
-def get_projects_by_id(
-    project_id: MultiInt, rule_details: bool = None, user_agent: str = None
-) -> JsonResponse:
+def get_projects_by_id(project_id: MultiInt, rule_details: bool = None, **params) -> JsonResponse:
     """Get one or more projects by ID.
 
     **API reference:** https://api.inaturalist.org/v1/docs/#!/Projects/get_projects_id
@@ -79,12 +77,7 @@ def get_projects_by_id(
     Returns:
         Response dict containing project records
     """
-    response = get_v1(
-        'projects',
-        ids=project_id,
-        params={'rule_details': rule_details},
-        user_agent=user_agent,
-    )
+    response = get_v1('projects', ids=project_id, params={'rule_details': rule_details}, **params)
 
     projects = response.json()
     projects['results'] = convert_all_coordinates(projects['results'])
