@@ -51,7 +51,6 @@ photo_json_partial = taxon_json['default_photo']
 search_results_json = load_sample_data('get_search.json')['results']
 user_json_partial = user_json_autocomplete[0]
 
-
 # Sample model objects
 annotation = Annotation.from_json(annotation_json)
 comment = Comment.from_json(comment_json)

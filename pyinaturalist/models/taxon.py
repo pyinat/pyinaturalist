@@ -1,4 +1,5 @@
-from typing import Dict, List
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from attr import field, fields_dict
 
@@ -10,51 +11,62 @@ from pyinaturalist.constants import (
     JsonResponse,
     TableRow,
 )
-from pyinaturalist.models import BaseModel, LazyProperty, Photo, define_model, kwarg
+from pyinaturalist.models import BaseModel, LazyProperty, Photo, datetime_attr, define_model, kwarg
 from pyinaturalist.v1 import get_taxa_by_id
 
 
 @define_model
 class Taxon(BaseModel):
-    """A dataclass containing information about a taxon, matching the schema of
+    """An iNaturalist taxon, based on the schema of
     `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_.
 
     Can be constructed from either a full or partial JSON record. Examples of partial records
-    include nested ``ancestors``, ``children``, and results from :py:func:`get_taxa_autocomplete`.
+    include nested ``ancestors``, ``children``, and results from :py:func:`.get_taxa_autocomplete`.
     """
 
-    atlas_id: int = kwarg
-    complete_rank: str = kwarg
-    complete_species_count: int = kwarg
-    extinct: bool = kwarg
-    iconic_taxon_id: int = field(default=0)
-    iconic_taxon_name: str = field(default='unknown')
-    id: int = kwarg
-    is_active: bool = kwarg
-    listed_taxa_count: int = kwarg
-    name: str = kwarg
-    observations_count: int = kwarg
-    parent_id: int = kwarg
-    rank: str = kwarg
-    rank_level: int = kwarg
-    taxon_changes_count: int = kwarg
-    taxon_schemes_count: int = kwarg
-    wikipedia_summary: str = kwarg
-    wikipedia_url: str = kwarg
-    preferred_common_name: str = field(default='')
+    complete_rank: str = kwarg  #: Complete or "leaf taxon" rank, e.g. species or subspecies
+    complete_species_count: int = kwarg  #: Total number of species descended from this taxon
+    created_at: Optional[datetime] = datetime_attr  #: When the taxon was added to iNaturalist
+    extinct: bool = kwarg  #: Indicates if the taxon is extinct
+    iconic_taxon_id: int = field(default=0)  #: ID of the iconic taxon or taxon "category"
+    iconic_taxon_name: str = field(default='unknown')  #: Name of the iconic taxon or taxon "category"
+    id: int = kwarg  #: Taxon ID
+    is_active: bool = kwarg  #: Indicates if the taxon is active (and not renamed, moved, etc.)
+    listed_taxa_count: int = kwarg  #: Number of listed taxa from this taxon + descendants
+    name: str = kwarg  #: Taxon name; contains full scientific name at species level and below
+    observations_count: int = kwarg  #: Total number of observations of this taxon and its descendants
+    parent_id: int = kwarg  #: Taxon ID of immediate ancestor
+    preferred_common_name: str = field(default='')  #: Common name for the preferred place, if any
+    preferred_establishment_means: str = kwarg  #: Establishment means for this taxon + preferred place
+    rank_level: int = kwarg  #: Rank number for easier comparison between ranks (kingdom=higest)
+    rank: str = kwarg  #: Taxon rank (species, genus, etc.)
+    taxon_changes_count: int = kwarg  #: Number of curator changes to this taxon
+    taxon_schemes_count: int = kwarg  #: Taxon schemes that include this taxon
+    wikipedia_summary: str = kwarg  #: Taxon summary from Wikipedia article, if available
+    wikipedia_url: str = kwarg  #: URL to Wikipedia article for the taxon, if available
 
     # Nested collections
-    ancestor_ids: List[int] = field(factory=list)
-    conservation_statuses: List[str] = field(factory=list)
-    current_synonymous_taxon_ids: List[int] = field(factory=list)
-    flag_counts: Dict = field(factory=dict)
-    listed_taxa: List = field(factory=list)
+    # TODO: Models+enums for conservation status and establishment means?
+    ancestor_ids: List[int] = field(factory=list)  #: Taxon IDs of ancestors, from highest rank to lowest
+    conservation_status: Dict[str, Any] = field(factory=dict)
+    conservation_statuses: List[Dict] = field(factory=list)  #:
+    current_synonymous_taxon_ids: List[int] = field(factory=list)  #: Taxa that are accepted synonyms
+    establishment_means: Dict[str, Any] = field(factory=dict)  #: Establishment means details
+    listed_taxa: List = field(factory=list)  #: Listed taxon IDs
 
     # Lazy-loaded nested model objects
     ancestors: property = LazyProperty(BaseModel.from_json_list)
     children: property = LazyProperty(BaseModel.from_json_list)
     default_photo: property = LazyProperty(Photo.from_json)
     taxon_photos: property = LazyProperty(Photo.from_json_list)
+
+    # Unused attributes
+    # atlas_id: int = kwarg
+    # flag_counts: Dict[str, int] = field(factory=dict)  # {"unresolved": 1, "resolved": 2}
+    # min_species_ancestry: str = kwarg  #: Used internally by iNaturalist for Elasticsearch aggregations
+    # min_species_taxon_id: int = kwarg
+    # photos_locked: bool = kwarg
+    # universal_search_rank: int = kwarg
 
     @classmethod
     def from_sorted_json_list(cls, value: JsonResponse) -> List['Taxon']:
@@ -75,17 +87,24 @@ class Taxon(BaseModel):
         return ICONIC_EMOJI.get(self.iconic_taxon_id, '❓')
 
     @property
-    def full_name(taxon) -> str:
-        """Taxon rank, scientific name, and common name (if available)"""
-        if not taxon:
-            return 'unknown taxon'
-        if not taxon.name:
-            name = str(taxon.id)
-        else:
-            common_name = taxon.preferred_common_name
-            name = taxon.name + (f' ({common_name})' if common_name else '')
+    def full_name(self) -> str:
+        """Taxon rank, scientific name, and common name (if available).
 
-        return f'{taxon.rank.title()}: {name}'
+        Example:
+
+            >>> taxon.full_name
+            'Genus: Physcia (Rosette Lichens)'
+
+        """
+        if not self.name and not self.rank:
+            return 'unknown taxon'
+        if not self.name:
+            name = str(self.id)
+        else:
+            common_name = self.preferred_common_name
+            name = self.name + (f' ({common_name})' if common_name else '')
+
+        return f'{self.rank.title()}: {name}'
 
     @property
     def icon_url(self) -> str:
