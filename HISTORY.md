@@ -46,6 +46,8 @@ Models:
     * ProjectUser
 * SearchResult
 * Taxon
+    * TaxonCount
+    * TaxonCounts
 * User
 
 Model features:

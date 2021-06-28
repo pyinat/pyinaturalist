@@ -152,6 +152,71 @@ Taxon.ancestors = LazyProperty(Taxon.from_json_list, 'ancestors')
 Taxon.children = LazyProperty(Taxon.from_sorted_json_list, 'children')
 
 
+@define_model
+class TaxonCount(Taxon):
+    """A taxon with an associated count, used in a :py:class:`.TaxonCounts` collection"""
+
+    count: int = field(default=0)
+
+    @classmethod
+    def from_json(cls, value: JsonResponse, user_id: int = None, **kwargs) -> 'TaxonCount':
+        """Flatten out count + taxon fields into a single-level dict before initializing"""
+        if 'results' in value:
+            value = value['results']
+        if 'taxon' in value:
+            value.update(value.pop('taxon'))
+        return super(TaxonCount, cls).from_json(value)  # type: ignore
+
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Rank': self.rank,
+            'Name': self.name,
+            'Count': self.count,
+        }
+
+    def __str__(self) -> str:
+        return f'[{self.id}] {self.full_name}: {self.count}'
+
+
+@define_model
+class TaxonCounts(BaseModel):
+    """A taxon with an associated count. Used with
+    `GET /observations/species_counts <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_species_counts>`_.
+    as well as :py:class:`.LifeList`.
+    """
+
+    taxa: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
+    _taxon_counts: Dict[int, int] = field(default=None, init=False, repr=False)
+
+    @classmethod
+    def from_json(cls, value: JsonResponse, **kwargs) -> 'TaxonCounts':
+        if 'results' in value:
+            value = value['results']
+        if 'taxa' not in value:
+            value = {'taxa': value}
+        return super(TaxonCounts, cls).from_json(value)  # type: ignore
+
+    @classmethod
+    def from_json_list(cls, value: JsonResponse, **kwargs) -> 'TaxonCounts':  # type: ignore
+        """Since this model represents a collection, just alias this to ``from_json``"""
+        return cls.from_json(value)
+
+    def count(self, taxon_id: int) -> int:
+        """Get an observation count for the specified taxon and its descendants.
+        **Note:** ``-1`` can be used an alias for ``count_without_taxon``.
+        """
+        # Make and cache an index of taxon IDs and observation counts
+        if self._taxon_counts is None:
+            self._taxon_counts = {t.id: t.descendant_obs_count for t in self.taxa}
+            self._taxon_counts[-1] = self.count_without_taxon
+        return self._taxon_counts.get(taxon_id, 0)
+
+    def __str__(self) -> str:
+        return '\n'.join([str(taxon) for taxon in self.taxa])
+
+
 def _get_rank_name_idx(taxon):
     return _get_rank_idx(taxon.rank), taxon.name
 

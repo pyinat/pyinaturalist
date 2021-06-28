@@ -23,6 +23,7 @@ RESPONSES = {
     'project': project_json,
     'search': search_results_json[0],
     'taxon': taxon_json_partial,
+    'taxon_counts': obs_species_counts_json[0],
     'user': user_json_partial,
 }
 

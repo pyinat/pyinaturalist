@@ -1,17 +1,16 @@
 from itertools import groupby
-from typing import Dict, List
+from typing import List
 
 from attr import field
 
-from pyinaturalist.constants import JsonResponse, TableRow
-from pyinaturalist.models import BaseModel, Taxon, define_model, kwarg
+from pyinaturalist.constants import JsonResponse
+from pyinaturalist.models import Taxon, TaxonCount, TaxonCounts, define_model, kwarg
 
 
 @define_model
-class LifeListTaxon(Taxon):
+class LifeListTaxon(TaxonCount):
     """A single taxon in a user's life list"""
 
-    count: int = field(default=0)
     descendant_obs_count: int = field(default=0)
     direct_obs_count: int = field(default=0)
 
@@ -20,47 +19,28 @@ class LifeListTaxon(Taxon):
         """Indentation level corresponding to this item's rank level"""
         return int(((70 - self.rank_level) / 5))
 
-    @property
-    def row(self) -> TableRow:
-        return {
-            'ID': self.id,
-            'Rank': self.rank,
-            'Name': self.name,
-            'Count': self.count,
-        }
-
     def __str__(self) -> str:
         padding = " " * self.indent_level
         return f'[{self.id:<8}] {padding} {self.rank.title()} {self.name}: {self.count}'
 
 
+# TODO: Better workaround for mypy not accepting subclasses in overridden attributes and methods
 @define_model
-class LifeList(BaseModel):
+class LifeList(TaxonCounts):
     """A user's life list, based on the schema of ``GET /observations/taxonomy``"""
 
     count_without_taxon: int = field(default=0)
-    taxa: List[LifeListTaxon] = field(factory=list, converter=LifeListTaxon.from_json_list)
+    taxa: List[LifeListTaxon] = field(factory=list, converter=LifeListTaxon.from_json_list)  # type: ignore
     user_id: int = kwarg
-    _taxon_counts: Dict[int, int] = field(default=None, init=False, repr=False)
 
     @classmethod
-    def from_json(cls, value: JsonResponse, user_id: int = None, **kwargs) -> BaseModel:
+    def from_json(cls, value: JsonResponse, user_id: int = None, **kwargs) -> 'LifeListTaxon':  # type: ignore
         count_without_taxon = value.get('count_without_taxon', 0)
         if 'results' in value:
             value = value['results']
 
         life_list_json = {'taxa': value, 'user_id': user_id, 'count_without_taxon': count_without_taxon}
         return super(LifeList, cls).from_json(life_list_json)  # type: ignore
-
-    def count(self, taxon_id: int) -> int:
-        """Get an observation count for the specified taxon and its descendants.
-        **Note:** ``-1`` can be used an alias for ``count_without_taxon``.
-        """
-        # Make and cache an index of taxon IDs and observation counts
-        if self._taxon_counts is None:
-            self._taxon_counts = {t.id: t.descendant_obs_count for t in self.taxa}
-            self._taxon_counts[-1] = self.count_without_taxon
-        return self._taxon_counts.get(taxon_id, 0)
 
     def tree(self):
         """**Experimental**
@@ -70,9 +50,6 @@ class LifeList(BaseModel):
             :py:class:`rich.tree.Tree`
         """
         return make_tree(self.taxa)
-
-    def __str__(self) -> str:
-        return '\n'.join([str(taxon) for taxon in self.taxa])
 
 
 def make_tree(taxa: List[Taxon]):
@@ -102,5 +79,5 @@ def make_tree(taxa: List[Taxon]):
 
 
 def _sort_groupby(values, key):
-    """Apply sorting then groupby using the same key"""
+    """Apply sorting then grouping using the same key"""
     return {k: list(group) for k, group in groupby(sorted(values, key=key), key=key)}

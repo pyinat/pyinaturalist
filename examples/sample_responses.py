@@ -19,6 +19,7 @@ from pyinaturalist.models import (
     Project,
     SearchResult,
     Taxon,
+    TaxonCounts,
     User,
 )
 
@@ -33,6 +34,7 @@ controlled_term_json = load_sample_data('get_controlled_terms.json')['results']
 obs_json = load_sample_data('get_observations_node_page1.json')['results'][0]
 obs_json_ofvs = load_sample_data('get_observation_with_ofvs.json')['results'][0]
 obs_fields_json = load_sample_data('get_observation_fields_page1.json')
+obs_species_counts_json = load_sample_data('get_observation_species_counts.json')['results']
 obs_taxonomy_json = load_sample_data('get_observation_taxonomy.json')
 place_json = load_sample_data('get_places_by_id.json')['results'][0]
 places_nearby_json = load_sample_data('get_places_nearby.json')['results']
@@ -72,6 +74,7 @@ project = Project.from_json(project_json)
 search_results = SearchResult.from_json_list(search_results_json)
 taxon = Taxon.from_json(taxon_json)
 taxon_partial = Taxon.from_json(taxon_json_partial)
+taxon_counts = TaxonCounts.from_json(obs_species_counts_json)
 user = User.from_json(user_json)
 
 # Sample tables
@@ -87,5 +90,6 @@ photo_table = format_table([photo, photo_partial, observation.photos[0]])
 place_table = format_table(places_nearby)
 project_table = format_table([project, project, project])
 search_results_table = format_table(search_results)
+taxon_counts_table = format_table(taxon_counts)
 taxon_table = format_table([taxon, observation_with_ofvs.taxon, observation.taxon])
 user_table = format_table(User.from_json_list(user_json_autocomplete))

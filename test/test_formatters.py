@@ -26,6 +26,7 @@ identification_1 = load_sample_data('get_identifications.json')['results'][0]
 identification_2 = load_sample_data('get_identifications.json')['results'][1]
 observation_1 = load_sample_data('get_observation.json')['results'][0]
 observation_2 = load_sample_data('get_observations_node_page1.json')['results'][0]
+obs_species_counts_json = load_sample_data('get_observation_species_counts.json')['results']
 obs_taxonomy_json = load_sample_data('get_observation_taxonomy.json')
 place_1 = load_sample_data('get_places_by_id.json')['results'][1]
 place_2 = load_sample_data('get_places_autocomplete.json')['results'][0]
@@ -43,7 +44,6 @@ user_1 = load_sample_data('get_user_by_id.json')['results'][0]
 user_2 = load_sample_data('get_users_autocomplete.json')['results'][0]
 
 comments = observation_2['comments']
-life_list = LifeList.from_json(obs_taxonomy_json)
 photo = taxon_1['default_photo']
 
 RESPONSES = [
@@ -51,6 +51,8 @@ RESPONSES = [
     [controlled_term_1, controlled_term_2],
     [identification_1, identification_2],
     [observation_1, observation_2],
+    obs_species_counts_json,
+    obs_taxonomy_json,
     [photo, photo],
     [place_1, place_2],
     places_nearby,
@@ -58,7 +60,6 @@ RESPONSES = [
     search_results,
     [taxon_1, taxon_2],
     [user_1, user_2],
-    life_list,
 ]
 
 
