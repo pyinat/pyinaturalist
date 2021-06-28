@@ -5,13 +5,14 @@ Note: when using classmethods as converters, mypy will raise a false positive er
 https://github.com/python/mypy/issues/6172
 https://github.com/python/mypy/issues/7912
 """
-# TODO: More refactoring and tests for load_json, from_json, and from_json_list
 import json
+
+from collections import UserList
 from datetime import datetime, timezone
 from logging import getLogger
 from os.path import expanduser
 from pathlib import Path
-from typing import Dict, Iterable, List, Type, TypeVar, Union
+from typing import Dict, Generic, Iterable, List, Type, TypeVar, Union
 
 from attr import asdict, define, field, fields_dict
 
@@ -75,8 +76,26 @@ class BaseModel:
         return asdict(self)
 
 
+# TODO: Better workaround for mypy not accepting subclasses in overridden attributes and methods
+@define(auto_attribs=False, order=False, slots=False)
+class BaseModelCollection(BaseModel, UserList, Generic[T]):
+    """Base class for collections of data models"""
+
+    data: List[T] = field(factory=list, init=False, repr=False)
+
+    @classmethod
+    def from_json_list(cls, value: JsonResponse, **kwargs) -> 'BaseModelCollection':  # type: ignore
+        """For model collections, initializing from a list should return an instance of ``cls``
+        instead of a builtin ``list``
+        """
+        return cls.from_json(value)  # type: ignore
+
+    def __attrs_post_init__(self):
+        self.data = self.taxa
+
+
 # Type aliases
-ModelObjects = Union[BaseModel, Iterable[BaseModel]]
+ModelObjects = Union[BaseModel, BaseModelCollection, Iterable[BaseModel]]
 ResponseOrObject = Union[BaseModel, JsonResponse]
 ResponseOrObjects = Union[ModelObjects, ResponseOrResults]
 

@@ -28,8 +28,10 @@
 Added data models for all API response types, to support working with typed python objects instead of JSON.
 
 Models:
-* Annotation
 * Comment
+* ControlledTerm
+  * ControlledTermValue
+  * Annotation
 * Identification
 * LifeList
     * LifeListTaxon
@@ -44,6 +46,8 @@ Models:
     * ProjectUser
 * SearchResult
 * Taxon
+    * TaxonCount
+    * TaxonCounts
 * User
 
 Model features:

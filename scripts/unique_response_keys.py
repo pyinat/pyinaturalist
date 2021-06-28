@@ -10,6 +10,8 @@ from examples.sample_responses import *
 RESPONSES = {
     'annotation': annotation_json,
     'comment': comment_json,
+    'controlled_term': controlled_term_json[0],
+    'controlled_term_value': controlled_term_value_json[0],
     'identification': identification_json,
     'observation_field': obs_field_json,
     'observation': obs_json,
@@ -21,6 +23,7 @@ RESPONSES = {
     'project': project_json,
     'search': search_results_json[0],
     'taxon': taxon_json_partial,
+    'taxon_counts': obs_species_counts_json[0],
     'user': user_json_partial,
 }
 
