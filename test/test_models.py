@@ -1,10 +1,11 @@
 """Things to test for each model:
 
-* Data type conversions
-* We should be able to initialize the model with no args, and get sane defaults
+* Load with sample response JSON, make sure it doesn't explode
+   * Test with responses from different endpoints and/or response variations, if applicable
+* Initialize the model with no args, and expect sane defaults
+* Any data type conversions that run on init
 * Any additional properties or aliases on the model
-* Initialization from different response types (if applicable)
-* Test formatting in the model's __str__ method
+* Formatting in the model's __str__ method
 """
 import pytest
 from datetime import datetime
@@ -196,6 +197,8 @@ def test_identification__str():
 
 def test_life_list__converters():
     life_list = LifeList.from_json(obs_taxonomy_json)
+    assert life_list.taxa[0] == life_list[0]
+    assert len(life_list) == 9
     assert isinstance(life_list.taxa[0], LifeListTaxon) and life_list.taxa[0].id == 1
 
 
@@ -510,6 +513,8 @@ def test_taxon__update_from_full_record():
 
 def test_taxon_counts__converters():
     taxon_counts = TaxonCounts.from_json(obs_species_counts_json)
+    assert taxon_counts.taxa[0] == taxon_counts[0]
+    assert len(taxon_counts) == 9
     assert isinstance(taxon_counts.taxa[0], TaxonCount) and taxon_counts.taxa[0].count == 31
 
 

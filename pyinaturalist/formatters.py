@@ -32,7 +32,6 @@ from pyinaturalist.models import (
     SearchResult,
     Taxon,
     TaxonCount,
-    TaxonCounts,
     User,
     get_model_fields,
 )
@@ -125,8 +124,6 @@ def ensure_model_list(values: ResponseOrObjects) -> List[BaseModel]:
     """If the given values are raw JSON responses, attempt to detect their type and convert to
     model objects
     """
-    if isinstance(values, TaxonCounts):
-        return values.taxa  # type: ignore
     values = ensure_list(values)
     if isinstance(values[0], BaseModel):
         return values

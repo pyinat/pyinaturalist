@@ -1,4 +1,5 @@
 """Type conversion utilities"""
+from collections import UserList
 from datetime import date, datetime, timedelta
 from dateutil.parser import UnknownTimezoneWarning  # type: ignore  # (missing from type stubs)
 from dateutil.parser import parse as parse_date
@@ -268,7 +269,7 @@ def ensure_list(value: Any, convert_csv: bool = False, delimiter: str = ',') -> 
     elif convert_csv and isinstance(value, str) and delimiter in value:
         return [s.strip() for s in value.split(delimiter)]
 
-    if isinstance(value, (list, tuple, set)):
+    if isinstance(value, (UserList, list, tuple, set)):
         return list(value)
     else:
         return [value]

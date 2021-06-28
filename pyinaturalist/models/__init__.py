@@ -9,6 +9,7 @@ from pyinaturalist.models.base import (
     ResponseOrObject,
     ResponseOrObjects,
     BaseModel,
+    BaseModelCollection,
     datetime_attr,
     datetime_now_attr,
     coordinate_pair,

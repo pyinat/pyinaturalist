@@ -17,7 +17,6 @@ from pyinaturalist.formatters import (
     pprint,
     simplify_observations,
 )
-from pyinaturalist.models import LifeList
 from test.conftest import load_sample_data
 
 controlled_term_1 = load_sample_data('get_controlled_terms.json')['results'][0]

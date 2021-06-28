@@ -24,7 +24,6 @@ class LifeListTaxon(TaxonCount):
         return f'[{self.id:<8}] {padding} {self.rank.title()} {self.name}: {self.count}'
 
 
-# TODO: Better workaround for mypy not accepting subclasses in overridden attributes and methods
 @define_model
 class LifeList(TaxonCounts):
     """A user's life list, based on the schema of ``GET /observations/taxonomy``"""
