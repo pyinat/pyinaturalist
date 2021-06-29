@@ -6,7 +6,6 @@ https://github.com/python/mypy/issues/6172
 https://github.com/python/mypy/issues/7912
 """
 import json
-
 from collections import UserList
 from datetime import datetime, timezone
 from logging import getLogger

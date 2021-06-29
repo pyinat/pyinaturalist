@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from attr import field, fields_dict
 
@@ -16,11 +16,47 @@ from pyinaturalist.models import (
     BaseModelCollection,
     LazyProperty,
     Photo,
+    Place,
+    User,
     datetime_attr,
     define_model,
     kwarg,
 )
 from pyinaturalist.v1 import get_taxa_by_id
+
+
+@define_model
+class ConservationStatus(BaseModel):
+    authority: str = kwarg
+    created_at: Optional[datetime] = datetime_attr
+    description: str = kwarg
+    geoprivacy: str = kwarg
+    iucn: int = kwarg
+    place_id: int = kwarg
+    source_id: int = kwarg
+    status: str = kwarg  # Enum
+    status_name: str = kwarg
+    taxon_id: int = kwarg
+    updated_at: Optional[datetime] = datetime_attr
+    updater_id: int = kwarg
+    url: str = kwarg
+
+    # Lazy-loaded nested model objects
+    place: property = LazyProperty(Place.from_json)
+    updater: property = LazyProperty(User.from_json)
+    user: property = LazyProperty(User.from_json)
+
+
+@define_model
+class EstablishmentMeans(BaseModel):
+    """The establishment means for a taxon in a given location"""
+
+    establishment_means: str = kwarg  # Enum: introduced, etc.
+    id: int = kwarg
+    place: property = LazyProperty(Place.from_json_list)
+
+    def __str__(self) -> str:
+        return self.establishment_means
 
 
 @define_model
@@ -54,18 +90,17 @@ class Taxon(BaseModel):
     wikipedia_url: str = kwarg  #: URL to Wikipedia article for the taxon, if available
 
     # Nested collections
-    # TODO: Models+enums for conservation status and establishment means?
     ancestor_ids: List[int] = field(factory=list)  #: Taxon IDs of ancestors, from highest rank to lowest
-    conservation_status: Dict[str, Any] = field(factory=dict)
-    conservation_statuses: List[Dict] = field(factory=list)  #:
     current_synonymous_taxon_ids: List[int] = field(factory=list)  #: Taxa that are accepted synonyms
-    establishment_means: Dict[str, Any] = field(factory=dict)  #: Establishment means details
     listed_taxa: List = field(factory=list)  #: Listed taxon IDs
 
     # Lazy-loaded nested model objects
     ancestors: property = LazyProperty(BaseModel.from_json_list)
     children: property = LazyProperty(BaseModel.from_json_list)
+    conservation_status: property = LazyProperty(ConservationStatus.from_json)
+    conservation_statuses: property = LazyProperty(ConservationStatus.from_json_list)
     default_photo: property = LazyProperty(Photo.from_json)
+    establishment_means: property = LazyProperty(EstablishmentMeans.from_json)
     taxon_photos: property = LazyProperty(Photo.from_json_list)
 
     # Unused attributes

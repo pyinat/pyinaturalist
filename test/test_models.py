@@ -17,8 +17,10 @@ from pyinaturalist.models import (
     OFV,
     Annotation,
     Comment,
+    ConservationStatus,
     ControlledTerm,
     ControlledTermValue,
+    EstablishmentMeans,
     LifeList,
     LifeListTaxon,
     Observation,
@@ -53,6 +55,10 @@ user_json_partial = load_sample_data('get_users_autocomplete.json')['results'][0
 search_results_json = load_sample_data('get_search.json')['results']
 taxon_json = load_sample_data('get_taxa_by_id.json')['results'][0]
 taxon_json_partial = load_sample_data('get_taxa.json')['results'][0]
+taxon_json_preferred_place = load_sample_data('get_taxa_with_preferred_place.json')['results'][0]
+taxon_json_conservation_statuses = load_sample_data('get_taxa_by_id_conservation_statuses.json')[
+    'results'
+][0]
 
 annotation_json = obs_json_ofvs['annotations'][0]
 comment_json = obs_json['comments'][0]
@@ -66,6 +72,7 @@ search_result_json_taxon = search_results_json[0]
 search_result_json_place = search_results_json[1]
 search_result_json_project = search_results_json[2]
 search_result_json_user = search_results_json[3]
+taxon_json_conservation_status = obs_json['taxon']
 
 # Base
 # --------------------
@@ -471,6 +478,29 @@ def test_taxon__empty():
     assert taxon.children == []
     assert taxon.default_photo is None
     assert taxon.taxon_photos == []
+
+
+def test_taxon__conservation_status():
+    cs = Taxon.from_json(taxon_json_conservation_status).conservation_status
+    assert isinstance(cs, ConservationStatus)
+    assert cs.authority == 'NatureServe'
+    assert cs.status_name == 'imperiled'
+
+
+# TODO: No sample data for this yet. Only on get_taxa_by_id response for particular taxa.
+def test_taxon__conservation_statuses():
+    css = Taxon.from_json(taxon_json_conservation_statuses).conservation_statuses[0]
+    assert isinstance(css, ConservationStatus)
+    assert css.status == "EN"
+    assert isinstance(css.updater, User) and css.user.id == 383144
+    assert isinstance(css.user, User) and css.user.id == 383144
+
+
+def test_taxon__establishment_means():
+    es = Taxon.from_json(taxon_json_preferred_place).establishment_means
+    assert isinstance(es, EstablishmentMeans)
+    assert es.id == 5660131
+    assert es.establishment_means == str(es) == 'introduced'
 
 
 def test_taxon__taxonomy():
