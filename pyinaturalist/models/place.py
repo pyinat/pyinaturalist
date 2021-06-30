@@ -21,9 +21,11 @@ def convert_optional_lat_long(obj: Union[Dict, List, None, str]):
 
 @define_model
 class Place(BaseModel):
-    """A curated or community-contributed place, based on the schema of
-    `GET /places/{id} <https://api.inaturalist.org/v1/docs/#!/Places/get_places_id>`_ and
-    `GET /places/nearby <https://api.inaturalist.org/v1/docs/#!/Places/get_places_nearby>`_.
+    """A curated or community-contributed place. Handles data from the following endpoints:
+
+    * `GET /places/{id} <https://api.inaturalist.org/v1/docs/#!/Places/get_places_id>`_
+    * `GET /places/nearby <https://api.inaturalist.org/v1/docs/#!/Places/get_places_nearby>`_
+    * `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_  (``establishment_means.place``)
     """
 
     admin_level: int = kwarg
@@ -57,6 +59,15 @@ class Place(BaseModel):
             return places
         else:
             return super(Place, cls).from_json_list(json_value)
+
+    @property
+    def ancestry(self) -> str:
+        """Handle slash-delimited 'ancestry' string from ``establishment_means.place``"""
+        return '/'.join(self.ancestor_place_ids)
+
+    @ancestry.setter
+    def ancestry(self, value: str):
+        self.ancestor_place_ids = value.split('/')
 
     @property
     def url(self) -> str:

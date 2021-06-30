@@ -7,65 +7,15 @@
 * Any additional properties or aliases on the model
 * Formatting in the model's __str__ method
 """
+# flake8: noqa: F405
 import pytest
 from datetime import datetime
 from dateutil.tz import tzoffset, tzutc
 
 from pyinaturalist.constants import ICONIC_TAXA, INAT_BASE_URL, PHOTO_INFO_BASE_URL, PHOTO_SIZES
-from pyinaturalist.models import (
-    ID,
-    OFV,
-    Annotation,
-    Comment,
-    ControlledTerm,
-    ControlledTermValue,
-    LifeList,
-    LifeListTaxon,
-    Observation,
-    ObservationField,
-    Photo,
-    Place,
-    Project,
-    ProjectObservation,
-    ProjectObservationField,
-    ProjectUser,
-    SearchResult,
-    Taxon,
-    TaxonCounts,
-    User,
-)
-from pyinaturalist.models.observation_field import ObservationFieldValue
-from pyinaturalist.models.taxon import TaxonCount
-from test.conftest import load_sample_data, sample_data_path
-
-controlled_term_json = load_sample_data('get_controlled_terms.json')['results'][0]
-obs_json = load_sample_data('get_observations_node_page1.json')['results'][0]
-obs_json_ofvs = load_sample_data('get_observation_with_ofvs.json')['results'][0]
-obs_field_json = load_sample_data('get_observation_fields_page1.json')[0]
-obs_species_counts_json = load_sample_data('get_observation_species_counts.json')['results']
-obs_taxonomy_json = load_sample_data('get_observation_taxonomy.json')
-place_json = load_sample_data('get_places_by_id.json')['results'][0]
-places_nearby_json = load_sample_data('get_places_nearby.json')['results']
-project_json = load_sample_data('get_projects.json')['results'][0]
-project_json_obs_fields = load_sample_data('get_projects_obs_fields.json')['results'][0]
-user_json = load_sample_data('get_user_by_id.json')['results'][0]
-user_json_partial = load_sample_data('get_users_autocomplete.json')['results'][0]
-search_results_json = load_sample_data('get_search.json')['results']
-taxon_json = load_sample_data('get_taxa_by_id.json')['results'][0]
-taxon_json_partial = load_sample_data('get_taxa.json')['results'][0]
-
-annotation_json = obs_json_ofvs['annotations'][0]
-comment_json = obs_json['comments'][0]
-controlled_term_value_json = controlled_term_json['values'][0]
-identification_json = obs_json['identifications'][0]
-ofv_json_numeric = obs_json_ofvs['ofvs'][1]
-ofv_json_taxon = obs_json_ofvs['ofvs'][0]
-photo_json = taxon_json['taxon_photos'][0]
-photo_json = taxon_json['default_photo']
-search_result_json_taxon = search_results_json[0]
-search_result_json_place = search_results_json[1]
-search_result_json_project = search_results_json[2]
-search_result_json_user = search_results_json[3]
+from pyinaturalist.models import *
+from test.conftest import sample_data_path
+from test.sample_data import *
 
 # Base
 # --------------------
@@ -93,7 +43,7 @@ def test_from_json_list():
 
 
 def test_annotation__converters():
-    annotation = Annotation.from_json(annotation_json)
+    annotation = Annotation.from_json(j_annotation_1)
     assert isinstance(annotation.user, User) and annotation.user.id == 2115051
 
 
@@ -104,17 +54,17 @@ def test_annotation__empty():
 
 
 def test_annotation__values():
-    annotation = Annotation.from_json(annotation_json)
+    annotation = Annotation.from_json(j_annotation_1)
     assert annotation.values == ['1', '2']
 
 
 def test_annotation__str():
-    annotation = Annotation.from_json(annotation_json)
+    annotation = Annotation.from_json(j_annotation_1)
     assert str(annotation) == '[1] 1|2 (0 votes)'
 
 
 def test_controlled_term__converters():
-    controlled_term = ControlledTerm.from_json(controlled_term_json)
+    controlled_term = ControlledTerm.from_json(j_controlled_term_1)
     value = controlled_term.values[0]
     assert controlled_term.taxon_ids == [47126]
     assert isinstance(value, ControlledTermValue) and value.id == 21
@@ -127,14 +77,14 @@ def test_controlled_term__empty():
 
 
 def test_controlled_term__properties():
-    controlled_term = ControlledTerm.from_json(controlled_term_json)
+    controlled_term = ControlledTerm.from_json(j_controlled_term_1)
     assert (
         controlled_term.value_labels == 'No Evidence of Flowering, Flowering, Fruiting, Flower Budding'
     )
 
 
 def test_controlled_term__str():
-    controlled_term = ControlledTerm.from_json(controlled_term_json)
+    controlled_term = ControlledTerm.from_json(j_controlled_term_1)
     assert (
         str(controlled_term)
         == '[12] Plant Phenology: No Evidence of Flowering, Flowering, Fruiting, Flower Budding'
@@ -142,7 +92,7 @@ def test_controlled_term__str():
 
 
 def test_controlled_term__value():
-    controlled_term_value = ControlledTermValue.from_json(controlled_term_value_json)
+    controlled_term_value = ControlledTermValue.from_json(j_controlled_term_value_1)
     assert controlled_term_value.taxon_ids == [47125]
     assert str(controlled_term_value) == '[21] No Evidence of Flowering'
 
@@ -152,7 +102,7 @@ def test_controlled_term__value():
 
 
 def test_comment__converters():
-    comment = Comment.from_json(comment_json)
+    comment = Comment.from_json(j_comment_1)
     assert isinstance(comment.user, User) and comment.user.id == 2852555
 
 
@@ -163,7 +113,7 @@ def test_comment__empty():
 
 
 def test_comment__str():
-    comment = Comment.from_json(comment_json)
+    comment = Comment.from_json(j_comment_1)
     assert str(comment) == 'samroom at 2020-08-28 12:04:18+00:00: Thankyou '
 
 
@@ -172,7 +122,7 @@ def test_comment__str():
 
 
 def test_identification__converters():
-    identification = ID.from_json(identification_json)
+    identification = ID.from_json(j_identification_3)
     assert isinstance(identification.user, User) and identification.user.id == 2852555
 
 
@@ -184,7 +134,7 @@ def test_identification__empty():
 
 
 def test_identification__str():
-    identification = ID.from_json(identification_json)
+    identification = ID.from_json(j_identification_3)
     assert str(identification) == (
         '[126501311] Species: Danaus plexippus (Monarch) (improving) added on '
         '2020-08-27 13:00:51-05:00 by samroom'
@@ -196,7 +146,7 @@ def test_identification__str():
 
 
 def test_life_list__converters():
-    life_list = LifeList.from_json(obs_taxonomy_json)
+    life_list = LifeList.from_json(j_life_list)
     assert life_list.taxa[0] == life_list[0]
     assert len(life_list) == 9
     assert isinstance(life_list.taxa[0], LifeListTaxon) and life_list.taxa[0].id == 1
@@ -209,7 +159,7 @@ def test_life_list__empty():
 
 
 def test_life_list__count():
-    life_list = LifeList.from_json(obs_taxonomy_json)
+    life_list = LifeList.from_json(j_life_list)
     assert life_list.count(1) == 3023  # Animalia
     assert life_list.count(981) == 2  # Phasianus colchicus
     assert life_list.count(-1) == 4  # Observations with no taxon
@@ -221,7 +171,7 @@ def test_life_list__count():
 
 
 def test_observation__converters():
-    obs = Observation.from_json(obs_json)
+    obs = Observation.from_json(j_observation_2)
     utc = tzoffset('Etc/UTC', 0)
     assert obs.created_at == datetime(2020, 8, 27, 0, 0, tzinfo=utc)
     assert obs.observed_on == datetime(2020, 8, 27, 8, 57, 22, tzinfo=utc)
@@ -247,21 +197,21 @@ def test_observation__empty():
 
 
 def test_observation__with_ofvs():
-    obs = Observation.from_json(obs_json_ofvs)
+    obs = Observation.from_json(j_observation_3_ofvs)
     ofv = obs.ofvs[0]
     assert isinstance(ofv, ObservationFieldValue)
     assert ofv.id == 14106828
     assert ofv.user.id == 2115051
 
 
-def test_observation__project_observations_():
-    obs = Observation.from_json(obs_json_ofvs)
+def test_observation__project_observations():
+    obs = Observation.from_json(j_observation_3_ofvs)
     proj_obs = obs.project_observations[0]
     assert isinstance(proj_obs, ProjectObservation) and proj_obs.id == 48899479
 
 
 def test_observation__thumbnail_url():
-    obs = Observation.from_json(obs_json)
+    obs = Observation.from_json(j_observation_2)
     assert obs.thumbnail_url == 'https://static.inaturalist.org/photos/92152429/square.jpg?1598551272'
 
 
@@ -270,7 +220,7 @@ def test_observation__thumbnail_url():
 
 
 def test_observation_field__converters():
-    obs_field = ObservationField.from_json(obs_field_json)
+    obs_field = ObservationField.from_json(j_obs_field_1)
     assert obs_field.allowed_values == ['Male', 'Female', 'Unknown']
     assert obs_field.created_at == datetime(2016, 5, 29, 16, 17, 8, 51000, tzinfo=tzutc())
 
@@ -282,12 +232,12 @@ def test_observation_field__empty():
 
 
 def test_observation_field__str():
-    obs_field = ObservationField.from_json(obs_field_json)
+    obs_field = ObservationField.from_json(j_obs_field_1)
     assert str(obs_field) == '[4813] Sex (deer/turkey) (text)'
 
 
 def test_observation_field_value__converters():
-    ofv = OFV.from_json(ofv_json_numeric)
+    ofv = OFV.from_json(j_ofv_1_numeric)
     assert ofv.datatype == 'numeric'
     assert ofv.value == 100
     assert ofv.taxon is None
@@ -295,7 +245,7 @@ def test_observation_field_value__converters():
 
 
 def test_observation_field_value__taxon():
-    ofv = OFV.from_json(ofv_json_taxon)
+    ofv = OFV.from_json(j_ofv_2_taxon)
     assert ofv.datatype == 'taxon'
     assert ofv.value == 119900
     assert isinstance(ofv.taxon, Taxon) and ofv.taxon.id == 119900
@@ -308,7 +258,7 @@ def test_observation_field_value__empty():
 
 
 def test_observation_field_value__str():
-    ofv = OFV.from_json(ofv_json_taxon)
+    ofv = OFV.from_json(j_ofv_2_taxon)
     assert str(ofv) == 'Feeding on: 119900'
 
 
@@ -317,7 +267,7 @@ def test_observation_field_value__str():
 
 
 def test_photo__converters():
-    photo = Photo.from_json(photo_json)
+    photo = Photo.from_json(j_photo_1)
     assert photo.id == 38359335
     assert photo.license_code == 'CC-BY-NC'
     assert photo.original_dimensions == (2048, 1365)
@@ -330,7 +280,7 @@ def test_photo__empty():
 
 
 def test_photo__license():
-    photo = Photo.from_json(photo_json)
+    photo = Photo.from_json(j_photo_1)
     assert photo.has_cc_license is True
     photo.license_code = 'CC0'
     assert photo.has_cc_license is True
@@ -343,7 +293,7 @@ def test_photo__license():
 
 @pytest.mark.parametrize('size', PHOTO_SIZES)
 def test_photo__urls(size):
-    photo = Photo.from_json(photo_json)
+    photo = Photo.from_json(j_photo_1)
     assert (
         photo.url_size(size)
         == getattr(photo, f'{size}_url')
@@ -353,7 +303,7 @@ def test_photo__urls(size):
 
 
 def test_photo__str():
-    photo = Photo.from_json(photo_json)
+    photo = Photo.from_json(j_photo_1)
     assert str(photo) == (
         '[38359335] https://static.inaturalist.org/photos/38359335/original.jpg?1557348751 '
         '(CC-BY-NC, 2048x1365)'
@@ -365,9 +315,9 @@ def test_photo__str():
 
 
 def test_place__converters():
-    place = Place.from_json(place_json)
+    place = Place.from_json(j_place_1)
     assert place.category is None
-    assert place.location == (-29.665119, 17.88583)
+    assert place.location == (-43.3254578926, 172.2325124165)
 
 
 def test_place__empty():
@@ -379,7 +329,7 @@ def test_place__empty():
 
 def test_places__nearby():
     """Results from /places/nearby should have an extra 'category' attribute"""
-    places = Place.from_json_list(places_nearby_json)
+    places = Place.from_json_list(j_places_nearby)
     assert places[0].category == 'standard'
     assert places[-1].category == 'community'
 
@@ -389,7 +339,7 @@ def test_places__nearby():
 
 
 def test_project__converters():
-    project = Project.from_json(project_json)
+    project = Project.from_json(j_project_1)
     assert project.location == (48.777404, -122.306929)
     assert project.project_observation_rules == project.obs_rules
     assert project.obs_rules[0]['id'] == 616862
@@ -412,7 +362,7 @@ def test_project__empty():
 
 
 def test_project__with_obs_fields():
-    project = Project.from_json(project_json_obs_fields)
+    project = Project.from_json(j_project_3_obs_fields)
     obs_field = project.project_observation_fields[0]
     assert isinstance(obs_field, ProjectObservationField)
     assert obs_field.id == 30
@@ -432,25 +382,25 @@ def test_search__empty():
 
 
 def test_search__place():
-    search_result = SearchResult.from_json(search_result_json_place)
+    search_result = SearchResult.from_json(j_search_result_2_place)
     assert search_result.score == 7.116488
     assert isinstance(search_result.record, Place) and search_result.record.id == 113562
 
 
 def test_search__project():
-    search_result = SearchResult.from_json(search_result_json_project)
+    search_result = SearchResult.from_json(j_search_result_3_project)
     assert search_result.score == 6.9390197
     assert isinstance(search_result.record, Project) and search_result.record.id == 9978
 
 
 def test_search__taxon():
-    search_result = SearchResult.from_json(search_result_json_taxon)
+    search_result = SearchResult.from_json(j_search_result_1_taxon)
     assert search_result.score == 9.062307
     assert isinstance(search_result.record, Taxon) and search_result.record.id == 47792
 
 
 def test_search__user():
-    search_result = SearchResult.from_json(search_result_json_user)
+    search_result = SearchResult.from_json(j_search_result_4_user)
     assert search_result.score == 4.6454225
     assert isinstance(search_result.record, User) and search_result.record.id == 113886
 
@@ -460,7 +410,7 @@ def test_search__user():
 
 
 def test_taxon__converters():
-    taxon = Taxon.from_json(taxon_json_partial)
+    taxon = Taxon.from_json(j_taxon_2_partial)
     assert isinstance(taxon.default_photo, Photo) and taxon.default_photo.id == 38359335
 
 
@@ -473,8 +423,31 @@ def test_taxon__empty():
     assert taxon.taxon_photos == []
 
 
+def test_taxon__conservation_status():
+    cs = Taxon.from_json(j_taxon_5_cs_status).conservation_status
+    assert isinstance(cs, ConservationStatus)
+    assert cs.authority == 'NatureServe'
+    assert cs.status_name == 'imperiled'
+
+
+# TODO: No sample data for this yet. Only on get_taxa_by_id response for particular taxa.
+def test_taxon__conservation_statuses():
+    css = Taxon.from_json(j_taxon_6_cs_statuses).conservation_statuses[0]
+    assert isinstance(css, ConservationStatus)
+    assert css.status == "EN"
+    assert isinstance(css.updater, User) and css.user.id == 383144
+    assert isinstance(css.user, User) and css.user.id == 383144
+
+
+def test_taxon__establishment_means():
+    es = Taxon.from_json(j_taxon_4_preferred_place).establishment_means
+    assert isinstance(es, EstablishmentMeans)
+    assert es.id == 5660131
+    assert es.establishment_means == str(es) == 'introduced'
+
+
 def test_taxon__taxonomy():
-    taxon = Taxon.from_json(taxon_json)
+    taxon = Taxon.from_json(j_taxon_1)
     parent = taxon.ancestors[0]
     child = taxon.children[0]
     assert isinstance(parent, Taxon) and parent.id == 1
@@ -482,7 +455,7 @@ def test_taxon__taxonomy():
 
 
 def test_taxon__properties():
-    taxon = Taxon.from_json(taxon_json)
+    taxon = Taxon.from_json(j_taxon_1)
     assert taxon.url == f'{INAT_BASE_URL}/taxa/70118'
     assert taxon.ancestry.startswith('Animalia | Arthropoda | Hexapoda | ')
     assert isinstance(taxon.parent, Taxon) and taxon.parent.id == 53850
@@ -501,7 +474,7 @@ def test_taxon__icon_url(taxon_name):
 
 
 def test_taxon_properties__partial():
-    taxon = Taxon.from_json(taxon_json_partial)
+    taxon = Taxon.from_json(j_taxon_2_partial)
     assert taxon.ancestry.startswith('48460 | 1 | 47120 | ')
     assert taxon.parent is None
 
@@ -512,7 +485,7 @@ def test_taxon__update_from_full_record():
 
 
 def test_taxon_counts__converters():
-    taxon_counts = TaxonCounts.from_json(obs_species_counts_json)
+    taxon_counts = TaxonCounts.from_json(j_obs_species_counts)
     assert taxon_counts.taxa[0] == taxon_counts[0]
     assert len(taxon_counts) == 9
     assert isinstance(taxon_counts.taxa[0], TaxonCount) and taxon_counts.taxa[0].count == 31
@@ -528,7 +501,7 @@ def test_taxon_counts__empty():
 
 
 def test_user__converters():
-    user = User.from_json(user_json)
+    user = User.from_json(j_user_1)
     assert user.identifications_count == 95624
 
 
@@ -539,17 +512,17 @@ def test_user__empty():
 
 
 def test_user__partial():
-    user = User.from_json(user_json_partial)
+    user = User.from_json(j_user_2_partial)
     assert user.id == 886482
     assert user.name == 'Nicolas Noé'
 
 
 def test_user__properties():
-    user = User.from_json(user_json)
+    user = User.from_json(j_user_1)
     assert user.username == user.login == 'kueda'
     assert user.display_name == user.name == 'Ken-ichi Ueda'
 
 
 def test_user__str():
-    user = User.from_json(user_json)
+    user = User.from_json(j_user_1)
     assert str(user) == '[1] kueda (Ken-ichi Ueda)'

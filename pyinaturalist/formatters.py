@@ -10,7 +10,7 @@ These functions will accept any of the following:
 from copy import deepcopy
 from datetime import date, datetime
 from functools import partial
-from typing import Callable, List, Type
+from typing import List, Type
 
 from pyinaturalist.constants import ResponseOrResults, ResponseResult
 from pyinaturalist.converters import ensure_list
@@ -85,7 +85,7 @@ HEADER_COLORS = {
 UNIQUE_RESPONSE_ATTRS = {
     'vote_score': Annotation,
     'disagreement': Identification,
-    'moderator_actions': Comment,  # Subset of ID attrs; if it's not an ID, assume it's a comment
+    'body': Comment,  # Subset of ID attrs; if it's not an ID, assume it's a comment
     'multivalued': ControlledTerm,
     'blocking': ControlledTermValue,
     'count_without_taxon': LifeList,
@@ -136,15 +136,17 @@ def format_table(values: ResponseOrObjects):
     """Format model objects as a table. If ``rich`` isn't installed or the model doesn't have a
     table format defined, just return a basic list of stringified objects.
     """
-    values = ensure_model_list(values)
-
     try:
         from rich.box import SIMPLE_HEAVY
         from rich.table import Column, Table
 
+        if isinstance(values, Table):
+            return values
+
+        values = ensure_model_list(values)
         headers = {k: HEADER_COLORS.get(k, '') for k in values[0].row.keys()}
     except (ImportError, NotImplementedError):
-        return '\n'.join([str(obj) for obj in values])
+        return '\n'.join([str(obj) for obj in ensure_model_list(values)])
 
     # Display any date/datetime values in short format
     def _str(value):
@@ -158,23 +160,6 @@ def format_table(values: ResponseOrObjects):
     for obj in values:
         table.add_row(*[_str(value) for value in obj.row.values()])
     return table
-
-
-def format_species_counts(species_counts: ResponseOrResults, **kwargs) -> str:
-    """Format observation species counts into a condensed list of names and # of observations"""
-    return _format_results(species_counts, _format_species_count)
-
-
-def _format_species_count(species_count: ResponseResult, **kwargs) -> str:
-    taxon = format_taxa(species_count['taxon'])
-    return f'{taxon}: {species_count["count"]}'
-
-
-# TODO: Replace remaining functions that use this with _format_model_objects (requires more model changes)
-def _format_results(obj: ResponseOrResults, format_func: Callable):
-    """Generic function to format a response, result, or list of results"""
-    obj_strings = [format_func(t) for t in ensure_list(obj)]
-    return '\n'.join(obj_strings)
 
 
 # TODO: This maybe belongs in a different module
@@ -220,5 +205,6 @@ format_observations = partial(_format_model_objects, cls=Observation)
 format_places = partial(_format_model_objects, cls=Place)
 format_projects = partial(_format_model_objects, cls=Project)
 format_search_results = partial(_format_model_objects, cls=SearchResult)
+format_species_counts = partial(_format_model_objects, cls=TaxonCount)
 format_taxa = partial(_format_model_objects, cls=Taxon)
 format_users = partial(_format_model_objects, cls=User)
