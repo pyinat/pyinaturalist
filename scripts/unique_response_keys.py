@@ -3,28 +3,31 @@
 """A script used to determine unique response keys for each response type"""
 import sys
 from itertools import chain
+from pprint import pprint
 
-sys.path.insert(0, '../examples')
-from examples.sample_responses import *
+from pyinaturalist.constants import PROJECT_DIR
+
+sys.path.insert(0, PROJECT_DIR)
+from test.sample_data import *
 
 RESPONSES = {
-    'annotation': annotation_json,
-    'comment': comment_json,
-    'controlled_term': controlled_term_json[0],
-    'controlled_term_value': controlled_term_value_json[0],
-    'identification': identification_json,
-    'observation_field': obs_field_json,
-    'observation': obs_json,
-    'life_list': obs_taxonomy_json,
-    'observation_field_value': ofv_json_numeric,
-    'photo': photo_json_partial,
-    'place': place_json,
-    'places_nearby': places_nearby_json,
-    'project': project_json,
-    'search': search_results_json[0],
-    'taxon': taxon_json_partial,
-    'taxon_counts': obs_species_counts_json[0],
-    'user': user_json_partial,
+    'annotation': j_annotation_1,
+    'comment': j_comment_1,
+    'controlled_term': j_controlled_term_1,
+    'controlled_term_value': j_controlled_term_value_1,
+    'identification': j_identification_1,
+    'observation_field': j_obs_field_1,
+    'observation': j_observation_1,
+    'life_list': j_life_list,
+    'observation_field_value': j_ofv_1_numeric,
+    'photo': j_photo_1,
+    'place': j_place_1,
+    'places_nearby': j_places_nearby,
+    'project': j_project_1,
+    'search': j_search_results[0],
+    'taxon': j_taxon_2_partial,
+    'taxon_counts': j_obs_species_counts[0],
+    'user': j_user_2_partial,
 }
 
 
@@ -36,4 +39,6 @@ def get_unique_keys(response_type):
 
 
 if __name__ == '__main__':
-    print({k: get_unique_keys(k) for k in RESPONSES})
+    for k in RESPONSES:
+        print(f'{k}: ', end='')
+        pprint(get_unique_keys(k))

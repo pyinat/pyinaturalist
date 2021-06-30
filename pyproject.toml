@@ -86,7 +86,11 @@ source = ['pyinaturalist']
 profile = 'black'
 line_length = 105
 skip_gitignore = true
-skip = ['pyinaturalist/__init__.py', 'pyinaturalist/models/__init__.py', 'pyinaturalist/node_api.py']
+skip = [
+    'pyinaturalist/__init__.py',
+    'pyinaturalist/models/__init__.py',
+    'pyinaturalist/node_api.py',
+]
 known_first_party = ['test']
 # Things that are common enough they may as well be grouped with stdlib imports
 extra_standard_library = ['dateutil', 'pytest', 'setuptools']
