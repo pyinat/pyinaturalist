@@ -38,7 +38,7 @@ class LifeList(TaxonCounts):
         if 'results' in value:
             value = value['results']
 
-        life_list_json = {'taxa': value, 'user_id': user_id, 'count_without_taxon': count_without_taxon}
+        life_list_json = {'data': value, 'user_id': user_id, 'count_without_taxon': count_without_taxon}
         return super(LifeList, cls).from_json(life_list_json)  # type: ignore
 
     def tree(self):

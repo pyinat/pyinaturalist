@@ -37,7 +37,7 @@ datetime_now_attr = field(converter=try_datetime, factory=utcnow)  # type: ignor
 class BaseModel:
     """Base class for data models"""
 
-    partial: bool = field(default=None, repr=False)
+    id: int = kwarg
     temp_attrs: List[str] = []
     headers: Dict[str, str] = {}
 

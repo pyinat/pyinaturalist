@@ -43,7 +43,7 @@ from pyinaturalist.models.project import (
     ProjectUser,
 )
 from pyinaturalist.models.observation_field import ObservationField, ObservationFieldValue
-from pyinaturalist.models.observation import Observation
+from pyinaturalist.models.observation import Observation, Observations
 from pyinaturalist.models.search import SearchResult
 
 

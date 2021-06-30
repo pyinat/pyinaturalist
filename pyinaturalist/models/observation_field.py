@@ -38,7 +38,6 @@ class ObservationField(BaseModel):
     created_at: datetime = datetime_now_attr
     datatype: str = kwarg  # Enum
     description: str = kwarg
-    id: int = kwarg
     name: str = kwarg
     updated_at: datetime = datetime_now_attr
     user_id: int = kwarg
@@ -68,7 +67,6 @@ class ObservationFieldValue(BaseModel):
 
     datatype: str = kwarg  # Enum
     field_id: int = kwarg
-    id: int = kwarg
     name: str = kwarg
     taxon_id: int = kwarg
     user_id: int = kwarg

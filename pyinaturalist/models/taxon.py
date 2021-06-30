@@ -74,7 +74,6 @@ class Taxon(BaseModel):
     extinct: bool = kwarg  #: Indicates if the taxon is extinct
     iconic_taxon_id: int = field(default=0)  #: ID of the iconic taxon or taxon "category"
     iconic_taxon_name: str = field(default='unknown')  #: Name of the iconic taxon or taxon "category"
-    id: int = kwarg  #: Taxon ID
     is_active: bool = kwarg  #: Indicates if the taxon is active (and not renamed, moved, etc.)
     listed_taxa_count: int = kwarg  #: Number of listed taxa from this taxon + descendants
     name: str = kwarg  #: Taxon name; contains full scientific name at species level and below
@@ -108,6 +107,7 @@ class Taxon(BaseModel):
     # flag_counts: Dict[str, int] = field(factory=dict)  # {"unresolved": 1, "resolved": 2}
     # min_species_ancestry: str = kwarg  #: Used internally by iNaturalist for Elasticsearch aggregations
     # min_species_taxon_id: int = kwarg
+    # partial: bool = field(default=None, repr=False)
     # photos_locked: bool = kwarg
     # universal_search_rank: int = kwarg
 

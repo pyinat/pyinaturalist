@@ -21,7 +21,6 @@ from pyinaturalist.models.observation_field import ObservationField
 class ProjectObservation(ObservationField):
     """Metadata about an observation that has been added to a project"""
 
-    id: int = kwarg
     preferences: Dict = field(factory=dict)  # Example: {'allows_curator_coordinate_access': True}
     project: Dict = field(factory=dict)  # Example: {'id': 24237}
     user_id: int = kwarg
@@ -80,7 +79,6 @@ class Project(BaseModel):
     hide_title: bool = kwarg
     icon_file_name: str = kwarg
     icon: str = kwarg
-    id: int = kwarg
     is_umbrella: bool = kwarg
     location: Optional[Coordinates] = coordinate_pair
     place_id: int = kwarg

@@ -147,9 +147,9 @@ def test_identification__str():
 
 def test_life_list__converters():
     life_list = LifeList.from_json(j_life_list)
-    assert life_list.taxa[0] == life_list[0]
+    assert life_list.data[0] == life_list[0]
     assert len(life_list) == 9
-    assert isinstance(life_list.taxa[0], LifeListTaxon) and life_list.taxa[0].id == 1
+    assert isinstance(life_list.data[0], LifeListTaxon) and life_list.data[0].id == 1
 
 
 def test_life_list__empty():
@@ -486,14 +486,14 @@ def test_taxon__update_from_full_record():
 
 def test_taxon_counts__converters():
     taxon_counts = TaxonCounts.from_json(j_obs_species_counts)
-    assert taxon_counts.taxa[0] == taxon_counts[0]
+    assert taxon_counts.data[0] == taxon_counts[0]
     assert len(taxon_counts) == 9
-    assert isinstance(taxon_counts.taxa[0], TaxonCount) and taxon_counts.taxa[0].count == 31
+    assert isinstance(taxon_counts.data[0], TaxonCount) and taxon_counts.data[0].count == 31
 
 
 def test_taxon_counts__empty():
     taxon_counts = TaxonCounts()
-    assert taxon_counts.taxa == []
+    assert taxon_counts.data == []
 
 
 # Users

@@ -35,7 +35,6 @@ class Place(BaseModel):
     category: str = kwarg  # Either 'standard' or 'community'
     display_name: str = kwarg
     geometry_geojson: GeoJson = field(factory=dict)
-    id: int = kwarg
     location: Coordinates = field(converter=convert_optional_lat_long, default=None)
     name: str = kwarg
     place_type: int = kwarg

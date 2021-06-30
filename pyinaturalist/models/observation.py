@@ -8,6 +8,7 @@ from pyinaturalist.converters import convert_observation_timestamp
 from pyinaturalist.models import (
     Annotation,
     BaseModel,
+    BaseModelCollection,
     Comment,
     Identification,
     LazyProperty,
@@ -39,7 +40,6 @@ class Observation(BaseModel):
     description: str = kwarg
     faves_count: int = kwarg
     geoprivacy: str = kwarg  # Enum
-    id: int = kwarg
     id_please: bool = kwarg
     identifications_count: int = kwarg
     identifications_most_agree: bool = kwarg
