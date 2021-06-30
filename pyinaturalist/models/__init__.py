@@ -1,6 +1,5 @@
 """Dataclasses for modeling iNaturalist API response objects"""
 # flake8: noqa: F401
-# TODO: Validators for multiple choice fields?
 from typing import Callable
 from attr import define
 
@@ -18,8 +17,9 @@ from pyinaturalist.models.base import (
 )
 from pyinaturalist.models.lazy_property import LazyProperty, add_lazy_attrs, get_model_fields
 
-# attrs class decorator with the most commonly used options
+# attrs class decorators with the most commonly used options
 define_model: Callable = define(auto_attribs=False, field_transformer=add_lazy_attrs)
+define_model_collection: Callable = define(auto_attribs=False, order=False, slots=False)
 
 # Imported in order of model dependencies
 from pyinaturalist.models.photo import Photo

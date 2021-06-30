@@ -21,6 +21,7 @@ from pyinaturalist.models import (
     coordinate_pair,
     datetime_attr,
     datetime_now_attr,
+    define_model_collection,
     kwarg,
 )
 from pyinaturalist.v1 import get_observation
@@ -164,3 +165,33 @@ class Observation(BaseModel):
             f'observed on {self.observed_on} by {self.user.login} '
             f'at {self.place_guess or self.location}'
         )
+
+
+@define_model_collection
+class Observations(BaseModelCollection):
+    """A collection of observation records"""
+
+    data: List[Observation] = field(factory=list, converter=Observation.from_json_list)
+
+    @property
+    def identifiers(self) -> List[User]:
+        """Get all unique identifiers"""
+        unique_users = {ident.user.id: ident.user for obs in self.data for ident in obs.identifications}
+        return list(unique_users.values())
+
+    @property
+    def taxa(self) -> List[Taxon]:
+        """Get all unique taxa"""
+        unique_taxa = {obs.taxon.id: obs.taxon for obs in self.data}
+        return list(unique_taxa.values())
+
+    @property
+    def thumbnail_urls(self) -> List[str]:
+        """Get thumbnails for all observation default photos"""
+        return [obs.thumbnail_url for obs in self.data if obs.thumbnail_url]
+
+    @property
+    def observers(self) -> List[User]:
+        """Get all unique observers"""
+        unique_users = {obs.user.id: obs.user for obs in self.data}
+        return list(unique_users.values())

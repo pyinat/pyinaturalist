@@ -215,6 +215,20 @@ def test_observation__thumbnail_url():
     assert obs.thumbnail_url == 'https://static.inaturalist.org/photos/92152429/square.jpg?1598551272'
 
 
+def test_observations():
+    obs_list = Observations.from_json_list(
+        [j_observation_1, j_observation_1, j_observation_2, j_observation_3_ofvs]
+    )
+    assert isinstance(obs_list.identifiers[0], User) and len(obs_list.identifiers) == 6
+    assert isinstance(obs_list.observers[0], User) and len(obs_list.observers) == 3
+    assert isinstance(obs_list.taxa[0], Taxon) and len(obs_list.taxa) == 3
+    assert len(obs_list.thumbnail_urls) == 4
+    assert (
+        obs_list.thumbnail_urls[0]
+        == 'https://static.inaturalist.org/photos/24355315/square.jpeg?1536150664'
+    )
+
+
 # Observation Fields
 # --------------------
 

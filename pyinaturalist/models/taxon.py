@@ -20,6 +20,7 @@ from pyinaturalist.models import (
     User,
     datetime_attr,
     define_model,
+    define_model_collection,
     kwarg,
 )
 from pyinaturalist.v1 import get_taxa_by_id
@@ -218,7 +219,7 @@ class TaxonCount(Taxon):
         return f'[{self.id}] {self.full_name}: {self.count}'
 
 
-@define_model
+@define_model_collection
 class TaxonCounts(BaseModelCollection):
     """A collection of taxa with an associated counts. Used with
     `GET /observations/species_counts <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_species_counts>`_.
@@ -227,14 +228,6 @@ class TaxonCounts(BaseModelCollection):
 
     data: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
     _taxon_counts: Dict[int, int] = field(default=None, init=False, repr=False)
-
-    @classmethod
-    def from_json(cls, value: JsonResponse, **kwargs) -> 'TaxonCounts':
-        if 'results' in value:
-            value = value['results']
-        if 'taxa' not in value:
-            value = {'taxa': value}
-        return super(TaxonCounts, cls).from_json(value)  # type: ignore
 
     def count(self, taxon_id: int) -> int:
         """Get an observation count for the specified taxon and its descendants, and handle unlisted taxa.

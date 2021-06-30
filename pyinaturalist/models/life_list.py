@@ -4,7 +4,14 @@ from typing import List
 from attr import field
 
 from pyinaturalist.constants import JsonResponse
-from pyinaturalist.models import Taxon, TaxonCount, TaxonCounts, define_model, kwarg
+from pyinaturalist.models import (
+    Taxon,
+    TaxonCount,
+    TaxonCounts,
+    define_model,
+    define_model_collection,
+    kwarg,
+)
 
 
 @define_model
@@ -24,7 +31,7 @@ class LifeListTaxon(TaxonCount):
         return f'[{self.id:<8}] {padding} {self.rank.title()} {self.name}: {self.count}'
 
 
-@define_model
+@define_model_collection
 class LifeList(TaxonCounts):
     """A user's life list, based on the schema of ``GET /observations/taxonomy``"""
 
