@@ -20,6 +20,7 @@ from pyinaturalist.models import (
     User,
     datetime_attr,
     define_model,
+    define_model_collection,
     kwarg,
 )
 from pyinaturalist.v1 import get_taxa_by_id
@@ -74,7 +75,6 @@ class Taxon(BaseModel):
     extinct: bool = kwarg  #: Indicates if the taxon is extinct
     iconic_taxon_id: int = field(default=0)  #: ID of the iconic taxon or taxon "category"
     iconic_taxon_name: str = field(default='unknown')  #: Name of the iconic taxon or taxon "category"
-    id: int = kwarg  #: Taxon ID
     is_active: bool = kwarg  #: Indicates if the taxon is active (and not renamed, moved, etc.)
     listed_taxa_count: int = kwarg  #: Number of listed taxa from this taxon + descendants
     name: str = kwarg  #: Taxon name; contains full scientific name at species level and below
@@ -108,6 +108,7 @@ class Taxon(BaseModel):
     # flag_counts: Dict[str, int] = field(factory=dict)  # {"unresolved": 1, "resolved": 2}
     # min_species_ancestry: str = kwarg  #: Used internally by iNaturalist for Elasticsearch aggregations
     # min_species_taxon_id: int = kwarg
+    # partial: bool = field(default=None, repr=False)
     # photos_locked: bool = kwarg
     # universal_search_rank: int = kwarg
 
@@ -218,23 +219,15 @@ class TaxonCount(Taxon):
         return f'[{self.id}] {self.full_name}: {self.count}'
 
 
-@define_model
+@define_model_collection
 class TaxonCounts(BaseModelCollection):
     """A collection of taxa with an associated counts. Used with
     `GET /observations/species_counts <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_species_counts>`_.
     as well as :py:class:`.LifeList`.
     """
 
-    taxa: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
+    data: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
     _taxon_counts: Dict[int, int] = field(default=None, init=False, repr=False)
-
-    @classmethod
-    def from_json(cls, value: JsonResponse, **kwargs) -> 'TaxonCounts':
-        if 'results' in value:
-            value = value['results']
-        if 'taxa' not in value:
-            value = {'taxa': value}
-        return super(TaxonCounts, cls).from_json(value)  # type: ignore
 
     def count(self, taxon_id: int) -> int:
         """Get an observation count for the specified taxon and its descendants, and handle unlisted taxa.
@@ -242,12 +235,12 @@ class TaxonCounts(BaseModelCollection):
         """
         # Make and cache an index of taxon IDs and observation counts
         if self._taxon_counts is None:
-            self._taxon_counts = {t.id: t.descendant_obs_count for t in self.taxa}
+            self._taxon_counts = {t.id: t.descendant_obs_count for t in self.data}
             self._taxon_counts[-1] = self.count_without_taxon
         return self._taxon_counts.get(taxon_id, 0)
 
     def __str__(self) -> str:
-        return '\n'.join([str(taxon) for taxon in self.taxa])
+        return '\n'.join([str(taxon) for taxon in self.data])
 
 
 # Since these use Taxon classmethods, they must be added after Taxon is defined

@@ -52,7 +52,6 @@ class ControlledTermValue(BaseModel):
     """
 
     blocking: bool = kwarg
-    id: int = kwarg
     label: str = kwarg
     ontology_uri: str = kwarg
     uri: str = kwarg
@@ -69,7 +68,6 @@ class ControlledTerm(BaseModel):
     `GET /controlled_terms <https://api.inaturalist.org/v1/docs/#!/Controlled_Terms/get_controlled_terms>`_.
     """
 
-    id: int = kwarg
     is_value: bool = kwarg
     multivalued: bool = kwarg
     label: str = kwarg

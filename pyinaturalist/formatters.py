@@ -17,6 +17,7 @@ from pyinaturalist.converters import ensure_list
 from pyinaturalist.models import (
     Annotation,
     BaseModel,
+    BaseModelCollection,
     Comment,
     ControlledTerm,
     ControlledTermValue,
@@ -125,8 +126,8 @@ def ensure_model_list(values: ResponseOrObjects) -> List[BaseModel]:
     model objects
     """
     values = ensure_list(values)
-    if isinstance(values[0], BaseModel):
-        return values
+    if isinstance(values, BaseModelCollection) or isinstance(values[0], BaseModel):
+        return values  # type: ignore
 
     cls = detect_type(values[0])
     return [cls.from_json(value) for value in values]

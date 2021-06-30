@@ -17,7 +17,6 @@ class User(BaseModel):
     created_at: datetime = datetime_now_attr
     icon: str = kwarg
     icon_url: str = kwarg
-    id: int = kwarg
     identifications_count: int = kwarg
     journal_posts_count: int = kwarg
     login: str = kwarg

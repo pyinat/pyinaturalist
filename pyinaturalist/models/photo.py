@@ -15,7 +15,6 @@ class Photo(BaseModel):
     """
 
     attribution: str = kwarg
-    id: int = kwarg
     license_code: str = field(converter=format_license, default=None)  # Enum
     original_dimensions: Tuple[int, int] = field(converter=format_dimensions, default=(0, 0))
     url: str = kwarg

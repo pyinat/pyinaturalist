@@ -25,7 +25,6 @@ class Identification(BaseModel):
     current_taxon: bool = kwarg
     disagreement: bool = kwarg
     hidden: bool = kwarg
-    id: int = kwarg
     own_observation: bool = kwarg
     previous_observation_taxon_id: int = kwarg
     taxon_change: bool = kwarg  # TODO: confirm type

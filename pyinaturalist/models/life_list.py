@@ -4,7 +4,14 @@ from typing import List
 from attr import field
 
 from pyinaturalist.constants import JsonResponse
-from pyinaturalist.models import Taxon, TaxonCount, TaxonCounts, define_model, kwarg
+from pyinaturalist.models import (
+    Taxon,
+    TaxonCount,
+    TaxonCounts,
+    define_model,
+    define_model_collection,
+    kwarg,
+)
 
 
 @define_model
@@ -24,12 +31,12 @@ class LifeListTaxon(TaxonCount):
         return f'[{self.id:<8}] {padding} {self.rank.title()} {self.name}: {self.count}'
 
 
-@define_model
+@define_model_collection
 class LifeList(TaxonCounts):
     """A user's life list, based on the schema of ``GET /observations/taxonomy``"""
 
     count_without_taxon: int = field(default=0)
-    taxa: List[LifeListTaxon] = field(factory=list, converter=LifeListTaxon.from_json_list)  # type: ignore
+    data: List[LifeListTaxon] = field(factory=list, converter=LifeListTaxon.from_json_list)  # type: ignore
     user_id: int = kwarg
 
     @classmethod
@@ -38,7 +45,7 @@ class LifeList(TaxonCounts):
         if 'results' in value:
             value = value['results']
 
-        life_list_json = {'taxa': value, 'user_id': user_id, 'count_without_taxon': count_without_taxon}
+        life_list_json = {'data': value, 'user_id': user_id, 'count_without_taxon': count_without_taxon}
         return super(LifeList, cls).from_json(life_list_json)  # type: ignore
 
     def tree(self):
@@ -48,7 +55,7 @@ class LifeList(TaxonCounts):
         Returns:
             :py:class:`rich.tree.Tree`
         """
-        return make_tree(self.taxa)
+        return make_tree(self.data)
 
 
 def make_tree(taxa: List[Taxon]):

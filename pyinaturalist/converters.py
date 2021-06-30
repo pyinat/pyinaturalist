@@ -1,5 +1,4 @@
 """Type conversion utilities"""
-from collections import UserList
 from datetime import date, datetime, timedelta
 from dateutil.parser import UnknownTimezoneWarning  # type: ignore  # (missing from type stubs)
 from dateutil.parser import parse as parse_date
@@ -8,7 +7,7 @@ from io import BytesIO
 from logging import getLogger
 from os.path import abspath, expanduser
 from pathlib import Path
-from typing import IO, Any, Dict, List, Optional, Union
+from typing import IO, Any, Dict, List, MutableSequence, Optional, Union
 from warnings import catch_warnings, simplefilter
 
 from pyinaturalist.constants import (
@@ -246,9 +245,9 @@ def parse_offset(tz_offset: str, tz_name: str = None) -> tzoffset:
     return tzoffset(tz_name, delta.total_seconds() * multiplier)
 
 
-def safe_split(value: Any, delimiter: str = '|') -> List:
+def safe_split(value: Any, delimiter: str = '|') -> List[str]:
     """Split a pipe-(or other token)-delimited string"""
-    return ensure_list(value, convert_csv=True, delimiter=delimiter)
+    return list(ensure_list(value, convert_csv=True, delimiter=delimiter))
 
 
 def strip_empty_values(values: Dict) -> Dict:
@@ -256,11 +255,11 @@ def strip_empty_values(values: Dict) -> Dict:
     return {k: v for k, v in values.items() if v or v in [False, 0, 0.0]}
 
 
-# ?
+# Type conversion functions for collections
 # -------------------
 
 
-def ensure_list(value: Any, convert_csv: bool = False, delimiter: str = ',') -> List[Any]:
+def ensure_list(value: Any, convert_csv: bool = False, delimiter: str = ',') -> MutableSequence[Any]:
     """Convert an object, response, or (optionally) comma-separated string into a list"""
     if not value:
         return []
@@ -269,7 +268,9 @@ def ensure_list(value: Any, convert_csv: bool = False, delimiter: str = ',') -> 
     elif convert_csv and isinstance(value, str) and delimiter in value:
         return [s.strip() for s in value.split(delimiter)]
 
-    if isinstance(value, (UserList, list, tuple, set)):
+    if isinstance(value, MutableSequence):
+        return value
+    elif isinstance(value, (tuple, set)):
         return list(value)
     else:
         return [value]

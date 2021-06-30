@@ -13,7 +13,6 @@ class Comment(BaseModel):
     body: str = kwarg
     created_at: datetime = datetime_now_attr
     hidden: bool = kwarg
-    id: int = kwarg
     uuid: str = kwarg
 
     # Lazy-loaded nested model objects

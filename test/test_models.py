@@ -147,14 +147,14 @@ def test_identification__str():
 
 def test_life_list__converters():
     life_list = LifeList.from_json(j_life_list)
-    assert life_list.taxa[0] == life_list[0]
+    assert life_list.data[0] == life_list[0]
     assert len(life_list) == 9
-    assert isinstance(life_list.taxa[0], LifeListTaxon) and life_list.taxa[0].id == 1
+    assert isinstance(life_list.data[0], LifeListTaxon) and life_list.data[0].id == 1
 
 
 def test_life_list__empty():
     life_list = LifeList()
-    life_list.taxa == []
+    life_list.data == []
     life_list._taxon_counts is None
 
 
@@ -213,6 +213,20 @@ def test_observation__project_observations():
 def test_observation__thumbnail_url():
     obs = Observation.from_json(j_observation_2)
     assert obs.thumbnail_url == 'https://static.inaturalist.org/photos/92152429/square.jpg?1598551272'
+
+
+def test_observations():
+    obs_list = Observations.from_json_list(
+        [j_observation_1, j_observation_1, j_observation_2, j_observation_3_ofvs]
+    )
+    assert isinstance(obs_list.identifiers[0], User) and len(obs_list.identifiers) == 6
+    assert isinstance(obs_list.observers[0], User) and len(obs_list.observers) == 3
+    assert isinstance(obs_list.taxa[0], Taxon) and len(obs_list.taxa) == 3
+    assert len(obs_list.thumbnail_urls) == 4
+    assert (
+        obs_list.thumbnail_urls[0]
+        == 'https://static.inaturalist.org/photos/24355315/square.jpeg?1536150664'
+    )
 
 
 # Observation Fields
@@ -486,14 +500,14 @@ def test_taxon__update_from_full_record():
 
 def test_taxon_counts__converters():
     taxon_counts = TaxonCounts.from_json(j_obs_species_counts)
-    assert taxon_counts.taxa[0] == taxon_counts[0]
+    assert taxon_counts.data[0] == taxon_counts[0]
     assert len(taxon_counts) == 9
-    assert isinstance(taxon_counts.taxa[0], TaxonCount) and taxon_counts.taxa[0].count == 31
+    assert isinstance(taxon_counts.data[0], TaxonCount) and taxon_counts.data[0].count == 31
 
 
 def test_taxon_counts__empty():
     taxon_counts = TaxonCounts()
-    assert taxon_counts.taxa == []
+    assert taxon_counts.data == []
 
 
 # Users

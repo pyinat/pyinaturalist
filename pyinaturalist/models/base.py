@@ -37,7 +37,7 @@ datetime_now_attr = field(converter=try_datetime, factory=utcnow)  # type: ignor
 class BaseModel:
     """Base class for data models"""
 
-    partial: bool = field(default=None, repr=False)
+    id: int = kwarg
     temp_attrs: List[str] = []
     headers: Dict[str, str] = {}
 
@@ -78,9 +78,19 @@ class BaseModel:
 # TODO: Better workaround for mypy not accepting subclasses in overridden attributes and methods
 @define(auto_attribs=False, order=False, slots=False)
 class BaseModelCollection(BaseModel, UserList, Generic[T]):
-    """Base class for collections of data models"""
+    """Base class for data model collections. These will behave the same as lists but enable some
+    additional operations on contained items.
+    """
 
     data: List[T] = field(factory=list, init=False, repr=False)
+
+    @classmethod
+    def from_json(cls, value: JsonResponse, **kwargs) -> 'BaseModelCollection':
+        if 'results' in value:
+            value = value['results']
+        if 'data' not in value:
+            value = {'data': value}
+        return super(BaseModelCollection, cls).from_json(value)  # type: ignore
 
     @classmethod
     def from_json_list(cls, value: JsonResponse, **kwargs) -> 'BaseModelCollection':  # type: ignore
@@ -88,9 +98,6 @@ class BaseModelCollection(BaseModel, UserList, Generic[T]):
         instead of a builtin ``list``
         """
         return cls.from_json(value)  # type: ignore
-
-    def __attrs_post_init__(self):
-        self.data = self.taxa
 
 
 # Type aliases
