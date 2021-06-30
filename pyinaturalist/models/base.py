@@ -89,9 +89,6 @@ class BaseModelCollection(BaseModel, UserList, Generic[T]):
         """
         return cls.from_json(value)  # type: ignore
 
-    def __attrs_post_init__(self):
-        self.data = self.taxa
-
 
 # Type aliases
 ModelObjects = Union[BaseModel, BaseModelCollection, Iterable[BaseModel]]

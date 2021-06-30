@@ -29,7 +29,7 @@ class LifeList(TaxonCounts):
     """A user's life list, based on the schema of ``GET /observations/taxonomy``"""
 
     count_without_taxon: int = field(default=0)
-    taxa: List[LifeListTaxon] = field(factory=list, converter=LifeListTaxon.from_json_list)  # type: ignore
+    data: List[LifeListTaxon] = field(factory=list, converter=LifeListTaxon.from_json_list)  # type: ignore
     user_id: int = kwarg
 
     @classmethod
@@ -48,7 +48,7 @@ class LifeList(TaxonCounts):
         Returns:
             :py:class:`rich.tree.Tree`
         """
-        return make_tree(self.taxa)
+        return make_tree(self.data)
 
 
 def make_tree(taxa: List[Taxon]):

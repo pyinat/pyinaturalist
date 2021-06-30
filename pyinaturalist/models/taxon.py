@@ -225,7 +225,7 @@ class TaxonCounts(BaseModelCollection):
     as well as :py:class:`.LifeList`.
     """
 
-    taxa: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
+    data: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
     _taxon_counts: Dict[int, int] = field(default=None, init=False, repr=False)
 
     @classmethod
@@ -242,12 +242,12 @@ class TaxonCounts(BaseModelCollection):
         """
         # Make and cache an index of taxon IDs and observation counts
         if self._taxon_counts is None:
-            self._taxon_counts = {t.id: t.descendant_obs_count for t in self.taxa}
+            self._taxon_counts = {t.id: t.descendant_obs_count for t in self.data}
             self._taxon_counts[-1] = self.count_without_taxon
         return self._taxon_counts.get(taxon_id, 0)
 
     def __str__(self) -> str:
-        return '\n'.join([str(taxon) for taxon in self.taxa])
+        return '\n'.join([str(taxon) for taxon in self.data])
 
 
 # Since these use Taxon classmethods, they must be added after Taxon is defined

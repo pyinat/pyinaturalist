@@ -154,7 +154,7 @@ def test_life_list__converters():
 
 def test_life_list__empty():
     life_list = LifeList()
-    life_list.taxa == []
+    life_list.data == []
     life_list._taxon_counts is None
 
 
