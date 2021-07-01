@@ -126,6 +126,11 @@ class Taxon(BaseModel):
         return ' | '.join([str(t) for t in tokens])
 
     @property
+    def child_ids(self) -> List[int]:
+        """Taxon IDs of direct children, sorted by rank then name"""
+        return [t.id for t in self.child_taxa]
+
+    @property
     def emoji(self) -> str:
         """Get an emoji representing the iconic taxon"""
         return ICONIC_EMOJI.get(self.iconic_taxon_id, '❓')
