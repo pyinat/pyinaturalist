@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 
 from attr import define, field
 
-from pyinaturalist.constants import Coordinates, TableRow
+from pyinaturalist.constants import CC_LICENSES, GEOPRIVACY_LEVELS, Coordinates, QUALITY_GRADES, TableRow
 from pyinaturalist.converters import convert_observation_timestamp
 from pyinaturalist.models import (
     Annotation,
@@ -22,9 +22,14 @@ from pyinaturalist.models import (
     datetime_attr,
     datetime_now_attr,
     define_model_collection,
+    is_in,
     kwarg,
 )
 from pyinaturalist.v1 import get_observation
+
+
+def upper(value) -> Optional[str]:
+    return str(value).upper() if value is not None else None
 
 
 @define(auto_attribs=False, init=False, field_transformer=add_lazy_attrs)
@@ -37,12 +42,14 @@ class Observation(BaseModel):
     captive: bool = kwarg  #: Indicates if the organism is non-wild (captive or cultivated)
     community_taxon_id: int = kwarg  #: The current community identification taxon
     description: str = kwarg  #: Observation description
-    geoprivacy: str = kwarg  #: Location privace level (Enum): either 'open', 'obscured', or 'private
+    #: Location privacy level: either 'open', 'obscured', or 'private
+    geoprivacy: str = field(default=None, validator=is_in(GEOPRIVACY_LEVELS))
     identifications_count: int = kwarg  #: Total number of identifications
     identifications_most_agree: bool = kwarg  #: Indicates if most identifications agree
     identifications_most_disagree: bool = kwarg  #: Indicates if most identifications disagree
     identifications_some_agree: bool = kwarg  #: Indicates if some identifications agree
-    license_code: str = kwarg  #: Creative Commons license code (Enum)
+    #: Creative Commons license code
+    license_code: str = field(default=None, converter=upper, validator=is_in(CC_LICENSES))
     location: Optional[Coordinates] = coordinate_pair  #: Latitude and logitude in decimal degrees
     mappable: bool = kwarg  #: Indicates if the observation can be shown on a map
     num_identification_agreements: int = kwarg  #: Total number of agreeing identifications
@@ -50,11 +57,12 @@ class Observation(BaseModel):
     oauth_application_id: str = kwarg  #: OAuth application ID used to create the observation, if any
     obscured: bool = kwarg  #: Indicates if coordinates are obscured
     out_of_range: bool = kwarg  #: Indicates if the taxon is observed outside of its known range
-    owners_identification_from_vision: bool = kwarg  #: Indicates if the owner's ID was selected from CV
+    #: Indicates if the owner's ID was selected from computer visino results
+    owners_identification_from_vision: bool = kwarg
     place_guess: str = kwarg  #: Place name determined from observation coordinates
     positional_accuracy: int = kwarg  #: GPS accuracy in meters (real accuracy, if obscured)
     public_positional_accuracy: int = kwarg  #: GPS accuracy in meters (not accurate if obscured)
-    quality_grade: str = kwarg  #: Quality grade (Enum): One of 'research', 'needs_id', or 'casual'
+    quality_grade: str = field(default=None, validator=is_in(QUALITY_GRADES))  #: Quality grade
     site_id: int = kwarg  #: Site ID for iNaturalist network members, or 1 for inaturalist.org
     species_guess: str = kwarg  #: Species name from observer's initial identification
     observed_on: Optional[datetime] = datetime_attr  #: Date and time this was observed

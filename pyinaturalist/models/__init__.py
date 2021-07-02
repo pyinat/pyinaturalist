@@ -12,6 +12,7 @@ from pyinaturalist.models.base import (
     datetime_attr,
     datetime_now_attr,
     coordinate_pair,
+    is_in,
     kwarg,
     load_json,
 )

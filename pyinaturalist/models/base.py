@@ -13,7 +13,7 @@ from os.path import expanduser
 from pathlib import Path
 from typing import Dict, Generic, Iterable, List, Type, TypeVar, Union
 
-from attr import asdict, define, field, fields_dict
+from attr import asdict, define, field, fields_dict, validators
 
 from pyinaturalist.constants import AnyFile, JsonResponse, ResponseOrFile, ResponseOrResults, TableRow
 from pyinaturalist.converters import convert_lat_long, ensure_list, try_datetime
@@ -31,6 +31,12 @@ kwarg = field(default=None)
 coordinate_pair = field(converter=convert_lat_long, default=None)  # type: ignore
 datetime_attr = field(converter=try_datetime, default=None)  # type: ignore
 datetime_now_attr = field(converter=try_datetime, factory=utcnow)  # type: ignore
+
+
+# TODO: Case-insensitive version
+def is_in(options: Iterable):
+    """Validator for an optional multiple-choice attribute"""
+    return validators.in_(list(options) + [None])
 
 
 @define(auto_attribs=False)
