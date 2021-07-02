@@ -472,6 +472,7 @@ def test_taxon__properties():
     taxon = Taxon.from_json(j_taxon_1)
     assert taxon.url == f'{INAT_BASE_URL}/taxa/70118'
     assert taxon.ancestry.startswith('Animalia | Arthropoda | Hexapoda | ')
+    assert taxon.child_ids == [70115, 70114, 70117, 70116]
     assert isinstance(taxon.parent, Taxon) and taxon.parent.id == 53850
 
 
