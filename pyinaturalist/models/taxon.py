@@ -128,7 +128,7 @@ class Taxon(BaseModel):
     @property
     def child_ids(self) -> List[int]:
         """Taxon IDs of direct children, sorted by rank then name"""
-        return [t.id for t in self.child_taxa]
+        return [t.id for t in self.children]
 
     @property
     def emoji(self) -> str:

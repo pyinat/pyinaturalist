@@ -33,39 +33,34 @@ class Observation(BaseModel):
     `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
     """
 
-    created_at: datetime = datetime_now_attr
-    cached_votes_total: int = kwarg
-    captive: bool = kwarg
-    comments_count: int = kwarg
-    community_taxon_id: int = kwarg
-    description: str = kwarg
-    faves_count: int = kwarg
-    geoprivacy: str = kwarg  # Enum
-    id_please: bool = kwarg
-    identifications_count: int = kwarg
-    identifications_most_agree: bool = kwarg
-    identifications_most_disagree: bool = kwarg
-    identifications_some_agree: bool = kwarg
-    license_code: str = kwarg  # Enum
-    location: Optional[Coordinates] = coordinate_pair
-    map_scale: int = kwarg
-    mappable: bool = kwarg
-    num_identification_agreements: int = kwarg
-    num_identification_disagreements: int = kwarg
-    oauth_application_id: str = kwarg
-    obscured: bool = kwarg
-    out_of_range: bool = kwarg
-    owners_identification_from_vision: bool = kwarg
-    place_guess: str = kwarg
-    positional_accuracy: int = kwarg
-    public_positional_accuracy: int = kwarg
-    quality_grade: str = kwarg  # Enum
-    site_id: int = kwarg
-    species_guess: str = kwarg
-    observed_on: Optional[datetime] = datetime_attr
-    updated_at: Optional[datetime] = datetime_attr
-    uri: str = kwarg
-    uuid: str = kwarg
+    created_at: datetime = datetime_now_attr  #: Date and time this was created
+    captive: bool = kwarg  #: Indicates if the organism is non-wild (captive or cultivated)
+    community_taxon_id: int = kwarg  #: The current community identification taxon
+    description: str = kwarg  #: Observation description
+    geoprivacy: str = kwarg  #: Location privace level (Enum): either 'open', 'obscured', or 'private
+    identifications_count: int = kwarg  #: Total number of identifications
+    identifications_most_agree: bool = kwarg  #: Indicates if most identifications agree
+    identifications_most_disagree: bool = kwarg  #: Indicates if most identifications disagree
+    identifications_some_agree: bool = kwarg  #: Indicates if some identifications agree
+    license_code: str = kwarg  #: Creative Commons license code (Enum)
+    location: Optional[Coordinates] = coordinate_pair  #: Latitude and logitude in decimal degrees
+    mappable: bool = kwarg  #: Indicates if the observation can be shown on a map
+    num_identification_agreements: int = kwarg  #: Total number of agreeing identifications
+    num_identification_disagreements: int = kwarg  #: Total number of disagreeing identifications
+    oauth_application_id: str = kwarg  #: OAuth application ID used to create the observation, if any
+    obscured: bool = kwarg  #: Indicates if coordinates are obscured
+    out_of_range: bool = kwarg  #: Indicates if the taxon is observed outside of its known range
+    owners_identification_from_vision: bool = kwarg  #: Indicates if the owner's ID was selected from CV
+    place_guess: str = kwarg  #: Place name determined from observation coordinates
+    positional_accuracy: int = kwarg  #: GPS accuracy in meters (real accuracy, if obscured)
+    public_positional_accuracy: int = kwarg  #: GPS accuracy in meters (not accurate if obscured)
+    quality_grade: str = kwarg  #: Quality grade (Enum): One of 'research', 'needs_id', or 'casual'
+    site_id: int = kwarg  #: Site ID for iNaturalist network members, or 1 for inaturalist.org
+    species_guess: str = kwarg  #: Species name from observer's initial identification
+    observed_on: Optional[datetime] = datetime_attr  #: Date and time this was observed
+    updated_at: Optional[datetime] = datetime_attr  #: Date and time this was last updated
+    uri: str = kwarg  #: Link to observation details page
+    uuid: str = kwarg  #: Universally unique ID; generally preferred over 'id' where possible
 
     # Nested collections
     faves: List = field(factory=list)
@@ -92,10 +87,15 @@ class Observation(BaseModel):
     user: property = LazyProperty(User.from_json)
 
     # Additional attributes from API response that aren't needed; just left here for reference
+    # cached_votes_total: int = kwarg
+    # comments_count: int = kwarg
     # created_at_details: Dict = field(factory=dict)
     # created_time_zone: str = kwarg
+    # faves_count: int = kwarg
     # flags: List = field(factory=list)
     # geojson: Dict = field(factory=dict)
+    # id_please: bool = kwarg
+    # map_scale: int = kwarg
     # non_owner_ids: List = field(factory=list)
     # observed_on_details: Dict = field(factory=dict)
     # observed_on_string: str = kwarg
@@ -169,14 +169,20 @@ class Observation(BaseModel):
 
 @define_model_collection
 class Observations(BaseModelCollection):
-    """A collection of observation records"""
+    """A collection of observations"""
 
     data: List[Observation] = field(factory=list, converter=Observation.from_json_list)
 
     @property
     def identifiers(self) -> List[User]:
         """Get all unique identifiers"""
-        unique_users = {ident.user.id: ident.user for obs in self.data for ident in obs.identifications}
+        unique_users = {i.user.id: i.user for obs in self.data for i in obs.identifications}
+        return list(unique_users.values())
+
+    @property
+    def observers(self) -> List[User]:
+        """Get all unique observers"""
+        unique_users = {obs.user.id: obs.user for obs in self.data}
         return list(unique_users.values())
 
     @property
@@ -189,9 +195,3 @@ class Observations(BaseModelCollection):
     def thumbnail_urls(self) -> List[str]:
         """Get thumbnails for all observation default photos"""
         return [obs.thumbnail_url for obs in self.data if obs.thumbnail_url]
-
-    @property
-    def observers(self) -> List[User]:
-        """Get all unique observers"""
-        unique_users = {obs.user.id: obs.user for obs in self.data}
-        return list(unique_users.values())
