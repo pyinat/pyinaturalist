@@ -1,4 +1,3 @@
-.. This file exists only to generate sources, without using the generated ToC
-
+.. This file exists only to generate sources.
+.. Then automodsumm is used to generate a table of classes only.
 .. automodapi:: pyinaturalist.models
-  

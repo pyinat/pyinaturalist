@@ -22,8 +22,9 @@ TODO:
 """
 # flake8: noqa: E402
 import sys
+from glob import glob
 from os import makedirs, symlink
-from os.path import abspath, dirname, exists, join
+from os.path import abspath, basename, dirname, exists, join
 from shutil import copytree, rmtree
 
 
@@ -34,6 +35,7 @@ except ImportError:
     pass
 
 DOCS_DIR = abspath(dirname(__file__))
+CSS_DIR = join(DOCS_DIR, '_static')
 MODULE_DOCS_DIR = join(DOCS_DIR, 'modules')
 PROJECT_DIR = dirname(DOCS_DIR)
 PACKAGE_DIR = join(PROJECT_DIR, 'pyinaturalist')
@@ -87,20 +89,29 @@ intersphinx_mapping = {
     'requests': ('https://requests.readthedocs.io/en/master/', None),
 }
 
+# Generate labels in the format <page>:<section>
 autosectionlabel_prefix_document = True
+suppress_warnings = ['autosectionlabel.*']
 
-# Enable Google-style docstrings
+# napoleon settings
 napoleon_google_docstring = True
+napoleon_include_init_with_doc = True
 napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = False
+napoleon_use_param = True
+napoleon_type_aliases = {
+    'DateOrInt': 'pyinaturalist.constants.DateOrInt',
+    'IntOrStr': 'pyinaturalist.constants.IntOrStr',
+    'MultiInt': 'pyinaturalist.constants.MultiInt',
+    'MultiStr': 'pyinaturalist.constants.MultiStr',
+}
 
-# Strip prompt text when copying code blocks with copy button
+# copybutton settings: Strip prompt text when copying code blocks
 copybutton_prompt_text = r'>>> |\.\.\. |\$ '
 copybutton_prompt_is_regexp = True
 
 # Move type hint info to function description instead of signature
 autodoc_typehints = 'description'
-set_type_checking_flag = True
 
 # apidoc settings
 apidoc_module_dir = PACKAGE_DIR
@@ -113,6 +124,7 @@ apidoc_toc_file = False
 
 # autosummary + automodapi settings
 automodapi_inheritance_diagram = False
+automodapi_toctreedirnm = 'modules'
 automodsumm_inherited_members = False
 autosummary_generate = True
 autosummary_generate_overwrite = True
@@ -129,6 +141,7 @@ html_theme_options = {
     'globaltoc_includehidden': False,
     'master_doc': False,
     'nav_title': project,
+    'table_classes': ['docutils'],
     'repo_url': 'https://github.com/niconoe/pyinaturalist',
     'repo_name': project,
     'version_dropdown': True,
@@ -160,8 +173,8 @@ def setup(app):
     app.connect('builder-inited', document_models)
     app.connect('builder-inited', setup_external_files)
     app.connect('builder-inited', patch_automodapi)
-    app.add_css_file('style.css')
-    app.add_css_file('collapsible_container.css')
+    for stylesheet in glob(join(CSS_DIR, '*.css')):
+        app.add_css_file(basename(stylesheet))
 
 
 def setup_external_files(app):

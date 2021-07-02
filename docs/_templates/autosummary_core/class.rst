@@ -16,8 +16,9 @@
    .. rubric:: Attributes Summary
 
    .. csv-table::
+      :class: docutils
       :header: "Name", "Type", "Description"
-      :widths: 10, 10, 30
+      :widths: 10, 12, 30
       :file: {{ '../models/' + objname + '.csv' }}
 
    {% endif %}
