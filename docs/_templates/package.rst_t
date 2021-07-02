@@ -19,22 +19,8 @@
 {{- pkgname | e | heading }}
 {% endif %}
 
-{# ===== Class summary (models package only) =====}
-{# TODO: A better generic solution for this #}
-{%- if pkgname.endswith('.models') %}
-Classes
--------
-{% for submodule in submodules %}
-
-.. automodsumm:: {{ submodule }}
-    :classes-only:
-    :nosignatures:
-
-{% endfor %}
-{%- endif %}
-
-{# ===== Function summary (API function packages) ===== #}
-{%- if submodules and not pkgname.endswith('.models') %}
+{# ===== Function summary ===== #}
+{%- if submodules %}
 Functions
 ---------
 {% for submodule in submodules %}

@@ -1,9 +1,9 @@
 # Minimal makefile for Sphinx documentation
-SPHINXOPTS    ?=
-SPHINXBUILD   ?= sphinx-build
-SOURCEDIR     = .
-AUTOSOURCEDIR = $(SOURCEDIR)/modules
-BUILDDIR      = _build
+SPHINXOPTS     ?= -j auto
+SPHINXBUILD    ?= sphinx-build
+SOURCEDIR      = .
+AUTOSOURCEDIRS = $(SOURCEDIR)/api $(SOURCEDIR)/models $(SOURCEDIR)/modules
+BUILDDIR       = _build
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -14,7 +14,7 @@ help:
 all: clean clean-apidoc html
 
 clean-apidoc:
-	rm -rf "$(AUTOSOURCEDIR)"
+	rm -rf $(AUTOSOURCEDIRS)
 
 # Catch-all target: route all unknown targets to Sphinx builder
 %: Makefile

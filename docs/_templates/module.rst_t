@@ -1,8 +1,5 @@
 {{- basename | e | heading }}
 
-{# ===== Show function summary (except for model package) =====}
-{# TODO: A better generic solution for this #}
-{%- if not qualname.startswith('pyinaturalist.models.') %}
 Summary
 ^^^^^^^
 .. automodsumm:: {{ qualname }}
@@ -10,7 +7,6 @@ Summary
 
 Details
 ^^^^^^^
-{%- endif %}
 .. automodule:: {{ qualname }}
 {%- for option in automodule_options %}
    :{{ option }}:
