@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from os.path import abspath, dirname, join
 from pathlib import Path
-from typing import IO, Any, BinaryIO, Dict, Iterable, List, Tuple, Union
+from typing import IO, TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Optional, Tuple, Union
 
 # iNaturalist URLs
 API_V0_BASE_URL = 'https://www.inaturalist.org'
@@ -36,17 +36,15 @@ WRITE_HTTP_METHODS = ['PATCH', 'POST', 'PUT', 'DELETE']
 
 # Project directories
 PROJECT_DIR = abspath(dirname(dirname(__file__)))
+DOCS_DIR = join(PROJECT_DIR, 'docs')
 DOWNLOAD_DIR = join(PROJECT_DIR, 'downloads')
 SAMPLE_DATA_DIR = join(PROJECT_DIR, 'test', 'sample_data')
 
 # Response formats supported by GET /observations endpoint
 OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
 
-# Creative Commons license codes
-CC_LICENSES = ['CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0']
-
 # IUCN Conservation status codes; for more info, see: https://www.iucnredlist.org
-CONSERVATION_STATUSES = ['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX']
+CONSERVATION_STATUSES = ['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX', 'S2B']
 
 # Taxon ID and name of main taxa 'categories' that can be filtered on
 ICONIC_TAXA = {
@@ -119,7 +117,10 @@ REST_OBS_ORDER_BY_PROPERTIES = ['date_added', 'observed_on']
 PROJECT_ORDER_BY_PROPERTIES = ['created', 'distance', 'featured', 'recent_posts', 'updated']
 
 # Options for multiple choice parameters (non-endpoint-specific)
+CC_LICENSES = ['CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0']
+ALL_LICENSES = CC_LICENSES + ['ALL RIGHTS RESERVED']
 COMMUNITY_ID_STATUSES = ['most_agree', 'most_disagree', 'some_agree']
+ESTABLISTMENT_MEANS = ['introduced', 'native', 'endemic']
 EXTRA_PROPERTIES = ['fields', 'identifications', 'projects']
 GEOPRIVACY_LEVELS = ['obscured', 'obscured_private', 'open', 'private']
 HAS_PROPERTIES = ['photo', 'geo']
@@ -127,6 +128,7 @@ HISTOGRAM_DATE_FIELDS = ['created', 'observed']
 HISTOGRAM_INTERVALS = ['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
 ID_CATEGORIES = ['improving', 'supporting', 'leading', 'maverick']
 ORDER_DIRECTIONS = ['asc', 'desc']
+PLACE_CATEGORIES = ['standard', 'community']
 PROJECT_TYPES = ['collection', 'umbrella']
 QUALITY_GRADES = ['casual', 'needs_id', 'research']
 SEARCH_PROPERTIES = ['names', 'tags', 'description', 'place']
@@ -188,6 +190,7 @@ Coordinates = Tuple[float, float]
 AnyDate = Union[date, datetime, str]
 AnyDateTime = Union[datetime, str]
 AnyFile = Union[IO, Path, str]
+DateTime = datetime
 DateOrInt = Union[date, datetime, int]
 Dimensions = Tuple[int, int]
 FileOrPath = Union[BinaryIO, str]
@@ -207,3 +210,9 @@ MultiStr = Union[str, Iterable[str]]
 MultiIntOrStr = Union[MultiInt, MultiStr]
 TableRow = Dict[str, Any]
 TemplateFunction = Any  # Cannot use Callable/Protocol, as these will not allow a mix of signatures
+
+# For type checking purposes, some nullable attrs need to be marked as Optional.
+# For documentation purposes, this is redundant since all keyword args are optional.
+if TYPE_CHECKING:
+    Coordinates = Optional[Coordinates]  # type: ignore
+    DateTime = Optional[DateTime]  # type: ignore

@@ -1,9 +1,16 @@
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
-from attr import define, field
+from attr import define
 
-from pyinaturalist.constants import CC_LICENSES, GEOPRIVACY_LEVELS, Coordinates, QUALITY_GRADES, TableRow
+from pyinaturalist.constants import (
+    ALL_LICENSES,
+    GEOPRIVACY_LEVELS,
+    QUALITY_GRADES,
+    Coordinates,
+    DateTime,
+    TableRow,
+)
 from pyinaturalist.converters import convert_observation_timestamp
 from pyinaturalist.models import (
     Annotation,
@@ -19,17 +26,14 @@ from pyinaturalist.models import (
     User,
     add_lazy_attrs,
     coordinate_pair,
-    datetime_attr,
-    datetime_now_attr,
+    datetime_field,
+    datetime_now_field,
     define_model_collection,
+    field,
     is_in,
-    kwarg,
+    upper,
 )
 from pyinaturalist.v1 import get_observation
-
-
-def upper(value) -> Optional[str]:
-    return str(value).upper() if value is not None else None
 
 
 @define(auto_attribs=False, init=False, field_transformer=add_lazy_attrs)
@@ -38,51 +42,86 @@ class Observation(BaseModel):
     `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
     """
 
-    created_at: datetime = datetime_now_attr  #: Date and time this was created
-    captive: bool = kwarg  #: Indicates if the organism is non-wild (captive or cultivated)
-    community_taxon_id: int = kwarg  #: The current community identification taxon
-    description: str = kwarg  #: Observation description
-    #: Location privacy level: either 'open', 'obscured', or 'private
-    geoprivacy: str = field(default=None, validator=is_in(GEOPRIVACY_LEVELS))
-    identifications_count: int = kwarg  #: Total number of identifications
-    identifications_most_agree: bool = kwarg  #: Indicates if most identifications agree
-    identifications_most_disagree: bool = kwarg  #: Indicates if most identifications disagree
-    identifications_some_agree: bool = kwarg  #: Indicates if some identifications agree
-    #: Creative Commons license code
-    license_code: str = field(default=None, converter=upper, validator=is_in(CC_LICENSES))
-    location: Optional[Coordinates] = coordinate_pair  #: Latitude and logitude in decimal degrees
-    mappable: bool = kwarg  #: Indicates if the observation can be shown on a map
-    num_identification_agreements: int = kwarg  #: Total number of agreeing identifications
-    num_identification_disagreements: int = kwarg  #: Total number of disagreeing identifications
-    oauth_application_id: str = kwarg  #: OAuth application ID used to create the observation, if any
-    obscured: bool = kwarg  #: Indicates if coordinates are obscured
-    out_of_range: bool = kwarg  #: Indicates if the taxon is observed outside of its known range
-    #: Indicates if the owner's ID was selected from computer visino results
-    owners_identification_from_vision: bool = kwarg
-    place_guess: str = kwarg  #: Place name determined from observation coordinates
-    positional_accuracy: int = kwarg  #: GPS accuracy in meters (real accuracy, if obscured)
-    public_positional_accuracy: int = kwarg  #: GPS accuracy in meters (not accurate if obscured)
-    quality_grade: str = field(default=None, validator=is_in(QUALITY_GRADES))  #: Quality grade
-    site_id: int = kwarg  #: Site ID for iNaturalist network members, or 1 for inaturalist.org
-    species_guess: str = kwarg  #: Species name from observer's initial identification
-    observed_on: Optional[datetime] = datetime_attr  #: Date and time this was observed
-    updated_at: Optional[datetime] = datetime_attr  #: Date and time this was last updated
-    uri: str = kwarg  #: Link to observation details page
-    uuid: str = kwarg  #: Universally unique ID; generally preferred over 'id' where possible
+    created_at: datetime = datetime_now_field(doc='Date and time the observation was created')
+    captive: bool = field(
+        default=None, doc='Indicates if the organism is non-wild (captive or cultivated)'
+    )
+    community_taxon_id: int = field(default=None, doc='The current community identification taxon')
+    description: str = field(default=None, doc='Observation description')
+    geoprivacy: str = field(
+        default=None, validator=is_in(GEOPRIVACY_LEVELS), doc='Location privacy level'
+    )
+    identifications_count: int = field(default=None, doc='Total number of identifications')
+    identifications_most_agree: bool = field(default=None, doc='Indicates if most identifications agree')
+    identifications_most_disagree: bool = field(
+        default=None, doc='Indicates if most identifications disagree'
+    )
+    identifications_some_agree: bool = field(default=None, doc='Indicates if some identifications agree')
+    license_code: str = field(
+        default=None,
+        converter=upper,
+        validator=is_in(ALL_LICENSES),
+        doc='Creative Commons license code',
+    )
+    location: Coordinates = coordinate_pair()
+    mappable: bool = field(default=None, doc='Indicates if the observation can be shown on a map')
+    num_identification_agreements: int = field(default=None, doc='Total agreeing identifications')
+    num_identification_disagreements: int = field(default=None, doc='Total disagreeing identifications')
+    oauth_application_id: str = field(
+        default=None, doc='ID of the OAuth application used to create the observation, if any'
+    )
+    obscured: bool = field(
+        default=None,
+        doc='Indicates if coordinates are obscured (showing a broad approximate location on the map)',
+    )
+    out_of_range: bool = field(
+        default=None, doc='Indicates if the taxon is observed outside of its known range'
+    )
+    owners_identification_from_vision: bool = field(
+        default=None, doc="Indicates if the owner's ID was selected from computer vision results"
+    )
+    place_guess: str = field(default=None, doc='Place name determined from observation coordinates')
+    positional_accuracy: int = field(
+        default=None, doc='GPS accuracy in meters (real accuracy, if obscured)'
+    )
+    public_positional_accuracy: int = field(
+        default=None, doc='GPS accuracy in meters (not accurate if obscured)'
+    )
+    quality_grade: str = field(default=None, validator=is_in(QUALITY_GRADES), doc='Quality grade')
+    site_id: int = field(
+        default=None, doc='Site ID for iNaturalist network members, or ``1`` for inaturalist.org'
+    )
+    species_guess: str = field(default=None, doc="Taxon name from observer's initial identification")
+    observed_on: DateTime = datetime_field(doc='Date and time the organism was observed')
+    updated_at: DateTime = datetime_field(doc='Date and time the observation was last updated')
+    uri: str = field(default=None, doc='Link to observation details page')
+    uuid: str = field(
+        default=None, doc='Universally unique ID; generally preferred over ``id`` where possible'
+    )
 
     # Nested collections
-    faves: List = field(factory=list)
-    outlinks: List = field(factory=list)
-    place_ids: List = field(factory=list)
-    preferences: Dict = field(factory=dict)
-    project_ids: List = field(factory=list)
-    project_ids_with_curator_id: List = field(factory=list)
-    project_ids_without_curator_id: List = field(factory=list)
-    quality_metrics: List = field(factory=list)
-    reviewed_by: List = field(factory=list)
-    sounds: List = field(factory=list)
-    tags: List = field(factory=list)
-    votes: List = field(factory=list)
+    # TODO: Possible models for faves, sounds, and votes?
+    faves: List[Dict] = field(factory=list, doc='Details on users who have favorited the observation')
+    outlinks: List[Dict] = field(
+        factory=list, doc='Linked observation pages on other sites (e.g., GBIF)'
+    )
+    place_ids: List[int] = field(factory=list)
+    preferences: Dict[str, Any] = field(
+        factory=dict,
+        doc='Any user observation preferences (related to community IDs, coordinate access, etc.)',
+    )
+    project_ids: List[int] = field(factory=list, doc='All associated project IDs')
+    project_ids_with_curator_id: List[int] = field(
+        factory=list, doc='Project IDs with a curator identification for this observation'
+    )
+    project_ids_without_curator_id: List[int] = field(
+        factory=list, doc='Project IDs without curator identification for this observation'
+    )
+    quality_metrics: List[Dict] = field(factory=list, doc='Data quality assessment metrics')
+    reviewed_by: List[int] = field(factory=list, doc='IDs of users who have reviewed the observation')
+    sounds: List[Dict] = field(factory=list, doc='Sound files associated with the observation')
+    tags: List[str] = field(factory=list, doc='Arbitrary user tags added to the observation')
+    votes: List[Dict] = field(factory=list, doc='Votes on data quality assessment metrics')
 
     # Lazy-loaded nested model objects
     annotations: property = LazyProperty(Annotation.from_json_list)
@@ -95,23 +134,23 @@ class Observation(BaseModel):
     user: property = LazyProperty(User.from_json)
 
     # Additional attributes from API response that aren't needed; just left here for reference
-    # cached_votes_total: int = kwarg
-    # comments_count: int = kwarg
+    # cached_votes_total: int = field(default=None)
+    # comments_count: int = field(default=None)
     # created_at_details: Dict = field(factory=dict)
-    # created_time_zone: str = kwarg
-    # faves_count: int = kwarg
+    # created_time_zone: str = field(default=None)
+    # faves_count: int = field(default=None)
     # flags: List = field(factory=list)
     # geojson: Dict = field(factory=dict)
-    # id_please: bool = kwarg
-    # map_scale: int = kwarg
+    # id_please: bool = field(default=None)
+    # map_scale: int = field(default=None)
     # non_owner_ids: List = field(factory=list)
     # observed_on_details: Dict = field(factory=dict)
-    # observed_on_string: str = kwarg
+    # observed_on_string: str = field(default=None)
     # observation_photos: List[Photo] = field(converter=Photo.from_dict_list, factory=list)
-    # observed_time_zone: str = kwarg
-    # spam: bool = kwarg
-    # time_observed_at: Optional[datetime] = datetime_attr
-    # time_zone_offset: str = kwarg
+    # observed_time_zone: str = field(default=None)
+    # spam: bool = field(default=None)
+    # time_observed_at: DateTime = datetime_attr
+    # time_zone_offset: str = field(default=None)
 
     # Attributes that will only be used during init and then omitted
     temp_attrs = [

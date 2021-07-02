@@ -1,28 +1,68 @@
-"""Dataclasses for modeling iNaturalist API response objects"""
+"""Data models that represent iNaturalist API response objects.
+See :ref:`user_guide:models` section for usage details.
+"""
 # flake8: noqa: F401
-from typing import Callable
-from attr import define
+from datetime import datetime, timezone
+from typing import Callable, Dict, Iterable, Optional, Union
 
-from pyinaturalist.models.base import (
-    ModelObjects,
-    ResponseOrObject,
-    ResponseOrObjects,
-    BaseModel,
-    BaseModelCollection,
-    datetime_attr,
-    datetime_now_attr,
-    coordinate_pair,
-    is_in,
-    kwarg,
-    load_json,
-)
+import attr
+from attr import define, validators
+
+from pyinaturalist.constants import JsonResponse, ResponseOrResults
+from pyinaturalist.converters import convert_lat_long, try_datetime
+from pyinaturalist.models.base import BaseModel, BaseModelCollection, load_json
 from pyinaturalist.models.lazy_property import LazyProperty, add_lazy_attrs, get_model_fields
 
-# attrs class decorators with the most commonly used options
+
+# Aliases and minor helper functions used by model classes
+# --------------------------------------------------------
+
+# Attrs class decorators with the most commonly used options
 define_model: Callable = define(auto_attribs=False, field_transformer=add_lazy_attrs)
 define_model_collection: Callable = define(auto_attribs=False, order=False, slots=False)
 
-# Imported in order of model dependencies
+
+def field(doc: str = '', metadata: Dict = None, **kwargs):
+    """A field with extra documentation metadata"""
+    metadata = metadata or {}
+    metadata['doc'] = doc
+    return attr.field(**kwargs, metadata=metadata)
+
+
+# TODO: Case-insensitive version
+def is_in(options: Iterable):
+    """Validator for an optional multiple-choice attribute"""
+    return validators.in_(list(options) + [None])
+
+
+def coordinate_pair(**kwargs):
+    """Field containing a pair of coordiantes"""
+    return field(
+        default=None,
+        converter=convert_lat_long,
+        doc='Location in ``(latitude, logitude)`` decimal degrees',
+        **kwargs,
+    )
+
+
+def datetime_field(**kwargs):
+    """Field that converts date/time strings into datetime objects"""
+    return field(default=None, converter=try_datetime, **kwargs)
+
+
+def datetime_now_field(**kwargs):
+    """Field that converts date/time strings into datetime objects, and defaults to the current time"""
+    return field(converter=try_datetime, factory=lambda: datetime.now(timezone.utc), **kwargs)
+
+
+def upper(value) -> Optional[str]:
+    """Converter to change a string to uppercase, if applicable"""
+    return value.upper() if isinstance(value, str) else None
+
+
+# Models imported in order of dependencies
+# --------------------------------------------------------
+
 from pyinaturalist.models.photo import Photo
 from pyinaturalist.models.place import Place
 from pyinaturalist.models.user import User
@@ -48,7 +88,12 @@ from pyinaturalist.models.observation import Observation, Observations
 from pyinaturalist.models.search import SearchResult
 
 
-# Add aliases for some of the longer class names
+# Type aliases involving model objects
+ModelObjects = Union[BaseModel, BaseModelCollection, Iterable[BaseModel]]
+ResponseOrObject = Union[BaseModel, JsonResponse]
+ResponseOrObjects = Union[ModelObjects, ResponseOrResults]
+
+# Short aliases for some of the longer class names
 ID = Identification
 OFD = ObservationField
 OFV = ObservationFieldValue

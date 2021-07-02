@@ -1,9 +1,8 @@
 from typing import Dict, List, Union
 
-from attr import field
-
 from pyinaturalist.constants import (
     INAT_BASE_URL,
+    PLACE_CATEGORIES,
     Coordinates,
     GeoJson,
     JsonResponse,
@@ -11,7 +10,7 @@ from pyinaturalist.constants import (
     TableRow,
 )
 from pyinaturalist.converters import convert_lat_long
-from pyinaturalist.models import BaseModel, define_model, kwarg
+from pyinaturalist.models import BaseModel, define_model, field, is_in
 from pyinaturalist.models.base import ensure_list
 
 
@@ -28,17 +27,29 @@ class Place(BaseModel):
     * `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_  (``establishment_means.place``)
     """
 
-    admin_level: int = kwarg
-    ancestor_place_ids: List[str] = field(factory=list)
-    bbox_area: float = kwarg
-    bounding_box_geojson: GeoJson = field(factory=dict)
-    category: str = kwarg  # Either 'standard' or 'community'
-    display_name: str = kwarg
-    geometry_geojson: GeoJson = field(factory=dict)
-    location: Coordinates = field(converter=convert_optional_lat_long, default=None)
-    name: str = kwarg
-    place_type: int = kwarg
-    slug: str = kwarg
+    admin_level: int = field(default=None, doc='Administrative level, if any')
+    ancestor_place_ids: List[str] = field(
+        factory=list, doc='IDs of places that this place is contained within'
+    )
+    bbox_area: float = field(default=None, doc='Bounding box area')
+    bounding_box_geojson: GeoJson = field(
+        factory=dict, doc='Bounding box polygon that fully encloses the place'
+    )
+    category: str = field(
+        default=None,
+        validator=is_in(PLACE_CATEGORIES),
+        doc='Place category (only applies to /places/nearby)',
+    )
+    display_name: str = field(default=None, doc='Place name as displayed on place info page')
+    geometry_geojson: GeoJson = field(factory=dict, doc='Polygon representing place boundary')
+    location: Coordinates = field(
+        default=None,
+        converter=convert_optional_lat_long,
+        doc='Location in ``(latitude, logitude)`` decimal degrees',
+    )
+    name: str = field(default=None, doc='Place name')
+    place_type: int = field(default=None, doc='Numeric value indicating place type')
+    slug: str = field(default=None, doc='Place URL slug')
 
     @classmethod
     def from_json(cls, value: JsonResponse, category: str = None, **kwargs) -> BaseModel:

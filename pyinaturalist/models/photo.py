@@ -1,11 +1,9 @@
 # TODO: Method to preview image in Jupyter
 from typing import Optional, Tuple
 
-from attr import field
-
-from pyinaturalist.constants import CC_LICENSES, PHOTO_INFO_BASE_URL, PHOTO_SIZES, TableRow
+from pyinaturalist.constants import ALL_LICENSES, CC_LICENSES, PHOTO_INFO_BASE_URL, PHOTO_SIZES, TableRow
 from pyinaturalist.converters import format_dimensions, format_license
-from pyinaturalist.models import BaseModel, define_model, kwarg
+from pyinaturalist.models import BaseModel, define_model, field, is_in
 
 
 @define_model
@@ -14,10 +12,17 @@ class Photo(BaseModel):
     `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
     """
 
-    attribution: str = kwarg
-    license_code: str = field(converter=format_license, default=None)  # Enum
-    original_dimensions: Tuple[int, int] = field(converter=format_dimensions, default=(0, 0))
-    url: str = kwarg
+    attribution: str = field(default=None, doc='License attribution')
+    license_code: str = field(
+        default=None,
+        converter=format_license,
+        validator=is_in(ALL_LICENSES),
+        doc='Creative Commons license code',
+    )
+    original_dimensions: Tuple[int, int] = field(
+        converter=format_dimensions, default=(0, 0), doc='Dimensions of original image'
+    )
+    url: str = field(default=None, doc='Image URL; see properties for URLs of specific image sizes')
     _url_format: str = field(init=False, repr=False, default=None)
 
     # Unused attributes
@@ -43,6 +48,7 @@ class Photo(BaseModel):
 
     @property
     def info_url(self) -> str:
+        """URL for photo info page"""
         return f'{PHOTO_INFO_BASE_URL}/{self.id}'
 
     @property

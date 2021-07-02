@@ -1,0 +1,2653 @@
+{
+  "quality_grade": "research",
+  "time_observed_at": "2021-07-02T19:59:03-05:00",
+  "taxon_geoprivacy": "open",
+  "annotations": [],
+  "uuid": "cc1d41f6-c2b4-423c-a254-0276463e960b",
+  "id": 85411131,
+  "cached_votes_total": 0,
+  "identifications_most_agree": true,
+  "species_guess": "Groundhog",
+  "identifications_most_disagree": false,
+  "tags": [],
+  "positional_accuracy": 10,
+  "comments_count": 0,
+  "site_id": 1,
+  "license_code": null,
+  "quality_metrics": [
+    {
+      "id": 6988064,
+      "user_id": 2115051,
+      "metric": "wild",
+      "agree": true,
+      "user": {
+        "id": 2115051,
+        "login": "jkcook",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2019-08-10T17:52:01+00:00",
+        "login_autocomplete": "jkcook",
+        "login_exact": "jkcook",
+        "name": "Jordan Cook",
+        "name_autocomplete": "Jordan Cook",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/2115051/thumb.jpeg?1591994381",
+        "observations_count": 748,
+        "identifications_count": 548,
+        "journal_posts_count": 0,
+        "activity_count": 1296,
+        "species_count": 383,
+        "universal_search_rank": 748,
+        "roles": [],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/2115051/medium.jpeg?1591994381"
+      }
+    }
+  ],
+  "public_positional_accuracy": 10,
+  "reviewed_by": [
+    593014,
+    2115051
+  ],
+  "oauth_application_id": 3,
+  "flags": [],
+  "created_at": "2021-07-02 20:05:53-05:00",
+  "description": "",
+  "project_ids_with_curator_id": [],
+  "updated_at": "2021-07-02 23:09:35-05:00",
+  "sounds": [],
+  "place_ids": [
+    1,
+    24,
+    155,
+    9853,
+    59613,
+    64422,
+    64423,
+    66741,
+    82256,
+    97394,
+    116535,
+    129109,
+    136963,
+    137232,
+    137509,
+    155074
+  ],
+  "captive": false,
+  "taxon": {
+    "is_active": true,
+    "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933/339572/209650/46078",
+    "min_species_ancestry": "48460,1,2,355675,40151,848317,848320,848323,43698,129411,45933,339572,209650,46078,46095",
+    "endemic": false,
+    "iconic_taxon_id": 40151,
+    "min_species_taxon_id": 46095,
+    "threatened": false,
+    "rank_level": 10,
+    "introduced": false,
+    "native": true,
+    "parent_id": 46078,
+    "name": "Marmota monax",
+    "rank": "species",
+    "extinct": false,
+    "id": 46095,
+    "ancestor_ids": [
+      48460,
+      1,
+      2,
+      355675,
+      40151,
+      848317,
+      848320,
+      848323,
+      43698,
+      129411,
+      45933,
+      339572,
+      209650,
+      46078,
+      46095
+    ],
+    "photos_locked": false,
+    "taxon_schemes_count": 5,
+    "wikipedia_url": "http://en.wikipedia.org/wiki/Groundhog",
+    "current_synonymous_taxon_ids": null,
+    "created_at": "2008-03-19T01:27:05+00:00",
+    "taxon_changes_count": 0,
+    "complete_species_count": null,
+    "universal_search_rank": 15623,
+    "observations_count": 15623,
+    "flag_counts": {
+      "resolved": 1,
+      "unresolved": 0
+    },
+    "atlas_id": 31,
+    "default_photo": {
+      "id": 39918766,
+      "license_code": "cc-by-nc",
+      "attribution": "(c) Mike Leveille, some rights reserved (CC BY-NC)",
+      "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+      "original_dimensions": {
+        "height": 1536,
+        "width": 2048
+      },
+      "flags": [],
+      "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+      "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/medium.jpeg?1558808910"
+    },
+    "iconic_taxon_name": "Mammalia",
+    "preferred_common_name": "Groundhog"
+  },
+  "ident_taxon_ids": [
+    48460,
+    1,
+    2,
+    355675,
+    40151,
+    848317,
+    848320,
+    848323,
+    43698,
+    129411,
+    45933,
+    339572,
+    209650,
+    46078,
+    46095
+  ],
+  "outlinks": [],
+  "faves_count": 0,
+  "ofvs": [],
+  "num_identification_agreements": 1,
+  "preferences": {
+    "prefers_community_taxon": null
+  },
+  "comments": [],
+  "map_scale": null,
+  "uri": "https://www.inaturalist.org/observations/85411131",
+  "project_ids": [],
+  "community_taxon_id": 46095,
+  "geojson": {
+    "type": "Point",
+    "coordinates": [
+      -92.5431879714,
+      41.2860798165
+    ]
+  },
+  "owners_identification_from_vision": false,
+  "identifications_count": 1,
+  "obscured": false,
+  "num_identification_disagreements": 0,
+  "geoprivacy": null,
+  "location": [
+    41.2860798165,
+    -92.5431879714
+  ],
+  "votes": [],
+  "spam": false,
+  "user": {
+    "id": 593014,
+    "login": "jeheiple",
+    "spam": false,
+    "suspended": false,
+    "created_at": "2017-08-21T02:54:05+00:00",
+    "site_id": 1,
+    "preferences": {},
+    "login_autocomplete": "jeheiple",
+    "login_exact": "jeheiple",
+    "name": "Julie Magee Heiple",
+    "name_autocomplete": "Julie Magee Heiple",
+    "orcid": null,
+    "icon": "https://static.inaturalist.org/attachments/users/icons/593014/thumb.jpg?1504657329",
+    "observations_count": 3971,
+    "identifications_count": 981,
+    "journal_posts_count": 0,
+    "activity_count": 4952,
+    "species_count": 1240,
+    "universal_search_rank": 3971,
+    "roles": [],
+    "icon_url": "https://static.inaturalist.org/attachments/users/icons/593014/medium.jpg?1504657329"
+  },
+  "mappable": true,
+  "identifications_some_agree": true,
+  "project_ids_without_curator_id": [],
+  "place_guess": "Keomah State Park, Oskaloosa, IA, US",
+  "identifications": [
+    {
+      "hidden": false,
+      "disagreement": null,
+      "flags": [],
+      "created_at": "2021-07-02T20:05:53-05:00",
+      "taxon_id": 46095,
+      "body": null,
+      "own_observation": true,
+      "uuid": "806b8610-b429-4abc-98ad-d7db1125e72c",
+      "taxon_change": null,
+      "moderator_actions": [],
+      "vision": false,
+      "current": true,
+      "id": 187881001,
+      "created_at_details": {
+        "date": "2021-07-02",
+        "day": 2,
+        "month": 7,
+        "year": 2021,
+        "hour": 20,
+        "week": 26
+      },
+      "category": "improving",
+      "spam": false,
+      "user": {
+        "id": 593014,
+        "login": "jeheiple",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2017-08-21T02:54:05+00:00",
+        "login_autocomplete": "jeheiple",
+        "login_exact": "jeheiple",
+        "name": "Julie Magee Heiple",
+        "name_autocomplete": "Julie Magee Heiple",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/593014/thumb.jpg?1504657329",
+        "observations_count": 3971,
+        "identifications_count": 981,
+        "journal_posts_count": 0,
+        "activity_count": 4952,
+        "species_count": 1240,
+        "universal_search_rank": 3971,
+        "roles": [],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/593014/medium.jpg?1504657329"
+      },
+      "previous_observation_taxon_id": 46095,
+      "taxon": {
+        "photos_locked": false,
+        "taxon_schemes_count": 5,
+        "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933/339572/209650/46078",
+        "min_species_ancestry": "48460,1,2,355675,40151,848317,848320,848323,43698,129411,45933,339572,209650,46078,46095",
+        "wikipedia_url": "http://en.wikipedia.org/wiki/Groundhog",
+        "current_synonymous_taxon_ids": null,
+        "iconic_taxon_id": 40151,
+        "created_at": "2008-03-19T01:27:05+00:00",
+        "taxon_changes_count": 0,
+        "complete_species_count": null,
+        "rank": "species",
+        "extinct": false,
+        "id": 46095,
+        "universal_search_rank": 15623,
+        "ancestor_ids": [
+          48460,
+          1,
+          2,
+          355675,
+          40151,
+          848317,
+          848320,
+          848323,
+          43698,
+          129411,
+          45933,
+          339572,
+          209650,
+          46078
+        ],
+        "observations_count": 15623,
+        "is_active": true,
+        "flag_counts": {
+          "resolved": 1,
+          "unresolved": 0
+        },
+        "min_species_taxon_id": 46095,
+        "rank_level": 10,
+        "atlas_id": 31,
+        "parent_id": 46078,
+        "name": "Marmota monax",
+        "default_photo": {
+          "id": 39918766,
+          "license_code": "cc-by-nc",
+          "attribution": "(c) Mike Leveille, some rights reserved (CC BY-NC)",
+          "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+          "original_dimensions": {
+            "height": 1536,
+            "width": 2048
+          },
+          "flags": [],
+          "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+          "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/medium.jpeg?1558808910"
+        },
+        "iconic_taxon_name": "Mammalia",
+        "preferred_common_name": "Groundhog",
+        "ancestors": [
+          {
+            "observations_count": 40195743,
+            "taxon_schemes_count": 2,
+            "is_active": true,
+            "ancestry": "48460",
+            "flag_counts": {
+              "resolved": 11,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Animal",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 1,
+            "rank_level": 70,
+            "taxon_changes_count": 4,
+            "atlas_id": null,
+            "complete_species_count": null,
+            "parent_id": 48460,
+            "complete_rank": "order",
+            "name": "Animalia",
+            "rank": "kingdom",
+            "extinct": false,
+            "id": 1,
+            "default_photo": {
+              "id": 80678745,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80678745/square.jpg?1593020613",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80678745/square.jpg?1593020613",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80678745/medium.jpg?1593020613"
+            },
+            "ancestor_ids": [
+              48460,
+              1
+            ],
+            "iconic_taxon_name": "Animalia",
+            "preferred_common_name": "Animals"
+          },
+          {
+            "observations_count": 17515322,
+            "taxon_schemes_count": 2,
+            "is_active": true,
+            "ancestry": "48460/1",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Chordate",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 1,
+            "rank_level": 60,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 74029,
+            "parent_id": 1,
+            "complete_rank": "subspecies",
+            "name": "Chordata",
+            "rank": "phylum",
+            "extinct": false,
+            "id": 2,
+            "default_photo": {
+              "id": 80551845,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551845/square.jpg?1592953542",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551845/square.jpg?1592953542",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551845/medium.jpg?1592953542"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2
+            ],
+            "iconic_taxon_name": "Animalia",
+            "preferred_common_name": "Chordates"
+          },
+          {
+            "observations_count": 17490126,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2",
+            "flag_counts": {
+              "resolved": 2,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Vertebrate",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 1,
+            "rank_level": 57,
+            "taxon_changes_count": 1,
+            "atlas_id": null,
+            "complete_species_count": 70929,
+            "parent_id": 2,
+            "complete_rank": "subspecies",
+            "name": "Vertebrata",
+            "rank": "subphylum",
+            "extinct": false,
+            "id": 355675,
+            "default_photo": {
+              "id": 80551642,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551642/square.jpg?1592953462",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551642/square.jpg?1592953462",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551642/medium.jpg?1592953462"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675
+            ],
+            "iconic_taxon_name": "Animalia",
+            "preferred_common_name": "Vertebrates"
+          },
+          {
+            "observations_count": 2031532,
+            "taxon_schemes_count": 2,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675",
+            "flag_counts": {
+              "resolved": 2,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Mammal",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 50,
+            "taxon_changes_count": 1,
+            "atlas_id": null,
+            "complete_species_count": 5826,
+            "parent_id": 355675,
+            "complete_rank": "species",
+            "name": "Mammalia",
+            "rank": "class",
+            "extinct": false,
+            "id": 40151,
+            "default_photo": {
+              "id": 80551250,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551250/square.jpg?1592953269",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551250/square.jpg?1592953269",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551250/medium.jpg?1592953269"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Mammals"
+          },
+          {
+            "observations_count": 2004600,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "https://en.wikipedia.org/wiki/Theria",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 47,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 5821,
+            "parent_id": 40151,
+            "complete_rank": "species",
+            "name": "Theria",
+            "rank": "subclass",
+            "extinct": false,
+            "id": 848317,
+            "default_photo": {
+              "id": 83336879,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336879/square.jpg?1594255580",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336879/square.jpg?1594255580",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336879/medium.jpg?1594255580"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Therians"
+          },
+          {
+            "observations_count": 1936629,
+            "taxon_schemes_count": 0,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "https://en.wikipedia.org/wiki/Placentalia",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 45,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 5475,
+            "parent_id": 848317,
+            "complete_rank": "species",
+            "name": "Placentalia",
+            "rank": "infraclass",
+            "extinct": false,
+            "id": 848320,
+            "default_photo": {
+              "id": 83336736,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336736/square.jpg?1594255485",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336736/square.jpg?1594255485",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336736/medium.jpg?1594255485"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Placental Mammals"
+          },
+          {
+            "observations_count": 809654,
+            "taxon_schemes_count": 0,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "https://en.wikipedia.org/wiki/Euarchontoglires",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 43,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 2934,
+            "parent_id": 848320,
+            "complete_rank": "species",
+            "name": "Euarchontoglires",
+            "rank": "superorder",
+            "extinct": false,
+            "id": 848323,
+            "default_photo": {
+              "id": 83336441,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336441/square.jpg?1594255328",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336441/square.jpg?1594255328",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336441/medium.jpg?1594255328"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Primates, Rodents, and Allies"
+          },
+          {
+            "observations_count": 540001,
+            "taxon_schemes_count": 2,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 2
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Rodent",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 40,
+            "taxon_changes_count": 1,
+            "atlas_id": null,
+            "complete_species_count": 2350,
+            "parent_id": 848323,
+            "complete_rank": "species",
+            "name": "Rodentia",
+            "rank": "order",
+            "extinct": false,
+            "id": 43698,
+            "default_photo": {
+              "id": 24165841,
+              "license_code": "cc-by-nc",
+              "attribution": "(c) Nikolai Vladimirov, algunos derechos reservados (CC BY-NC)",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/24165841/square.jpg?1535874406",
+              "original_dimensions": {
+                "height": 1365,
+                "width": 2048
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/24165841/square.jpg?1535874406",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/24165841/medium.jpg?1535874406"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Rodents"
+          },
+          {
+            "observations_count": 375894,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Sciuromorpha",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 37,
+            "taxon_changes_count": 1,
+            "atlas_id": null,
+            "complete_species_count": 316,
+            "parent_id": 43698,
+            "complete_rank": "species",
+            "name": "Sciuromorpha",
+            "rank": "suborder",
+            "extinct": false,
+            "id": 129411,
+            "default_photo": {
+              "id": 2841930,
+              "license_code": null,
+              "attribution": "(c) shawneevt, all rights reserved",
+              "url": "https://static.inaturalist.org/photos/2841930/square.JPG?1451854072",
+              "original_dimensions": {
+                "height": 1536,
+                "width": 2048
+              },
+              "flags": [],
+              "square_url": "https://static.inaturalist.org/photos/2841930/square.JPG?1451854072",
+              "medium_url": "https://static.inaturalist.org/photos/2841930/medium.JPG?1451854072"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Squirrels, Dormice, and Mountain Beavers"
+          },
+          {
+            "observations_count": 373799,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Squirrel",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 30,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 286,
+            "parent_id": 129411,
+            "complete_rank": "species",
+            "name": "Sciuridae",
+            "rank": "family",
+            "extinct": false,
+            "id": 45933,
+            "default_photo": {
+              "id": 57429066,
+              "license_code": null,
+              "attribution": "(c) Eduardo Correa, all rights reserved",
+              "url": "https://static.inaturalist.org/photos/57429066/square.jpg?1575429297",
+              "original_dimensions": {
+                "height": 960,
+                "width": 831
+              },
+              "flags": [],
+              "square_url": "https://static.inaturalist.org/photos/57429066/square.jpg?1575429297",
+              "medium_url": "https://static.inaturalist.org/photos/57429066/medium.jpg?1575429297"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411,
+              45933
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Squirrels"
+          },
+          {
+            "observations_count": 128509,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Xerinae",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 27,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 130,
+            "parent_id": 45933,
+            "complete_rank": "species",
+            "name": "Xerinae",
+            "rank": "subfamily",
+            "extinct": false,
+            "id": 339572,
+            "default_photo": {
+              "id": 638878,
+              "license_code": "cc-by-nc",
+              "attribution": "(c) susanelliott, some rights reserved (CC BY-NC), uploaded by Susan Elliott",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/square.jpg?1389806181",
+              "original_dimensions": {
+                "height": 772,
+                "width": 1024
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/square.jpg?1389806181",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/medium.jpg?1389806181"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411,
+              45933,
+              339572
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Ground and African Tree Squirrels"
+          },
+          {
+            "observations_count": 125886,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933/339572",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Ground_squirrel",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 25,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 93,
+            "parent_id": 339572,
+            "complete_rank": "species",
+            "name": "Marmotini",
+            "rank": "tribe",
+            "extinct": false,
+            "id": 209650,
+            "default_photo": {
+              "id": 638878,
+              "license_code": "cc-by-nc",
+              "attribution": "(c) susanelliott, alguns direitos reservados (CC BY-NC), uploaded by Susan Elliott",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/square.jpg?1389806181",
+              "original_dimensions": {
+                "height": 772,
+                "width": 1024
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/square.jpg?1389806181",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/medium.jpg?1389806181"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411,
+              45933,
+              339572,
+              209650
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Holarctic Ground Squirrels and Chipmunks"
+          },
+          {
+            "observations_count": 26719,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933/339572/209650",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Marmot",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 20,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 14,
+            "parent_id": 209650,
+            "complete_rank": "species",
+            "name": "Marmota",
+            "rank": "genus",
+            "extinct": false,
+            "id": 46078,
+            "default_photo": {
+              "id": 13344602,
+              "license_code": "cc-by-nc",
+              "attribution": "(c) daviddodd, some rights reserved (CC BY-NC)",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/13344602/square.jpg?1517887148",
+              "original_dimensions": {
+                "height": 1365,
+                "width": 2048
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/13344602/square.jpg?1517887148",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/13344602/medium.jpg?1517887148"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411,
+              45933,
+              339572,
+              209650,
+              46078
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Marmots"
+          }
+        ]
+      },
+      "previous_observation_taxon": {
+        "photos_locked": false,
+        "taxon_schemes_count": 5,
+        "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933/339572/209650/46078",
+        "min_species_ancestry": "48460,1,2,355675,40151,848317,848320,848323,43698,129411,45933,339572,209650,46078,46095",
+        "wikipedia_url": "http://en.wikipedia.org/wiki/Groundhog",
+        "current_synonymous_taxon_ids": null,
+        "iconic_taxon_id": 40151,
+        "created_at": "2008-03-19T01:27:05+00:00",
+        "taxon_changes_count": 0,
+        "complete_species_count": null,
+        "rank": "species",
+        "extinct": false,
+        "id": 46095,
+        "universal_search_rank": 15623,
+        "ancestor_ids": [
+          48460,
+          1,
+          2,
+          355675,
+          40151,
+          848317,
+          848320,
+          848323,
+          43698,
+          129411,
+          45933,
+          339572,
+          209650,
+          46078,
+          46095
+        ],
+        "observations_count": 15623,
+        "is_active": true,
+        "flag_counts": {
+          "resolved": 1,
+          "unresolved": 0
+        },
+        "min_species_taxon_id": 46095,
+        "rank_level": 10,
+        "atlas_id": 31,
+        "parent_id": 46078,
+        "name": "Marmota monax",
+        "default_photo": {
+          "id": 39918766,
+          "license_code": "cc-by-nc",
+          "attribution": "(c) Mike Leveille, some rights reserved (CC BY-NC)",
+          "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+          "original_dimensions": {
+            "height": 1536,
+            "width": 2048
+          },
+          "flags": [],
+          "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+          "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/medium.jpeg?1558808910"
+        },
+        "iconic_taxon_name": "Mammalia",
+        "preferred_common_name": "Groundhog"
+      }
+    },
+    {
+      "hidden": false,
+      "disagreement": false,
+      "flags": [],
+      "created_at": "2021-07-02T23:09:35-05:00",
+      "taxon_id": 46095,
+      "body": null,
+      "own_observation": false,
+      "uuid": "1d594b39-315e-48c9-98ce-6e40e72fceda",
+      "taxon_change": null,
+      "moderator_actions": [],
+      "vision": false,
+      "current": true,
+      "id": 187909758,
+      "created_at_details": {
+        "date": "2021-07-02",
+        "day": 2,
+        "month": 7,
+        "year": 2021,
+        "hour": 23,
+        "week": 26
+      },
+      "category": "supporting",
+      "spam": false,
+      "user": {
+        "id": 2115051,
+        "login": "jkcook",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2019-08-10T17:52:01+00:00",
+        "login_autocomplete": "jkcook",
+        "login_exact": "jkcook",
+        "name": "Jordan Cook",
+        "name_autocomplete": "Jordan Cook",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/2115051/thumb.jpeg?1591994381",
+        "observations_count": 748,
+        "identifications_count": 548,
+        "journal_posts_count": 0,
+        "activity_count": 1296,
+        "species_count": 383,
+        "universal_search_rank": 748,
+        "roles": [],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/2115051/medium.jpeg?1591994381"
+      },
+      "previous_observation_taxon_id": 46095,
+      "taxon": {
+        "photos_locked": false,
+        "taxon_schemes_count": 5,
+        "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933/339572/209650/46078",
+        "min_species_ancestry": "48460,1,2,355675,40151,848317,848320,848323,43698,129411,45933,339572,209650,46078,46095",
+        "wikipedia_url": "http://en.wikipedia.org/wiki/Groundhog",
+        "current_synonymous_taxon_ids": null,
+        "iconic_taxon_id": 40151,
+        "created_at": "2008-03-19T01:27:05+00:00",
+        "taxon_changes_count": 0,
+        "complete_species_count": null,
+        "rank": "species",
+        "extinct": false,
+        "id": 46095,
+        "universal_search_rank": 15623,
+        "ancestor_ids": [
+          48460,
+          1,
+          2,
+          355675,
+          40151,
+          848317,
+          848320,
+          848323,
+          43698,
+          129411,
+          45933,
+          339572,
+          209650,
+          46078
+        ],
+        "observations_count": 15623,
+        "is_active": true,
+        "flag_counts": {
+          "resolved": 1,
+          "unresolved": 0
+        },
+        "min_species_taxon_id": 46095,
+        "rank_level": 10,
+        "atlas_id": 31,
+        "parent_id": 46078,
+        "name": "Marmota monax",
+        "default_photo": {
+          "id": 39918766,
+          "license_code": "cc-by-nc",
+          "attribution": "(c) Mike Leveille, some rights reserved (CC BY-NC)",
+          "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+          "original_dimensions": {
+            "height": 1536,
+            "width": 2048
+          },
+          "flags": [],
+          "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+          "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/medium.jpeg?1558808910"
+        },
+        "iconic_taxon_name": "Mammalia",
+        "preferred_common_name": "Groundhog",
+        "ancestors": [
+          {
+            "observations_count": 40195743,
+            "taxon_schemes_count": 2,
+            "is_active": true,
+            "ancestry": "48460",
+            "flag_counts": {
+              "resolved": 11,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Animal",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 1,
+            "rank_level": 70,
+            "taxon_changes_count": 4,
+            "atlas_id": null,
+            "complete_species_count": null,
+            "parent_id": 48460,
+            "complete_rank": "order",
+            "name": "Animalia",
+            "rank": "kingdom",
+            "extinct": false,
+            "id": 1,
+            "default_photo": {
+              "id": 80678745,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80678745/square.jpg?1593020613",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80678745/square.jpg?1593020613",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80678745/medium.jpg?1593020613"
+            },
+            "ancestor_ids": [
+              48460,
+              1
+            ],
+            "iconic_taxon_name": "Animalia",
+            "preferred_common_name": "Animals"
+          },
+          {
+            "observations_count": 17515322,
+            "taxon_schemes_count": 2,
+            "is_active": true,
+            "ancestry": "48460/1",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Chordate",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 1,
+            "rank_level": 60,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 74029,
+            "parent_id": 1,
+            "complete_rank": "subspecies",
+            "name": "Chordata",
+            "rank": "phylum",
+            "extinct": false,
+            "id": 2,
+            "default_photo": {
+              "id": 80551845,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551845/square.jpg?1592953542",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551845/square.jpg?1592953542",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551845/medium.jpg?1592953542"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2
+            ],
+            "iconic_taxon_name": "Animalia",
+            "preferred_common_name": "Chordates"
+          },
+          {
+            "observations_count": 17490126,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2",
+            "flag_counts": {
+              "resolved": 2,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Vertebrate",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 1,
+            "rank_level": 57,
+            "taxon_changes_count": 1,
+            "atlas_id": null,
+            "complete_species_count": 70929,
+            "parent_id": 2,
+            "complete_rank": "subspecies",
+            "name": "Vertebrata",
+            "rank": "subphylum",
+            "extinct": false,
+            "id": 355675,
+            "default_photo": {
+              "id": 80551642,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551642/square.jpg?1592953462",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551642/square.jpg?1592953462",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551642/medium.jpg?1592953462"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675
+            ],
+            "iconic_taxon_name": "Animalia",
+            "preferred_common_name": "Vertebrates"
+          },
+          {
+            "observations_count": 2031532,
+            "taxon_schemes_count": 2,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675",
+            "flag_counts": {
+              "resolved": 2,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Mammal",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 50,
+            "taxon_changes_count": 1,
+            "atlas_id": null,
+            "complete_species_count": 5826,
+            "parent_id": 355675,
+            "complete_rank": "species",
+            "name": "Mammalia",
+            "rank": "class",
+            "extinct": false,
+            "id": 40151,
+            "default_photo": {
+              "id": 80551250,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551250/square.jpg?1592953269",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551250/square.jpg?1592953269",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551250/medium.jpg?1592953269"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Mammals"
+          },
+          {
+            "observations_count": 2004600,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "https://en.wikipedia.org/wiki/Theria",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 47,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 5821,
+            "parent_id": 40151,
+            "complete_rank": "species",
+            "name": "Theria",
+            "rank": "subclass",
+            "extinct": false,
+            "id": 848317,
+            "default_photo": {
+              "id": 83336879,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336879/square.jpg?1594255580",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336879/square.jpg?1594255580",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336879/medium.jpg?1594255580"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Therians"
+          },
+          {
+            "observations_count": 1936629,
+            "taxon_schemes_count": 0,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "https://en.wikipedia.org/wiki/Placentalia",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 45,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 5475,
+            "parent_id": 848317,
+            "complete_rank": "species",
+            "name": "Placentalia",
+            "rank": "infraclass",
+            "extinct": false,
+            "id": 848320,
+            "default_photo": {
+              "id": 83336736,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336736/square.jpg?1594255485",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336736/square.jpg?1594255485",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336736/medium.jpg?1594255485"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Placental Mammals"
+          },
+          {
+            "observations_count": 809654,
+            "taxon_schemes_count": 0,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "https://en.wikipedia.org/wiki/Euarchontoglires",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 43,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 2934,
+            "parent_id": 848320,
+            "complete_rank": "species",
+            "name": "Euarchontoglires",
+            "rank": "superorder",
+            "extinct": false,
+            "id": 848323,
+            "default_photo": {
+              "id": 83336441,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336441/square.jpg?1594255328",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336441/square.jpg?1594255328",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336441/medium.jpg?1594255328"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Primates, Rodents, and Allies"
+          },
+          {
+            "observations_count": 540001,
+            "taxon_schemes_count": 2,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 2
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Rodent",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 40,
+            "taxon_changes_count": 1,
+            "atlas_id": null,
+            "complete_species_count": 2350,
+            "parent_id": 848323,
+            "complete_rank": "species",
+            "name": "Rodentia",
+            "rank": "order",
+            "extinct": false,
+            "id": 43698,
+            "default_photo": {
+              "id": 24165841,
+              "license_code": "cc-by-nc",
+              "attribution": "(c) Nikolai Vladimirov, algunos derechos reservados (CC BY-NC)",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/24165841/square.jpg?1535874406",
+              "original_dimensions": {
+                "height": 1365,
+                "width": 2048
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/24165841/square.jpg?1535874406",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/24165841/medium.jpg?1535874406"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Rodents"
+          },
+          {
+            "observations_count": 375894,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Sciuromorpha",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 37,
+            "taxon_changes_count": 1,
+            "atlas_id": null,
+            "complete_species_count": 316,
+            "parent_id": 43698,
+            "complete_rank": "species",
+            "name": "Sciuromorpha",
+            "rank": "suborder",
+            "extinct": false,
+            "id": 129411,
+            "default_photo": {
+              "id": 2841930,
+              "license_code": null,
+              "attribution": "(c) shawneevt, all rights reserved",
+              "url": "https://static.inaturalist.org/photos/2841930/square.JPG?1451854072",
+              "original_dimensions": {
+                "height": 1536,
+                "width": 2048
+              },
+              "flags": [],
+              "square_url": "https://static.inaturalist.org/photos/2841930/square.JPG?1451854072",
+              "medium_url": "https://static.inaturalist.org/photos/2841930/medium.JPG?1451854072"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Squirrels, Dormice, and Mountain Beavers"
+          },
+          {
+            "observations_count": 373799,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Squirrel",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 30,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 286,
+            "parent_id": 129411,
+            "complete_rank": "species",
+            "name": "Sciuridae",
+            "rank": "family",
+            "extinct": false,
+            "id": 45933,
+            "default_photo": {
+              "id": 57429066,
+              "license_code": null,
+              "attribution": "(c) Eduardo Correa, all rights reserved",
+              "url": "https://static.inaturalist.org/photos/57429066/square.jpg?1575429297",
+              "original_dimensions": {
+                "height": 960,
+                "width": 831
+              },
+              "flags": [],
+              "square_url": "https://static.inaturalist.org/photos/57429066/square.jpg?1575429297",
+              "medium_url": "https://static.inaturalist.org/photos/57429066/medium.jpg?1575429297"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411,
+              45933
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Squirrels"
+          },
+          {
+            "observations_count": 128509,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Xerinae",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 27,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 130,
+            "parent_id": 45933,
+            "complete_rank": "species",
+            "name": "Xerinae",
+            "rank": "subfamily",
+            "extinct": false,
+            "id": 339572,
+            "default_photo": {
+              "id": 638878,
+              "license_code": "cc-by-nc",
+              "attribution": "(c) susanelliott, some rights reserved (CC BY-NC), uploaded by Susan Elliott",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/square.jpg?1389806181",
+              "original_dimensions": {
+                "height": 772,
+                "width": 1024
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/square.jpg?1389806181",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/medium.jpg?1389806181"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411,
+              45933,
+              339572
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Ground and African Tree Squirrels"
+          },
+          {
+            "observations_count": 125886,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933/339572",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Ground_squirrel",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 25,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 93,
+            "parent_id": 339572,
+            "complete_rank": "species",
+            "name": "Marmotini",
+            "rank": "tribe",
+            "extinct": false,
+            "id": 209650,
+            "default_photo": {
+              "id": 638878,
+              "license_code": "cc-by-nc",
+              "attribution": "(c) susanelliott, alguns direitos reservados (CC BY-NC), uploaded by Susan Elliott",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/square.jpg?1389806181",
+              "original_dimensions": {
+                "height": 772,
+                "width": 1024
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/square.jpg?1389806181",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/medium.jpg?1389806181"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411,
+              45933,
+              339572,
+              209650
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Holarctic Ground Squirrels and Chipmunks"
+          },
+          {
+            "observations_count": 26719,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933/339572/209650",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Marmot",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 20,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 14,
+            "parent_id": 209650,
+            "complete_rank": "species",
+            "name": "Marmota",
+            "rank": "genus",
+            "extinct": false,
+            "id": 46078,
+            "default_photo": {
+              "id": 13344602,
+              "license_code": "cc-by-nc",
+              "attribution": "(c) daviddodd, some rights reserved (CC BY-NC)",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/13344602/square.jpg?1517887148",
+              "original_dimensions": {
+                "height": 1365,
+                "width": 2048
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/13344602/square.jpg?1517887148",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/13344602/medium.jpg?1517887148"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411,
+              45933,
+              339572,
+              209650,
+              46078
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Marmots"
+          }
+        ]
+      },
+      "previous_observation_taxon": {
+        "photos_locked": false,
+        "taxon_schemes_count": 5,
+        "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933/339572/209650/46078",
+        "min_species_ancestry": "48460,1,2,355675,40151,848317,848320,848323,43698,129411,45933,339572,209650,46078,46095",
+        "wikipedia_url": "http://en.wikipedia.org/wiki/Groundhog",
+        "current_synonymous_taxon_ids": null,
+        "iconic_taxon_id": 40151,
+        "created_at": "2008-03-19T01:27:05+00:00",
+        "taxon_changes_count": 0,
+        "complete_species_count": null,
+        "rank": "species",
+        "extinct": false,
+        "id": 46095,
+        "universal_search_rank": 15623,
+        "ancestor_ids": [
+          48460,
+          1,
+          2,
+          355675,
+          40151,
+          848317,
+          848320,
+          848323,
+          43698,
+          129411,
+          45933,
+          339572,
+          209650,
+          46078,
+          46095
+        ],
+        "observations_count": 15623,
+        "is_active": true,
+        "flag_counts": {
+          "resolved": 1,
+          "unresolved": 0
+        },
+        "min_species_taxon_id": 46095,
+        "rank_level": 10,
+        "atlas_id": 31,
+        "parent_id": 46078,
+        "name": "Marmota monax",
+        "default_photo": {
+          "id": 39918766,
+          "license_code": "cc-by-nc",
+          "attribution": "(c) Mike Leveille, some rights reserved (CC BY-NC)",
+          "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+          "original_dimensions": {
+            "height": 1536,
+            "width": 2048
+          },
+          "flags": [],
+          "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+          "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/medium.jpeg?1558808910"
+        },
+        "iconic_taxon_name": "Mammalia",
+        "preferred_common_name": "Groundhog"
+      }
+    }
+  ],
+  "project_observations": [],
+  "photos": [
+    {
+      "id": 140526551,
+      "license_code": null,
+      "url": "https://static.inaturalist.org/photos/140526551/square.jpg?1625274578",
+      "attribution": "(c) Julie Magee Heiple, all rights reserved",
+      "original_dimensions": {
+        "width": 2048,
+        "height": 1536
+      },
+      "flags": []
+    },
+    {
+      "id": 140526956,
+      "license_code": null,
+      "url": "https://static.inaturalist.org/photos/140526956/square.jpg?1625274754",
+      "attribution": "(c) Julie Magee Heiple, all rights reserved",
+      "original_dimensions": {
+        "width": 2048,
+        "height": 1536
+      },
+      "flags": []
+    }
+  ],
+  "observation_photos": [
+    {
+      "id": 131264703,
+      "position": 0,
+      "uuid": "20983986-1c78-4e52-bb6e-c8bb58581cec",
+      "photo": {
+        "id": 140526551,
+        "license_code": null,
+        "url": "https://static.inaturalist.org/photos/140526551/square.jpg?1625274578",
+        "attribution": "(c) Julie Magee Heiple, all rights reserved",
+        "original_dimensions": {
+          "width": 2048,
+          "height": 1536
+        },
+        "flags": []
+      }
+    },
+    {
+      "id": 131265194,
+      "position": 1,
+      "uuid": "101334f2-1858-4e1e-a905-30eea99a1243",
+      "photo": {
+        "id": 140526956,
+        "license_code": null,
+        "url": "https://static.inaturalist.org/photos/140526956/square.jpg?1625274754",
+        "attribution": "(c) Julie Magee Heiple, all rights reserved",
+        "original_dimensions": {
+          "width": 2048,
+          "height": 1536
+        },
+        "flags": []
+      }
+    }
+  ],
+  "faves": [],
+  "non_owner_ids": [
+    {
+      "hidden": false,
+      "disagreement": false,
+      "flags": [],
+      "created_at": "2021-07-02T23:09:35-05:00",
+      "taxon_id": 46095,
+      "body": null,
+      "own_observation": false,
+      "uuid": "1d594b39-315e-48c9-98ce-6e40e72fceda",
+      "taxon_change": null,
+      "moderator_actions": [],
+      "vision": false,
+      "current": true,
+      "id": 187909758,
+      "created_at_details": {
+        "date": "2021-07-02",
+        "day": 2,
+        "month": 7,
+        "year": 2021,
+        "hour": 23,
+        "week": 26
+      },
+      "category": "supporting",
+      "spam": false,
+      "user": {
+        "id": 2115051,
+        "login": "jkcook",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2019-08-10T17:52:01+00:00",
+        "login_autocomplete": "jkcook",
+        "login_exact": "jkcook",
+        "name": "Jordan Cook",
+        "name_autocomplete": "Jordan Cook",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/2115051/thumb.jpeg?1591994381",
+        "observations_count": 748,
+        "identifications_count": 548,
+        "journal_posts_count": 0,
+        "activity_count": 1296,
+        "species_count": 383,
+        "universal_search_rank": 748,
+        "roles": [],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/2115051/medium.jpeg?1591994381"
+      },
+      "previous_observation_taxon_id": 46095,
+      "taxon": {
+        "photos_locked": false,
+        "taxon_schemes_count": 5,
+        "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933/339572/209650/46078",
+        "min_species_ancestry": "48460,1,2,355675,40151,848317,848320,848323,43698,129411,45933,339572,209650,46078,46095",
+        "wikipedia_url": "http://en.wikipedia.org/wiki/Groundhog",
+        "current_synonymous_taxon_ids": null,
+        "iconic_taxon_id": 40151,
+        "created_at": "2008-03-19T01:27:05+00:00",
+        "taxon_changes_count": 0,
+        "complete_species_count": null,
+        "rank": "species",
+        "extinct": false,
+        "id": 46095,
+        "universal_search_rank": 15623,
+        "ancestor_ids": [
+          48460,
+          1,
+          2,
+          355675,
+          40151,
+          848317,
+          848320,
+          848323,
+          43698,
+          129411,
+          45933,
+          339572,
+          209650,
+          46078
+        ],
+        "observations_count": 15623,
+        "is_active": true,
+        "flag_counts": {
+          "resolved": 1,
+          "unresolved": 0
+        },
+        "min_species_taxon_id": 46095,
+        "rank_level": 10,
+        "atlas_id": 31,
+        "parent_id": 46078,
+        "name": "Marmota monax",
+        "default_photo": {
+          "id": 39918766,
+          "license_code": "cc-by-nc",
+          "attribution": "(c) Mike Leveille, some rights reserved (CC BY-NC)",
+          "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+          "original_dimensions": {
+            "height": 1536,
+            "width": 2048
+          },
+          "flags": [],
+          "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+          "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/medium.jpeg?1558808910"
+        },
+        "iconic_taxon_name": "Mammalia",
+        "preferred_common_name": "Groundhog",
+        "ancestors": [
+          {
+            "observations_count": 40195743,
+            "taxon_schemes_count": 2,
+            "is_active": true,
+            "ancestry": "48460",
+            "flag_counts": {
+              "resolved": 11,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Animal",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 1,
+            "rank_level": 70,
+            "taxon_changes_count": 4,
+            "atlas_id": null,
+            "complete_species_count": null,
+            "parent_id": 48460,
+            "complete_rank": "order",
+            "name": "Animalia",
+            "rank": "kingdom",
+            "extinct": false,
+            "id": 1,
+            "default_photo": {
+              "id": 80678745,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80678745/square.jpg?1593020613",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80678745/square.jpg?1593020613",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80678745/medium.jpg?1593020613"
+            },
+            "ancestor_ids": [
+              48460,
+              1
+            ],
+            "iconic_taxon_name": "Animalia",
+            "preferred_common_name": "Animals"
+          },
+          {
+            "observations_count": 17515322,
+            "taxon_schemes_count": 2,
+            "is_active": true,
+            "ancestry": "48460/1",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Chordate",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 1,
+            "rank_level": 60,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 74029,
+            "parent_id": 1,
+            "complete_rank": "subspecies",
+            "name": "Chordata",
+            "rank": "phylum",
+            "extinct": false,
+            "id": 2,
+            "default_photo": {
+              "id": 80551845,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551845/square.jpg?1592953542",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551845/square.jpg?1592953542",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551845/medium.jpg?1592953542"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2
+            ],
+            "iconic_taxon_name": "Animalia",
+            "preferred_common_name": "Chordates"
+          },
+          {
+            "observations_count": 17490126,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2",
+            "flag_counts": {
+              "resolved": 2,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Vertebrate",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 1,
+            "rank_level": 57,
+            "taxon_changes_count": 1,
+            "atlas_id": null,
+            "complete_species_count": 70929,
+            "parent_id": 2,
+            "complete_rank": "subspecies",
+            "name": "Vertebrata",
+            "rank": "subphylum",
+            "extinct": false,
+            "id": 355675,
+            "default_photo": {
+              "id": 80551642,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551642/square.jpg?1592953462",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551642/square.jpg?1592953462",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551642/medium.jpg?1592953462"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675
+            ],
+            "iconic_taxon_name": "Animalia",
+            "preferred_common_name": "Vertebrates"
+          },
+          {
+            "observations_count": 2031532,
+            "taxon_schemes_count": 2,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675",
+            "flag_counts": {
+              "resolved": 2,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Mammal",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 50,
+            "taxon_changes_count": 1,
+            "atlas_id": null,
+            "complete_species_count": 5826,
+            "parent_id": 355675,
+            "complete_rank": "species",
+            "name": "Mammalia",
+            "rank": "class",
+            "extinct": false,
+            "id": 40151,
+            "default_photo": {
+              "id": 80551250,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551250/square.jpg?1592953269",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551250/square.jpg?1592953269",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551250/medium.jpg?1592953269"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Mammals"
+          },
+          {
+            "observations_count": 2004600,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "https://en.wikipedia.org/wiki/Theria",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 47,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 5821,
+            "parent_id": 40151,
+            "complete_rank": "species",
+            "name": "Theria",
+            "rank": "subclass",
+            "extinct": false,
+            "id": 848317,
+            "default_photo": {
+              "id": 83336879,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336879/square.jpg?1594255580",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336879/square.jpg?1594255580",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336879/medium.jpg?1594255580"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Therians"
+          },
+          {
+            "observations_count": 1936629,
+            "taxon_schemes_count": 0,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "https://en.wikipedia.org/wiki/Placentalia",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 45,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 5475,
+            "parent_id": 848317,
+            "complete_rank": "species",
+            "name": "Placentalia",
+            "rank": "infraclass",
+            "extinct": false,
+            "id": 848320,
+            "default_photo": {
+              "id": 83336736,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336736/square.jpg?1594255485",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336736/square.jpg?1594255485",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336736/medium.jpg?1594255485"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Placental Mammals"
+          },
+          {
+            "observations_count": 809654,
+            "taxon_schemes_count": 0,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "https://en.wikipedia.org/wiki/Euarchontoglires",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 43,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 2934,
+            "parent_id": 848320,
+            "complete_rank": "species",
+            "name": "Euarchontoglires",
+            "rank": "superorder",
+            "extinct": false,
+            "id": 848323,
+            "default_photo": {
+              "id": 83336441,
+              "license_code": "cc0",
+              "attribution": "no rights reserved",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336441/square.jpg?1594255328",
+              "original_dimensions": {
+                "height": 2000,
+                "width": 2000
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336441/square.jpg?1594255328",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/83336441/medium.jpg?1594255328"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Primates, Rodents, and Allies"
+          },
+          {
+            "observations_count": 540001,
+            "taxon_schemes_count": 2,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 2
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Rodent",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 40,
+            "taxon_changes_count": 1,
+            "atlas_id": null,
+            "complete_species_count": 2350,
+            "parent_id": 848323,
+            "complete_rank": "species",
+            "name": "Rodentia",
+            "rank": "order",
+            "extinct": false,
+            "id": 43698,
+            "default_photo": {
+              "id": 24165841,
+              "license_code": "cc-by-nc",
+              "attribution": "(c) Nikolai Vladimirov, algunos derechos reservados (CC BY-NC)",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/24165841/square.jpg?1535874406",
+              "original_dimensions": {
+                "height": 1365,
+                "width": 2048
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/24165841/square.jpg?1535874406",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/24165841/medium.jpg?1535874406"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Rodents"
+          },
+          {
+            "observations_count": 375894,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Sciuromorpha",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 37,
+            "taxon_changes_count": 1,
+            "atlas_id": null,
+            "complete_species_count": 316,
+            "parent_id": 43698,
+            "complete_rank": "species",
+            "name": "Sciuromorpha",
+            "rank": "suborder",
+            "extinct": false,
+            "id": 129411,
+            "default_photo": {
+              "id": 2841930,
+              "license_code": null,
+              "attribution": "(c) shawneevt, all rights reserved",
+              "url": "https://static.inaturalist.org/photos/2841930/square.JPG?1451854072",
+              "original_dimensions": {
+                "height": 1536,
+                "width": 2048
+              },
+              "flags": [],
+              "square_url": "https://static.inaturalist.org/photos/2841930/square.JPG?1451854072",
+              "medium_url": "https://static.inaturalist.org/photos/2841930/medium.JPG?1451854072"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Squirrels, Dormice, and Mountain Beavers"
+          },
+          {
+            "observations_count": 373799,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Squirrel",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 30,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 286,
+            "parent_id": 129411,
+            "complete_rank": "species",
+            "name": "Sciuridae",
+            "rank": "family",
+            "extinct": false,
+            "id": 45933,
+            "default_photo": {
+              "id": 57429066,
+              "license_code": null,
+              "attribution": "(c) Eduardo Correa, all rights reserved",
+              "url": "https://static.inaturalist.org/photos/57429066/square.jpg?1575429297",
+              "original_dimensions": {
+                "height": 960,
+                "width": 831
+              },
+              "flags": [],
+              "square_url": "https://static.inaturalist.org/photos/57429066/square.jpg?1575429297",
+              "medium_url": "https://static.inaturalist.org/photos/57429066/medium.jpg?1575429297"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411,
+              45933
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Squirrels"
+          },
+          {
+            "observations_count": 128509,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Xerinae",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 27,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 130,
+            "parent_id": 45933,
+            "complete_rank": "species",
+            "name": "Xerinae",
+            "rank": "subfamily",
+            "extinct": false,
+            "id": 339572,
+            "default_photo": {
+              "id": 638878,
+              "license_code": "cc-by-nc",
+              "attribution": "(c) susanelliott, some rights reserved (CC BY-NC), uploaded by Susan Elliott",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/square.jpg?1389806181",
+              "original_dimensions": {
+                "height": 772,
+                "width": 1024
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/square.jpg?1389806181",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/medium.jpg?1389806181"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411,
+              45933,
+              339572
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Ground and African Tree Squirrels"
+          },
+          {
+            "observations_count": 125886,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933/339572",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Ground_squirrel",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 25,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 93,
+            "parent_id": 339572,
+            "complete_rank": "species",
+            "name": "Marmotini",
+            "rank": "tribe",
+            "extinct": false,
+            "id": 209650,
+            "default_photo": {
+              "id": 638878,
+              "license_code": "cc-by-nc",
+              "attribution": "(c) susanelliott, alguns direitos reservados (CC BY-NC), uploaded by Susan Elliott",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/square.jpg?1389806181",
+              "original_dimensions": {
+                "height": 772,
+                "width": 1024
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/square.jpg?1389806181",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/638878/medium.jpg?1389806181"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411,
+              45933,
+              339572,
+              209650
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Holarctic Ground Squirrels and Chipmunks"
+          },
+          {
+            "observations_count": 26719,
+            "taxon_schemes_count": 1,
+            "is_active": true,
+            "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933/339572/209650",
+            "flag_counts": {
+              "resolved": 0,
+              "unresolved": 0
+            },
+            "wikipedia_url": "http://en.wikipedia.org/wiki/Marmot",
+            "current_synonymous_taxon_ids": null,
+            "iconic_taxon_id": 40151,
+            "rank_level": 20,
+            "taxon_changes_count": 0,
+            "atlas_id": null,
+            "complete_species_count": 14,
+            "parent_id": 209650,
+            "complete_rank": "species",
+            "name": "Marmota",
+            "rank": "genus",
+            "extinct": false,
+            "id": 46078,
+            "default_photo": {
+              "id": 13344602,
+              "license_code": "cc-by-nc",
+              "attribution": "(c) daviddodd, some rights reserved (CC BY-NC)",
+              "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/13344602/square.jpg?1517887148",
+              "original_dimensions": {
+                "height": 1365,
+                "width": 2048
+              },
+              "flags": [],
+              "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/13344602/square.jpg?1517887148",
+              "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/13344602/medium.jpg?1517887148"
+            },
+            "ancestor_ids": [
+              48460,
+              1,
+              2,
+              355675,
+              40151,
+              848317,
+              848320,
+              848323,
+              43698,
+              129411,
+              45933,
+              339572,
+              209650,
+              46078
+            ],
+            "iconic_taxon_name": "Mammalia",
+            "preferred_common_name": "Marmots"
+          }
+        ]
+      },
+      "previous_observation_taxon": {
+        "photos_locked": false,
+        "taxon_schemes_count": 5,
+        "ancestry": "48460/1/2/355675/40151/848317/848320/848323/43698/129411/45933/339572/209650/46078",
+        "min_species_ancestry": "48460,1,2,355675,40151,848317,848320,848323,43698,129411,45933,339572,209650,46078,46095",
+        "wikipedia_url": "http://en.wikipedia.org/wiki/Groundhog",
+        "current_synonymous_taxon_ids": null,
+        "iconic_taxon_id": 40151,
+        "created_at": "2008-03-19T01:27:05+00:00",
+        "taxon_changes_count": 0,
+        "complete_species_count": null,
+        "rank": "species",
+        "extinct": false,
+        "id": 46095,
+        "universal_search_rank": 15623,
+        "ancestor_ids": [
+          48460,
+          1,
+          2,
+          355675,
+          40151,
+          848317,
+          848320,
+          848323,
+          43698,
+          129411,
+          45933,
+          339572,
+          209650,
+          46078,
+          46095
+        ],
+        "observations_count": 15623,
+        "is_active": true,
+        "flag_counts": {
+          "resolved": 1,
+          "unresolved": 0
+        },
+        "min_species_taxon_id": 46095,
+        "rank_level": 10,
+        "atlas_id": 31,
+        "parent_id": 46078,
+        "name": "Marmota monax",
+        "default_photo": {
+          "id": 39918766,
+          "license_code": "cc-by-nc",
+          "attribution": "(c) Mike Leveille, some rights reserved (CC BY-NC)",
+          "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+          "original_dimensions": {
+            "height": 1536,
+            "width": 2048
+          },
+          "flags": [],
+          "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/square.jpeg?1558808910",
+          "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/39918766/medium.jpeg?1558808910"
+        },
+        "iconic_taxon_name": "Mammalia",
+        "preferred_common_name": "Groundhog"
+      }
+    }
+  ],
+  "observed_on": "2021-07-02 19:59:03-06:00"
+}

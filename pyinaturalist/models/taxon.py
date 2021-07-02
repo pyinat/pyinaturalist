@@ -1,13 +1,15 @@
-from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List
 
-from attr import field, fields_dict
+from attr import fields_dict
 
 from pyinaturalist.constants import (
+    CONSERVATION_STATUSES,
+    ESTABLISTMENT_MEANS,
     ICONIC_EMOJI,
     ICONIC_TAXA_BASE_URL,
     INAT_BASE_URL,
     RANKS,
+    DateTime,
     JsonResponse,
     TableRow,
 )
@@ -18,29 +20,46 @@ from pyinaturalist.models import (
     Photo,
     Place,
     User,
-    datetime_attr,
+    datetime_field,
     define_model,
     define_model_collection,
-    kwarg,
+    field,
+    is_in,
+    upper,
 )
 from pyinaturalist.v1 import get_taxa_by_id
 
 
+# TODO: Some more properties to consolidate differences between endpoints? (place_id vs. place, etc.)
+# TODO: Include codes from other sources? Currently only including IUCN codes.
 @define_model
 class ConservationStatus(BaseModel):
-    authority: str = kwarg
-    created_at: Optional[datetime] = datetime_attr
-    description: str = kwarg
-    geoprivacy: str = kwarg
-    iucn: int = kwarg
-    place_id: int = kwarg
-    source_id: int = kwarg
-    status: str = kwarg  # Enum
-    status_name: str = kwarg
-    taxon_id: int = kwarg
-    updated_at: Optional[datetime] = datetime_attr
-    updater_id: int = kwarg
-    url: str = kwarg
+    """The conservation status of a taxon in a given location, based on the schema of:
+
+    * Taxon.conservation_status from `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_
+    * Observation.taxon.conservation_statused from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_
+    """
+
+    authority: str = field(default=None, doc='Data source for conservation status')
+    created_at: DateTime = datetime_field(doc='Date and time the conservation status was created')
+    description: str = field(default=None, doc='Description of conservation status')
+    geoprivacy: str = field(
+        default=None, doc='Default geoprivacy level; may be obscured or private for protected species'
+    )
+    iucn: int = field(default=None, doc='IUCD ID, if applicable')
+    place_id: int = field(default=None)
+    source_id: int = field(default=None)
+    status: str = field(
+        default=None,
+        converter=upper,
+        validator=is_in(CONSERVATION_STATUSES),
+        doc='Short code for conservation status',
+    )
+    status_name: str = field(default=None, doc='Full name of conservation status')
+    taxon_id: int = field(default=None, doc='Taxon ID')
+    updated_at: DateTime = datetime_field(doc='Date and time the conservation status was last updated')
+    updater_id: int = field(default=None)
+    url: str = field(default=None, doc='Link to data source with more details')
 
     # Lazy-loaded nested model objects
     place: property = LazyProperty(Place.from_json)
@@ -52,8 +71,9 @@ class ConservationStatus(BaseModel):
 class EstablishmentMeans(BaseModel):
     """The establishment means for a taxon in a given location"""
 
-    establishment_means: str = kwarg  # Enum: introduced, etc.
-    id: int = kwarg
+    establishment_means: str = field(
+        default=None, validator=is_in(ESTABLISTMENT_MEANS), doc='Establishment means description'
+    )
     place: property = LazyProperty(Place.from_json_list)
 
     def __str__(self) -> str:
@@ -69,30 +89,57 @@ class Taxon(BaseModel):
     include nested ``ancestors``, ``children``, and results from :py:func:`.get_taxa_autocomplete`.
     """
 
-    complete_rank: str = kwarg  #: Complete or "leaf taxon" rank, e.g. species or subspecies
-    complete_species_count: int = kwarg  #: Total number of species descended from this taxon
-    created_at: Optional[datetime] = datetime_attr  #: When the taxon was added to iNaturalist
-    extinct: bool = kwarg  #: Indicates if the taxon is extinct
-    iconic_taxon_id: int = field(default=0)  #: ID of the iconic taxon or taxon "category"
-    iconic_taxon_name: str = field(default='unknown')  #: Name of the iconic taxon or taxon "category"
-    is_active: bool = kwarg  #: Indicates if the taxon is active (and not renamed, moved, etc.)
-    listed_taxa_count: int = kwarg  #: Number of listed taxa from this taxon + descendants
-    name: str = kwarg  #: Taxon name; contains full scientific name at species level and below
-    observations_count: int = kwarg  #: Total number of observations of this taxon and its descendants
-    parent_id: int = kwarg  #: Taxon ID of immediate ancestor
-    preferred_common_name: str = field(default='')  #: Common name for the preferred place, if any
-    preferred_establishment_means: str = kwarg  #: Establishment means for this taxon + preferred place
-    rank_level: int = kwarg  #: Rank number for easier comparison between ranks (kingdom=higest)
-    rank: str = kwarg  #: Taxon rank (species, genus, etc.)
-    taxon_changes_count: int = kwarg  #: Number of curator changes to this taxon
-    taxon_schemes_count: int = kwarg  #: Taxon schemes that include this taxon
-    wikipedia_summary: str = kwarg  #: Taxon summary from Wikipedia article, if available
-    wikipedia_url: str = kwarg  #: URL to Wikipedia article for the taxon, if available
+    complete_rank: str = field(
+        default=None, doc='Complete or "leaf taxon" rank, e.g. species or subspecies'
+    )
+    complete_species_count: int = field(
+        default=None, doc='Total number of species descended from this taxon'
+    )
+    created_at: DateTime = datetime_field(doc='Date and time the taxon was added to iNaturalist')
+    extinct: bool = field(default=None, doc='Indicates if the taxon is extinct')
+    iconic_taxon_id: int = field(
+        default=0, doc='ID of the iconic taxon (e.g., general taxon "category")'
+    )
+    iconic_taxon_name: str = field(
+        default='unknown', doc='Name of the iconic taxon (e.g., general taxon "category")'
+    )
+    is_active: bool = field(
+        default=None, doc='Indicates if the taxon is active (and not renamed, moved, etc.)'
+    )
+    listed_taxa_count: int = field(
+        default=None, doc='Number of listed taxa from this taxon + descendants'
+    )
+    name: str = field(
+        default=None, doc='Taxon name; contains full scientific name at species level and below'
+    )
+    observations_count: int = field(
+        default=None, doc='Total number of observations of this taxon and its descendants'
+    )
+    parent_id: int = field(default=None, doc='Taxon ID of immediate ancestor')
+    preferred_common_name: str = field(default='', doc='Common name for the preferred place, if any')
+    preferred_establishment_means: str = field(
+        default=None, doc='Establishment means for this taxon in the given preferred place (if any)'
+    )
+    rank_level: int = field(
+        default=None,
+        doc='Number indicating rank level, for easier comparison between ranks (kingdom=higest)',
+    )
+    rank: str = field(default=None, validator=is_in(RANKS), doc='Taxon rank')
+    taxon_changes_count: int = field(default=None, doc='Number of curator changes to this taxon')
+    taxon_schemes_count: int = field(default=None, doc='Taxon schemes that include this taxon')
+    wikipedia_summary: str = field(
+        default=None, doc='Taxon summary from Wikipedia article, if available'
+    )
+    wikipedia_url: str = field(default=None, doc=' URL to Wikipedia article for the taxon, if available')
 
     # Nested collections
-    ancestor_ids: List[int] = field(factory=list)  #: Taxon IDs of ancestors, from highest rank to lowest
-    current_synonymous_taxon_ids: List[int] = field(factory=list)  #: Taxa that are accepted synonyms
-    listed_taxa: List = field(factory=list)  #: Listed taxon IDs
+    ancestor_ids: List[int] = field(
+        factory=list, doc='Taxon IDs of ancestors, from highest rank to lowest'
+    )
+    current_synonymous_taxon_ids: List[int] = field(
+        factory=list, doc='Taxon IDs of taxa that are accepted synonyms'
+    )
+    listed_taxa: List[int] = field(factory=list, doc='Listed taxon IDs')
 
     # Lazy-loaded nested model objects
     ancestors: property = LazyProperty(BaseModel.from_json_list)
@@ -104,13 +151,13 @@ class Taxon(BaseModel):
     taxon_photos: property = LazyProperty(Photo.from_json_list)
 
     # Unused attributes
-    # atlas_id: int = kwarg
+    # atlas_id: int = field(default=None)
     # flag_counts: Dict[str, int] = field(factory=dict)  # {"unresolved": 1, "resolved": 2}
-    # min_species_ancestry: str = kwarg  #: Used internally by iNaturalist for Elasticsearch aggregations
-    # min_species_taxon_id: int = kwarg
+    # min_species_ancestry: str = field(default=None)  #: Used internally by iNaturalist for Elasticsearch aggregations
+    # min_species_taxon_id: int = field(default=None)
     # partial: bool = field(default=None, repr=False)
-    # photos_locked: bool = kwarg
-    # universal_search_rank: int = kwarg
+    # photos_locked: bool = field(default=None)
+    # universal_search_rank: int = field(default=None)
 
     @classmethod
     def from_sorted_json_list(cls, value: JsonResponse) -> List['Taxon']:

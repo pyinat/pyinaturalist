@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from pyinaturalist.constants import TableRow
-from pyinaturalist.models import BaseModel, LazyProperty, User, datetime_now_attr, define_model, kwarg
+from pyinaturalist.models import BaseModel, LazyProperty, User, datetime_now_field, define_model, field
 
 
 @define_model
@@ -10,12 +10,10 @@ class Comment(BaseModel):
     from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
     """
 
-    body: str = kwarg
-    created_at: datetime = datetime_now_attr
-    hidden: bool = kwarg
-    uuid: str = kwarg
-
-    # Lazy-loaded nested model objects
+    body: str = field(default=None, doc='Comment text')
+    created_at: datetime = datetime_now_field(doc='Date and time the comment was created')
+    hidden: bool = field(default=None, doc='Indicates if the comment is hidden')
+    uuid: str = field(default=None, doc='Universally unique ID')
     user: property = LazyProperty(User.from_json)
 
     # Unused attributes

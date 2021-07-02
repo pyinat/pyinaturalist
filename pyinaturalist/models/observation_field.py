@@ -1,8 +1,6 @@
 from datetime import date, datetime
 from typing import List, Union
 
-from attr import field
-
 from pyinaturalist.constants import TableRow
 from pyinaturalist.converters import safe_split, try_int_or_float
 from pyinaturalist.models import (
@@ -10,9 +8,9 @@ from pyinaturalist.models import (
     LazyProperty,
     Taxon,
     User,
-    datetime_now_attr,
+    datetime_now_field,
     define_model,
-    kwarg,
+    field,
 )
 
 # Mappings from observation field value datatypes to python datatypes
@@ -35,15 +33,15 @@ class ObservationField(BaseModel):
     """
 
     allowed_values: List[str] = field(converter=safe_split, factory=list)
-    created_at: datetime = datetime_now_attr
-    datatype: str = kwarg  # Enum
-    description: str = kwarg
-    name: str = kwarg
-    updated_at: datetime = datetime_now_attr
-    user_id: int = kwarg
-    users_count: int = kwarg
-    uuid: str = kwarg
-    values_count: int = kwarg
+    created_at: datetime = datetime_now_field(doc='Date and time the observation field was created')
+    datatype: str = field(default=None)  # Enum
+    description: str = field(default=None)
+    name: str = field(default=None)
+    updated_at: datetime = datetime_now_field(doc='Date and time the observation field was last updated')
+    user_id: int = field(default=None)
+    users_count: int = field(default=None)
+    uuid: str = field(default=None)
+    values_count: int = field(default=None)
 
     @property
     def row(self) -> TableRow:
@@ -65,21 +63,21 @@ class ObservationFieldValue(BaseModel):
     from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
     """
 
-    datatype: str = kwarg  # Enum
-    field_id: int = kwarg
-    name: str = kwarg
-    taxon_id: int = kwarg
-    user_id: int = kwarg
-    uuid: str = kwarg
-    value: OFVValue = kwarg
+    datatype: str = field(default=None)  # Enum
+    field_id: int = field(default=None)
+    name: str = field(default=None)
+    taxon_id: int = field(default=None)
+    user_id: int = field(default=None)
+    uuid: str = field(default=None)
+    value: OFVValue = field(default=None)
 
     # Lazy-loaded nested model objects
     taxon: property = LazyProperty(Taxon.from_json)
     user: property = LazyProperty(User.from_json)
 
     # Unused attrbiutes
-    # name_ci: str = kwarg
-    # value_ci: int = kwarg
+    # name_ci: str = field(default=None)
+    # value_ci: int = field(default=None)
 
     # Convert value by datatype
     def __attrs_post_init__(self):

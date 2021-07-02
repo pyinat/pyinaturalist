@@ -1,18 +1,16 @@
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List
 
-from attr import field
-
-from pyinaturalist.constants import INAT_BASE_URL, Coordinates, JsonResponse, TableRow
+from pyinaturalist.constants import INAT_BASE_URL, Coordinates, DateTime, JsonResponse, TableRow
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
     User,
     coordinate_pair,
-    datetime_attr,
-    datetime_now_attr,
+    datetime_field,
+    datetime_now_field,
     define_model,
-    kwarg,
+    field,
 )
 from pyinaturalist.models.observation_field import ObservationField
 
@@ -23,8 +21,8 @@ class ProjectObservation(ObservationField):
 
     preferences: Dict = field(factory=dict)  # Example: {'allows_curator_coordinate_access': True}
     project: Dict = field(factory=dict)  # Example: {'id': 24237}
-    user_id: int = kwarg
-    uuid: str = kwarg
+    user_id: int = field(default=None)
+    uuid: str = field(default=None)
     user: property = LazyProperty(User.from_json)
 
 
@@ -32,9 +30,9 @@ class ProjectObservation(ObservationField):
 class ProjectObservationField(ObservationField):
     """An :py:class:`.ObservationField` with additional project-specific information"""
 
-    project_observation_field_id: int = kwarg
-    position: int = kwarg
-    required: bool = kwarg
+    project_observation_field_id: int = field(default=None)
+    position: int = field(default=None)
+    required: bool = field(default=None)
 
     @classmethod
     def from_json(cls, value: JsonResponse, **kwargs) -> 'ProjectObservationField':
@@ -50,9 +48,9 @@ class ProjectObservationField(ObservationField):
 class ProjectUser(User):
     """A :py:class:`.User` with additional project-specific information"""
 
-    project_id: int = kwarg
-    project_user_id: int = kwarg
-    role: str = kwarg
+    project_id: int = field(default=None)
+    project_user_id: int = field(default=None)
+    role: str = field(default=None)
 
     @classmethod
     def from_json(cls, value: JsonResponse, **kwargs) -> 'ProjectUser':
@@ -70,31 +68,33 @@ class Project(BaseModel):
     `GET /projects <https://api.inaturalist.org/v1/docs/#!/Projects/get_projects>`_.
     """
 
-    banner_color: str = kwarg
-    created_at: datetime = datetime_now_attr
-    description: str = kwarg
-    header_image_contain: bool = kwarg
-    header_image_file_name: str = kwarg
-    header_image_url: str = kwarg
-    hide_title: bool = kwarg
-    icon_file_name: str = kwarg
-    icon: str = kwarg
-    is_umbrella: bool = kwarg
-    location: Optional[Coordinates] = coordinate_pair
-    place_id: int = kwarg
-    prefers_user_trust: bool = kwarg
-    project_type: str = kwarg
-    slug: str = kwarg
-    terms: str = kwarg
-    title: str = kwarg
-    updated_at: Optional[datetime] = datetime_attr
-    user_id: int = kwarg
+    banner_color: str = field(default=None)
+    created_at: datetime = datetime_now_field(doc='Date and time the project was created')
+    description: str = field(default=None, doc='Project description')
+    header_image_url: str = field(default=None)
+    hide_title: bool = field(default=None)
+    icon: str = field(default=None, doc='URL for project icon')
+    is_umbrella: bool = field(
+        default=None,
+        doc='Indicates if this is an umbrella project (containing observations from other projects)',
+    )
+    location: Coordinates = coordinate_pair()
+    place_id: int = field(default=None)
+    prefers_user_trust: bool = field(default=None)
+    project_type: str = field(default=None)
+    slug: str = field(default=None, doc='URL slug')
+    terms: str = field(default=None)
+    title: str = field(default=None, doc='Project title')
+    updated_at: DateTime = datetime_field(doc='Date and time the project was last updated')
+    user_id: int = field(default=None)
 
     # Nested collections
     project_observation_rules: List[Dict] = field(factory=list)
     rule_preferences: List[Dict] = field(factory=list)
-    search_parameters: List[Dict] = field(factory=list)
-    site_features: List[Dict] = field(factory=list)
+    search_parameters: List[Dict] = field(factory=list, doc='Filters for observations to include')
+    site_features: List[Dict] = field(
+        factory=list, doc='Details about if/when the project was featured on inaturalist.org'
+    )
     user_ids: List[int] = field(factory=list)
 
     # Lazy-loaded nested model objects
@@ -104,8 +104,11 @@ class Project(BaseModel):
 
     # Unused attributes
     # flags: List = field(factory=list)
-    # latitude: float = kwarg
-    # longitude: float = kwarg
+    # header_image_contain: bool = field(default=None)
+    # header_image_file_name: str = field(default=None)
+    # icon_file_name: str = field(default=None)
+    # latitude: float = field(default=None)
+    # longitude: float = field(default=None)
 
     # Aliases
     @property

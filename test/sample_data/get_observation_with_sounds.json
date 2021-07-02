@@ -1,0 +1,574 @@
+{
+  "quality_grade": "needs_id",
+  "time_observed_at": "2021-06-25T22:18:43+00:00",
+  "taxon_geoprivacy": "open",
+  "annotations": [],
+  "uuid": "1d64616d-3a8e-4197-9930-71090479b6f1",
+  "id": 84681407,
+  "cached_votes_total": 0,
+  "identifications_most_agree": false,
+  "species_guess": "Pipistrellus pipistrellus",
+  "identifications_most_disagree": false,
+  "tags": [],
+  "positional_accuracy": 19,
+  "comments_count": 0,
+  "site_id": 1,
+  "license_code": "cc0",
+  "quality_metrics": [],
+  "public_positional_accuracy": 19,
+  "reviewed_by": [
+    1866606
+  ],
+  "oauth_application_id": 612,
+  "flags": [],
+  "created_at": "2021-06-27 11:35:50+00:00",
+  "description": "Recorded on Echo Meter Touch 2 Pro Android App 2.8.3 \r\n Number of calls in sequence: 44 \r\n Peak frequencies (kHz): 50, 51, 56, 54, 56, 57, 56, 47, 48, 47, 46, 47, 48, 49, 49, 58, 58, 58, 59, 58, 58, 49, 58, 57, 48, 58, 49, 49, 48, 47, 48, 49, 58, 51, 55, 57, 49, 48, 48, 48, 49, 48, 49, 50 \r\n Max frequencies (kHz): 73, 66, 72, 64, 82, 73, 82, 64, 48, 51, 66, 76, 50, 80, 89, 93, 95, 95, 92, 94, 92, 93, 90, 90, 86, 88, 91, 50, 93, 50, 49, 58, 98, 97, 94, 93, 50, 50, 66, 85, 49, 67, 74, 58 \r\n Min frequencies (kHz): 50, 51, 51, 50, 52, 48, 49, 47, 47, 47, 46, 47, 47, 49, 48, 49, 50, 50, 50, 50, 49, 48, 50, 47, 47, 50, 47, 48, 48, 46, 47, 48, 48, 51, 49, 48, 48, 47, 47, 47, 47, 47, 47, 48 \r\n Call durations (ms): 2.4, 1.6, 1.6, 1.8, 1.8, 4, 3.1, 3.4, 1.6, 2, 3, 4.2, 2, 2.6, 2.8, 2.2, 2, 1.8, 1.9, 2, 2.5, 3.5, 2.1, 4.2, 3.6, 2, 4.1, 1.9, 3.6, 2.4, 1.8, 2.5, 3, 1.9, 2, 2.9, 1.5, 1.9, 3.1, 3.9, 1.9, 3, 2.6, 1.9 \r\n Recorder settings\r\n [{\"rate\":\"256000\",\"gain\":\"0.00\",\"trig level\":\"0.00\",\"trig max len\":\"0.00\",\"trig window\":\"0.00\",\"trig min freq\":\"0.00\",\"trig max freq\":\"0.00\",\"prefix\":null}]",
+  "project_ids_with_curator_id": [],
+  "updated_at": "2021-06-28 09:28:25+00:00",
+  "sounds": [
+    {
+      "id": 263113,
+      "license_code": "cc0",
+      "attribution": "keine Rechte vorbehalten",
+      "native_sound_id": null,
+      "secret_token": null,
+      "file_url": "https://static.inaturalist.org/sounds/263113.wav?1624793769",
+      "file_content_type": "audio/x-wav",
+      "play_local": true,
+      "subtype": null,
+      "flags": []
+    }
+  ],
+  "place_ids": [
+    6857,
+    6858,
+    30388,
+    59614,
+    67952,
+    80627,
+    81490,
+    96372,
+    97391,
+    108692,
+    127426,
+    141423,
+    149133
+  ],
+  "captive": false,
+  "taxon": {
+    "is_active": true,
+    "ancestry": "48460/1/2/355675/40151/848317/848320/848324/40268/446946/446959/40269/846180/846363/40355",
+    "min_species_ancestry": "48460,1,2,355675,40151,848317,848320,848324,40268,446946,446959,40269,846180,846363,40355,40364",
+    "endemic": false,
+    "iconic_taxon_id": 40151,
+    "min_species_taxon_id": 40364,
+    "threatened": false,
+    "rank_level": 10,
+    "introduced": false,
+    "native": true,
+    "parent_id": 40355,
+    "name": "Pipistrellus pipistrellus",
+    "rank": "species",
+    "extinct": false,
+    "id": 40364,
+    "ancestor_ids": [
+      48460,
+      1,
+      2,
+      355675,
+      40151,
+      848317,
+      848320,
+      848324,
+      40268,
+      446946,
+      446959,
+      40269,
+      846180,
+      846363,
+      40355,
+      40364
+    ],
+    "photos_locked": false,
+    "taxon_schemes_count": 5,
+    "wikipedia_url": "http://en.wikipedia.org/wiki/Common_pipistrelle",
+    "current_synonymous_taxon_ids": null,
+    "created_at": "2008-03-19T00:19:47+00:00",
+    "taxon_changes_count": 0,
+    "complete_species_count": null,
+    "universal_search_rank": 946,
+    "observations_count": 946,
+    "flag_counts": {
+      "resolved": 0,
+      "unresolved": 0
+    },
+    "atlas_id": null,
+    "default_photo": {
+      "id": 273054,
+      "license_code": "cc-by-sa",
+      "attribution": "(c) Gilles San Martin, some rights reserved (CC BY-SA)",
+      "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/273054/square.jpg?1545510373",
+      "original_dimensions": {
+        "height": 1371,
+        "width": 2048
+      },
+      "flags": [],
+      "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/273054/square.jpg?1545510373",
+      "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/273054/medium.jpg?1545510373"
+    },
+    "iconic_taxon_name": "Mammalia",
+    "preferred_common_name": "Common Pipistrelle"
+  },
+  "ident_taxon_ids": [
+    48460,
+    1,
+    2,
+    355675,
+    40151,
+    848317,
+    848320,
+    848324,
+    40268,
+    446946,
+    446959,
+    40269,
+    846180,
+    846363,
+    40355,
+    40364
+  ],
+  "outlinks": [],
+  "faves_count": 0,
+  "ofvs": [
+    {
+      "id": 15245697,
+      "uuid": "03571211-1c15-4d18-a79f-1ccc683192b2",
+      "field_id": 567,
+      "datatype": "text",
+      "name": "Bat detector model",
+      "name_ci": "Bat detector model",
+      "value": "Echo Meter Touch 2 Pro Android App 2.8.3",
+      "value_ci": "Echo Meter Touch 2 Pro Android App 2.8.3",
+      "user_id": 1866606,
+      "user": {
+        "id": 1866606,
+        "login": "tomaugust",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2019-06-12T08:15:13+00:00",
+        "login_autocomplete": "tomaugust",
+        "login_exact": "tomaugust",
+        "name": "Tom August",
+        "name_autocomplete": "Tom August",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/1866606/thumb.jpeg?1560327313",
+        "observations_count": 181,
+        "identifications_count": 0,
+        "journal_posts_count": 0,
+        "activity_count": 181,
+        "species_count": 77,
+        "universal_search_rank": 181,
+        "roles": [],
+        "site_id": 25,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/1866606/medium.jpeg?1560327313"
+      }
+    },
+    {
+      "id": 15245698,
+      "uuid": "6a72563a-328c-4edb-afce-296f9242d9b6",
+      "field_id": 4936,
+      "datatype": "text",
+      "name": "Sampling rate",
+      "name_ci": "Sampling rate",
+      "value": "256.0",
+      "value_ci": "256.0",
+      "user_id": 1866606,
+      "user": {
+        "id": 1866606,
+        "login": "tomaugust",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2019-06-12T08:15:13+00:00",
+        "login_autocomplete": "tomaugust",
+        "login_exact": "tomaugust",
+        "name": "Tom August",
+        "name_autocomplete": "Tom August",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/1866606/thumb.jpeg?1560327313",
+        "observations_count": 181,
+        "identifications_count": 0,
+        "journal_posts_count": 0,
+        "activity_count": 181,
+        "species_count": 77,
+        "universal_search_rank": 181,
+        "roles": [],
+        "site_id": 25,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/1866606/medium.jpeg?1560327313"
+      }
+    },
+    {
+      "id": 15245699,
+      "uuid": "7f49610b-9bc2-4fb2-9480-c71ebb4e09c1",
+      "field_id": 12583,
+      "datatype": "time",
+      "name": "eventTime",
+      "name_ci": "eventTime",
+      "value": "22:18:43",
+      "value_ci": "22:18:43",
+      "user_id": 1866606,
+      "user": {
+        "id": 1866606,
+        "login": "tomaugust",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2019-06-12T08:15:13+00:00",
+        "login_autocomplete": "tomaugust",
+        "login_exact": "tomaugust",
+        "name": "Tom August",
+        "name_autocomplete": "Tom August",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/1866606/thumb.jpeg?1560327313",
+        "observations_count": 181,
+        "identifications_count": 0,
+        "journal_posts_count": 0,
+        "activity_count": 181,
+        "species_count": 77,
+        "universal_search_rank": 181,
+        "roles": [],
+        "site_id": 25,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/1866606/medium.jpeg?1560327313"
+      }
+    },
+    {
+      "id": 15245700,
+      "uuid": "742f1059-2731-4e0c-adbb-f8b534d5d323",
+      "field_id": 308,
+      "datatype": "text",
+      "name": "Echolocation call frequency",
+      "name_ci": "Echolocation call frequency",
+      "value": "52.0",
+      "value_ci": "52.0",
+      "user_id": 1866606,
+      "user": {
+        "id": 1866606,
+        "login": "tomaugust",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2019-06-12T08:15:13+00:00",
+        "login_autocomplete": "tomaugust",
+        "login_exact": "tomaugust",
+        "name": "Tom August",
+        "name_autocomplete": "Tom August",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/1866606/thumb.jpeg?1560327313",
+        "observations_count": 181,
+        "identifications_count": 0,
+        "journal_posts_count": 0,
+        "activity_count": 181,
+        "species_count": 77,
+        "universal_search_rank": 181,
+        "roles": [],
+        "site_id": 25,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/1866606/medium.jpeg?1560327313"
+      }
+    }
+  ],
+  "num_identification_agreements": 0,
+  "preferences": {
+    "prefers_community_taxon": null
+  },
+  "comments": [],
+  "map_scale": 17,
+  "uri": "https://www.inaturalist.org/observations/84681407",
+  "project_ids": [
+    3405,
+    225
+  ],
+  "community_taxon_id": null,
+  "geojson": {
+    "type": "Point",
+    "coordinates": [
+      -1.122952,
+      51.601234
+    ]
+  },
+  "owners_identification_from_vision": false,
+  "identifications_count": 0,
+  "obscured": false,
+  "num_identification_disagreements": 0,
+  "geoprivacy": null,
+  "location": [
+    51.601234,
+    -1.122952
+  ],
+  "votes": [],
+  "spam": false,
+  "user": {
+    "id": 1866606,
+    "login": "tomaugust",
+    "spam": false,
+    "suspended": false,
+    "created_at": "2019-06-12T08:15:13+00:00",
+    "site_id": 25,
+    "preferences": {},
+    "login_autocomplete": "tomaugust",
+    "login_exact": "tomaugust",
+    "name": "Tom August",
+    "name_autocomplete": "Tom August",
+    "orcid": null,
+    "icon": "https://static.inaturalist.org/attachments/users/icons/1866606/thumb.jpeg?1560327313",
+    "observations_count": 181,
+    "identifications_count": 0,
+    "journal_posts_count": 0,
+    "activity_count": 181,
+    "species_count": 77,
+    "universal_search_rank": 181,
+    "roles": [],
+    "icon_url": "https://static.inaturalist.org/attachments/users/icons/1866606/medium.jpeg?1560327313"
+  },
+  "mappable": true,
+  "identifications_some_agree": false,
+  "project_ids_without_curator_id": [
+    3405,
+    225
+  ],
+  "place_guess": "Oxfordshire, England, GB",
+  "identifications": [
+    {
+      "hidden": false,
+      "disagreement": null,
+      "flags": [],
+      "created_at": "2021-06-27T13:35:50+02:00",
+      "taxon_id": 40364,
+      "body": null,
+      "own_observation": true,
+      "uuid": "67262bae-15c1-4f7e-bf2c-b439ed9401c6",
+      "taxon_change": null,
+      "moderator_actions": [],
+      "vision": false,
+      "current": true,
+      "id": 186421590,
+      "created_at_details": {
+        "date": "2021-06-27",
+        "day": 27,
+        "month": 6,
+        "year": 2021,
+        "hour": 13,
+        "week": 25
+      },
+      "category": "leading",
+      "spam": false,
+      "user": {
+        "id": 1866606,
+        "login": "tomaugust",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2019-06-12T08:15:13+00:00",
+        "login_autocomplete": "tomaugust",
+        "login_exact": "tomaugust",
+        "name": "Tom August",
+        "name_autocomplete": "Tom August",
+        "orcid": null,
+        "icon": "https://static.inaturalist.org/attachments/users/icons/1866606/thumb.jpeg?1560327313",
+        "observations_count": 181,
+        "identifications_count": 0,
+        "journal_posts_count": 0,
+        "activity_count": 181,
+        "species_count": 77,
+        "universal_search_rank": 181,
+        "roles": [],
+        "site_id": 25,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/1866606/medium.jpeg?1560327313"
+      },
+      "previous_observation_taxon_id": 40364,
+      "taxon": "TRUNCATED",
+      "previous_observation_taxon": {
+        "photos_locked": false,
+        "taxon_schemes_count": 5,
+        "ancestry": "48460/1/2/355675/40151/848317/848320/848324/40268/446946/446959/40269/846180/846363/40355",
+        "min_species_ancestry": "48460,1,2,355675,40151,848317,848320,848324,40268,446946,446959,40269,846180,846363,40355,40364",
+        "wikipedia_url": "http://en.wikipedia.org/wiki/Common_pipistrelle",
+        "current_synonymous_taxon_ids": null,
+        "iconic_taxon_id": 40151,
+        "created_at": "2008-03-19T00:19:47+00:00",
+        "taxon_changes_count": 0,
+        "complete_species_count": null,
+        "rank": "species",
+        "extinct": false,
+        "id": 40364,
+        "universal_search_rank": 946,
+        "ancestor_ids": [
+          48460,
+          1,
+          2,
+          355675,
+          40151,
+          848317,
+          848320,
+          848324,
+          40268,
+          446946,
+          446959,
+          40269,
+          846180,
+          846363,
+          40355,
+          40364
+        ],
+        "observations_count": 946,
+        "is_active": true,
+        "flag_counts": {
+          "resolved": 0,
+          "unresolved": 0
+        },
+        "min_species_taxon_id": 40364,
+        "rank_level": 10,
+        "atlas_id": null,
+        "parent_id": 40355,
+        "name": "Pipistrellus pipistrellus",
+        "default_photo": {
+          "id": 273054,
+          "license_code": "cc-by-sa",
+          "attribution": "(c) Gilles San Martin, some rights reserved (CC BY-SA)",
+          "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/273054/square.jpg?1545510373",
+          "original_dimensions": {
+            "height": 1371,
+            "width": 2048
+          },
+          "flags": [],
+          "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/273054/square.jpg?1545510373",
+          "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/273054/medium.jpg?1545510373"
+        },
+        "iconic_taxon_name": "Mammalia",
+        "preferred_common_name": "Common Pipistrelle"
+      }
+    }
+  ],
+  "project_observations": [
+    {
+      "id": 53605217,
+      "uuid": "f94bdbf2-bfe2-4315-a30e-8a23d607a039",
+      "project": {
+        "id": 3405
+      },
+      "user_id": null,
+      "preferences": {
+        "allows_curator_coordinate_access": true
+      }
+    },
+    {
+      "id": 53628828,
+      "uuid": "18674d0e-5ad2-4049-8c75-f702d62a6413",
+      "project": {
+        "id": 225
+      },
+      "user_id": 5643,
+      "preferences": {
+        "allows_curator_coordinate_access": false
+      },
+      "user": {
+        "id": 5643,
+        "login": "jakob",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2012-04-02T10:00:13+00:00",
+        "login_autocomplete": "jakob",
+        "login_exact": "jakob",
+        "name": "Jakob Fahr",
+        "name_autocomplete": "Jakob Fahr",
+        "orcid": "https://orcid.org/0000-0002-9174-1204",
+        "icon": "https://static.inaturalist.org/attachments/users/icons/5643/thumb.png?1475530151",
+        "observations_count": 24342,
+        "identifications_count": 157955,
+        "journal_posts_count": 2,
+        "activity_count": 182299,
+        "species_count": 4821,
+        "universal_search_rank": 24342,
+        "roles": [
+          "curator"
+        ],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/5643/medium.png?1475530151"
+      }
+    }
+  ],
+  "observation_sounds": [
+    {
+      "id": 257015,
+      "uuid": "7155abe6-0810-4e54-8648-62792b5c4707",
+      "sound": {
+        "id": 263113,
+        "license_code": "cc0",
+        "attribution": "keine Rechte vorbehalten",
+        "native_sound_id": null,
+        "secret_token": null,
+        "file_url": "https://static.inaturalist.org/sounds/263113.wav?1624793769",
+        "file_content_type": "audio/x-wav",
+        "play_local": true,
+        "subtype": null,
+        "flags": []
+      }
+    }
+  ],
+  "photos": [
+    {
+      "id": 139206257,
+      "license_code": "cc0",
+      "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/139206257/square.png?1624793751",
+      "attribution": "no rights reserved",
+      "original_dimensions": {
+        "width": 1024,
+        "height": 768
+      },
+      "flags": []
+    },
+    {
+      "id": 139206266,
+      "license_code": "cc0",
+      "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/139206266/square.png?1624793755",
+      "attribution": "no rights reserved",
+      "original_dimensions": {
+        "width": 1024,
+        "height": 768
+      },
+      "flags": []
+    }
+  ],
+  "observation_photos": [
+    {
+      "id": 130048321,
+      "position": 0,
+      "uuid": "00ddbd28-9a03-48d0-a4f0-4b4765bd3dbe",
+      "photo": {
+        "id": 139206257,
+        "license_code": "cc0",
+        "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/139206257/square.png?1624793751",
+        "attribution": "no rights reserved",
+        "original_dimensions": {
+          "width": 1024,
+          "height": 768
+        },
+        "flags": []
+      }
+    },
+    {
+      "id": 130048328,
+      "position": 1,
+      "uuid": "a87d8621-8d92-4894-a1b9-175f28b7da62",
+      "photo": {
+        "id": 139206266,
+        "license_code": "cc0",
+        "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/139206266/square.png?1624793755",
+        "attribution": "no rights reserved",
+        "original_dimensions": {
+          "width": 1024,
+          "height": 768
+        },
+        "flags": []
+      }
+    }
+  ],
+  "faves": [],
+  "non_owner_ids": [],
+  "observed_on": "2021-06-25 22:18:43+00:00"
+}

@@ -22,7 +22,7 @@ def document_models(app):
         export_model_doc(model.__name__, doc_table)
 
 
-def get_model_classes() -> List[Type['BaseModel']]:
+def get_model_classes() -> List[Type]:
     """Get all model classes defined in the :py:mod:`pyinaturalist.models` package"""
     import pyinaturalist.models
     from pyinaturalist.models import BaseModel
@@ -39,7 +39,7 @@ def get_model_doc(cls) -> List[Tuple[str, str, str]]:
     """Get the name, type and description for all model attributes. If an attribute has a validator
     with options, include those options in the description.
     """
-    return [_get_field_doc(field) for field in cls.__attrs_attrs__]
+    return [_get_field_doc(field) for field in cls.__attrs_attrs__ if not field.name.startswith('_')]
 
 
 def _get_field_doc(field: Attribute) -> Tuple[str, str, str]:
@@ -48,8 +48,8 @@ def _get_field_doc(field: Attribute) -> Tuple[str, str, str]:
     field_type = format_annotation(field.type)
     doc = field.metadata.get('doc', '')
     if getattr(field.validator, 'options', None):
-        options = ', '.join([opt for opt in field.validator.options if opt is not None])
-        doc += f'\n\n**Options:** ``{options}``'
+        options = ', '.join([f'``{opt}``' for opt in field.validator.options if opt is not None])
+        doc += f'\n\n**Options:** {options}'
     return (f'**{field.name}**', field_type, doc)
 
 

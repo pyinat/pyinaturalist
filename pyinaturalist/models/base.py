@@ -7,43 +7,25 @@ https://github.com/python/mypy/issues/7912
 """
 import json
 from collections import UserList
-from datetime import datetime, timezone
 from logging import getLogger
 from os.path import expanduser
 from pathlib import Path
-from typing import Dict, Generic, Iterable, List, Type, TypeVar, Union
+from typing import Dict, Generic, List, Type, TypeVar
 
-from attr import asdict, define, field, fields_dict, validators
+from attr import asdict, define, field, fields_dict
 
 from pyinaturalist.constants import AnyFile, JsonResponse, ResponseOrFile, ResponseOrResults, TableRow
-from pyinaturalist.converters import convert_lat_long, ensure_list, try_datetime
+from pyinaturalist.converters import ensure_list
 
 T = TypeVar('T', bound='BaseModel')
 logger = getLogger(__name__)
-
-
-def utcnow() -> datetime:
-    return datetime.now(timezone.utc)
-
-
-# Some aliases for common attribute types
-kwarg = field(default=None)
-coordinate_pair = field(converter=convert_lat_long, default=None)  # type: ignore
-datetime_attr = field(converter=try_datetime, default=None)  # type: ignore
-datetime_now_attr = field(converter=try_datetime, factory=utcnow)  # type: ignore
-
-
-# TODO: Case-insensitive version
-def is_in(options: Iterable):
-    """Validator for an optional multiple-choice attribute"""
-    return validators.in_(list(options) + [None])
 
 
 @define(auto_attribs=False)
 class BaseModel:
     """Base class for data models"""
 
-    id: int = kwarg
+    id: int = field(default=None)
     temp_attrs: List[str] = []
     headers: Dict[str, str] = {}
 
@@ -104,12 +86,6 @@ class BaseModelCollection(BaseModel, UserList, Generic[T]):
         instead of a builtin ``list``
         """
         return cls.from_json(value)  # type: ignore
-
-
-# Type aliases
-ModelObjects = Union[BaseModel, BaseModelCollection, Iterable[BaseModel]]
-ResponseOrObject = Union[BaseModel, JsonResponse]
-ResponseOrObjects = Union[ModelObjects, ResponseOrResults]
 
 
 def load_json(value: ResponseOrFile) -> ResponseOrResults:
