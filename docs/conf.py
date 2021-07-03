@@ -11,10 +11,8 @@
     * Show a function summary for ``pyinaturalist.v*`` packages
     * Show a function summary for all modules except ``pyinaturalist.models.*``
 * Some Sphinx builder hooks copy some content so it can be accessed relative to ``docs`` dir
-* Some CSS adds collapsible drop-down container
-* Additional CSS is added to customize function-level docs
-* A version dropdown (to switch to docs for older versions) is added with ``sphinx-material``, and
-  versions are listed in ``static/versions.json``
+* Some CSS and JS adds collapsible drop-down container
+* On Readthedocs, CSS and JS is automatically added for a version dropdown
 
 TODO:
 * Customization for package-level docs that can be done with module docstrings instead of templates?
@@ -22,9 +20,8 @@ TODO:
 """
 # flake8: noqa: E402
 import sys
-from glob import glob
 from os import makedirs, symlink
-from os.path import abspath, basename, dirname, exists, join
+from os.path import dirname, exists, join
 from shutil import copytree, rmtree
 
 # Avoid a potential circular import in nbsphinx
@@ -70,7 +67,7 @@ extensions = [
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
     'sphinx_copybutton',
-    'sphinx_material',
+    'sphinx_inline_tabs',
     'sphinxcontrib.apidoc',
     'myst_parser',
     'nbsphinx',
@@ -78,13 +75,11 @@ extensions = [
 
 # MyST extensions
 myst_enable_extensions = [
-    "colon_fence",
-    # "deflist",
-    "html_image",
-    "linkify",
-    "replacements",
-    "smartquotes",
-    # "substitution",
+    'colon_fence',
+    'html_image',
+    'linkify',
+    'replacements',
+    'smartquotes',
 ]
 
 nbsphinx_allow_errors = True
@@ -137,32 +132,28 @@ autosummary_generate_overwrite = True
 autosummary_imported_members = False
 numpydoc_show_class_members = False
 
-# sphinx-material theme settings
-html_theme = 'sphinx_material'
-html_show_sphinx = False
-html_theme_options = {
-    'color_primary': 'blue-grey',
-    'color_accent': 'teal',
-    'globaltoc_depth': 3,
-    'globaltoc_includehidden': False,
-    'master_doc': False,
-    'nav_title': 'pyinaturalist documentation',
-    'repo_url': 'https://github.com/niconoe/pyinaturalist',
-    'table_classes': ['docutils'],
-    'touch_icon': 'python-logo-green.png',
-    'repo_name': 'GitHub repository',
-    'version_dropdown': True,
-    'version_json': '_static/versions.json',
-}
-html_sidebars = {'**': ['logo-text.html', 'globaltoc.html', 'localtoc.html', 'searchbox.html']}
-pygments_style = 'friendly'
-
-# TODO If/when dark mode support is added for sphinx-material
-# pygments_style = 'material'
-
-# Favicon & sidebar logo
-html_logo = join('images', 'python-logo-green.png')
+# HTML general settings
+html_logo = join('images', 'pyinaturalist_logo.png')
+# html_logo = join('images', 'python-logo-green.png')
 html_favicon = join('images', 'favicon.ico')
+html_js_files = ['collapsible_container.js']
+html_css_files = ['collapsible_container.css', 'table.css']
+html_show_sphinx = False
+pygments_style = 'friendly'
+pygments_dark_style = 'material'
+
+# HTML theme settings
+html_theme = 'furo'
+html_theme_options = {
+    'light_css_variables': {
+        'color-brand-primary': '#436500',  # Dark green
+        # 'color-brand-content': 'teal',
+    },
+    'dark_css_variables': {
+        'color-brand-primary': '#74AC00',  # Yellow-green
+    },
+    'sidebar_hide_name': True,
+}
 
 
 def setup(app):
@@ -180,8 +171,6 @@ def setup(app):
     app.connect('builder-inited', document_models)
     app.connect('builder-inited', setup_external_files)
     app.connect('builder-inited', patch_automodapi)
-    for stylesheet in glob(join(CSS_DIR, '*.css')):
-        app.add_css_file(basename(stylesheet))
 
 
 def setup_external_files(app):

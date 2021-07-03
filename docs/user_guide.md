@@ -1,39 +1,42 @@
 # User Guide
 This page summarizes how to use the main features of pyinaturalist.
 
-```{contents}
-:depth: 1
-:local: true
-```
-
 ## Installation
-:::{admonition} Python version compatibility
-:class: toggle
-pyinaturalist currently requires **python 3.6+**. If you need to use an older version
-of python, here are the last compatible versions of pyinaturalist:
+Installation instructions:
 
-- **python 2.7:** pyinaturalist 0.1
-- **python 3.4:** pyinaturalist 0.10
-- **python 3.5:** pyinaturalist 0.11
-- **python 3.6:** still supported, but expected to be dropped in a future release
-:::
-
+:::{tab} Pip
 Install the latest stable version with pip:
 ```
 pip install pyinaturalist
 ```
-
-Or with Conda, if you prefer:
+:::
+:::{tab} Conda
+Or install from conda-forge, if you prefer:
 ```
 conda install -c conda-forge pyinaturalist
 ```
-
+:::
+:::{tab} Pre-release
 If you would like to use the latest development (pre-release) version:
 ```
 pip install --pre pyinaturalist
 ```
-
+:::
+:::{tab} Local development
 See {ref}`contributing` for details on setup for local development.
+:::
+
+:::{admonition} Python version compatibility
+:class: toggle, tip
+
+pyinaturalist currently requires **python 3.6+**. If you need to use an older version
+of python, here are the last compatible versions of pyinaturalist:
+
+* **python 2.7:** pyinaturalist 0.1
+* **python 3.4:** pyinaturalist 0.10
+* **python 3.5:** pyinaturalist 0.11
+* **python 3.6:** still supported, but expected to be dropped in a future release
+:::
 
 ## Imports
 All of the main features can be imported from the top-level `pyinaturalist` namespace:
@@ -50,32 +53,35 @@ Or to just import everything (convenient for scripts and notebooks, but less so 
 Requests generally follow the same format as the [API](https://api.inaturalist.org/v1)
 and [search URLs](https://forum.inaturalist.org/t/how-to-use-inaturalists-search-urls-wiki).
 
-For example, if you wanted to search observations by user, the following API request:
-```
-https://api.inaturalist.org/v1/observations?user_id=tiwane%2Cjdmore
-```
+For example, if you wanted to search observations by user, these three requests are equivalent:
 
-And search URL:
+:::{tab} search URL
 ```
 https://www.inaturalist.org/observations?user_id=tiwane,jdmore
 ```
-
-Are equivalent to the following pyinaturalist search:
+:::
+:::{tab} API request
 ```
+https://api.inaturalist.org/v1/observations?user_id=tiwane%2Cjdmore
+```
+:::
+:::{tab} pyinaturalist search
+```python
 >>> get_observations(user_id=['tiwane', 'jdmore'])
 ```
+:::
 
 There are some optional conveniences you can use, for example:
-- Python lists instead of comma-separated strings
-- Python booleans instead of JS-style boolean strings or 1/0
-- Python file-like objects or file paths for photo and sound uploads
-- Python {py:class}`~datetime.date` and {py:class}`~datetime.datetime` objects instead of date/time strings
-- Some simplified data formats for create and update requests
-- Simplified pagination
-- Validation for multiple-choice parameters (for example, `quality_grade`)
+* Python lists instead of comma-separated strings
+* Python booleans instead of JS-style boolean strings or 1/0
+* Python file-like objects or file paths for photo and sound uploads
+* Python {py:class}`~datetime.date` and {py:class}`~datetime.datetime` objects instead of date/time strings
+* Some simplified data formats for create and update requests
+* Simplified pagination
+* Validation for multiple-choice parameters (for example, `quality_grade`)
 
 And more, depending on the function.
-See the {ref}`reference` section for a complete list of functions available.
+See the {ref}`reference-docs` section for a complete list of functions available.
 
 ## Responses
 API responses are returned as JSON, with some python type conversions applied (similar to the request
@@ -96,8 +102,7 @@ format and print responses and model objects as a condensed, colorized table.
 
 **Examples:**
 
-:::{admonition} Example observation table
-:class: toggle
+:::{tab} Observations
 ```
 >>> from pyinaturalist import get_observations, pprint
 >>> observations = get_observations(user_id='niconoe', per_page=5)
@@ -111,9 +116,7 @@ ID         Taxon ID   Taxon                                                  Obs
 82696334   472617     Species: Tomocerus vulgaris                            Jun 07, 2021   niconoe   1428 Braine-l'Alleud, Belgique
 ```
 :::
-
-:::{admonition} Example place table
-:class: toggle
+:::{tab} Places
 ```
 >>> from pyinaturalist import get_places, pprint
 >>> places = get_places_autocomplete('Vale')
@@ -132,9 +135,7 @@ ID         Taxon ID   Taxon                                                  Obs
 104268     46.7917     27.0905   Valea Ursului                    https://www.inaturalist.org/places/104268
 ```
 :::
-
-:::{admonition} Example place table (with terminal colors)
-:class: toggle
+:::{tab} Places (with terminal colors)
 ```{figure} images/pprint_table.png
 ```
 :::
@@ -143,15 +144,11 @@ ID         Taxon ID   Taxon                                                  Obs
 Data models ({py:mod}`pyinaturalist.models`) are included for all API response types. These allow
 working with typed python objects instead of raw JSON. These are not used by default in the API query
 functions, but you can easily use them as follows:
-
-:::{admonition} Convert observation response JSON to Observation objects
-:class: toggle
-```
+```python
 >>> from pyinaturalist import Observation, get_observations
 >>> response = get_observations(user_id='my_username)
 >>> observations = Observation.from_json_list(response)
 ```
-:::
 
 In a future release, these models will be fully integrated with the API query functions.
 
@@ -186,14 +183,15 @@ you will need to use an access token.
 
 ### Creating an Application
 :::{admonition} Why do I need to create an application?
-:class: toggle
+:class: toggle, tip
 
 iNaturalist uses OAuth2, which provides several different methods (or "flows") to access the site.
 For example, on the [login page](https://www.inaturalist.org/login), you have the option of logging
 in with a username/password, or with an external provider (Google, Facebook, etc.):
 
-```{figure} images/inat-user-login.png
+```{image} images/inat-user-login.png
 :alt: Login form
+:width: 150
 ```
 
 Outside of iNaturalist.org, anything else that uses the API to create or modify data is considered
@@ -214,15 +212,16 @@ following pieces of information:
 * **URL and Redirect URI:** Just enter the URL to your GitHub repo, if you have one; otherwise any
   placeholder like "<https://www.inaturalist.org>" will work.
 
-```{figure} images/inat-new-application.png
+```{image} images/inat-new-application.png
 :alt: New Application form
+:width: 300
 ```
 
 You should then see a screen like this, which will show your new application ID and secret. These will
 only be shown once, so save them somewhere secure, preferably in a password manager.
-
-```{figure} images/inat-new-application-complete.png
+```{image} images/inat-new-application-complete.png
 :alt: Completed application form
+:width: 400
 ```
 
 ### Basic Usage
@@ -250,20 +249,16 @@ environment variable names are the keyword arguments in uppercase, prefixed with
 * `INAT_APP_SECRET`
 
 **Examples:**
-
-:::{admonition} Set environment variables in python:
-:class: toggle
+:::{tab} Python
 ```python
 >>> import os
->>> os.environ\['INAT_USERNAME'\] = 'my_inaturalist_username'
->>> os.environ\['INAT_PASSWORD'\] = 'my_inaturalist_password'
->>> os.environ\['INAT_APP_ID'\] = '33f27dc63bdf27f4ca6cd95df'
->>> os.environ\['INAT_APP_SECRET'\] = 'bbce628be722bfe283de4'
+>>> os.environ['INAT_USERNAME'] = 'my_inaturalist_username'
+>>> os.environ['INAT_PASSWORD'] = 'my_inaturalist_password'
+>>> os.environ['INAT_APP_ID'] = '33f27dc63bdf27f4ca6cd95df'
+>>> os.environ['INAT_APP_SECRET'] = 'bbce628be722bfe283de4'
 ```
 :::
-
-:::{admonition} Set environment variables in a POSIX shell (bash, etc.):
-:class: toggle
+:::{tab} Unix (MacOS / Linux)
 ```bash
 export INAT_USERNAME="my_inaturalist_username"
 export INAT_PASSWORD="my_inaturalist_password"
@@ -271,9 +266,7 @@ export INAT_APP_ID="33f27dc63bdf27f4ca6cd95df"
 export INAT_APP_SECRET="bbce628be722bfe283de4"
 ```
 :::
-
-:::{admonition} Set environment variables in a Windows shell:
-:class: toggle
+:::{tab} Windows CMD
 ```bat
 set INAT_USERNAME="my_inaturalist_username"
 set INAT_PASSWORD="my_inaturalist_password"
@@ -281,9 +274,7 @@ set INAT_APP_ID="33f27dc63bdf27f4ca6cd95df"
 set INAT_APP_SECRET="bbce628be722bfe283de4"
 ```
 :::
-
-:::{admonition} Set environment variables in PowerShell:
-:class: toggle
+:::{tab} PowerShell
 ```powershell
 $Env:INAT_USERNAME="my_inaturalist_username"
 $Env:INAT_PASSWORD="my_inaturalist_password"
@@ -379,7 +370,7 @@ instead:
 While not mandatory, it's good practice to include a [user-agent](https://en.wikipedia.org/wiki/User_agent) in
 your API calls. This field can be either something that identifies the project or its contact person.
 
-You can either set this globally:
+You can set this globally:
 ```python
 >>> import pyinaturalist
 >>>
@@ -387,7 +378,7 @@ You can either set this globally:
 >>> # From now on, all API calls will use this user-agent.
 ```
 
-To set this for individual requests, all API functions accept an optional `user_agent` parameter:
+Or to set this for individual requests, all API functions accept an optional `user_agent` parameter:
 ```python
 >>> from pyinaturalist import get_observation
 >>> get_observation(observation_id=16227955, user_agent='Jane Doe \<jane.doe@gmail.com>')
