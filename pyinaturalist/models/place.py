@@ -81,7 +81,7 @@ class Place(BaseModel):
 
     @property
     def url(self) -> str:
-        """Info URL on iNaturalist.org"""
+        """Place info URL on iNaturalist.org"""
         return f'{INAT_BASE_URL}/places/{self.id}'
 
     @property

@@ -13,8 +13,8 @@ class Comment(BaseModel):
     body: str = field(default=None, doc='Comment text')
     created_at: datetime = datetime_now_field(doc='Date and time the comment was created')
     hidden: bool = field(default=None, doc='Indicates if the comment is hidden')
-    uuid: str = field(default=None, doc='Universally unique ID')
-    user: property = LazyProperty(User.from_json)
+    uuid: str = field(default=None, doc='Universally unique identifier')
+    user: property = LazyProperty(User.from_json, type=User, doc='User that added the comment')
 
     # Unused attributes
     # created_at_details: Dict = field(factory=dict)

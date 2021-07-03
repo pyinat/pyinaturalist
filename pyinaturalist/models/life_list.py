@@ -16,8 +16,10 @@ from pyinaturalist.models import (
 class LifeListTaxon(TaxonCount):
     """A single taxon in a user's life list"""
 
-    descendant_obs_count: int = field(default=0)
-    direct_obs_count: int = field(default=0)
+    descendant_obs_count: int = field(default=0, doc='Number of observations of taxon children')
+    direct_obs_count: int = field(
+        default=0, doc='Number of observations of this exact taxon (excluding children)'
+    )
 
     @property
     def indent_level(self) -> int:

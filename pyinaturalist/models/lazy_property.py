@@ -1,6 +1,6 @@
 from functools import update_wrapper
 from inspect import signature
-from typing import Any, Callable, Iterable, List
+from typing import Any, Callable, Dict, Iterable, List, Type
 
 from attr import Attribute, Factory
 
@@ -17,7 +17,6 @@ FIELD_DEFAULTS = {
 }
 
 
-# TODO: Add support for description that will show up in Sphinx docs
 class LazyProperty(property):
     """A lazy-initialized/cached descriptor, similar to ``@functools.cached_property``, but works
     for slotted classes by not relying on ``__dict__``.
@@ -50,11 +49,13 @@ class LazyProperty(property):
 
     """
 
-    def __init__(self, converter: Callable, name: str = None):
+    def __init__(self, converter: Callable, name: str = None, doc: str = None, type: Type = BaseModel):
+        update_wrapper(self, converter)
         self.converter = converter
         self.default = None
+        self.type = type
+        self.__doc__ = doc
         self.__set_name__(None, name)
-        update_wrapper(self, converter)
 
         # Use either a list factory or default value, depending on the converter's return type
         if _returns_list(converter):
@@ -98,13 +99,14 @@ def get_model_fields(obj: Any) -> Iterable[Attribute]:
     """Add placeholder attributes for lazy-loaded model properties so they get picked up by rich's
     pretty-printer. Does not change behavior for anything except :py:class:`.BaseModel` subclasses.
     """
-    from pyinaturalist.models import LazyProperty
-
     attrs = list(obj.__attrs_attrs__)
     if isinstance(obj, BaseModel):
-        prop_names = [k for k, v in type(obj).__dict__.items() if isinstance(v, LazyProperty)]
-        attrs += [make_attribute(p) for p in prop_names]
+        attrs += [make_attribute(p) for p in get_lazy_properties(type(obj))]
     return attrs
+
+
+def get_lazy_properties(cls: Type[BaseModel]) -> Dict[str, LazyProperty]:
+    return {k: v for k, v in cls.__dict__.items() if isinstance(v, LazyProperty)}
 
 
 def make_attribute(name, **kwargs):

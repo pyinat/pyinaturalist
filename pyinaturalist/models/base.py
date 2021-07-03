@@ -25,7 +25,7 @@ logger = getLogger(__name__)
 class BaseModel:
     """Base class for data models"""
 
-    id: int = field(default=None)
+    id: int = field(default=None, metadata={'doc': 'Unique record ID'})
     temp_attrs: List[str] = []
     headers: Dict[str, str] = {}
 

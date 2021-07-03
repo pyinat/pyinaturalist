@@ -5,12 +5,15 @@ import csv
 from inspect import getmembers, isclass
 from os import makedirs
 from os.path import join
-from typing import List, Tuple, Type
+from typing import Any, List, Tuple, Type, get_type_hints
 
 from attr import Attribute
+from sphinx_autodoc_typehints import format_annotation
 
 from pyinaturalist.constants import DOCS_DIR
+from pyinaturalist.models import LazyProperty, get_lazy_properties
 
+IGNORE_PROPERTIES = ['row']
 MODEL_DOC_DIR = join(DOCS_DIR, 'models')
 
 
@@ -34,23 +37,54 @@ def get_model_classes() -> List[Type]:
     return model_classes
 
 
-# TODO: Also include @properties?
-def get_model_doc(cls) -> List[Tuple[str, str, str]]:
-    """Get the name, type and description for all model attributes. If an attribute has a validator
-    with options, include those options in the description.
+# TODO: Also include regular @properties?
+# TODO: CSS to style LazyProperties with a different background color?
+# TODO: Remove autodoc member docs for LazyProperties
+def get_model_doc(cls: Type) -> List[Tuple[str, str, str]]:
+    """Get the name, type and description for all model attributes, properties, and LazyProperties.
+    If an attribute has a validator with options, include those options in the description.
     """
-    return [_get_field_doc(field) for field in cls.__attrs_attrs__ if not field.name.startswith('_')]
+
+    doc_rows = [_get_field_doc(field) for field in cls.__attrs_attrs__ if not field.name.startswith('_')]
+    doc_rows += [('', '', ''), ('', '', '')]
+    doc_rows += [_get_property_doc(prop) for prop in get_properties(cls)]
+    doc_rows += [('', '', ''), ('', '', '')]
+    doc_rows += [_get_lazy_property_doc(prop) for _, prop in get_lazy_properties(cls).items()]
+    return doc_rows
+
+
+def get_properties(cls: Type) -> List[property]:
+    """Get all @property descriptors from a class"""
+    return [
+        member
+        for member in cls.__dict__.values()
+        if isinstance(member, property)
+        and not isinstance(member, LazyProperty)
+        and member.fget.__name__ not in IGNORE_PROPERTIES
+    ]
 
 
 def _get_field_doc(field: Attribute) -> Tuple[str, str, str]:
-    from sphinx_autodoc_typehints import format_annotation
-
-    field_type = format_annotation(field.type)
+    """Get a row documenting an attrs Attribute"""
+    rtype = format_annotation(field.type)
     doc = field.metadata.get('doc', '')
     if getattr(field.validator, 'options', None):
         options = ', '.join([f'``{opt}``' for opt in field.validator.options if opt is not None])
         doc += f'\n\n**Options:** {options}'
-    return (f'**{field.name}**', field_type, doc)
+    return (f'**{field.name}**', rtype, doc)
+
+
+def _get_property_doc(prop: property) -> Tuple[str, str, str]:
+    """Get a row documenting a regular @property"""
+    rtype = format_annotation(get_type_hints(prop.fget).get('return', Any))
+    doc = (prop.fget.__doc__ or '').split('\n')[0]
+    return (f'**{prop.fget.__name__}**', rtype, doc)
+
+
+def _get_lazy_property_doc(prop: LazyProperty) -> Tuple[str, str, str]:
+    """Get a row documenting a LazyProperty"""
+    rtype = format_annotation(prop.type)
+    return (f'**{prop.__name__}**', rtype, prop.__doc__)
 
 
 def export_model_doc(model_name, doc_table):

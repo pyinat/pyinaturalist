@@ -34,7 +34,7 @@ except ImportError:
 sys.path.insert(0, '..')
 from pyinaturalist import __version__
 from pyinaturalist.constants import DOCS_DIR, PROJECT_DIR, EXAMPLES_DIR, SAMPLE_DATA_DIR
-from pyinaturalist.api_docs import document_models
+from pyinaturalist.api_docs.model_docs import document_models
 
 # Relevant doc directories used in extension settings
 CSS_DIR = join(DOCS_DIR, '_static')

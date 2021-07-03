@@ -119,19 +119,33 @@ class Observation(BaseModel):
     )
     quality_metrics: List[Dict] = field(factory=list, doc='Data quality assessment metrics')
     reviewed_by: List[int] = field(factory=list, doc='IDs of users who have reviewed the observation')
-    sounds: List[Dict] = field(factory=list, doc='Sound files associated with the observation')
+    sounds: List[Dict] = field(factory=list, doc='Observation sound files')
     tags: List[str] = field(factory=list, doc='Arbitrary user tags added to the observation')
     votes: List[Dict] = field(factory=list, doc='Votes on data quality assessment metrics')
 
-    # Lazy-loaded nested model objects
-    annotations: property = LazyProperty(Annotation.from_json_list)
-    comments: property = LazyProperty(Comment.from_json_list)
-    identifications: property = LazyProperty(Identification.from_json_list)
-    ofvs: property = LazyProperty(ObservationFieldValue.from_json_list)
-    photos: property = LazyProperty(Photo.from_json_list)
-    project_observations: property = LazyProperty(ProjectObservation.from_json_list)
-    taxon: property = LazyProperty(Taxon.from_json)
-    user: property = LazyProperty(User.from_json)
+    # Lazy-loaded model objects
+    annotations: property = LazyProperty(
+        Annotation.from_json_list, type=List[Annotation], doc='Observation annotations'
+    )
+    comments: property = LazyProperty(
+        Comment.from_json_list, type=List[Comment], doc='Observation comments'
+    )
+    identifications: property = LazyProperty(
+        Identification.from_json_list, type=List[Identification], doc='Observation identifications'
+    )
+    ofvs: property = LazyProperty(
+        ObservationFieldValue.from_json_list,
+        type=List[ObservationFieldValue],
+        doc='Observation field values',
+    )
+    photos: property = LazyProperty(Photo.from_json_list, type=List[Photo], doc='Observation photos')
+    project_observations: property = LazyProperty(
+        ProjectObservation.from_json_list,
+        type=List[ProjectObservation],
+        doc='Details on any projects that the observation has been added to',
+    )
+    taxon: property = LazyProperty(Taxon.from_json, type=Taxon, doc='Observation taxon')
+    user: property = LazyProperty(User.from_json, type=User, doc='Observer')
 
     # Additional attributes from API response that aren't needed; just left here for reference
     # cached_votes_total: int = field(default=None)

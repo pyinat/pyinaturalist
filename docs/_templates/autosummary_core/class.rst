@@ -1,7 +1,5 @@
-{% if referencefile %}
-.. include:: {{ referencefile }}
-{% endif %}
 
+{# Automodapi class template for data models #}
 {{ objname }}
 {{ underline }}
 
@@ -9,7 +7,6 @@
 
 .. autoclass:: {{ objname }}
    :show-inheritance:
-   :members:
    
    {% block attributes_summary %}
    {% if attributes %}

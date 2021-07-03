@@ -18,7 +18,7 @@ class Annotation(BaseModel):
     uuid: str = field(default=None)
     vote_score: int = field(default=None)
     votes: List = field(factory=list)
-    user: property = LazyProperty(User.from_json)
+    user: property = LazyProperty(User.from_json, type=User, doc='User who added the annotation')
 
     @property
     def values(self) -> List[str]:
@@ -73,8 +73,11 @@ class ControlledTerm(BaseModel):
     uri: str = field(default=None)
     uuid: str = field(default=None)
     taxon_ids: List[int] = field(factory=list)
-
-    values: property = LazyProperty(ControlledTermValue.from_json_list)
+    values: property = LazyProperty(
+        ControlledTermValue.from_json_list,
+        type=List[ControlledTermValue],
+        doc='Allowed values for this controlled term',
+    )
 
     @property
     def value_labels(self) -> str:
