@@ -38,6 +38,7 @@ WRITE_HTTP_METHODS = ['PATCH', 'POST', 'PUT', 'DELETE']
 PROJECT_DIR = abspath(dirname(dirname(__file__)))
 DOCS_DIR = join(PROJECT_DIR, 'docs')
 DOWNLOAD_DIR = join(PROJECT_DIR, 'downloads')
+EXAMPLES_DIR = join(PROJECT_DIR, 'examples')
 SAMPLE_DATA_DIR = join(PROJECT_DIR, 'test', 'sample_data')
 
 # Response formats supported by GET /observations endpoint

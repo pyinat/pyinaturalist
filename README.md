@@ -14,8 +14,8 @@
 
 [![](docs/images/pyinaturalist_logo_med.png)](https://pyinaturalist.readthedocs.io)
 
-## Summary
-[iNaturalist](https://www.inaturalist.org) is a community science platform that helps people
+# Introduction
+[**iNaturalist**](https://www.inaturalist.org) is a community science platform that helps people
 get involved in the natural world by observing and identifying the living things around them.
 Collectively, the community produces a rich source of global biodiversity data that can be valuable
 to anyone from hobbyists to scientists.
