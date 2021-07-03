@@ -102,8 +102,7 @@ format and print responses and model objects as a condensed, colorized table.
 
 **Examples:**
 
-:::{admonition} Example observation table
-:class: toggle
+:::{tab} Observations
 ```
 >>> from pyinaturalist import get_observations, pprint
 >>> observations = get_observations(user_id='niconoe', per_page=5)
@@ -117,9 +116,7 @@ ID         Taxon ID   Taxon                                                  Obs
 82696334   472617     Species: Tomocerus vulgaris                            Jun 07, 2021   niconoe   1428 Braine-l'Alleud, Belgique
 ```
 :::
-
-:::{admonition} Example place table
-:class: toggle
+:::{tab} Places
 ```
 >>> from pyinaturalist import get_places, pprint
 >>> places = get_places_autocomplete('Vale')
@@ -138,9 +135,7 @@ ID         Taxon ID   Taxon                                                  Obs
 104268     46.7917     27.0905   Valea Ursului                    https://www.inaturalist.org/places/104268
 ```
 :::
-
-:::{admonition} Example place table (with terminal colors)
-:class: toggle
+:::{tab} Places (with terminal colors)
 ```{figure} images/pprint_table.png
 ```
 :::
@@ -149,15 +144,11 @@ ID         Taxon ID   Taxon                                                  Obs
 Data models ({py:mod}`pyinaturalist.models`) are included for all API response types. These allow
 working with typed python objects instead of raw JSON. These are not used by default in the API query
 functions, but you can easily use them as follows:
-
-:::{admonition} Convert observation response JSON to Observation objects
-:class: toggle
-```
+```python
 >>> from pyinaturalist import Observation, get_observations
 >>> response = get_observations(user_id='my_username)
 >>> observations = Observation.from_json_list(response)
 ```
-:::
 
 In a future release, these models will be fully integrated with the API query functions.
 
@@ -192,7 +183,7 @@ you will need to use an access token.
 
 ### Creating an Application
 :::{admonition} Why do I need to create an application?
-:class: toggle
+:class: toggle, tip
 
 iNaturalist uses OAuth2, which provides several different methods (or "flows") to access the site.
 For example, on the [login page](https://www.inaturalist.org/login), you have the option of logging
@@ -379,7 +370,7 @@ instead:
 While not mandatory, it's good practice to include a [user-agent](https://en.wikipedia.org/wiki/User_agent) in
 your API calls. This field can be either something that identifies the project or its contact person.
 
-You can either set this globally:
+You can set this globally:
 ```python
 >>> import pyinaturalist
 >>>
@@ -387,7 +378,7 @@ You can either set this globally:
 >>> # From now on, all API calls will use this user-agent.
 ```
 
-To set this for individual requests, all API functions accept an optional `user_agent` parameter:
+Or to set this for individual requests, all API functions accept an optional `user_agent` parameter:
 ```python
 >>> from pyinaturalist import get_observation
 >>> get_observation(observation_id=16227955, user_agent='Jane Doe \<jane.doe@gmail.com>')
