@@ -26,7 +26,7 @@ Also see :ref:`endpoints` for an overview of which iNaturalist endpoints are cur
     modules/pyinaturalist.v0
     modules/pyinaturalist.v1
     modules/pyinaturalist.v2
-    modules/pyinaturalist.models
+    pyinaturalist.models
 
 .. toctree::
     :caption: Additional Utility Modules

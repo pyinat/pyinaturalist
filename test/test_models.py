@@ -301,7 +301,7 @@ def test_photo__license():
 
     photo.license_code = None
     assert photo.has_cc_license is False
-    photo.license_code = 'all rights reserved'
+    photo.license_code = 'ALL RIGHTS RESERVED'
     assert photo.has_cc_license is False
 
 

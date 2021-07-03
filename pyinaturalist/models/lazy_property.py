@@ -17,6 +17,7 @@ FIELD_DEFAULTS = {
 }
 
 
+# TODO: Add support for description that will show up in Sphinx docs
 class LazyProperty(property):
     """A lazy-initialized/cached descriptor, similar to ``@functools.cached_property``, but works
     for slotted classes by not relying on ``__dict__``.

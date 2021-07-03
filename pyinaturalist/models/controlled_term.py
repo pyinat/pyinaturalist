@@ -1,9 +1,7 @@
 from typing import List
 
-from attr import field
-
 from pyinaturalist.constants import TableRow
-from pyinaturalist.models import BaseModel, LazyProperty, User, define_model, kwarg
+from pyinaturalist.models import BaseModel, LazyProperty, User, define_model, field
 
 
 @define_model
@@ -13,12 +11,12 @@ class Annotation(BaseModel):
     `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
     """
 
-    concatenated_attr_val: str = kwarg
-    controlled_attribute_id: int = kwarg
-    controlled_value_id: int = kwarg
-    user_id: int = kwarg
-    uuid: str = kwarg
-    vote_score: int = kwarg
+    concatenated_attr_val: str = field(default=None)
+    controlled_attribute_id: int = field(default=None)
+    controlled_value_id: int = field(default=None)
+    user_id: int = field(default=None)
+    uuid: str = field(default=None)
+    vote_score: int = field(default=None)
     votes: List = field(factory=list)
     user: property = LazyProperty(User.from_json)
 
@@ -51,11 +49,11 @@ class ControlledTermValue(BaseModel):
     `GET /controlled_terms <https://api.inaturalist.org/v1/docs/#!/Controlled_Terms/get_controlled_terms>`_.
     """
 
-    blocking: bool = kwarg
-    label: str = kwarg
-    ontology_uri: str = kwarg
-    uri: str = kwarg
-    uuid: str = kwarg
+    blocking: bool = field(default=None)
+    label: str = field(default=None)
+    ontology_uri: str = field(default=None)
+    uri: str = field(default=None)
+    uuid: str = field(default=None)
     taxon_ids: List[int] = field(factory=list)
 
     def __str__(self):
@@ -68,12 +66,12 @@ class ControlledTerm(BaseModel):
     `GET /controlled_terms <https://api.inaturalist.org/v1/docs/#!/Controlled_Terms/get_controlled_terms>`_.
     """
 
-    is_value: bool = kwarg
-    multivalued: bool = kwarg
-    label: str = kwarg
-    ontology_uri: str = kwarg
-    uri: str = kwarg
-    uuid: str = kwarg
+    is_value: bool = field(default=None)
+    multivalued: bool = field(default=None)
+    label: str = field(default=None)
+    ontology_uri: str = field(default=None)
+    uri: str = field(default=None)
+    uuid: str = field(default=None)
     taxon_ids: List[int] = field(factory=list)
 
     values: property = LazyProperty(ControlledTermValue.from_json_list)

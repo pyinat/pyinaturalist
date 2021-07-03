@@ -1,8 +1,6 @@
 from itertools import groupby
 from typing import List
 
-from attr import field
-
 from pyinaturalist.constants import JsonResponse
 from pyinaturalist.models import (
     Taxon,
@@ -10,7 +8,7 @@ from pyinaturalist.models import (
     TaxonCounts,
     define_model,
     define_model_collection,
-    kwarg,
+    field,
 )
 
 
@@ -37,7 +35,7 @@ class LifeList(TaxonCounts):
 
     count_without_taxon: int = field(default=0)
     data: List[LifeListTaxon] = field(factory=list, converter=LifeListTaxon.from_json_list)  # type: ignore
-    user_id: int = kwarg
+    user_id: int = field(default=None)
 
     @classmethod
     def from_json(cls, value: JsonResponse, user_id: int = None, **kwargs) -> 'LifeListTaxon':  # type: ignore

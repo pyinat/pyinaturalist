@@ -1,9 +1,7 @@
 from typing import List, Union
 
-from attr import field
-
 from pyinaturalist.constants import TableRow
-from pyinaturalist.models import BaseModel, Place, Project, Taxon, User, define_model, kwarg
+from pyinaturalist.models import BaseModel, Place, Project, Taxon, User, define_model, field, is_in
 
 SEARCH_RESULT_TYPES = {cls.__name__: cls for cls in [Place, Project, Taxon, User]}
 SEARCH_RESULT_TITLES = {'Place': 'name', 'Project': 'title', 'Taxon': 'full_name', 'User': 'login'}
@@ -16,10 +14,10 @@ class SearchResult(BaseModel):
     `GET /search <https://api.inaturalist.org/v1/docs/#!/Search/get_search>`_.
     """
 
-    score: float = field(default=0)
-    type: str = kwarg  # Enum
-    matches: List[str] = field(factory=list)
-    record: SearchResultRecord = kwarg
+    score: float = field(default=0, doc='Search result rank')
+    type: str = field(default=None, validator=is_in(SEARCH_RESULT_TYPES), doc='Search result type')
+    matches: List[str] = field(factory=list, doc='Search terms matched')
+    record: SearchResultRecord = field(default=None, doc='Search result object')
 
     # Convert value by datatype
     def __attrs_post_init__(self):

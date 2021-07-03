@@ -314,9 +314,9 @@ def format_file_size(n_bytes: int) -> str:
     return _format(unit)
 
 
-def format_license(value: str) -> str:
+def format_license(value: str) -> Optional[str]:
     """Format a Creative Commons license code"""
-    return str(value).upper().replace('_', '-')
+    return str(value).upper().replace('_', '-') if value else None
 
 
 # 'Safe' conversion functions that return invalid values as None instead of raising an error

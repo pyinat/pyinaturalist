@@ -6,9 +6,9 @@ from pyinaturalist.models import (
     LazyProperty,
     Taxon,
     User,
-    datetime_now_attr,
+    datetime_now_field,
     define_model,
-    kwarg,
+    field,
 )
 
 
@@ -18,19 +18,19 @@ class Identification(BaseModel):
     `GET /identifications <https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications>`_.
     """
 
-    body: str = kwarg
-    category: str = kwarg  # Enum
-    created_at: datetime = datetime_now_attr
-    current: bool = kwarg
-    current_taxon: bool = kwarg
-    disagreement: bool = kwarg
-    hidden: bool = kwarg
-    own_observation: bool = kwarg
-    previous_observation_taxon_id: int = kwarg
-    taxon_change: bool = kwarg  # TODO: confirm type
-    taxon_id: int = kwarg
-    uuid: str = kwarg
-    vision: bool = kwarg
+    body: str = field(default=None)
+    category: str = field(default=None)  # Enum
+    created_at: datetime = datetime_now_field(doc='Date and time the identification was added')
+    current: bool = field(default=None)
+    current_taxon: bool = field(default=None)
+    disagreement: bool = field(default=None)
+    hidden: bool = field(default=None)
+    own_observation: bool = field(default=None)
+    previous_observation_taxon_id: int = field(default=None)
+    taxon_change: bool = field(default=None)  # TODO: confirm type
+    taxon_id: int = field(default=None)
+    uuid: str = field(default=None)
+    vision: bool = field(default=None)
 
     # Lazy-loaded nested model objects
     taxon: property = LazyProperty(Taxon.from_json)
@@ -38,7 +38,7 @@ class Identification(BaseModel):
 
     # Unused attributes
     # created_at_details: {}
-    # spam: bool = kwarg
+    # spam: bool = field(default=None)
     # flags: List = field(factory=list)
     # moderator_actions: List = field(factory=list)
     # observation: {}

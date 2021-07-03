@@ -1,10 +1,8 @@
 from datetime import datetime
 from typing import List
 
-from attr import field
-
 from pyinaturalist.constants import INAT_BASE_URL, TableRow
-from pyinaturalist.models import BaseModel, datetime_now_attr, define_model, kwarg
+from pyinaturalist.models import BaseModel, datetime_now_field, define_model, field
 
 
 @define_model
@@ -13,26 +11,26 @@ class User(BaseModel):
     `GET /users/{id} <https://api.inaturalist.org/v1/docs/#!/Users/get_users_id>`_.
     """
 
-    activity_count: int = kwarg
-    created_at: datetime = datetime_now_attr
-    icon: str = kwarg
-    icon_url: str = kwarg
-    identifications_count: int = kwarg
-    journal_posts_count: int = kwarg
-    login: str = kwarg
-    name: str = kwarg
-    observations_count: int = kwarg
-    orcid: str = kwarg
+    activity_count: int = field(default=None)
+    created_at: datetime = datetime_now_field(doc='Date and time the user was registered')
+    icon: str = field(default=None)
+    icon_url: str = field(default=None)
+    identifications_count: int = field(default=None)
+    journal_posts_count: int = field(default=None)
+    login: str = field(default=None)
+    name: str = field(default=None)
+    observations_count: int = field(default=None)
+    orcid: str = field(default=None)
     roles: List = field(factory=list)
-    site_id: int = kwarg
+    site_id: int = field(default=None)
 
     # Unused attributes
-    # login_autocomplete: str = kwarg
-    # login_exact: str = kwarg
-    # name_autocomplete: str = kwarg
-    # spam: bool = kwarg
-    # suspended: bool = kwarg
-    # universal_search_rank: int = kwarg
+    # login_autocomplete: str = field(default=None)
+    # login_exact: str = field(default=None)
+    # name_autocomplete: str = field(default=None)
+    # spam: bool = field(default=None)
+    # suspended: bool = field(default=None)
+    # universal_search_rank: int = field(default=None)
 
     # Aliases
     @property
