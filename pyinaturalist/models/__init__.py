@@ -11,7 +11,12 @@ from attr import define, validators
 from pyinaturalist.constants import JsonResponse, ResponseOrResults
 from pyinaturalist.converters import convert_lat_long, try_datetime
 from pyinaturalist.models.base import BaseModel, BaseModelCollection, load_json
-from pyinaturalist.models.lazy_property import LazyProperty, add_lazy_attrs, get_model_fields
+from pyinaturalist.models.lazy_property import (
+    LazyProperty,
+    add_lazy_attrs,
+    get_lazy_properties,
+    get_model_fields,
+)
 
 
 # Aliases and minor helper functions used by model classes
@@ -77,13 +82,13 @@ from pyinaturalist.models.controlled_term import Annotation, ControlledTerm, Con
 from pyinaturalist.models.comment import Comment
 from pyinaturalist.models.identification import Identification
 from pyinaturalist.models.life_list import LifeList, LifeListTaxon
+from pyinaturalist.models.observation_field import ObservationField, ObservationFieldValue
 from pyinaturalist.models.project import (
     Project,
     ProjectObservation,
     ProjectObservationField,
     ProjectUser,
 )
-from pyinaturalist.models.observation_field import ObservationField, ObservationFieldValue
 from pyinaturalist.models.observation import Observation, Observations
 from pyinaturalist.models.search import SearchResult
 

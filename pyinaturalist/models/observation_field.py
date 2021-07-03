@@ -70,10 +70,12 @@ class ObservationFieldValue(BaseModel):
     user_id: int = field(default=None)
     uuid: str = field(default=None)
     value: OFVValue = field(default=None)
-
-    # Lazy-loaded nested model objects
-    taxon: property = LazyProperty(Taxon.from_json)
-    user: property = LazyProperty(User.from_json)
+    taxon: property = LazyProperty(
+        Taxon.from_json, type=Taxon, doc='Taxon that the observation field applies to'
+    )
+    user: property = LazyProperty(
+        User.from_json, type=User, doc='User that applied the observation field value'
+    )
 
     # Unused attrbiutes
     # name_ci: str = field(default=None)

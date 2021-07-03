@@ -11,4 +11,3 @@ from pyinaturalist.api_docs.forge_utils import (
     copy_signatures,
     document_request_params,
 )
-from pyinaturalist.api_docs.model_docs import document_models

@@ -27,6 +27,7 @@ class SearchResult(BaseModel):
 
     @property
     def record_name(self) -> str:
+        """Alias for type-specific name/title field"""
         name_attr = SEARCH_RESULT_TITLES[self.type]
         return getattr(self.record, name_attr)
 

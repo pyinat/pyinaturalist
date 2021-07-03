@@ -62,9 +62,15 @@ class ConservationStatus(BaseModel):
     url: str = field(default=None, doc='Link to data source with more details')
 
     # Lazy-loaded nested model objects
-    place: property = LazyProperty(Place.from_json)
-    updater: property = LazyProperty(User.from_json)
-    user: property = LazyProperty(User.from_json)
+    place: property = LazyProperty(
+        Place.from_json, type=Place, doc='Location that the conservation status applies to'
+    )
+    updater: property = LazyProperty(
+        User.from_json, type=User, doc='User that last updated the conservation status'
+    )
+    user: property = LazyProperty(
+        User.from_json, type=User, doc='User that created the conservation status'
+    )
 
 
 @define_model
@@ -74,7 +80,9 @@ class EstablishmentMeans(BaseModel):
     establishment_means: str = field(
         default=None, validator=is_in(ESTABLISTMENT_MEANS), doc='Establishment means description'
     )
-    place: property = LazyProperty(Place.from_json_list)
+    place: property = LazyProperty(
+        Place.from_json_list, type=Place, doc='Location that the establishment means applies to'
+    )
 
     def __str__(self) -> str:
         return self.establishment_means
@@ -130,7 +138,7 @@ class Taxon(BaseModel):
     wikipedia_summary: str = field(
         default=None, doc='Taxon summary from Wikipedia article, if available'
     )
-    wikipedia_url: str = field(default=None, doc=' URL to Wikipedia article for the taxon, if available')
+    wikipedia_url: str = field(default=None, doc='URL to Wikipedia article for the taxon, if available')
 
     # Nested collections
     ancestor_ids: List[int] = field(
@@ -141,14 +149,28 @@ class Taxon(BaseModel):
     )
     listed_taxa: List[int] = field(factory=list, doc='Listed taxon IDs')
 
-    # Lazy-loaded nested model objects
+    # Lazy-loade model objects
     ancestors: property = LazyProperty(BaseModel.from_json_list)
     children: property = LazyProperty(BaseModel.from_json_list)
-    conservation_status: property = LazyProperty(ConservationStatus.from_json)
-    conservation_statuses: property = LazyProperty(ConservationStatus.from_json_list)
-    default_photo: property = LazyProperty(Photo.from_json)
-    establishment_means: property = LazyProperty(EstablishmentMeans.from_json)
-    taxon_photos: property = LazyProperty(Photo.from_json_list)
+    conservation_status: property = LazyProperty(
+        ConservationStatus.from_json,
+        type=ConservationStatus,
+        doc='Conservation status of the taxon in a given location',
+    )
+    conservation_statuses: property = LazyProperty(
+        ConservationStatus.from_json_list,
+        type=List[ConservationStatus],
+        doc='Conservation statuses of the taxon in different locations',
+    )
+    default_photo: property = LazyProperty(Photo.from_json, type=Photo, doc='Taxon default photo')
+    establishment_means: property = LazyProperty(
+        EstablishmentMeans.from_json,
+        type=EstablishmentMeans,
+        doc='Establishment means for a taxon in a given location',
+    )
+    taxon_photos: property = LazyProperty(
+        Photo.from_json_list, type=List[Photo], doc='All taxon photos shown on taxon info page'
+    )
 
     # Unused attributes
     # atlas_id: int = field(default=None)
@@ -204,12 +226,12 @@ class Taxon(BaseModel):
 
     @property
     def icon_url(self) -> str:
-        """Get a URL to the iconic taxon's icon"""
+        """URL to the iconic taxon's icon"""
         return f'{ICONIC_TAXA_BASE_URL}/{self.iconic_taxon_name.lower()}-75px.png'
 
     @property
     def parent(self) -> 'Taxon':
-        """Get immediate parent, if any"""
+        """Immediate parent, if any"""
         return self.ancestors[-1] if self.ancestors else None
 
     @property
@@ -247,7 +269,7 @@ class Taxon(BaseModel):
 class TaxonCount(Taxon):
     """A taxon with an associated count, used in a :py:class:`.TaxonCounts` collection"""
 
-    count: int = field(default=0)  #: Number of observations of this taxon
+    count: int = field(default=0, doc='Number of observations of this taxon')
 
     @classmethod
     def from_json(cls, value: JsonResponse, user_id: int = None, **kwargs) -> 'TaxonCount':
@@ -296,13 +318,21 @@ class TaxonCounts(BaseModelCollection):
 
 
 # Since these use Taxon classmethods, they must be added after Taxon is defined
-Taxon.ancestors = LazyProperty(Taxon.from_json_list, 'ancestors')
-Taxon.children = LazyProperty(Taxon.from_sorted_json_list, 'children')
+Taxon.ancestors = LazyProperty(
+    Taxon.from_sorted_json_list,
+    name='ancestors',
+    type=List[Taxon],
+    doc='Ancestor taxa, from highest rank to lowest',
+)
+Taxon.children = LazyProperty(
+    Taxon.from_sorted_json_list,
+    name='children',
+    type=List[Taxon],
+    doc='Child taxa, sorted by rank then name',
+)
 
 
 def _get_rank_name_idx(taxon):
-    return _get_rank_idx(taxon.rank), taxon.name
-
-
-def _get_rank_idx(rank: str) -> int:
-    return RANKS.index(rank) if rank in RANKS else 0
+    """Sort index by rank and name (ascending)"""
+    idx = RANKS.index(taxon.rank) if taxon.rank in RANKS else 0
+    return idx * -1, taxon.name

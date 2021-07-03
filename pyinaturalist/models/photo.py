@@ -39,6 +39,7 @@ class Photo(BaseModel):
 
     @property
     def dimensions_str(self) -> str:
+        """Dimensions as a string, formatted as ``{width}x{height}``"""
         return f'{self.original_dimensions[0]}x{self.original_dimensions[1]}'
 
     @property
@@ -48,31 +49,37 @@ class Photo(BaseModel):
 
     @property
     def info_url(self) -> str:
-        """URL for photo info page"""
+        """Photo info URL on iNaturalist.org"""
         return f'{PHOTO_INFO_BASE_URL}/{self.id}'
 
     @property
     def large_url(self) -> Optional[str]:
+        """Image URL (large size)"""
         return self.url_size('large')
 
     @property
     def medium_url(self) -> Optional[str]:
+        """Image URL (medium size)"""
         return self.url_size('medium')
 
     @property
     def original_url(self) -> Optional[str]:
+        """Image URL (original size)"""
         return self.url_size('original')
 
     @property
     def small_url(self) -> Optional[str]:
+        """Image URL (small size)"""
         return self.url_size('small')
 
     @property
     def square_url(self) -> Optional[str]:
+        """Image URL (thumbnail size)"""
         return self.url_size('square')
 
     @property
     def thumbnail_url(self) -> Optional[str]:
+        """Image URL (thumbnail size)"""
         return self.url_size('square')
 
     def url_size(self, size: str) -> Optional[str]:
