@@ -1,14 +1,10 @@
 # User Guide
 This page summarizes how to use the main features of pyinaturalist.
 
-```{contents}
-:depth: 1
-:local: true
-```
-
 ## Installation
 :::{admonition} Python version compatibility
-:class: toggle
+:class: toggle, tip
+
 pyinaturalist currently requires **python 3.6+**. If you need to use an older version
 of python, here are the last compatible versions of pyinaturalist:
 
@@ -75,7 +71,7 @@ There are some optional conveniences you can use, for example:
 - Validation for multiple-choice parameters (for example, `quality_grade`)
 
 And more, depending on the function.
-See the {ref}`reference` section for a complete list of functions available.
+See the {ref}`reference-docs` section for a complete list of functions available.
 
 ## Responses
 API responses are returned as JSON, with some python type conversions applied (similar to the request
@@ -192,8 +188,9 @@ iNaturalist uses OAuth2, which provides several different methods (or "flows") t
 For example, on the [login page](https://www.inaturalist.org/login), you have the option of logging
 in with a username/password, or with an external provider (Google, Facebook, etc.):
 
-```{figure} images/inat-user-login.png
+```{image} images/inat-user-login.png
 :alt: Login form
+:width: 150
 ```
 
 Outside of iNaturalist.org, anything else that uses the API to create or modify data is considered
@@ -214,15 +211,16 @@ following pieces of information:
 * **URL and Redirect URI:** Just enter the URL to your GitHub repo, if you have one; otherwise any
   placeholder like "<https://www.inaturalist.org>" will work.
 
-```{figure} images/inat-new-application.png
+```{image} images/inat-new-application.png
 :alt: New Application form
+:width: 300
 ```
 
 You should then see a screen like this, which will show your new application ID and secret. These will
 only be shown once, so save them somewhere secure, preferably in a password manager.
-
-```{figure} images/inat-new-application-complete.png
+```{image} images/inat-new-application-complete.png
 :alt: Completed application form
+:width: 400
 ```
 
 ### Basic Usage

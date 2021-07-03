@@ -1,11 +1,4 @@
-/* Taken from: https://github.com/plone/training/blob/master/_static/custom.css */
-
-.toggle {
-    background: none repeat scroll 0 0 #e7f2fa;
-    padding: 12px;
-    line-height: 24px;
-    margin-bottom: 24px;
-}
+/* Adapted from: https://github.com/plone/training/blob/master/_static/custom.css */
 
 .toggle .admonition-title {
     display: block;
