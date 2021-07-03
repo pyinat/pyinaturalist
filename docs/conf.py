@@ -64,7 +64,7 @@ source_suffix = ['.rst', '.md']
 templates_path = ['_templates']
 version = release = __version__
 
-# Sphinx extension modules
+# Sphinx extensions
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
@@ -77,8 +77,20 @@ extensions = [
     'sphinx_copybutton',
     'sphinx_material',
     'sphinxcontrib.apidoc',
-    'm2r2',
+    # 'm2r2',
+    'myst_parser',
     'nbsphinx',
+]
+
+# MyST extensions
+myst_enable_extensions = [
+    "colon_fence",
+    # "deflist",
+    "html_image",
+    "linkify",
+    "replacements",
+    "smartquotes",
+    # "substitution",
 ]
 
 nbsphinx_allow_errors = True
