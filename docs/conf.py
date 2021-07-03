@@ -67,6 +67,7 @@ extensions = [
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
     'sphinx_copybutton',
+    'sphinx_inline_tabs',
     'sphinxcontrib.apidoc',
     'myst_parser',
     'nbsphinx',

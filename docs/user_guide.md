@@ -2,34 +2,41 @@
 This page summarizes how to use the main features of pyinaturalist.
 
 ## Installation
+Installation instructions:
+
+:::{tab} Pip
+Install the latest stable version with pip:
+```
+pip install pyinaturalist
+```
+:::
+:::{tab} Conda
+Or install from conda-forge, if you prefer:
+```
+conda install -c conda-forge pyinaturalist
+```
+:::
+:::{tab} Pre-release
+If you would like to use the latest development (pre-release) version:
+```
+pip install --pre pyinaturalist
+```
+:::
+:::{tab} Local development
+See {ref}`contributing` for details on setup for local development.
+:::
+
 :::{admonition} Python version compatibility
 :class: toggle, tip
 
 pyinaturalist currently requires **python 3.6+**. If you need to use an older version
 of python, here are the last compatible versions of pyinaturalist:
 
-- **python 2.7:** pyinaturalist 0.1
-- **python 3.4:** pyinaturalist 0.10
-- **python 3.5:** pyinaturalist 0.11
-- **python 3.6:** still supported, but expected to be dropped in a future release
+* **python 2.7:** pyinaturalist 0.1
+* **python 3.4:** pyinaturalist 0.10
+* **python 3.5:** pyinaturalist 0.11
+* **python 3.6:** still supported, but expected to be dropped in a future release
 :::
-
-Install the latest stable version with pip:
-```
-pip install pyinaturalist
-```
-
-Or with Conda, if you prefer:
-```
-conda install -c conda-forge pyinaturalist
-```
-
-If you would like to use the latest development (pre-release) version:
-```
-pip install --pre pyinaturalist
-```
-
-See {ref}`contributing` for details on setup for local development.
 
 ## Imports
 All of the main features can be imported from the top-level `pyinaturalist` namespace:
@@ -46,29 +53,32 @@ Or to just import everything (convenient for scripts and notebooks, but less so 
 Requests generally follow the same format as the [API](https://api.inaturalist.org/v1)
 and [search URLs](https://forum.inaturalist.org/t/how-to-use-inaturalists-search-urls-wiki).
 
-For example, if you wanted to search observations by user, the following API request:
-```
-https://api.inaturalist.org/v1/observations?user_id=tiwane%2Cjdmore
-```
+For example, if you wanted to search observations by user, these three requests are equivalent:
 
-And search URL:
+:::{tab} search URL
 ```
 https://www.inaturalist.org/observations?user_id=tiwane,jdmore
 ```
-
-Are equivalent to the following pyinaturalist search:
+:::
+:::{tab} API request
 ```
+https://api.inaturalist.org/v1/observations?user_id=tiwane%2Cjdmore
+```
+:::
+:::{tab} pyinaturalist search
+```python
 >>> get_observations(user_id=['tiwane', 'jdmore'])
 ```
+:::
 
 There are some optional conveniences you can use, for example:
-- Python lists instead of comma-separated strings
-- Python booleans instead of JS-style boolean strings or 1/0
-- Python file-like objects or file paths for photo and sound uploads
-- Python {py:class}`~datetime.date` and {py:class}`~datetime.datetime` objects instead of date/time strings
-- Some simplified data formats for create and update requests
-- Simplified pagination
-- Validation for multiple-choice parameters (for example, `quality_grade`)
+* Python lists instead of comma-separated strings
+* Python booleans instead of JS-style boolean strings or 1/0
+* Python file-like objects or file paths for photo and sound uploads
+* Python {py:class}`~datetime.date` and {py:class}`~datetime.datetime` objects instead of date/time strings
+* Some simplified data formats for create and update requests
+* Simplified pagination
+* Validation for multiple-choice parameters (for example, `quality_grade`)
 
 And more, depending on the function.
 See the {ref}`reference-docs` section for a complete list of functions available.
@@ -248,20 +258,16 @@ environment variable names are the keyword arguments in uppercase, prefixed with
 * `INAT_APP_SECRET`
 
 **Examples:**
-
-:::{admonition} Set environment variables in python:
-:class: toggle
+:::{tab} Python
 ```python
 >>> import os
->>> os.environ\['INAT_USERNAME'\] = 'my_inaturalist_username'
->>> os.environ\['INAT_PASSWORD'\] = 'my_inaturalist_password'
->>> os.environ\['INAT_APP_ID'\] = '33f27dc63bdf27f4ca6cd95df'
->>> os.environ\['INAT_APP_SECRET'\] = 'bbce628be722bfe283de4'
+>>> os.environ['INAT_USERNAME'] = 'my_inaturalist_username'
+>>> os.environ['INAT_PASSWORD'] = 'my_inaturalist_password'
+>>> os.environ['INAT_APP_ID'] = '33f27dc63bdf27f4ca6cd95df'
+>>> os.environ['INAT_APP_SECRET'] = 'bbce628be722bfe283de4'
 ```
 :::
-
-:::{admonition} Set environment variables in a POSIX shell (bash, etc.):
-:class: toggle
+:::{tab} Unix (MacOS / Linux)
 ```bash
 export INAT_USERNAME="my_inaturalist_username"
 export INAT_PASSWORD="my_inaturalist_password"
@@ -269,9 +275,7 @@ export INAT_APP_ID="33f27dc63bdf27f4ca6cd95df"
 export INAT_APP_SECRET="bbce628be722bfe283de4"
 ```
 :::
-
-:::{admonition} Set environment variables in a Windows shell:
-:class: toggle
+:::{tab} Windows CMD
 ```bat
 set INAT_USERNAME="my_inaturalist_username"
 set INAT_PASSWORD="my_inaturalist_password"
@@ -279,9 +283,7 @@ set INAT_APP_ID="33f27dc63bdf27f4ca6cd95df"
 set INAT_APP_SECRET="bbce628be722bfe283de4"
 ```
 :::
-
-:::{admonition} Set environment variables in PowerShell:
-:class: toggle
+:::{tab} PowerShell
 ```powershell
 $Env:INAT_USERNAME="my_inaturalist_username"
 $Env:INAT_PASSWORD="my_inaturalist_password"

@@ -46,12 +46,13 @@ sphinx = { version = "^4.0.2", optional = true }
 sphinx-automodapi = { version=">=0.13", optional = true}
 sphinx-autodoc-typehints = { version = "^1.11", optional = true }
 sphinx-copybutton = { version = "^0.3", optional = true }
+sphinx-inline-tabs = {version = "^2021.4.11-beta.9", optional = true, python = ">=3.8"}
 sphinxcontrib-apidoc = { version = "^0.3", optional = true }
 
 [tool.poetry.extras]
 all = []  # Placeholder for optional dependencies needed to run examples in docs
 docs = ["furo", "linkify-it-py", "myst-parser", "nbsphinx", "sphinx", "sphinx-automodapi",
-        "sphinx-autodoc-typehints", "sphinx-copybutton", "sphinxcontrib-apidoc"]
+        "sphinx-autodoc-typehints", "sphinx-copybutton", "sphinx-inline-tabs", "sphinxcontrib-apidoc"]
 
 [tool.poetry.dev-dependencies]
 black = {version = "21.6b0", python = ">=3.6.2, <3.10"}
@@ -82,6 +83,7 @@ directory = 'test-reports'
 [tool.coverage.run]
 branch = true
 source = ['pyinaturalist']
+omit = ['pyinaturalist/api_docs/model_docs.py']
 
 [tool.isort]
 profile = 'black'
