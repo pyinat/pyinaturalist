@@ -137,7 +137,7 @@ autosummary_generate_overwrite = True
 autosummary_imported_members = False
 numpydoc_show_class_members = False
 
-# HTML theme settings
+# sphinx-material theme settings
 html_theme = 'sphinx_material'
 html_show_sphinx = False
 html_theme_options = {
@@ -146,10 +146,11 @@ html_theme_options = {
     'globaltoc_depth': 3,
     'globaltoc_includehidden': False,
     'master_doc': False,
-    'nav_title': project,
-    'table_classes': ['docutils'],
+    'nav_title': 'pyinaturalist documentation',
     'repo_url': 'https://github.com/niconoe/pyinaturalist',
-    'repo_name': project,
+    'table_classes': ['docutils'],
+    'touch_icon': 'python-logo-green.png',
+    'repo_name': 'GitHub repository',
     'version_dropdown': True,
     'version_json': '_static/versions.json',
 }
@@ -160,7 +161,7 @@ pygments_style = 'friendly'
 # pygments_style = 'material'
 
 # Favicon & sidebar logo
-# html_logo = 'logo.jpg'
+html_logo = join('images', 'python-logo-green.png')
 html_favicon = join('images', 'favicon.ico')
 
 
