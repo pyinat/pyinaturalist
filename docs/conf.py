@@ -27,35 +27,30 @@ from os import makedirs, symlink
 from os.path import abspath, basename, dirname, exists, join
 from shutil import copytree, rmtree
 
-
 # Avoid a potential circular import in nbsphinx
 try:
     import prompt_toolkit  # noqa
 except ImportError:
     pass
 
-DOCS_DIR = abspath(dirname(__file__))
+# Add project path so we can import our package
+sys.path.insert(0, '..')
+from pyinaturalist import __version__
+from pyinaturalist.constants import DOCS_DIR, PROJECT_DIR, EXAMPLES_DIR, SAMPLE_DATA_DIR
+from pyinaturalist.api_docs import document_models
+
+# Relevant doc directories used in extension settings
 CSS_DIR = join(DOCS_DIR, '_static')
-MODULE_DOCS_DIR = join(DOCS_DIR, 'modules')
-PROJECT_DIR = dirname(DOCS_DIR)
+MODULE_DOCS_DIR = 'modules'
 PACKAGE_DIR = join(PROJECT_DIR, 'pyinaturalist')
 
-# Source paths and symlink paths for static content to include
-DATA_DIR_SRC = join(PROJECT_DIR, 'test', 'sample_data')
+# Symlink paths for static content outside docs directory
 DATA_DIR_SYMLINK = join(DOCS_DIR, 'sample_data')
-IMAGE_DIR_SRC = join(DOCS_DIR, 'images')
-IMAGE_DIR_SYMLINK = join(DOCS_DIR, 'docs', 'images')
-NOTEBOOK_DIR_SRC = join(PROJECT_DIR, 'examples')
 NOTEBOOK_DIR_COPY = join(DOCS_DIR, 'examples')
-
-# Add project path so we can import our package
-sys.path.insert(0, PROJECT_DIR)
-from pyinaturalist import __version__
-from pyinaturalist.api_docs import document_models
 
 # General information about the project.
 copyright = '2021, Nicolas Noé, Jordan Cook'
-exclude_patterns = ['_build', 'modules/pyinaturalist.rst']
+exclude_patterns = ['_build', f'{MODULE_DOCS_DIR}/pyinaturalist.rst']
 html_static_path = ['_static']
 master_doc = 'index'
 needs_sphinx = '4.0'
@@ -126,7 +121,7 @@ autodoc_typehints = 'description'
 
 # apidoc settings
 apidoc_module_dir = PACKAGE_DIR
-apidoc_output_dir = 'modules'
+apidoc_output_dir = MODULE_DOCS_DIR
 apidoc_excluded_paths = ['api_docs/*', 'models/*', 'node_api.py', 'rest_api.py']
 apidoc_extra_args = ['--templatedir=_templates']
 apidoc_module_first = True
@@ -135,7 +130,7 @@ apidoc_toc_file = False
 
 # autosummary + automodapi settings
 automodapi_inheritance_diagram = False
-automodapi_toctreedirnm = 'modules'
+automodapi_toctreedirnm = MODULE_DOCS_DIR
 automodsumm_inherited_members = False
 autosummary_generate = True
 autosummary_generate_overwrite = True
@@ -192,11 +187,10 @@ def setup_external_files(app):
     """Create symlinks and copies of files outside docs directory so they can be accessed by Sphinx
     directives.
     """
-    make_symlink(IMAGE_DIR_SRC, IMAGE_DIR_SYMLINK)
-    make_symlink(DATA_DIR_SRC, DATA_DIR_SYMLINK)
+    make_symlink(SAMPLE_DATA_DIR, DATA_DIR_SYMLINK)
     # Unfortunately this can't be symlinked; nbsphinx will insert image links relative to this dir
     rmtree(NOTEBOOK_DIR_COPY, ignore_errors=True)
-    copytree(NOTEBOOK_DIR_SRC, NOTEBOOK_DIR_COPY)
+    copytree(EXAMPLES_DIR, NOTEBOOK_DIR_COPY)
 
 
 def make_symlink(src, dest):

@@ -1,6 +1,9 @@
 (index-page)=
 
 ```{include} ../README.md
+:relative-docs: docs/
+:relative-images:
+:start-line: 2
 ```
 
 # Contents
