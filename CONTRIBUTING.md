@@ -4,7 +4,7 @@ Contributions are welcome, and they are greatly appreciated! Every
 little bit helps, and credit will always be given.
 
 ## Installation
-To set up for local development (requires [poetry](python-poetry.org)):
+To set up for local development (requires [poetry](https://python-poetry.org)):
 ```bash
 $ git clone https://github.com/niconoe/pyinaturalist.git
 $ cd pyinaturalist
@@ -16,9 +16,11 @@ $ pre-commit install --config .github/pre-commit.yml
 ## Contribution Guidelines
 
 ### Documentation
-We use [Sphinx](http://www.sphinx-doc.org), and the references page is automatically
-generated thanks to `sphinx.ext.autodoc` and `sphinx_autodoc_typehints` extensions. All
-functions / methods / classes should have proper docstrings.
+For PRs, please include docstrings for all functions and classes.
+
+Project documentation is generated using [Sphinx](https://www.sphinx-doc.org),
+[MyST](https://myst-parser.readthedocs.io), and several Sphinx extensions and custom templates.
+See [conf.py][https://github.com/niconoe/pyinaturalist/blob/main/docs/conf.py] for more details.
 
 To build the docs locally:
 ```bash
@@ -44,8 +46,8 @@ This isn't needed for internal changes (tests, other docs, refactoring, etc.).
 We use the [pytest](https://docs.pytest.org/en/latest/) framework for unit testing.
 Just run the `pytest` command to run locally.
 
-We also use [tox](https://tox.readthedocs.io/en/latest/) to test multiple python versions.
-Use the `tox` command to run locally. This is also run by GitHub Actions on all pull requests.
+For PRs, GitHub Actions will also run tests for all supported python versions.
+You can use [tox](https://tox.readthedocs.io/en/latest/) to test these versions locally.
 
 ### Type Annotations
 All parameters and return values should have type annotations, which will be checked by `mypy` and

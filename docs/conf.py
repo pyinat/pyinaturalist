@@ -77,7 +77,6 @@ extensions = [
     'sphinx_copybutton',
     'sphinx_material',
     'sphinxcontrib.apidoc',
-    # 'm2r2',
     'myst_parser',
     'nbsphinx',
 ]
