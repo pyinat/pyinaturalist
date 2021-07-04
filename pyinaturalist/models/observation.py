@@ -205,6 +205,7 @@ class Observation(BaseModel):
 
     @property
     def thumbnail_url(self) -> Optional[str]:
+        """Thumbnail URL for first observation photo (if any)"""
         if not self.photos:
             return None
         return self.photos[0].thumbnail_url

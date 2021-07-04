@@ -15,6 +15,8 @@ from pyinaturalist.models import LazyProperty, get_lazy_properties
 
 IGNORE_PROPERTIES = ['row']
 MODEL_DOC_DIR = join(DOCS_DIR, 'models')
+PROPERTY_TYPE = format_annotation(property)
+LAZY_PROPERTY_TYPE = format_annotation(LazyProperty)
 
 
 def document_models(app):
@@ -46,9 +48,9 @@ def get_model_doc(cls: Type) -> List[Tuple[str, str, str]]:
     """
 
     doc_rows = [_get_field_doc(field) for field in cls.__attrs_attrs__ if not field.name.startswith('_')]
-    doc_rows += [('', '', ''), ('', '', '')]
+    doc_rows += [('', '', '')]
     doc_rows += [_get_property_doc(prop) for prop in get_properties(cls)]
-    doc_rows += [('', '', ''), ('', '', '')]
+    doc_rows += [('', '', '')]
     doc_rows += [_get_lazy_property_doc(prop) for _, prop in get_lazy_properties(cls).items()]
     return doc_rows
 
@@ -76,15 +78,16 @@ def _get_field_doc(field: Attribute) -> Tuple[str, str, str]:
 
 def _get_property_doc(prop: property) -> Tuple[str, str, str]:
     """Get a row documenting a regular @property"""
-    rtype = format_annotation(get_type_hints(prop.fget).get('return', Any))
+    fget_rtype = get_type_hints(prop.fget).get('return', Any)
+    rtype = format_annotation(fget_rtype)
     doc = (prop.fget.__doc__ or '').split('\n')[0]
-    return (f'**{prop.fget.__name__}**', rtype, doc)
+    return (f'**{prop.fget.__name__}** ({PROPERTY_TYPE})', rtype, doc)
 
 
 def _get_lazy_property_doc(prop: LazyProperty) -> Tuple[str, str, str]:
     """Get a row documenting a LazyProperty"""
     rtype = format_annotation(prop.type)
-    return (f'**{prop.__name__}**', rtype, prop.__doc__)
+    return (f'**{prop.__name__}** ({LAZY_PROPERTY_TYPE})', rtype, prop.__doc__)
 
 
 def export_model_doc(model_name, doc_table):
