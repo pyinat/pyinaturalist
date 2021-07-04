@@ -199,7 +199,6 @@ def _format_model_objects(obj: ResponseOrResults, cls: Type[BaseModel], **kwargs
     return '\n'.join([str(obj) for obj in objects])
 
 
-# TODO: Figure out type annotations for these. Or just replace with pprint()?
 format_controlled_terms = partial(_format_model_objects, cls=ControlledTerm)
 format_identifications = partial(_format_model_objects, cls=Identification)
 format_observations = partial(_format_model_objects, cls=Observation)

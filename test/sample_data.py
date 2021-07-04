@@ -41,6 +41,8 @@ j_taxon_3_no_common_name = SAMPLE_DATA['get_taxa']['results'][2]
 j_taxon_4_preferred_place = SAMPLE_DATA['get_taxa_with_preferred_place']['results'][0]
 j_taxon_5_cs_status = j_observation_2['taxon']
 j_taxon_6_cs_statuses = SAMPLE_DATA['get_taxa_by_id_conservation_statuses']['results'][0]
+j_taxon_7_autocomplete = SAMPLE_DATA['get_taxa_autocomplete']['results'][0]
+j_taxon_8_all_names = SAMPLE_DATA['get_taxa_with_all_names']['results'][0]
 
 j_annotation_1 = j_observation_3_ofvs['annotations'][0]
 j_comments = j_observation_2['comments']

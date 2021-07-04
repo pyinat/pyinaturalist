@@ -2,7 +2,6 @@
 The main purpose of these functions is to support some python-specific conveniences and translate
 them into standard request parameters, along with request validation that makes debugging easier.
 """
-# TODO: It would be nice to put all the multiple-choice options on the models and use attrs validators
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from logging import getLogger

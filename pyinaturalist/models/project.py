@@ -1,7 +1,14 @@
 from datetime import datetime
 from typing import Dict, List
 
-from pyinaturalist.constants import INAT_BASE_URL, Coordinates, DateTime, JsonResponse, TableRow
+from pyinaturalist.constants import (
+    INAT_BASE_URL,
+    PROJECT_TYPES,
+    Coordinates,
+    DateTime,
+    JsonResponse,
+    TableRow,
+)
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
@@ -81,21 +88,22 @@ class Project(BaseModel):
         doc='Indicates if this is an umbrella project (containing observations from other projects)',
     )
     location: Coordinates = coordinate_pair()
-    place_id: int = field(default=None)
-    prefers_user_trust: bool = field(default=None)
-    project_type: str = field(default=None)  # Enum
-    slug: str = field(default=None, doc='URL slug')
-    terms: str = field(default=None, doc='Project terms')
-    title: str = field(default=None, doc='Project title')
-    updated_at: DateTime = datetime_field(doc='Date and time the project was last updated')
-
-    # Nested collections
-    project_observation_rules: List[Dict] = field(factory=list)
+    place_id: int = field(default=None, doc='Project place ID')
+    prefers_user_trust: bool = field(
+        default=None,
+        doc='Indicates if the project wants users to share hidden coordinates with the project admins',
+    )
+    project_observation_rules: List[Dict] = field(factory=list, doc='Project observation rules')
+    project_type: str = field(default=None, options=PROJECT_TYPES, doc='Project type')  # Enum
     rule_preferences: List[Dict] = field(factory=list)
     search_parameters: List[Dict] = field(factory=list, doc='Filters for observations to include')
     site_features: List[Dict] = field(
         factory=list, doc='Details about if/when the project was featured on inaturalist.org'
     )
+    slug: str = field(default=None, doc='URL slug')
+    terms: str = field(default=None, doc='Project terms')
+    title: str = field(default=None, doc='Project title')
+    updated_at: DateTime = datetime_field(doc='Date and time the project was last updated')
     user_ids: List[int] = field(factory=list)
 
     # Lazy-loaded model objects

@@ -39,12 +39,10 @@ def get_model_classes() -> List[Type]:
     return model_classes
 
 
-# TODO: Also include regular @properties?
-# TODO: CSS to style LazyProperties with a different background color?
-# TODO: Remove autodoc member docs for LazyProperties
 def get_model_doc(cls: Type) -> List[Tuple[str, str, str]]:
     """Get the name, type and description for all model attributes, properties, and LazyProperties.
-    If an attribute has a validator with options, include those options in the description.
+    If an attribute has metadata for options (possible values for the attribute), include those
+    options in the description.
     """
 
     doc_rows = [_get_field_doc(field) for field in cls.__attrs_attrs__ if not field.name.startswith('_')]
@@ -70,8 +68,9 @@ def _get_field_doc(field: Attribute) -> Tuple[str, str, str]:
     """Get a row documenting an attrs Attribute"""
     rtype = format_annotation(field.type)
     doc = field.metadata.get('doc', '')
-    if getattr(field.validator, 'options', None):
-        options = ', '.join([f'``{opt}``' for opt in field.validator.options if opt is not None])
+    options = field.metadata.get('options', [])
+    if options:
+        options = ', '.join([f'``{opt}``' for opt in filter(None, options)])
         doc += f'\n\n**Options:** {options}'
     return (f'**{field.name}**', rtype, doc)
 

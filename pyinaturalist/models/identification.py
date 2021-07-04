@@ -9,7 +9,6 @@ from pyinaturalist.models import (
     datetime_now_field,
     define_model,
     field,
-    is_in,
 )
 
 
@@ -20,7 +19,7 @@ class Identification(BaseModel):
     """
 
     body: str = field(default=None, doc='Comment text')
-    category: str = field(default=None, validator=is_in(ID_CATEGORIES), doc='Identification category')
+    category: str = field(default=None, options=ID_CATEGORIES, doc='Identification category')
     created_at: datetime = datetime_now_field(doc='Date and time the identification was added')
     current: bool = field(
         default=None, doc='Indicates if the identification is the currently accepted one'

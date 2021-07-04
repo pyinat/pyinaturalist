@@ -1,3 +1,4 @@
+# TODO: Possible models for faves, sounds, and votes?
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -30,7 +31,6 @@ from pyinaturalist.models import (
     datetime_now_field,
     define_model_collection,
     field,
-    is_in,
     upper,
 )
 from pyinaturalist.v1 import get_observation
@@ -48,9 +48,8 @@ class Observation(BaseModel):
     )
     community_taxon_id: int = field(default=None, doc='The current community identification taxon')
     description: str = field(default=None, doc='Observation description')
-    geoprivacy: str = field(
-        default=None, validator=is_in(GEOPRIVACY_LEVELS), doc='Location privacy level'
-    )
+    faves: List[Dict] = field(factory=list, doc='Details on users who have favorited the observation')
+    geoprivacy: str = field(default=None, options=GEOPRIVACY_LEVELS, doc='Location privacy level')
     identifications_count: int = field(default=None, doc='Total number of identifications')
     identifications_most_agree: bool = field(default=None, doc='Indicates if most identifications agree')
     identifications_most_disagree: bool = field(
@@ -58,10 +57,7 @@ class Observation(BaseModel):
     )
     identifications_some_agree: bool = field(default=None, doc='Indicates if some identifications agree')
     license_code: str = field(
-        default=None,
-        converter=upper,
-        validator=is_in(ALL_LICENSES),
-        doc='Creative Commons license code',
+        default=None, converter=upper, options=ALL_LICENSES, doc='Creative Commons license code'
     )
     location: Coordinates = coordinate_pair()
     mappable: bool = field(default=None, doc='Indicates if the observation can be shown on a map')
@@ -74,38 +70,22 @@ class Observation(BaseModel):
         default=None,
         doc='Indicates if coordinates are obscured (showing a broad approximate location on the map)',
     )
+    observed_on: DateTime = datetime_field(doc='Date and time the organism was observed')
+    outlinks: List[Dict] = field(
+        factory=list, doc='Linked observation pages on other sites (e.g., GBIF)'
+    )
     out_of_range: bool = field(
         default=None, doc='Indicates if the taxon is observed outside of its known range'
     )
     owners_identification_from_vision: bool = field(
         default=None, doc="Indicates if the owner's ID was selected from computer vision results"
     )
+
     place_guess: str = field(default=None, doc='Place name determined from observation coordinates')
+    place_ids: List[int] = field(factory=list)
     positional_accuracy: int = field(
         default=None, doc='GPS accuracy in meters (real accuracy, if obscured)'
     )
-    public_positional_accuracy: int = field(
-        default=None, doc='GPS accuracy in meters (not accurate if obscured)'
-    )
-    quality_grade: str = field(default=None, validator=is_in(QUALITY_GRADES), doc='Quality grade')
-    site_id: int = field(
-        default=None, doc='Site ID for iNaturalist network members, or ``1`` for inaturalist.org'
-    )
-    species_guess: str = field(default=None, doc="Taxon name from observer's initial identification")
-    observed_on: DateTime = datetime_field(doc='Date and time the organism was observed')
-    updated_at: DateTime = datetime_field(doc='Date and time the observation was last updated')
-    uri: str = field(default=None, doc='Link to observation details page')
-    uuid: str = field(
-        default=None, doc='Universally unique ID; generally preferred over ``id`` where possible'
-    )
-
-    # Nested collections
-    # TODO: Possible models for faves, sounds, and votes?
-    faves: List[Dict] = field(factory=list, doc='Details on users who have favorited the observation')
-    outlinks: List[Dict] = field(
-        factory=list, doc='Linked observation pages on other sites (e.g., GBIF)'
-    )
-    place_ids: List[int] = field(factory=list)
     preferences: Dict[str, Any] = field(
         factory=dict,
         doc='Any user observation preferences (related to community IDs, coordinate access, etc.)',
@@ -117,10 +97,23 @@ class Observation(BaseModel):
     project_ids_without_curator_id: List[int] = field(
         factory=list, doc='Project IDs without curator identification for this observation'
     )
+    public_positional_accuracy: int = field(
+        default=None, doc='GPS accuracy in meters (not accurate if obscured)'
+    )
+    quality_grade: str = field(default=None, options=QUALITY_GRADES, doc='Quality grade')
     quality_metrics: List[Dict] = field(factory=list, doc='Data quality assessment metrics')
     reviewed_by: List[int] = field(factory=list, doc='IDs of users who have reviewed the observation')
+    site_id: int = field(
+        default=None, doc='Site ID for iNaturalist network members, or ``1`` for inaturalist.org'
+    )
     sounds: List[Dict] = field(factory=list, doc='Observation sound files')
+    species_guess: str = field(default=None, doc="Taxon name from observer's initial identification")
     tags: List[str] = field(factory=list, doc='Arbitrary user tags added to the observation')
+    updated_at: DateTime = datetime_field(doc='Date and time the observation was last updated')
+    uri: str = field(default=None, doc='Link to observation details page')
+    uuid: str = field(
+        default=None, doc='Universally unique ID; generally preferred over ``id`` where possible'
+    )
     votes: List[Dict] = field(factory=list, doc='Votes on data quality assessment metrics')
 
     # Lazy-loaded model objects

@@ -1,7 +1,7 @@
 from typing import List, Union
 
 from pyinaturalist.constants import TableRow
-from pyinaturalist.models import BaseModel, Place, Project, Taxon, User, define_model, field, is_in
+from pyinaturalist.models import BaseModel, Place, Project, Taxon, User, define_model, field
 
 SEARCH_RESULT_TYPES = {cls.__name__: cls for cls in [Place, Project, Taxon, User]}
 SEARCH_RESULT_TITLES = {'Place': 'name', 'Project': 'title', 'Taxon': 'full_name', 'User': 'login'}
@@ -15,7 +15,7 @@ class SearchResult(BaseModel):
     """
 
     score: float = field(default=0, doc='Search result rank')
-    type: str = field(default=None, validator=is_in(SEARCH_RESULT_TYPES), doc='Search result type')
+    type: str = field(default=None, options=SEARCH_RESULT_TYPES, doc='Search result type')
     matches: List[str] = field(factory=list, doc='Search terms matched')
     record: SearchResultRecord = field(default=None, doc='Search result object')
 
