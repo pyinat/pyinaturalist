@@ -111,8 +111,9 @@ napoleon_type_aliases = {
 copybutton_prompt_text = r'>>> |\.\.\. |\$ '
 copybutton_prompt_is_regexp = True
 
-# Move type hint info to function description instead of signature
-autodoc_typehints = 'description'
+# Disable autodoc's built-in type hints, and use sphinx_autodoc_typehints extension instead
+# The features are similar, but sphinx_autodoc_typehints still produces better output
+autodoc_typehints = 'none'
 
 # apidoc settings
 apidoc_module_dir = PACKAGE_DIR

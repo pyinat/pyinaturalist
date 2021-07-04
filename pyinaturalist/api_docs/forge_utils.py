@@ -15,8 +15,8 @@ logger = getLogger(__name__)
 
 
 def copy_doc_signature(template_functions: List[TemplateFunction]) -> Callable:
-    """Document a function with both docstrings and function signatures from one or more
-    template functions.
+    """Document a function with docstrings, function signatures, and type annotations from
+    one or more template functions.
 
     Signature modification requires ``python-forge``. If not installed, only docstrings will be modified.
 
@@ -54,7 +54,8 @@ def copy_doc_signature(template_functions: List[TemplateFunction]) -> Callable:
     template_functions += [_user_agent, _session]
 
     def wrapper(func):
-        # Modify docstring
+        # Modify annotations and docstring
+        func = copy_annotations(func, template_functions)
         func = copy_docstrings(func, template_functions)
 
         # If forge is installed, modify signature; otherwise, silently ignore it
@@ -70,6 +71,16 @@ def copy_doc_signature(template_functions: List[TemplateFunction]) -> Callable:
 
 # Alias specifically for API functions
 document_request_params = copy_doc_signature
+
+from typing import get_type_hints
+
+
+def copy_annotations(target_function: Callable, template_functions: List[TemplateFunction]) -> Callable:
+    """Copy type annotations from one or more template functions to a target function"""
+    for template_function in template_functions:
+        for k, v in get_type_hints(template_function).items():
+            target_function.__annotations__[k] = v
+    return target_function
 
 
 def copy_docstrings(target_function: Callable, template_functions: List[TemplateFunction]) -> Callable:
