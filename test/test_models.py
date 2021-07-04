@@ -437,6 +437,11 @@ def test_taxon__empty():
     assert taxon.taxon_photos == []
 
 
+def test_taxon__all_names():
+    taxon = Taxon.from_json(j_taxon_8_all_names)
+    assert taxon.names[1] == {'is_valid': True, 'name': 'American Crow', 'position': 0, 'locale': 'en'}
+
+
 def test_taxon__autocomplete():
     taxon = Taxon.from_json(j_taxon_7_autocomplete)
     assert taxon.matched_term == 'Vespidae'

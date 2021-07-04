@@ -97,6 +97,9 @@ class Taxon(BaseModel):
     include nested ``ancestors``, ``children``, and results from :py:func:`.get_taxa_autocomplete`.
     """
 
+    ancestor_ids: List[int] = field(
+        factory=list, doc='Taxon IDs of ancestors, from highest rank to lowest'
+    )
     complete_rank: str = field(
         default=None, doc='Complete or "leaf taxon" rank, e.g. species or subspecies'
     )
@@ -104,6 +107,9 @@ class Taxon(BaseModel):
         default=None, doc='Total number of species descended from this taxon'
     )
     created_at: DateTime = datetime_field(doc='Date and time the taxon was added to iNaturalist')
+    current_synonymous_taxon_ids: List[int] = field(
+        factory=list, doc='Taxon IDs of taxa that are accepted synonyms'
+    )
     extinct: bool = field(default=None, doc='Indicates if the taxon is extinct')
     iconic_taxon_id: int = field(
         default=0, doc='ID of the iconic taxon (e.g., general taxon "category")'
@@ -114,12 +120,16 @@ class Taxon(BaseModel):
     is_active: bool = field(
         default=None, doc='Indicates if the taxon is active (and not renamed, moved, etc.)'
     )
+    listed_taxa: List[int] = field(factory=list, doc='Listed taxon IDs')
     listed_taxa_count: int = field(
         default=None, doc='Number of listed taxa from this taxon + descendants'
     )
     matched_term: str = field(default=None, doc='Matched search term, from autocomplete results')
     name: str = field(
         default=None, doc='Taxon name; contains full scientific name at species level and below'
+    )
+    names: List[Dict] = field(
+        factory=list, doc='All regional common names; only returned if ``all_names`` is specified'
     )
     observations_count: int = field(
         default=None, doc='Total number of observations of this taxon and its descendants'
@@ -141,16 +151,7 @@ class Taxon(BaseModel):
     )
     wikipedia_url: str = field(default=None, doc='URL to Wikipedia article for the taxon, if available')
 
-    # Nested collections
-    ancestor_ids: List[int] = field(
-        factory=list, doc='Taxon IDs of ancestors, from highest rank to lowest'
-    )
-    current_synonymous_taxon_ids: List[int] = field(
-        factory=list, doc='Taxon IDs of taxa that are accepted synonyms'
-    )
-    listed_taxa: List[int] = field(factory=list, doc='Listed taxon IDs')
-
-    # Lazy-loade model objects
+    # Lazy-loaded model objects
     ancestors: property = LazyProperty(BaseModel.from_json_list)
     children: property = LazyProperty(BaseModel.from_json_list)
     conservation_status: property = LazyProperty(
