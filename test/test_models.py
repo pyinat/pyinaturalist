@@ -454,7 +454,6 @@ def test_taxon__conservation_status():
     assert cs.status_name == 'imperiled'
 
 
-# TODO: No sample data for this yet. Only on get_taxa_by_id response for particular taxa.
 def test_taxon__conservation_statuses():
     css = Taxon.from_json(j_taxon_6_cs_statuses).conservation_statuses[0]
     assert isinstance(css, ConservationStatus)

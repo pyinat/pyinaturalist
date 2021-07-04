@@ -1,4 +1,3 @@
-# TODO: Decide on consistent terminology for POST/PUT endpoints, rename, and add DeprecationWarnings to previous names
 from logging import getLogger
 from typing import List, Union
 

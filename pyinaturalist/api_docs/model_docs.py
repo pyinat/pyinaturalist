@@ -39,9 +39,6 @@ def get_model_classes() -> List[Type]:
     return model_classes
 
 
-# TODO: Also include regular @properties?
-# TODO: CSS to style LazyProperties with a different background color?
-# TODO: Remove autodoc member docs for LazyProperties
 def get_model_doc(cls: Type) -> List[Tuple[str, str, str]]:
     """Get the name, type and description for all model attributes, properties, and LazyProperties.
     If an attribute has metadata for options (possible values for the attribute), include those

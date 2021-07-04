@@ -19,7 +19,6 @@ def get_all_observations(**params) -> List[JsonResponse]:
     return paginate_all(get_observations, method='id', **params)['results']
 
 
-# TODO: Deprecate get_geojson_observations and move to pyinaturalist-convert
 def get_geojson_observations(properties: List[str] = None, **params) -> JsonResponse:
     """Get all observation results combined into a GeoJSON ``FeatureCollection``.
     By default this includes some basic observation properties as GeoJSON ``Feature`` properties.
