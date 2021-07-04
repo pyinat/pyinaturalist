@@ -437,6 +437,11 @@ def test_taxon__empty():
     assert taxon.taxon_photos == []
 
 
+def test_taxon__autocomplete():
+    taxon = Taxon.from_json(j_taxon_7_autocomplete)
+    assert taxon.matched_term == 'Vespidae'
+
+
 def test_taxon__conservation_status():
     cs = Taxon.from_json(j_taxon_5_cs_status).conservation_status
     assert isinstance(cs, ConservationStatus)

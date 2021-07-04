@@ -117,6 +117,7 @@ class Taxon(BaseModel):
     listed_taxa_count: int = field(
         default=None, doc='Number of listed taxa from this taxon + descendants'
     )
+    matched_term: str = field(default=None, doc='Matched search term, from autocomplete results')
     name: str = field(
         default=None, doc='Taxon name; contains full scientific name at species level and below'
     )
