@@ -27,10 +27,11 @@ define_model: Callable = define(auto_attribs=False, field_transformer=add_lazy_a
 define_model_collection: Callable = define(auto_attribs=False, order=False, slots=False)
 
 
-def field(doc: str = '', metadata: Dict = None, **kwargs):
-    """A field with extra documentation metadata"""
+def field(doc: str = '', options: Iterable = None, metadata: Dict = None, **kwargs):
+    """A field with extra metadata for documentation and options"""
     metadata = metadata or {}
     metadata['doc'] = doc
+    metadata['options'] = options
     return attr.field(**kwargs, metadata=metadata)
 
 

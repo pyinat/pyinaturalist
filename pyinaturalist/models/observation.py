@@ -30,7 +30,6 @@ from pyinaturalist.models import (
     datetime_now_field,
     define_model_collection,
     field,
-    is_in,
     upper,
 )
 from pyinaturalist.v1 import get_observation
@@ -48,9 +47,7 @@ class Observation(BaseModel):
     )
     community_taxon_id: int = field(default=None, doc='The current community identification taxon')
     description: str = field(default=None, doc='Observation description')
-    geoprivacy: str = field(
-        default=None, validator=is_in(GEOPRIVACY_LEVELS), doc='Location privacy level'
-    )
+    geoprivacy: str = field(default=None, options=GEOPRIVACY_LEVELS, doc='Location privacy level')
     identifications_count: int = field(default=None, doc='Total number of identifications')
     identifications_most_agree: bool = field(default=None, doc='Indicates if most identifications agree')
     identifications_most_disagree: bool = field(
@@ -58,10 +55,7 @@ class Observation(BaseModel):
     )
     identifications_some_agree: bool = field(default=None, doc='Indicates if some identifications agree')
     license_code: str = field(
-        default=None,
-        converter=upper,
-        validator=is_in(ALL_LICENSES),
-        doc='Creative Commons license code',
+        default=None, converter=upper, options=ALL_LICENSES, doc='Creative Commons license code'
     )
     location: Coordinates = coordinate_pair()
     mappable: bool = field(default=None, doc='Indicates if the observation can be shown on a map')
@@ -87,7 +81,7 @@ class Observation(BaseModel):
     public_positional_accuracy: int = field(
         default=None, doc='GPS accuracy in meters (not accurate if obscured)'
     )
-    quality_grade: str = field(default=None, validator=is_in(QUALITY_GRADES), doc='Quality grade')
+    quality_grade: str = field(default=None, options=QUALITY_GRADES, doc='Quality grade')
     site_id: int = field(
         default=None, doc='Site ID for iNaturalist network members, or ``1`` for inaturalist.org'
     )

@@ -24,7 +24,6 @@ from pyinaturalist.models import (
     define_model,
     define_model_collection,
     field,
-    is_in,
     upper,
 )
 from pyinaturalist.v1 import get_taxa_by_id
@@ -52,7 +51,7 @@ class ConservationStatus(BaseModel):
     status: str = field(
         default=None,
         converter=upper,
-        validator=is_in(CONSERVATION_STATUSES),
+        options=CONSERVATION_STATUSES,
         doc='Short code for conservation status',
     )
     status_name: str = field(default=None, doc='Full name of conservation status')
@@ -78,7 +77,7 @@ class EstablishmentMeans(BaseModel):
     """The establishment means for a taxon in a given location"""
 
     establishment_means: str = field(
-        default=None, validator=is_in(ESTABLISTMENT_MEANS), doc='Establishment means description'
+        default=None, options=ESTABLISTMENT_MEANS, doc='Establishment means description'
     )
     place: property = LazyProperty(
         Place.from_json_list, type=Place, doc='Location that the establishment means applies to'
@@ -143,7 +142,7 @@ class Taxon(BaseModel):
         default=None,
         doc='Number indicating rank level, for easier comparison between ranks (kingdom=higest)',
     )
-    rank: str = field(default=None, validator=is_in(RANKS), doc='Taxon rank')
+    rank: str = field(default=None, options=RANKS, doc='Taxon rank')
     taxon_changes_count: int = field(default=None, doc='Number of curator changes to this taxon')
     taxon_schemes_count: int = field(default=None, doc='Taxon schemes that include this taxon')
     wikipedia_summary: str = field(
