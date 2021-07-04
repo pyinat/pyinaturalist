@@ -3,6 +3,11 @@
 {{ objname }}
 {{ underline }}
 
+{# Increase the max content width, since we won't have a local ToC to the right #}
+.. raw:: html
+
+   <style>div.content{width: 60em}</style>
+
 .. currentmodule:: {{ module }}
 
 .. autoclass:: {{ objname }}
@@ -15,7 +20,7 @@
    .. csv-table::
       :class: docutils
       :header: "Name", "Type", "Description"
-      :widths: 10, 12, 30
+      :widths: 12 12 76
       :file: {{ '../models/' + objname + '.csv' }}
 
    {% endif %}

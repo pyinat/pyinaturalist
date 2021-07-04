@@ -5,7 +5,7 @@ without modifying the target functions.
 """
 from inspect import cleandoc, ismethod, signature
 from logging import getLogger
-from typing import Callable, List
+from typing import Callable, List, get_type_hints
 
 from requests import Session
 
@@ -71,8 +71,6 @@ def copy_doc_signature(template_functions: List[TemplateFunction]) -> Callable:
 
 # Alias specifically for API functions
 document_request_params = copy_doc_signature
-
-from typing import get_type_hints
 
 
 def copy_annotations(target_function: Callable, template_functions: List[TemplateFunction]) -> Callable:
