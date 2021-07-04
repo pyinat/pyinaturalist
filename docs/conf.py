@@ -147,11 +147,12 @@ pygments_dark_style = 'material'
 html_theme = 'furo'
 html_theme_options = {
     'light_css_variables': {
-        'color-brand-primary': '#436500',  # Dark green
-        # 'color-brand-content': 'teal',
+        'color-brand-primary': '#00766c',  # MD light-blue-600; light #64d8cb | med #26a69a
+        'color-brand-content': '#006db3',  # MD teal-400;       light #63ccff | med #039be5
     },
     'dark_css_variables': {
-        'color-brand-primary': '#74AC00',  # Yellow-green
+        'color-brand-primary': '#64d8cb',
+        'color-brand-content': '#63ccff',
     },
     'sidebar_hide_name': True,
 }

@@ -1,30 +1,36 @@
-/* Styles for tables. For sphinx-material, requires docutils class to be in 'table_classes' */
-.docutils table {
-    box-shadow:0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12),0 3px 1px -2px rgba(0,0,0,.2);
-    display:inline-block;
-    border-radius:.1rem;
-    font-size:.64rem;
-    margin-top:1.5em;
-    max-width:100%;
-    overflow:auto;
-    -webkit-overflow-scrolling:touch
+/* Slightly modified table styles from Furo theme*/
+
+table.docutils {
+  border-radius: 0.2rem;
+  border-spacing: 0;
+  border-collapse: collapse;
+  box-shadow:0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12),0 3px 1px -2px rgba(0,0,0,.2);
 }
-.docutils th {
-    min-width:5rem;
-    padding:.6rem .8rem;
-    background-color: #ecf0f3;
-    border-top: 3px solid #00bfa5;
-    vertical-align:top
+
+table.docutils th {
+    background: #63ccff;
+    border-bottom: 3px solid #006db3;
 }
-.docutils td {
-    padding:.6rem .8rem;
-    border-top:.05rem solid rgba(0,1,0,.07);
-    vertical-align:top
+
+/* TODO: Use variables for light/med/dark variants */
+@media (prefers-color-scheme: dark) {
+    table.docutils th {
+        background: #006db3;
+        border-bottom: 3px solid #63ccff;
+    }
+    
 }
-.docutils tr{transition:background-color .125s}
-.docutils tr:hover{
+
+table.docutils tr{transition:background-color .125s}
+table.docutils tr:hover{
     background-color:rgba(0,0,0,.035);
     box-shadow:inset 0 .05rem 0 #fff
 }
-.docutils tr:first-child td{border-top:0}
-.docutils table a {word-break:normal}
+
+
+/* table.docutils td, th {
+    padding: 0 0.25rem;
+    border-left: 1px solid var(--color-background-border);
+    border-right: 1px solid var(--color-background-border);
+    border-bottom: 1px solid var(--color-background-border);
+} */
