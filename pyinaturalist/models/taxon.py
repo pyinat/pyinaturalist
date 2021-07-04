@@ -33,10 +33,10 @@ from pyinaturalist.v1 import get_taxa_by_id
 # TODO: Include codes from other sources? Currently only including IUCN codes.
 @define_model
 class ConservationStatus(BaseModel):
-    """The conservation status of a taxon in a given location, based on the schema of:
+    """‼️ The conservation status of a taxon in a given location, based on the schema of:
 
-    * Taxon.conservation_status from `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_
-    * Observation.taxon.conservation_statused from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_
+    * ``Taxon.conservation_status`` from `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_
+    * ``Observation.taxon.conservation_statuses`` from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_
     """
 
     authority: str = field(default=None, doc='Data source for conservation status')
@@ -74,7 +74,7 @@ class ConservationStatus(BaseModel):
 
 @define_model
 class EstablishmentMeans(BaseModel):
-    """The establishment means for a taxon in a given location"""
+    """‼️ The establishment means for a taxon in a given location"""
 
     establishment_means: str = field(
         default=None, options=ESTABLISTMENT_MEANS, doc='Establishment means description'
@@ -89,7 +89,7 @@ class EstablishmentMeans(BaseModel):
 
 @define_model
 class Taxon(BaseModel):
-    """An iNaturalist taxon, based on the schema of
+    """🐦 An iNaturalist taxon, based on the schema of
     `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_.
 
     Can be constructed from either a full or partial JSON record. Examples of partial records
@@ -268,7 +268,9 @@ class Taxon(BaseModel):
 
 @define_model
 class TaxonCount(Taxon):
-    """A taxon with an associated count, used in a :py:class:`.TaxonCounts` collection"""
+    """🐦#️⃣ A :py:class:`.Taxon` with an associated count, used in a :py:class:`.TaxonCounts`
+    collection
+    """
 
     count: int = field(default=0, doc='Number of observations of this taxon')
 
@@ -296,7 +298,7 @@ class TaxonCount(Taxon):
 
 @define_model_collection
 class TaxonCounts(BaseModelCollection):
-    """A collection of taxa with an associated counts. Used with
+    """🐦#️⃣📓 A collection of taxa with an associated counts. Used with
     `GET /observations/species_counts <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_species_counts>`_.
     as well as :py:class:`.LifeList`.
     """

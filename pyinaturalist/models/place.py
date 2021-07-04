@@ -20,7 +20,7 @@ def convert_optional_lat_long(obj: Union[Dict, List, None, str]):
 
 @define_model
 class Place(BaseModel):
-    """A curated or community-contributed place. Handles data from the following endpoints:
+    """📍 A curated or community-contributed place. Handles data from the following endpoints:
 
     * `GET /places/{id} <https://api.inaturalist.org/v1/docs/#!/Places/get_places_id>`_
     * `GET /places/nearby <https://api.inaturalist.org/v1/docs/#!/Places/get_places_nearby>`_

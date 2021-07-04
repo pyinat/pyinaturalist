@@ -6,7 +6,7 @@ from pyinaturalist.models import BaseModel, LazyProperty, User, define_model, fi
 
 @define_model
 class Annotation(BaseModel):
-    """An annotation, meaning a **controlled term value** applied by a **user** to an **observation**.
+    """📝 An annotation, meaning a **controlled term value** applied by a **user** to an **observation**.
     Based on the schema of annotations from
     `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
     """
@@ -45,7 +45,7 @@ class Annotation(BaseModel):
 
 @define_model
 class ControlledTermValue(BaseModel):
-    """A controlled term **value**, based on the schema of
+    """📋 A controlled term **value**, based on the schema of
     `GET /controlled_terms <https://api.inaturalist.org/v1/docs/#!/Controlled_Terms/get_controlled_terms>`_.
     """
 
@@ -62,7 +62,7 @@ class ControlledTermValue(BaseModel):
 
 @define_model
 class ControlledTerm(BaseModel):
-    """A controlled term, based on the schema of
+    """📋 A controlled term, based on the schema of
     `GET /controlled_terms <https://api.inaturalist.org/v1/docs/#!/Controlled_Terms/get_controlled_terms>`_.
     """
 

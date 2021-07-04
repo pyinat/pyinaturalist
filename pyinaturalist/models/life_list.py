@@ -14,7 +14,7 @@ from pyinaturalist.models import (
 
 @define_model
 class LifeListTaxon(TaxonCount):
-    """A single taxon in a user's life list"""
+    """🐦 A single :py:class:`.Taxon` in a user's :py:class:`.LifeList`"""
 
     descendant_obs_count: int = field(default=0, doc='Number of observations of taxon children')
     direct_obs_count: int = field(
@@ -33,7 +33,7 @@ class LifeListTaxon(TaxonCount):
 
 @define_model_collection
 class LifeList(TaxonCounts):
-    """A user's life list, based on the schema of ``GET /observations/taxonomy``"""
+    """🐦✅📓 A user's life list, based on the schema of ``GET /observations/taxonomy``"""
 
     count_without_taxon: int = field(default=0)
     data: List[LifeListTaxon] = field(factory=list, converter=LifeListTaxon.from_json_list)  # type: ignore
