@@ -136,7 +136,7 @@ def test_identification__empty():
 def test_identification__str():
     identification = ID.from_json(j_identification_3)
     assert str(identification) == (
-        '[126501311] Species: Danaus plexippus (Monarch) (improving) added on '
+        '[126501311] 🦋 Species: Danaus plexippus (Monarch) (improving) added on '
         '2020-08-27 13:00:51-05:00 by samroom'
     )
 

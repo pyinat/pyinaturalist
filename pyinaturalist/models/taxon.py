@@ -204,32 +204,21 @@ class Taxon(BaseModel):
     @property
     def emoji(self) -> str:
         """Get an emoji representing the taxon"""
-        if not self.ancestor_ids and self.iconic_taxon_id:
-            return ICONIC_EMOJI.get(self.iconic_taxon_id, '❓')
         for taxon_id in [self.id] + list(reversed(self.ancestor_ids)):
             if taxon_id in EMOJI:
                 return EMOJI[taxon_id]
-        return '❓'
+        return ICONIC_EMOJI.get(self.iconic_taxon_id, '❓')
 
     @property
     def full_name(self) -> str:
-        """Taxon rank, scientific name, and common name (if available).
-
-        Example:
-
-            >>> taxon.full_name
-            'Genus: Physcia (Rosette Lichens)'
-
-        """
+        """Taxon rank, scientific name, common name (if available), and emoji"""
         if not self.name and not self.rank:
             return 'unknown taxon'
         if not self.name:
-            name = str(self.id)
-        else:
-            common_name = self.preferred_common_name
-            name = self.name + (f' ({common_name})' if common_name else '')
+            return f'{self.rank.title()}: {self.id}'
 
-        return f'{self.rank.title()}: {name}'
+        common_name = f' ({self.preferred_common_name})' if self.preferred_common_name else ''
+        return f'{self.emoji} {self.rank.title()}: {self.name}{common_name}'
 
     @property
     def icon_url(self) -> str:
@@ -294,7 +283,7 @@ class TaxonCount(Taxon):
         return {
             'ID': self.id,
             'Rank': self.rank,
-            'Name': self.name,
+            'Name': f'{self.emoji} {self.name}',
             'Count': self.count,
         }
 

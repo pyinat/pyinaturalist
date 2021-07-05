@@ -1,7 +1,7 @@
 from itertools import groupby
 from typing import List
 
-from pyinaturalist.constants import JsonResponse
+from pyinaturalist.constants import JsonResponse, TableRow
 from pyinaturalist.models import (
     Taxon,
     TaxonCount,
@@ -25,6 +25,15 @@ class LifeListTaxon(TaxonCount):
     def indent_level(self) -> int:
         """Indentation level corresponding to this item's rank level"""
         return int(((70 - self.rank_level) / 5))
+
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Rank': self.rank,
+            'Name': {self.name},
+            'Count': self.count,
+        }
 
     def __str__(self) -> str:
         padding = " " * self.indent_level
