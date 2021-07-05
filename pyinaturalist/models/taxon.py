@@ -13,6 +13,7 @@ from pyinaturalist.constants import (
     JsonResponse,
     TableRow,
 )
+from pyinaturalist.docs import EMOJI
 from pyinaturalist.models import (
     BaseModel,
     BaseModelCollection,
@@ -202,8 +203,13 @@ class Taxon(BaseModel):
 
     @property
     def emoji(self) -> str:
-        """Get an emoji representing the iconic taxon"""
-        return ICONIC_EMOJI.get(self.iconic_taxon_id, '❓')
+        """Get an emoji representing the taxon"""
+        if not self.ancestor_ids and self.iconic_taxon_id:
+            return ICONIC_EMOJI.get(self.iconic_taxon_id, '❓')
+        for taxon_id in [self.id] + list(reversed(self.ancestor_ids)):
+            if taxon_id in EMOJI:
+                return EMOJI[taxon_id]
+        return '❓'
 
     @property
     def full_name(self) -> str:
