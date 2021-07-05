@@ -3,6 +3,7 @@ Thanks to the following individuals for providing pull requests, feedback, bug r
 questions, and other contributions that have helped to improve pyinaturalist:     
 
 * [AE Hamrick](https://github.com/AEHamrick)
+* [Ben Armstrong](https://github.com/synrg)
 * [Felipe S Barros](https://github.com/FelipeSBarros)
 * [Ken-ichi Ueda](https://github.com/kueda/)
 * [Matt Muir](https://forum.inaturalist.org/u/muir)

@@ -1,6 +1,6 @@
 # History
 
-## 0.14 (2021-TBD)
+## 0.14 (2021-07-TBD)
 [See all Issues & PRs for 0.14](https://github.com/niconoe/pyinaturalist/milestone/5?closed=1)
 
 ### New Endpoints
