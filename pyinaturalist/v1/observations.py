@@ -1,5 +1,3 @@
-from pyinaturalist.api_docs import document_request_params
-from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.constants import (
     NODE_OBS_ORDER_BY_PROPERTIES,
     HistogramResponse,
@@ -12,6 +10,8 @@ from pyinaturalist.converters import (
     convert_histogram,
     convert_observation_timestamps,
 )
+from pyinaturalist.docs import document_request_params
+from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.pagination import add_paginate_all
 from pyinaturalist.request_params import validate_multiple_choice_param

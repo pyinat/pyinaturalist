@@ -72,7 +72,7 @@ def test_format_identifications(input):
 @pytest.mark.parametrize('input', get_variations(j_observation_1))
 def test_format_observation(input):
     expected_str = (
-        '[16227955] Species: Lixus bardanae observed on 2018-09-05 14:06:00+01:00 '
+        '[16227955] 🪲 Species: Lixus bardanae observed on 2018-09-05 14:06:00+01:00 '
         'by niconoe at 54 rue des Badauds'
     )
     assert format_observations(input) == expected_str
@@ -104,7 +104,7 @@ def test_format_places__nearby():
 
 def test_format_search_results():
     expected_str = (
-        '[Taxon] [47792] Order: Odonata (Dragonflies and Damselflies)\n'
+        '[Taxon] [47792] 🐛 Order: Odonata (Dragonflies and Damselflies)\n'
         '[Place] [113562] Odonates of Peninsular India and Sri Lanka\n'
         '[Project] [9978] Ohio Dragonfly Survey  (Ohio Odonata Survey)\n'
         '[User] [113886] odonatanb (Gilles Belliveau)'
@@ -114,19 +114,19 @@ def test_format_search_results():
 
 @pytest.mark.parametrize('input', get_variations(j_species_count_1))
 def test_format_species_counts(input):
-    expected_str = '[48484] Species: Harmonia axyridis (Asian Lady Beetle): 31'
+    expected_str = '[48484] 🐞 Species: Harmonia axyridis (Asian Lady Beetle): 31'
     assert format_species_counts(input) == expected_str
 
 
 @pytest.mark.parametrize('input', get_variations(j_taxon_1))
 def test_format_taxa__with_common_name(input):
-    expected_str = '[70118] Species: Nicrophorus vespilloides (Lesser Vespillo Burying Beetle)'
+    expected_str = '[70118] 🪲 Species: Nicrophorus vespilloides (Lesser Vespillo Burying Beetle)'
     assert format_taxa(input) == expected_str
 
 
 @pytest.mark.parametrize('input', get_variations(j_taxon_3_no_common_name))
 def test_format_taxon__without_common_name(input):
-    assert format_taxa(input) == '[124162] Species: Temnostoma vespiforme'
+    assert format_taxa(input) == '[124162] 🪰 Species: Temnostoma vespiforme'
 
 
 @pytest.mark.parametrize('input', get_variations(j_user_2_partial))

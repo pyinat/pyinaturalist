@@ -1,10 +1,10 @@
 from typing import Any
 
-from pyinaturalist.api_docs import document_request_params
-from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.api_requests import get, put
 from pyinaturalist.constants import API_V0_BASE_URL, JsonResponse
 from pyinaturalist.converters import convert_all_timestamps
+from pyinaturalist.docs import document_request_params
+from pyinaturalist.docs import templates as docs
 from pyinaturalist.pagination import add_paginate_all
 
 

@@ -7,8 +7,10 @@ from pyinaturalist.models import BaseModel, define_model, field
 
 @define_model
 class Photo(BaseModel):
-    """An observation photo, based on the schema of photos from
-    `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
+    """📷 An observation photo, based on the schema of photos from:
+
+    * `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_
+    * `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`
     """
 
     attribution: str = field(default=None, doc='License attribution')

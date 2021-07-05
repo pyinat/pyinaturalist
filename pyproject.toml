@@ -83,7 +83,7 @@ directory = 'test-reports'
 [tool.coverage.run]
 branch = true
 source = ['pyinaturalist']
-omit = ['pyinaturalist/api_docs/model_docs.py']
+omit = ['pyinaturalist/docs/model_docs.py']
 
 [tool.isort]
 profile = 'black'

@@ -1,7 +1,7 @@
 from itertools import groupby
 from typing import List
 
-from pyinaturalist.constants import JsonResponse
+from pyinaturalist.constants import JsonResponse, TableRow
 from pyinaturalist.models import (
     Taxon,
     TaxonCount,
@@ -14,7 +14,7 @@ from pyinaturalist.models import (
 
 @define_model
 class LifeListTaxon(TaxonCount):
-    """A single taxon in a user's life list"""
+    """🐦 A single :py:class:`.Taxon` in a user's :py:class:`.LifeList`"""
 
     descendant_obs_count: int = field(default=0, doc='Number of observations of taxon children')
     direct_obs_count: int = field(
@@ -26,6 +26,15 @@ class LifeListTaxon(TaxonCount):
         """Indentation level corresponding to this item's rank level"""
         return int(((70 - self.rank_level) / 5))
 
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Rank': self.rank,
+            'Name': {self.name},
+            'Count': self.count,
+        }
+
     def __str__(self) -> str:
         padding = " " * self.indent_level
         return f'[{self.id:<8}] {padding} {self.rank.title()} {self.name}: {self.count}'
@@ -33,7 +42,7 @@ class LifeListTaxon(TaxonCount):
 
 @define_model_collection
 class LifeList(TaxonCounts):
-    """A user's life list, based on the schema of ``GET /observations/taxonomy``"""
+    """🐦✅📓 A user's life list, based on the schema of ``GET /observations/taxonomy``"""
 
     count_without_taxon: int = field(default=0)
     data: List[LifeListTaxon] = field(factory=list, converter=LifeListTaxon.from_json_list)  # type: ignore

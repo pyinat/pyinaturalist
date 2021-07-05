@@ -3,7 +3,7 @@
 * ``forge`` is used to define and reuse documentation for API request parameters
 * ``apidoc`` is used to generate rst sources for **modules**
 * ``autosummary`` is used to generate rst sources for **packages and summaries**
-* ``automodapi`` + ``pyinaturalist.api_docs.model_docs`` are used to generate model
+* ``automodapi`` + ``pyinaturalist.docs.model_docs`` are used to generate model
   documentation based on ``attrs`` fields + metadata
 * ``intersphinx`` is used to insert links to other projects' docs
 * Jinja templates provide some additional customization:
@@ -34,7 +34,7 @@ except ImportError:
 sys.path.insert(0, '..')
 from pyinaturalist import __version__
 from pyinaturalist.constants import DOCS_DIR, PROJECT_DIR, EXAMPLES_DIR, SAMPLE_DATA_DIR
-from pyinaturalist.api_docs.model_docs import document_models
+from pyinaturalist.docs.model_docs import document_models
 
 # Relevant doc directories used in extension settings
 CSS_DIR = join(DOCS_DIR, '_static')
@@ -118,7 +118,7 @@ autodoc_typehints = 'none'
 # apidoc settings
 apidoc_module_dir = PACKAGE_DIR
 apidoc_output_dir = MODULE_DOCS_DIR
-apidoc_excluded_paths = ['api_docs/*', 'models/*', 'node_api.py', 'rest_api.py']
+apidoc_excluded_paths = ['docs/*', 'models/*', 'node_api.py', 'rest_api.py']
 apidoc_extra_args = ['--templatedir=_templates']
 apidoc_module_first = True
 apidoc_separate_modules = True

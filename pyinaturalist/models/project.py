@@ -24,7 +24,7 @@ from pyinaturalist.models import (
 
 @define_model
 class ProjectObservation(BaseModel):
-    """Metadata about an observation that has been added to a project"""
+    """👤🔎🐦 Metadata about an observation that has been added to a project"""
 
     preferences: Dict = field(factory=dict)  # Example: {'allows_curator_coordinate_access': True}
     project: Dict = field(factory=dict)  # Example: {'id': 24237}
@@ -37,7 +37,7 @@ class ProjectObservation(BaseModel):
 
 @define_model
 class ProjectObservationField(ObservationField):
-    """An :py:class:`.ObservationField` with additional project-specific information"""
+    """📋 An :py:class:`.ObservationField` with additional project-specific information"""
 
     project_observation_field_id: int = field(default=None)
     position: int = field(default=None)
@@ -55,7 +55,7 @@ class ProjectObservationField(ObservationField):
 
 @define_model
 class ProjectUser(User):
-    """A :py:class:`.User` with additional project-specific information"""
+    """👤 A :py:class:`.User` with additional project-specific information"""
 
     project_id: int = field(default=None)
     project_user_id: int = field(default=None)
@@ -73,7 +73,7 @@ class ProjectUser(User):
 
 @define_model
 class Project(BaseModel):
-    """A dataclass containing information about a project, matching the schema of
+    """👥 An iNaturalist project, based on the schema of
     `GET /projects <https://api.inaturalist.org/v1/docs/#!/Projects/get_projects>`_.
     """
 

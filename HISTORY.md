@@ -1,6 +1,6 @@
 # History
 
-## 0.14 (2021-TBD)
+## 0.14 (2021-07-TBD)
 [See all Issues & PRs for 0.14](https://github.com/niconoe/pyinaturalist/milestone/5?closed=1)
 
 ### New Endpoints
@@ -61,8 +61,8 @@ Model features:
 ### Other Changes
 * Consolidated response formatting into a single `pprint()` function (instead of one per resource type)
 * Refactored and reorganized the following internal utility modules (see API docs for details):
-    * `api_docs`
     * `converters`
+    * `docs`
     * `formatters`
     * `request_params`
 * Added a default response timeout of 5 seconds

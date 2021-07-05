@@ -7,7 +7,7 @@ from pyinaturalist.models import BaseModel, datetime_now_field, define_model, fi
 
 @define_model
 class User(BaseModel):
-    """A dataclass containing information about an user, matching the schema of
+    """👤 An iNaturalist user, based on the schema of
     `GET /users/{id} <https://api.inaturalist.org/v1/docs/#!/Users/get_users_id>`_.
     """
 

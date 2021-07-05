@@ -9,7 +9,6 @@ from unittest.mock import Mock
 from requests import Response, Session
 
 import pyinaturalist
-from pyinaturalist.api_docs import copy_signature
 from pyinaturalist.constants import (
     MAX_DELAY,
     REQUESTS_PER_DAY,
@@ -19,6 +18,7 @@ from pyinaturalist.constants import (
     MultiInt,
     RequestParams,
 )
+from pyinaturalist.docs import copy_signature
 from pyinaturalist.request_params import prepare_request
 
 # Mock response content to return in dry-run mode

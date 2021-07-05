@@ -1,6 +1,6 @@
-from pyinaturalist.api_docs import copy_docstrings
+from pyinaturalist.docs import copy_docstrings
 
-# from pyinaturalist.api_docs import copy_signatures, document_request_params
+# from pyinaturalist.docs import copy_signatures, document_request_params
 
 
 def test_document_request_params():

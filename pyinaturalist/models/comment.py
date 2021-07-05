@@ -6,7 +6,7 @@ from pyinaturalist.models import BaseModel, LazyProperty, User, datetime_now_fie
 
 @define_model
 class Comment(BaseModel):
-    """An observation comment, based on the schema of comments
+    """📝 An observation comment, based on the schema of comments
     from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
     """
 
