@@ -1,8 +1,6 @@
 from logging import getLogger
 from typing import List, Union
 
-from pyinaturalist.api_docs import document_request_params
-from pyinaturalist.api_docs import templates as docs
 from pyinaturalist.api_requests import delete, get, post, put
 from pyinaturalist.constants import (
     API_V0_BASE_URL,
@@ -17,6 +15,8 @@ from pyinaturalist.converters import (
     ensure_file_obj,
     ensure_list,
 )
+from pyinaturalist.docs import document_request_params
+from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.pagination import add_paginate_all
 from pyinaturalist.request_params import convert_observation_fields, validate_multiple_choice_param

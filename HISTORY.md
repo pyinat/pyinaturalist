@@ -61,8 +61,8 @@ Model features:
 ### Other Changes
 * Consolidated response formatting into a single `pprint()` function (instead of one per resource type)
 * Refactored and reorganized the following internal utility modules (see API docs for details):
-    * `api_docs`
     * `converters`
+    * `docs`
     * `formatters`
     * `request_params`
 * Added a default response timeout of 5 seconds

@@ -4,7 +4,8 @@
 * Dynamic docs: Function signatures + docstrings based on API request params
 * Static docs: Sphinx documentation on readthedocs.io
 """
-from pyinaturalist.api_docs.forge_utils import (
+from pyinaturalist.docs.emoji import EMOJI
+from pyinaturalist.docs.forge_utils import (
     copy_doc_signature,
     copy_docstrings,
     copy_signature,
