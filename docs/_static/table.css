@@ -12,6 +12,7 @@ table.docutils th {
     border-bottom: 3px solid #006db3;
 }
 
+
 /* TODO: Use variables for light/med/dark variants */
 @media (prefers-color-scheme: dark) {
     table.docutils th {
@@ -21,6 +22,7 @@ table.docutils th {
     
 }
 
+table.docutils td {text-align: left}
 table.docutils tr{transition:background-color .125s}
 table.docutils tr:hover{
     background-color:rgba(0,0,0,.035);
