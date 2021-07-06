@@ -23,9 +23,9 @@ $ make -C docs html
 To preview:
 ```bash
 # MacOS:
-$ open docs/_build/index.html
+$ open docs/_build/html/index.html
 # Linux:
-$ xdg-open docs/_build/index.html
+$ xdg-open docs/_build/html/index.html
 ```
 
 Project documentation is generated using [Sphinx](https://www.sphinx-doc.org),
