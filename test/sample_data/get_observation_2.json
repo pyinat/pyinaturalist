@@ -1,0 +1,473 @@
+{
+  "quality_grade": "research",
+  "time_observed_at": "2021-06-10T16:02:00-07:00",
+  "taxon_geoprivacy": null,
+  "annotations": [],
+  "uuid": "cdbd7405-1901-409d-b784-7e79f26c1eb9",
+  "id": 83103252,
+  "cached_votes_total": 0,
+  "identifications_most_agree": true,
+  "species_guess": "Whip Cicadas",
+  "identifications_most_disagree": false,
+  "tags": [
+    "Okanagana"
+  ],
+  "positional_accuracy": 33,
+  "comments_count": 1,
+  "site_id": 1,
+  "license_code": "cc0",
+  "quality_metrics": [],
+  "public_positional_accuracy": 33,
+  "reviewed_by": [
+    1,
+    443199
+  ],
+  "oauth_application_id": null,
+  "flags": [],
+  "created_at": "2021-06-14 23:53:01-07:00",
+  "description": "",
+  "project_ids_with_curator_id": [],
+  "updated_at": "2021-06-15 04:50:40-07:00",
+  "sounds": [],
+  "captive": false,
+  "taxon": {
+    "is_active": true,
+    "ancestry": "48460/1/47120/372739/47158/184884/47744/125816/372849/50190/50186/556902/605128/605130",
+    "min_species_ancestry": "48460,1,47120,372739,47158,184884,47744,125816,372849,50190,50186,556902,605128,605130,176578",
+    "endemic": false,
+    "iconic_taxon_id": 47158,
+    "min_species_taxon_id": 176578,
+    "threatened": false,
+    "rank_level": 20,
+    "introduced": false,
+    "native": false,
+    "parent_id": 605130,
+    "name": "Okanagana",
+    "rank": "genus",
+    "extinct": false,
+    "id": 176578,
+    "ancestor_ids": [
+      48460,
+      1,
+      47120,
+      372739,
+      47158,
+      184884,
+      47744,
+      125816,
+      372849,
+      50190,
+      50186,
+      556902,
+      605128,
+      605130,
+      176578
+    ],
+    "photos_locked": false,
+    "taxon_schemes_count": 1,
+    "wikipedia_url": "http://en.wikipedia.org/wiki/Okanagana",
+    "current_synonymous_taxon_ids": null,
+    "created_at": "2012-10-24T02:20:10+00:00",
+    "taxon_changes_count": 0,
+    "complete_species_count": null,
+    "universal_search_rank": 2634,
+    "observations_count": 2634,
+    "flag_counts": {
+      "resolved": 0,
+      "unresolved": 0
+    },
+    "place_ids": [
+      1,
+      14,
+      2757,
+      4512,
+      9853,
+      50422,
+      53219,
+      59613,
+      62068,
+      62332,
+      65360,
+      66741,
+      67725,
+      67759,
+      67760,
+      92151,
+      92337,
+      92665,
+      96034,
+      96057,
+      96683,
+      96687,
+      97394,
+      117476,
+      121278,
+      123427,
+      129010,
+      145270,
+      145714,
+      154011,
+      155063,
+      156220,
+      165950
+    ],
+    "atlas_id": null,
+    "default_photo": {
+      "id": 398757,
+      "license_code": "cc-by-nc",
+      "attribution": "(c) faerthen, some rights reserved (CC BY-NC), uploaded by faerthen",
+      "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/398757/square.jpg?1372952785",
+      "original_dimensions": {
+        "height": 2048,
+        "width": 1881
+      },
+      "flags": [],
+      "square_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/398757/square.jpg?1372952785",
+      "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/398757/medium.jpg?1372952785"
+    },
+    "iconic_taxon_name": "Insecta",
+    "preferred_common_name": "Whip Cicadas"
+  },
+  "ident_taxon_ids": [
+    48460,
+    1,
+    47120,
+    372739,
+    47158,
+    184884,
+    47744,
+    125816,
+    372849,
+    50190,
+    50186,
+    556902,
+    605128,
+    605130,
+    176578
+  ],
+  "outlinks": [],
+  "faves_count": 0,
+  "ofvs": [],
+  "num_identification_agreements": 1,
+  "preferences": {
+    "prefers_community_taxon": null
+  },
+  "comments": [
+    {
+      "id": 7171083,
+      "uuid": "48b1188b-5811-42cb-8d21-782ae9cc81b1",
+      "user": {
+        "id": 443199,
+        "login": "willc-t",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2017-04-06T15:02:36+00:00",
+        "login_autocomplete": "willc-t",
+        "login_exact": "willc-t",
+        "name": "Will Chatfield-Taylor",
+        "name_autocomplete": "Will Chatfield-Taylor",
+        "orcid": "https://orcid.org/0000-0001-6509-4317",
+        "icon": "https://static.inaturalist.org/attachments/users/icons/443199/thumb.jpg?1565472742",
+        "observations_count": 813,
+        "identifications_count": 10340,
+        "journal_posts_count": 0,
+        "activity_count": 11153,
+        "species_count": 704,
+        "universal_search_rank": 813,
+        "roles": [
+          "curator"
+        ],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/443199/medium.jpg?1565472742"
+      },
+      "created_at": "2021-06-15T07:51:09-04:00",
+      "created_at_details": {
+        "date": "2021-06-15",
+        "day": 15,
+        "month": 6,
+        "year": 2021,
+        "hour": 7,
+        "week": 24
+      },
+      "body": "With a female, this could be bella or occidentalis from this angle.",
+      "flags": [],
+      "moderator_actions": [],
+      "hidden": false
+    }
+  ],
+  "map_scale": 16,
+  "uri": "https://www.inaturalist.org/observations/83103252",
+  "project_ids": [],
+  "community_taxon_id": 176578,
+  "geojson": {
+    "type": "Point",
+    "coordinates": [
+      -121.516314,
+      41.72144
+    ]
+  },
+  "owners_identification_from_vision": false,
+  "identifications_count": 1,
+  "obscured": false,
+  "num_identification_disagreements": 0,
+  "geoprivacy": null,
+  "location": [
+    41.72144,
+    -121.516314
+  ],
+  "votes": [],
+  "spam": false,
+  "user": {
+    "id": 1,
+    "login": "kueda",
+    "spam": false,
+    "suspended": false,
+    "created_at": "2008-03-20T21:15:42+00:00",
+    "site_id": 1,
+    "login_autocomplete": "kueda",
+    "login_exact": "kueda",
+    "name": "Ken-ichi Ueda",
+    "name_autocomplete": "Ken-ichi Ueda",
+    "orcid": "https://orcid.org/0000-0003-0145-6846",
+    "icon": "https://static.inaturalist.org/attachments/users/icons/1/thumb.jpg?1475527316",
+    "observations_count": 42642,
+    "identifications_count": 100944,
+    "journal_posts_count": 86,
+    "activity_count": 143672,
+    "species_count": 8986,
+    "universal_search_rank": 42642,
+    "roles": [
+      "admin",
+      "curator"
+    ],
+    "icon_url": "https://static.inaturalist.org/attachments/users/icons/1/medium.jpg?1475527316",
+    "preferences": {
+      "prefers_community_taxa": true,
+      "prefers_observation_fields_by": "curators",
+      "prefers_project_addition_by": "joined"
+    }
+  },
+  "mappable": true,
+  "identifications_some_agree": true,
+  "project_ids_without_curator_id": [],
+  "place_guess": "Bunchgrass Trail, Lava Beds National Monument, Siskiyou County, CA, USA",
+  "identifications": [
+    {
+      "hidden": false,
+      "disagreement": null,
+      "flags": [],
+      "created_at": "2021-06-15T02:53:01-04:00",
+      "taxon_id": 176578,
+      "body": null,
+      "own_observation": true,
+      "uuid": "9d96cc87-7728-4333-8593-932c7146a771",
+      "taxon_change": null,
+      "moderator_actions": [],
+      "vision": false,
+      "current": true,
+      "id": 183324707,
+      "created_at_details": {
+        "date": "2021-06-15",
+        "day": 15,
+        "month": 6,
+        "year": 2021,
+        "hour": 2,
+        "week": 24
+      },
+      "category": "improving",
+      "spam": false,
+      "user": {
+        "id": 1,
+        "login": "kueda",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2008-03-20T21:15:42+00:00",
+        "login_autocomplete": "kueda",
+        "login_exact": "kueda",
+        "name": "Ken-ichi Ueda",
+        "name_autocomplete": "Ken-ichi Ueda",
+        "orcid": "https://orcid.org/0000-0003-0145-6846",
+        "icon": "https://static.inaturalist.org/attachments/users/icons/1/thumb.jpg?1475527316",
+        "observations_count": 42642,
+        "identifications_count": 100944,
+        "journal_posts_count": 86,
+        "activity_count": 143672,
+        "species_count": 8986,
+        "universal_search_rank": 42642,
+        "roles": [
+          "admin",
+          "curator"
+        ],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/1/medium.jpg?1475527316"
+      },
+      "previous_observation_taxon_id": 176578,
+      "taxon": {
+        "id": 176578,
+        "rank": "genus",
+        "name": "Okanagana"
+      },
+      "previous_observation_taxon": {
+        "id": 176578,
+        "rank": "genus",
+        "name": "Okanagana"
+      }
+    },
+    {
+      "hidden": false,
+      "disagreement": false,
+      "flags": [],
+      "created_at": "2021-06-15T07:50:40-04:00",
+      "taxon_id": 176578,
+      "body": null,
+      "own_observation": false,
+      "uuid": "ae3a442a-9019-4621-8a37-1eba522ea735",
+      "taxon_change": null,
+      "moderator_actions": [],
+      "vision": false,
+      "current": true,
+      "id": 183361878,
+      "created_at_details": {
+        "date": "2021-06-15",
+        "day": 15,
+        "month": 6,
+        "year": 2021,
+        "hour": 7,
+        "week": 24
+      },
+      "category": "supporting",
+      "spam": false,
+      "user": {
+        "id": 443199,
+        "login": "willc-t",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2017-04-06T15:02:36+00:00",
+        "login_autocomplete": "willc-t",
+        "login_exact": "willc-t",
+        "name": "Will Chatfield-Taylor",
+        "name_autocomplete": "Will Chatfield-Taylor",
+        "orcid": "https://orcid.org/0000-0001-6509-4317",
+        "icon": "https://static.inaturalist.org/attachments/users/icons/443199/thumb.jpg?1565472742",
+        "observations_count": 813,
+        "identifications_count": 10340,
+        "journal_posts_count": 0,
+        "activity_count": 11153,
+        "species_count": 704,
+        "universal_search_rank": 813,
+        "roles": [
+          "curator"
+        ],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/443199/medium.jpg?1565472742"
+      },
+      "previous_observation_taxon_id": 176578,
+      "taxon": {
+        "id": 176578,
+        "rank": "genus",
+        "name": "Okanagana"
+      },
+      "previous_observation_taxon": {
+        "id": 176578,
+        "rank": "genus",
+        "name": "Okanagana"
+      }
+    }
+  ],
+  "project_observations": [],
+  "photos": [
+    {
+      "id": 136458117,
+      "license_code": "cc-by",
+      "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/136458117/square.jpg?1623739627",
+      "attribution": "(c) Ken-ichi Ueda, some rights reserved (CC BY)",
+      "original_dimensions": {
+        "width": 1365,
+        "height": 2048
+      },
+      "flags": []
+    }
+  ],
+  "observation_photos": [
+    {
+      "id": 127470344,
+      "position": 0,
+      "uuid": "b9483003-c73c-40dd-aaa0-9bc70bdbed17",
+      "photo": {
+        "id": 136458117,
+        "license_code": "cc-by",
+        "url": "https://inaturalist-open-data.s3.amazonaws.com/photos/136458117/square.jpg?1623739627",
+        "attribution": "(c) Ken-ichi Ueda, some rights reserved (CC BY)",
+        "original_dimensions": {
+          "width": 1365,
+          "height": 2048
+        },
+        "flags": []
+      }
+    }
+  ],
+  "faves": [],
+  "non_owner_ids": [
+    {
+      "hidden": false,
+      "disagreement": false,
+      "flags": [],
+      "created_at": "2021-06-15T07:50:40-04:00",
+      "taxon_id": 176578,
+      "body": null,
+      "own_observation": false,
+      "uuid": "ae3a442a-9019-4621-8a37-1eba522ea735",
+      "taxon_change": null,
+      "moderator_actions": [],
+      "vision": false,
+      "current": true,
+      "id": 183361878,
+      "created_at_details": {
+        "date": "2021-06-15",
+        "day": 15,
+        "month": 6,
+        "year": 2021,
+        "hour": 7,
+        "week": 24
+      },
+      "category": "supporting",
+      "spam": false,
+      "user": {
+        "id": 443199,
+        "login": "willc-t",
+        "spam": false,
+        "suspended": false,
+        "created_at": "2017-04-06T15:02:36+00:00",
+        "login_autocomplete": "willc-t",
+        "login_exact": "willc-t",
+        "name": "Will Chatfield-Taylor",
+        "name_autocomplete": "Will Chatfield-Taylor",
+        "orcid": "https://orcid.org/0000-0001-6509-4317",
+        "icon": "https://static.inaturalist.org/attachments/users/icons/443199/thumb.jpg?1565472742",
+        "observations_count": 813,
+        "identifications_count": 10340,
+        "journal_posts_count": 0,
+        "activity_count": 11153,
+        "species_count": 704,
+        "universal_search_rank": 813,
+        "roles": [
+          "curator"
+        ],
+        "site_id": 1,
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/443199/medium.jpg?1565472742"
+      },
+      "previous_observation_taxon_id": 176578,
+      "taxon": {
+        "id": 176578,
+        "rank": "genus",
+        "name": "Okanagana"
+      },
+      "previous_observation_taxon": {
+        "id": 176578,
+        "rank": "genus",
+        "name": "Okanagana"
+      }
+    }
+  ],
+  "observed_on": "2021-06-10 16:02:00-08:00"
+}

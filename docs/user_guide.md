@@ -39,12 +39,12 @@ of python, here are the last compatible versions of pyinaturalist:
 :::
 
 ## Imports
-All of the main features can be imported from the top-level `pyinaturalist` namespace:
+You can import all public functions and classes from the top-level `pyinaturalist` package:
 ```
 >>> from pyinaturalist import Taxon, get_observations, pprint  # etc.
 ```
 
-Or to just import everything (convenient for scripts and notebooks, but less so for applications):
+Or you can just import everything:
 ```
 >>> from pyinaturalist import *
 ```
@@ -71,34 +71,41 @@ https://api.inaturalist.org/v1/observations?user_id=tiwane%2Cjdmore
 ```
 :::
 
-There are some optional conveniences you can use, for example:
+Compared to search URLs and raw API requests, pyinaturalist provides some conveniences for making
+requests easier:
 * Python lists instead of comma-separated strings
-* Python booleans instead of JS-style boolean strings or 1/0
+* Python booleans instead of JS-style boolean strings or `1`/`0`
 * Python file-like objects or file paths for photo and sound uploads
 * Python {py:class}`~datetime.date` and {py:class}`~datetime.datetime` objects instead of date/time strings
-* Some simplified data formats for create and update requests
+* Simplified data formats for `POST` and `PUT` requests
 * Simplified pagination
-* Validation for multiple-choice parameters (for example, `quality_grade`)
+* Validation for multiple-choice parameters
 
 And more, depending on the function.
 See the {ref}`reference-docs` section for a complete list of functions available.
 
 ## Responses
-API responses are returned as JSON, with some python type conversions applied (similar to the request
-type conversions mentioned above). Example response data is shown in the documentation for each request
-function. For example, here's what an observation response looks like:
+API responses are returned as JSON, with some python type conversions applied (similar to the
+request type conversions mentioned above). Example response data is shown in the documentation for
+each request function, for example {py:func}`~pyinaturalist.v1.observations.get_observations`
 
+Here is how some of those response fields correspond to observation details shown on
+iNaturalist.org:
+```{figure} images/inat-observation-page-annotated.png
+```
+
+And here is what that same observation looks like in JSON:
 :::{admonition} Observation response JSON
 :class: toggle
-```{literalinclude} sample_data/get_observations_node.py
+```{literalinclude} sample_data/get_observation_2.json
 ```
 :::
 
 ### Previewing Responses
 These responses can contain large amounts of response attributes, making it somewhat cumbersome if you
-just want to quickly preview results (for example, in a Jupyter notebook or REPL).
-For that purpose, a handy {py:func}`~pyinaturalist.formatters.pprint` function is included that will
-format and print responses and model objects as a condensed, colorized table.
+just want to quickly preview results (for example, in a Jupyter notebook). For that purpose, the
+{py:func}`~pyinaturalist.formatters.pprint` function is included to format response data as a
+condensed, color-highlighted table.
 
 **Examples:**
 

@@ -51,18 +51,26 @@ class Observation(BaseModel):
     faves: List[Dict] = field(factory=list, doc='Details on users who have favorited the observation')
     geoprivacy: str = field(default=None, options=GEOPRIVACY_LEVELS, doc='Location privacy level')
     identifications_count: int = field(default=None, doc='Total number of identifications')
-    identifications_most_agree: bool = field(default=None, doc='Indicates if most identifications agree')
-    identifications_most_disagree: bool = field(
-        default=None, doc='Indicates if most identifications disagree'
+    identifications_most_agree: bool = field(
+        default=None, doc='Indicates if most identifications agree with the community ID'
     )
-    identifications_some_agree: bool = field(default=None, doc='Indicates if some identifications agree')
+    identifications_most_disagree: bool = field(
+        default=None, doc='Indicates if most identifications disagree with the community ID'
+    )
+    identifications_some_agree: bool = field(
+        default=None, doc='Indicates if some identifications agree with the community ID'
+    )
     license_code: str = field(
         default=None, converter=upper, options=ALL_LICENSES, doc='Creative Commons license code'
     )
     location: Coordinates = coordinate_pair()
     mappable: bool = field(default=None, doc='Indicates if the observation can be shown on a map')
-    num_identification_agreements: int = field(default=None, doc='Total agreeing identifications')
-    num_identification_disagreements: int = field(default=None, doc='Total disagreeing identifications')
+    num_identification_agreements: int = field(
+        default=None, doc='Total identifications that agree with the community ID'
+    )
+    num_identification_disagreements: int = field(
+        default=None, doc='Total identifications that disagree with the community ID'
+    )
     oauth_application_id: str = field(
         default=None, doc='ID of the OAuth application used to create the observation, if any'
     )
