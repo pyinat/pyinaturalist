@@ -254,7 +254,7 @@ place to start.
 Other python projects related to iNaturalist:
 
 * [Dronefly](https://github.com/synrg/dronefly): A Discord bot with iNaturalist data access features,
+  used by the iNaturalist Discord server.
 * [pyinaturalist-convert](https://github.com/JWCook/pyinaturalist-convert): Tools to convert observation data to and from multiple formats
 * [pyinaturalist-open-data](https://github.com/JWCook/pyinaturalist-open-data):  Tools for working with [iNaturalist open data](https://registry.opendata.aws/inaturalist-open-data/)
 * [pyinaturalist-notebook](https://github.com/JWCook/pyinaturalist-notebook): Jupyter notebook Docker image for pyinaturalist
-  used by the iNaturalist Discord server.
