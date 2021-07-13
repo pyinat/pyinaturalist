@@ -1,6 +1,6 @@
 # History
 
-## 0.14 (2021-07-TBD)
+## 0.14 (2021-07-14)
 [See all Issues & PRs for 0.14](https://github.com/niconoe/pyinaturalist/milestone/5?closed=1)
 
 ### New Endpoints
@@ -66,8 +66,9 @@ Model features:
     * `formatters`
     * `request_params`
 * Added a default response timeout of 5 seconds
-* Added `examples/sample_responses.py`, containint response JSON, model objects, and tables of every type to experiment with
-* Set up pyinaturalist-notebook to [runnable with Binder](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
+* Added an example (`examples/sample_responses.py`) containing response JSON, model objects, and tables of every type to experiment with
+* Added a tutorial notebook (`examples/Tutorial.ipynb`)
+* Set up pyinaturalist-notebook to be [runnable with Binder](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
 
 -----
 ## 0.13 (2021-05-22)

@@ -18,13 +18,11 @@ Docker image, which you can also use to run these examples on a local Jupyter se
 .. toctree::
     :maxdepth: 2
 
+    examples/Tutorial.ipynb
     examples/Data Visualizations - Regional Activity Report.ipynb
     examples/Data Visualizations - Regional Observation Stats.ipynb
     examples/Data Visualizations - Seaborn.ipynb
     examples/Data Visualizations - Matplotlib.ipynb
-
-.. examples/observations_to_gpx.py
-
 
 .. TODO: Can't generate thumbnails for Altair visualizations
 .. .. nbgallery::
@@ -32,7 +30,6 @@ Docker image, which you can also use to run these examples on a local Jupyter se
 ..     :name: nb-gallery
 ..
 ..     ../examples/Data Visualizations - Regional Observation Stats.ipynb
-
 
 Scripts
 -------

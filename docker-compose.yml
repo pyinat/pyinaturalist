@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  jupyter:
+    container_name: jupyter
+    image: jxcook/pyinaturalist-notebook
+    ports:
+      - 8888:8888
+    volumes:
+      - .:/home/jovyan/work
+    restart: unless-stopped
+    # environment:
+      # Set any value here to use as a token instead of generating one
+      # JUPYTER_TOKEN: 'token goes here'
