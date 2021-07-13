@@ -1,4 +1,7 @@
-from typing import Optional, Tuple
+from io import BytesIO
+from typing import BinaryIO, Optional, Tuple
+
+import requests
 
 from pyinaturalist.constants import ALL_LICENSES, CC_LICENSES, PHOTO_INFO_BASE_URL, PHOTO_SIZES, TableRow
 from pyinaturalist.converters import format_dimensions, format_license
@@ -86,17 +89,19 @@ class Photo(BaseModel):
             return None
         return self._url_format.format(size=size)
 
-    def open(self, size: str = 'large'):
+    def open(self, size: str = 'large') -> BinaryIO:
+        """Download the image and return as a file-like object"""
+        url = self.url_size(size)
+        return requests.get(url, stream=True).raw if url else BytesIO()
+
+    def show(self, size: str = 'large'):
         """Download and display the image with the system's default image viewer.
-        Experimental / requires ``pillow``
+        Requires ``pillow``.
         """
-        import requests
         from PIL import Image
 
-        url = self.url_size(size)
-        if url:
-            img = Image.open(requests.get(url, stream=True).raw)
-            img.show()
+        img = Image.open(self.open(size=size))
+        img.show()
 
     @property
     def row(self) -> TableRow:
