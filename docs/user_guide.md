@@ -87,8 +87,9 @@ See the {ref}`reference-docs` section for a complete list of functions available
 ## Responses
 API responses are returned as JSON, with some python type conversions applied (similar to the
 request type conversions mentioned above). Example response data is shown in the documentation for
-each request function, for example {py:func}`~pyinaturalist.v1.observations.get_observations`
+each request function, for example {py:func}`~pyinaturalist.v1.observations.get_observations`.
 
+### API Data vs Web UI
 Here is how some of those response fields correspond to observation details shown on
 iNaturalist.org:
 ```{figure} images/inat-observation-page-annotated.png
