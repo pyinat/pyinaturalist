@@ -10,7 +10,7 @@ SearchResultRecord = Union[Place, Project, Taxon, User]
 
 @define_model
 class SearchResult(BaseModel):
-    """🔍 A search result of any type, based on the schema of
+    """:fa:`search` A search result of any type, based on the schema of
     `GET /search <https://api.inaturalist.org/v1/docs/#!/Search/get_search>`_.
     """
 

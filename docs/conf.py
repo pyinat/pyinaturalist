@@ -48,7 +48,6 @@ NOTEBOOK_DIR_COPY = join(DOCS_DIR, 'examples')
 # General information about the project.
 copyright = '2021, Nicolas Noé, Jordan Cook'
 exclude_patterns = ['_build', f'{MODULE_DOCS_DIR}/pyinaturalist.rst']
-html_static_path = ['_static']
 master_doc = 'index'
 needs_sphinx = '4.0'
 project = 'pyinaturalist'
@@ -68,6 +67,7 @@ extensions = [
     'sphinx_automodapi.smart_resolver',
     'sphinx_copybutton',
     'sphinx_inline_tabs',
+    'sphinx_panels',
     'sphinxcontrib.apidoc',
     'myst_parser',
     'nbsphinx',
@@ -134,11 +134,16 @@ autosummary_imported_members = False
 numpydoc_show_class_members = False
 
 # HTML general settings
-html_logo = join('images', 'pyinaturalist_logo.png')
-# html_logo = join('images', 'python-logo-green.png')
-html_favicon = join('images', 'favicon.ico')
+html_static_path = ['_static']
+html_favicon = join('_static', 'favicon.ico')
+html_logo = join('_static', 'pyinaturalist_logo.png')
 html_js_files = ['collapsible_container.js']
-html_css_files = ['collapsible_container.css', 'table.css']
+html_css_files = [
+    'collapsible_container.css',
+    'colors.sass',
+    'table.css',
+    'https://use.fontawesome.com/releases/v5.15.3/css/all.css',
+]
 html_show_sphinx = False
 pygments_style = 'friendly'
 pygments_dark_style = 'material'
