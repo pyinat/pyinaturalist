@@ -39,6 +39,7 @@ rich = ">=10.0"
 
 # Documentation dependencies needed for Readthedocs builds
 furo = {version = "2021.7.5b38", optional = true}
+ipython = {version = "^7.25.0", optional = true, python = ">=3.7"}
 linkify-it-py = {version = "^1.0.1", optional = true}
 myst-parser = {version = "^0.15.1", optional = true}
 nbsphinx = { version = "^0.8.5", optional = true }
@@ -52,7 +53,7 @@ sphinxcontrib-apidoc = { version = "^0.3", optional = true }
 
 [tool.poetry.extras]
 all = []  # Placeholder for optional dependencies needed to run examples in docs
-docs = ["furo", "linkify-it-py", "myst-parser", "nbsphinx", "sphinx", "sphinx-automodapi",
+docs = ["furo", "ipython", "linkify-it-py", "myst-parser", "nbsphinx", "sphinx", "sphinx-automodapi",
         "sphinx-autodoc-typehints", "sphinx-copybutton", "sphinx-inline-tabs", "sphinx-panels",
         "sphinxcontrib-apidoc"]
 
