@@ -14,7 +14,7 @@ from pyinaturalist.models import (
 
 @define_model
 class Identification(BaseModel):
-    """🔎 An observation identification, based on the schema of
+    """:fa:`fingerprint,style=fas` An observation identification, based on the schema of
     `GET /identifications <https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications>`_.
     """
 

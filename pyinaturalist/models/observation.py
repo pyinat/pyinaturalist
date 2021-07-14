@@ -38,7 +38,7 @@ from pyinaturalist.v1 import get_observation
 
 @define(auto_attribs=False, init=False, field_transformer=add_lazy_attrs)
 class Observation(BaseModel):
-    """👤🔎🐦 An observation, based the schema of
+    """:fa:`binoculars` An observation, based the schema of
     `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
     """
 
@@ -232,7 +232,7 @@ class Observation(BaseModel):
 
 @define_model_collection
 class Observations(BaseModelCollection):
-    """👥🔍🐦 A collection of observations"""
+    """:fa:`binoculars` A collection of observations"""
 
     data: List[Observation] = field(factory=list, converter=Observation.from_json_list)
 

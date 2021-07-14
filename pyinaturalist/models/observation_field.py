@@ -28,7 +28,7 @@ OFVValue = Union[date, datetime, float, int, str]
 
 @define_model
 class ObservationField(BaseModel):
-    """📋 An observation field **definition**, based on the schema of
+    """:fa:`tag` An observation field **definition**, based on the schema of
     `GET /observation_fields <https://www.inaturalist.org/pages/api+reference#get-observation_fields>`_.
     """
 
@@ -59,7 +59,7 @@ class ObservationField(BaseModel):
 
 @define_model
 class ObservationFieldValue(BaseModel):
-    """📝 An observation field **value**, based on the schema of ``Observation.ofvs``
+    """:fa:`tag` An observation field **value**, based on the schema of ``Observation.ofvs``
     from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
     """
 

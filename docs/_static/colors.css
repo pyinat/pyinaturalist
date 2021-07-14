@@ -1,0 +1,7 @@
+/* Main theme colors */
+.md-primary {color: var(--color-brand-primary)}
+.md-secondary {color: var(--color-brand-content)}
+
+/* Color for Font Awesome icons */
+span.fa {color: var(--color-brand-primary)}
+span.fas {color: var(--color-brand-primary)}
