@@ -80,13 +80,21 @@ Here are some general guidelines for submitting a pull request:
 - Submit the PR to be merged into the `main` branch.
 
 ### Releases
-For maintainers:
+Notes for maintainers on publishing new releases:
 
 Releases are based on git tags. GitHub Actions will build and deploy packages to PyPi on tagged commits
 on the `main` branch. Release steps:
-- Update the version in `pyinaturalist/__init__.py`
+- Update the version in both `pyproject.toml` and `pyinaturalist/__init__.py`
 - Update the release notes in `HISTORY.md`
 - Merge changes into the `main` branch
-- Push a new tag, e.g.: `git tag v0.1 && git push origin --tags`
+- Push a new tag, e.g.: `git tag v0.1.0 && git push upstream --tags`
 - This will trigger a deployment. Verify that this completes successfully and that the new version
-  can be installed from pypi with `pip install`
+  can be installed from PyPI with `pip install pyinaturalist`.
+- Verify that the docs are built and published to [Read The Docs](https://pyinaturalist.readthedocs.io).
+- A PR for a new Conda release will be created by a bot on the [pyinaturalist-feedstock](https://github.com/conda-forge/pyinaturalist-feedstock/)
+  repo. It may take a couple hours after PyPI deployment for this to happen. Typically this will be
+  auto-merged and built without any manual action required. Just verify that this completes successfully
+  and that the new version can be installed from conda-forge with `conda install -c conda-forge pyinaturalist`.
+  - If new depedencies have been added, then those must also be added to the [conda recipe](https://github.com/conda-forge/pyinaturalist-feedstock/blob/master/recipe/meta.yaml).
+- Update and build the Docker image for [pyinaturalist-notebook](https://github.com/JWCook/pyinaturalist-notebook).
+  - TODO: This should be fully automated, and triggered after the Conda build rather than the PyPI build.
