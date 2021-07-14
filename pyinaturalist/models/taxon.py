@@ -146,6 +146,9 @@ class Taxon(BaseModel):
     rank: str = field(default=None, options=RANKS, doc='Taxon rank')
     taxon_changes_count: int = field(default=None, doc='Number of curator changes to this taxon')
     taxon_schemes_count: int = field(default=None, doc='Taxon schemes that include this taxon')
+    vision: bool = field(
+        default=None, doc='Indicates if this taxon is included in the computer vision model'
+    )
     wikipedia_summary: str = field(
         default=None, doc='Taxon summary from Wikipedia article, if available'
     )

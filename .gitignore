@@ -9,6 +9,7 @@ downloads/
 *.egg-info
 .installed.cfg
 .mypy_cache/
+.venv
 bin
 build
 develop-eggs

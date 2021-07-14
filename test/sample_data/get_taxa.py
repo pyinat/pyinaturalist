@@ -47,6 +47,7 @@
             'matched_term': 'Vespidae',
             'iconic_taxon_name': 'Insecta',
             'preferred_common_name': 'Hornets, Paper Wasps, Potter Wasps, and Allies',
+            'vision': True,
         },
         {
             'observations_count': 4,
@@ -80,6 +81,7 @@
             'ancestor_ids': [48460, 1, 2, 355675, 47178, 47286, 51544, 92786],
             'matched_term': 'Vespicula',
             'iconic_taxon_name': 'Actinopterygii',
+            'vision': True,
         },
     ],
 }

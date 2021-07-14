@@ -55,7 +55,8 @@
       ],
       "matched_term": "Nicrophorus vespilloides",
       "iconic_taxon_name": "Insecta",
-      "preferred_common_name": "Lesser Vespillo Burying Beetle"
+      "preferred_common_name": "Lesser Vespillo Burying Beetle",
+      "vision": true
     },
     {
       "observations_count": 187,
@@ -109,7 +110,8 @@
       ],
       "matched_term": "Nicrophorus vespillo",
       "iconic_taxon_name": "Insecta",
-      "preferred_common_name": "Vespillo Burying Beetle"
+      "preferred_common_name": "Vespillo Burying Beetle",
+      "vision": true
     },
     {
       "observations_count": 55,
@@ -164,7 +166,8 @@
         124162
       ],
       "matched_term": "Temnostoma vespiforme",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 39,
@@ -217,7 +220,8 @@
       ],
       "matched_term": "S\u00e9sie vespiforme",
       "iconic_taxon_name": "Insecta",
-      "preferred_common_name": "Yellow-legged Clearwing"
+      "preferred_common_name": "Yellow-legged Clearwing",
+      "vision": true
     },
     {
       "observations_count": 29,
@@ -267,7 +271,8 @@
         270746
       ],
       "matched_term": "Franklinothrips vespiformis",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 12,
@@ -319,7 +324,8 @@
         495392
       ],
       "matched_term": "Vespidae st1",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 11,
@@ -373,7 +379,8 @@
         466251
       ],
       "matched_term": "Ceriana vespiformis",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 7,
@@ -428,7 +435,8 @@
         882585
       ],
       "matched_term": "Bembix vespiformis",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 7,
@@ -482,7 +490,8 @@
         633966
       ],
       "matched_term": "Zelus vespiformis",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 4,
@@ -536,7 +545,8 @@
         560666
       ],
       "matched_term": "Ctenagenia vespiformis",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 4,
@@ -590,7 +600,8 @@
         752716
       ],
       "matched_term": "Pseudopolybia vespiceps vespiceps",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 3,
@@ -643,7 +654,8 @@
         886207
       ],
       "matched_term": "Hypodynerus vespiformis",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 2,
@@ -680,7 +692,8 @@
         84737
       ],
       "matched_term": "Vespina",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 2,
@@ -734,7 +747,8 @@
         605184
       ],
       "matched_term": "Moronopelios vespiformis",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 2,
@@ -789,7 +803,8 @@
         876493
       ],
       "matched_term": "Sphecomyia vespiformis",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 1,
@@ -843,7 +858,8 @@
         983565
       ],
       "matched_term": "Codula vespiformis",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -880,7 +896,8 @@
         621584
       ],
       "matched_term": "Vespicula cypho",
-      "iconic_taxon_name": "Actinopterygii"
+      "iconic_taxon_name": "Actinopterygii",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -926,7 +943,8 @@
         621585
       ],
       "matched_term": "Vespicula trachinoides",
-      "iconic_taxon_name": "Actinopterygii"
+      "iconic_taxon_name": "Actinopterygii",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -963,7 +981,8 @@
         621586
       ],
       "matched_term": "Vespicula zollingeri",
-      "iconic_taxon_name": "Actinopterygii"
+      "iconic_taxon_name": "Actinopterygii",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -1004,7 +1023,8 @@
         915291
       ],
       "matched_term": "Pygodasis vespiformis",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -1039,7 +1059,8 @@
         554174
       ],
       "matched_term": "Candida vespimorsuum",
-      "iconic_taxon_name": "Fungi"
+      "iconic_taxon_name": "Fungi",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -1079,7 +1100,8 @@
         299443
       ],
       "matched_term": "Vespita woolleyi",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -1120,7 +1142,8 @@
         907874
       ],
       "matched_term": "Argyroeides vespina",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -1160,7 +1183,8 @@
         646195
       ],
       "matched_term": "Vespiodes",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -1205,7 +1229,8 @@
         92786
       ],
       "matched_term": "Vespicula",
-      "iconic_taxon_name": "Actinopterygii"
+      "iconic_taxon_name": "Actinopterygii",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -1246,7 +1271,8 @@
         267991
       ],
       "matched_term": "Pseudopsis vespina",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -1286,7 +1312,8 @@
         833068
       ],
       "matched_term": "Mimetus vespillo",
-      "iconic_taxon_name": "Arachnida"
+      "iconic_taxon_name": "Arachnida",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -1330,7 +1357,8 @@
         572367
       ],
       "matched_term": "Odyneropsis vespiformis",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -1369,7 +1397,8 @@
         250566
       ],
       "matched_term": "Vespita",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     },
     {
       "observations_count": 0,
@@ -1407,7 +1436,8 @@
         472528
       ],
       "matched_term": "Vespina quercivora",
-      "iconic_taxon_name": "Insecta"
+      "iconic_taxon_name": "Insecta",
+      "vision": true
     }
   ]
 }
