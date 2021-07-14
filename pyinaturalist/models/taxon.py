@@ -90,7 +90,7 @@ class EstablishmentMeans(BaseModel):
 
 @define_model
 class Taxon(BaseModel):
-    """:fa:`dove` An iNaturalist taxon, based on the schema of
+    """:fa:`dove,style=fas` An iNaturalist taxon, based on the schema of
     `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_.
 
     Can be constructed from either a full or partial JSON record. Examples of partial records
@@ -266,7 +266,7 @@ class Taxon(BaseModel):
 
 @define_model
 class TaxonCount(Taxon):
-    """:fa:`dove` :fa:`list` A :py:class:`.Taxon` with an associated count, used in a :py:class:`.TaxonCounts`
+    """:fa:`dove,style=fas` :fa:`list` A :py:class:`.Taxon` with an associated count, used in a :py:class:`.TaxonCounts`
     collection
     """
 
@@ -296,7 +296,7 @@ class TaxonCount(Taxon):
 
 @define_model_collection
 class TaxonCounts(BaseModelCollection):
-    """:fa:`dove` :fa:`list` A collection of taxa with an associated counts. Used with
+    """:fa:`dove,style=fas` :fa:`list` A collection of taxa with an associated counts. Used with
     `GET /observations/species_counts <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_species_counts>`_.
     as well as :py:class:`.LifeList`.
     """

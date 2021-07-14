@@ -140,9 +140,10 @@ html_logo = join('_static', 'pyinaturalist_logo.png')
 html_js_files = ['collapsible_container.js']
 html_css_files = [
     'collapsible_container.css',
-    'colors.sass',
+    'colors.css',
     'table.css',
     'https://use.fontawesome.com/releases/v5.15.3/css/all.css',
+    'https://use.fontawesome.com/releases/v5.15.3/css/v4-shims.css',
 ]
 html_show_sphinx = False
 pygments_style = 'friendly'

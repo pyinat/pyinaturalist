@@ -4,3 +4,4 @@
 
 /* Color for Font Awesome icons */
 span.fa {color: var(--color-brand-primary)}
+span.fas {color: var(--color-brand-primary)}
