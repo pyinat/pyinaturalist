@@ -1,6 +1,7 @@
 # Minimal makefile for Sphinx documentation
 SPHINXOPTS     ?= -j auto
 SPHINXBUILD    ?= sphinx-build
+AUTOOPTS       = --ignore '*.csv' --port 8181
 SOURCEDIR      = .
 AUTOSOURCEDIRS = $(SOURCEDIR)/api $(SOURCEDIR)/models $(SOURCEDIR)/modules
 BUILDDIR       = _build
@@ -15,6 +16,9 @@ all: clean clean-apidoc html
 
 clean-apidoc:
 	rm -rf $(AUTOSOURCEDIRS)
+
+livehtml:
+	sphinx-autobuild "$(SOURCEDIR)" "$(BUILDDIR)"/html $(SPHINXOPTS) $(AUTOOPTS) $(O) 
 
 # Catch-all target: route all unknown targets to Sphinx builder
 %: Makefile
