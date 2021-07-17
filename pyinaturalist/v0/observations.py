@@ -82,15 +82,15 @@ def get_observations(**params) -> Union[List, str]:
     Returns:
         Return type will be ``dict`` for the ``json`` response format, and ``str`` for all others.
     """
-    converters = params.pop('converters', 'json')
-    if converters == 'geojson':
+    response_format = params.pop('response_format', 'json')
+    if response_format == 'geojson':
         raise ValueError('For geojson format, use pyinaturalist.v1.get_geojson_observations')
-    if converters not in OBSERVATION_FORMATS:
+    if response_format not in OBSERVATION_FORMATS:
         raise ValueError('Invalid response format')
     validate_multiple_choice_param(params, 'order_by', REST_OBS_ORDER_BY_PROPERTIES)
 
-    response = get(f'{API_V0_BASE_URL}/observations.{converters}', **params)
-    if converters == 'json':
+    response = get(f'{API_V0_BASE_URL}/observations.{response_format}', **params)
+    if response_format == 'json':
         observations = response.json()
         observations = convert_all_coordinates(observations)
         observations = convert_all_timestamps(observations)

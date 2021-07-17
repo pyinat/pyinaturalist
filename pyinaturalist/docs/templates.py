@@ -283,7 +283,7 @@ def _observation_rest_only(
     h1: AnyDate = None,
     h2: AnyDate = None,
     extra: str = None,
-    converters: str = 'json',
+    response_format: str = 'json',
 ):
     """
     has: Catch-all for some boolean selectors. This can be used multiple times, e.g.
@@ -298,7 +298,7 @@ def _observation_rest_only(
         **'fields'** returns observation field values,
         **'observation_photos'** returns information about the photos' relationship with the
         observation, like their order.
-    converters: A supported response format to return
+    response_format: A supported response format to return
     """
 
 

@@ -35,9 +35,13 @@ class BaseModel:
         Omits any invalid fields and ``None`` values, so we use our default factories instead
         (e.g. for empty dicts and lists).
         """
+        if isinstance(value, cls):
+            return value
+
         attr_names = [a.lstrip('_') for a in fields_dict(cls)]
         if cls.temp_attrs:
             attr_names.extend(cls.temp_attrs)
+
         valid_json = {k: v for k, v in value.items() if k in attr_names and v is not None}
         return cls(**valid_json, **kwargs)  # type: ignore
 

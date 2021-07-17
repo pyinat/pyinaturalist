@@ -1,6 +1,9 @@
 # History
 
-## 0.14 (2021-07-14)
+## 0.14.1 (2021-07-TBD)
+* Fix broken `response_format` parameter in `v0.get_observations()`
+
+## 0.14.0 (2021-07-14)
 [See all Issues & PRs for 0.14](https://github.com/niconoe/pyinaturalist/milestone/5?closed=1)
 
 ### New Endpoints
@@ -71,7 +74,7 @@ Model features:
 * Set up pyinaturalist-notebook to be [runnable with Binder](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
 
 -----
-## 0.13 (2021-05-22)
+## 0.13.0 (2021-05-22)
 [See all Issues & PRs for 0.13](https://github.com/niconoe/pyinaturalist/milestone/4?closed=1)
 
 ### New Endpoints
@@ -120,7 +123,7 @@ Model features:
 ### 0.12.1 (2021-03-07)
 * Add undocumented `ident_user_id` parameter to `get_observations()`
 
-## 0.12 (2021-02-02)
+## 0.12.0 (2021-02-02)
 [See all Issues & PRs for 0.12](https://github.com/niconoe/pyinaturalist/milestone/3?closed=1)
 
 ### New Endpoints
@@ -159,7 +162,7 @@ Model features:
 * Removed request parameters that were deprecated in 0.11
 
 -----
-## 0.11 (2020-11-04)
+## 0.11.0 (2020-11-04)
 [See all Issues & PRs for 0.11](https://github.com/niconoe/pyinaturalist/milestone/2?closed=1)
 
 ### New Endpoints
@@ -203,7 +206,7 @@ Model features:
 * Added testing & support for python 3.9
 * Added parameter validation for multiple-choice request parameters
 
-## 0.10 (2020-06-16)
+## 0.10.0 (2020-06-16)
 [See all Issues & PRs for 0.10](https://github.com/niconoe/pyinaturalist/milestone/1?closed=1)
 
 ### New Endpoints
@@ -223,7 +226,7 @@ Model features:
 
 * Bugfix: proper support for boolean and integer list parameters ([Issue #17](https://github.com/niconoe/pyinaturalist/issues/17))
 
-## 0.9 (2020-05-06)
+## 0.9.0 (2020-05-06)
 
 ### New Endpoints
 * Added new functions for Node API **Taxa** endpoints:
@@ -232,38 +235,38 @@ Model features:
     * `node_api.get_taxa_autocomplete()`
     * `node_api.get_taxa_by_id()`
 
-## 0.8 (2019-07-11)
+## 0.8.0 (2019-07-11)
 
 * All functions now take an optional `user-agent <https://en.wikipedia.org/wiki/User_agent>`_ parameter in order to identify yourself to iNaturalist. If not set, `Pyinaturalist/<VERSION>` will be used.
 
-## 0.7 (2019-05-08)
+## 0.7.0 (2019-05-08)
 
 * `rest_api.delete_observation()` now raises `ObservationNotFound` if the observation doesn't exist
 * minor dependencies update for security reasons
 
-## 0.6 (2018-11-15)
+## 0.6.0 (2018-11-15)
 
 * New function: `rest_api.delete_observation()`
 
-## 0.5 (2018-11-05)
+## 0.5.0 (2018-11-05)
 
 * New function: `node_api.get_observation()`
 
-## 0.4 (2018-11-05)
+## 0.4.0 (2018-11-05)
 
 * `create_observation()` now raises exceptions in case of errors.
 
-## 0.3 (2018-11-05)
+## 0.3.0 (2018-11-05)
 
 * `update_observation()` now raises exceptions in case of errors.
 
-## 0.2 (2018-10-31)
+## 0.2.0 (2018-10-31)
 
 * Better infrastructure (type annotations, documentation, ...)
 * Dropped support for Python 2.
 * New function: `update_observation()`
 * `rest_api.AuthenticationError` is now `exceptions.AuthenticationError`
 
-## 0.1 (2018-10-10)
+## 0.1.0 (2018-10-10)
 
 * First release on PyPI.
