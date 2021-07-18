@@ -487,6 +487,19 @@ def _taxon_id_params(
     """
 
 
+# Posts
+# --------------------
+
+
+def _get_posts(login: str = None, project_id: int = None, page: int = None, per_page: int = None):
+    """
+    login: Return posts by this user
+    project_id: Return posts from this project
+    page: Pagination page number
+    per_page: Number of results to return in a page. The maximum value is generally 200 unless otherwise noted
+    """
+
+
 # Individual/common params
 # ------------------------
 

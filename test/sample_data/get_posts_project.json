@@ -1,0 +1,312 @@
+[
+  {
+    "id": 47326,
+    "parent_id": 100,
+    "parent_type": "Project",
+    "user_id": 4079,
+    "published_at": "2021-03-06T12:57:02.901Z",
+    "title": "Taxonomy | Erebidae | Arctiinae | Lithosiini | \"Miltochrista alikangiae\"",
+    "body": "more \"progress\" - this time another commonly observed taxon in Hong Kong that has been attributed to the species <b><I>alikangiae</i> <small>Strand, 1917</small></b>, until recently in <I>Lyclene</i> and latterly of <I>Miltochrista</i>\r\n\r\nThere is a recent paper that looks at the <I>alikangiae</i> species group - <a href=\"https://www.biotaxa.org/Zootaxa/article/view/zootaxa.4869.1.4\">Volynkin & Černý, 2020</a> (most of which can be <a href=\"https://zenodo.org/record/4418380#.YENMw477SUk\">seen on Zenodo</a> - that places this group into a newly described genus: <B><i>Huangilene</i></b>.  So we now have to refer the Hong Kong taxon to the genus <I>Huangilene</i>. So far, so good. Even I can manage that!\r\n\r\nNow is where it pays to be a bit more attentive.\r\nThe abstract of Volynkin & Černý, 2020, is as follows (my paragraph formatting to make it easier to follow, with figure numbers from the paper's illustrations (added at the bottom herewith) appended in curly brackets):\r\n<pre>\r\nAbstract\r\nThe new genus Huangilene Volynkin & Černý, gen. n. is erected for the\r\nMiltochrista alikangiae (Strand, 1917) species-group with Lyclene kepica Dubatolov\r\n& Bucsek, 2013 as the type species. \r\n\r\nThree new species are described: \r\nH. odontotilepida Volynkin & Černý, sp. n. (Thailand, Cambodia, Laos), {4, 5, 6}\r\nH. kutzscheri Volynkin & Černý, sp. n. (continental China and Taiwan Isl.) {7 to 10} and \r\nH. apoklinousa Volynkin & Černý, sp. n. (Vietnam) {26 to 29}. \r\n\r\nFour new combinations are established: \r\nHuangilene kepica (Dubatolov & Bucsek, 2013), comb. n., {1, 2, 3}\r\nH. pseudolutara (N. Singh & Kirti, 2016), comb. n., {11 to 18}\r\nH. alikangiae alikangiae (Strand, 1917), comb. n. {19 to 22}\r\nH. alikangiae intermedia (Marumo, 1923), comb. n.  {23 to 25}\r\n\r\nThe lectotype is designated for Asura obsoleta Form alikangiae Strand, 1917,\r\nthe species’ type locality is fixed as “Karapin” (Taiwan, Chiayi County, Chaoliping).</pre>\r\n\r\nNow then, for Hong Kong these newly defined taxa do not fit with what can be observed with certainty.  On geography, One would expect H. kutzscheri to be the species found in Hong Kong, based on the geographic distribution given by Volynkin & Černý, 2020. However, the males of this taxon <i>do not</i> have black abdominal scales on the last few segments. Of the species that <I>do</i> have black scale tufts, <I>pseudolutara</i> occurs too far west, and has an incomplete ring of black scales, leaving only the Vietnamese taxon, <I>apoklinousa</i> with a full set of balck abdominal scales. The problem here is that the gap between the sub-medial fascia and the post-medial fascia is relatively small compared to that observed in Hong Kong material.\r\nHow to get round these differences - well for now I am going to suggest the HK taxon is placed only to genus for iNat id purposes, ie. <I>Huangilene</i>.  What are the realistic options?  Only time will tell - dissection for morphological analysis of the abdominal components and a thorough molecular analysis are needed to resolve the issue.  For now, though, I will refer to the HK taxon as <B><i>Huangilene</i> sp. cf. <i>apoklinousa</i></b>.\r\n\r\nSource:\r\nhttps://zenodo.org/record/4418380#.YENMw477SUk\r\nwith the species treated on separate pages to the right side (related identifiers..... parts)\r\n\r\n<img src=\"https://zenodo.org/api/iiif/v2/6a508d19-5399-4f97-a8db-893bcdea2b4b:b0a5edac-32ec-4efc-a2c3-84e5abb5a0f8:figure.png/full/750,/0/default.png\">\r\n<img src=\"https://zenodo.org/api/iiif/v2/fa845280-9080-4ceb-84c7-69248e183f68:50d4a9fd-aef4-40fc-9431-1aa86c14d7ba:figure.png/full/750,/0/default.png\">\r\n<img src=\"https://zenodo.org/api/iiif/v2/30e262e5-3b02-4a0d-aef8-0582fb2d8c59:335b034f-3548-41a4-90e3-b9e4a8ec792f:figure.png/full/750,/0/default.png\">",
+    "created_at": "2021-03-06T12:57:02.902Z",
+    "updated_at": "2021-03-16T09:50:50.052Z",
+    "start_time": null,
+    "stop_time": null,
+    "place_id": null,
+    "latitude": null,
+    "longitude": null,
+    "radius": null,
+    "distance": null,
+    "number": null,
+    "uuid": "471742b6-0af6-4923-9f7c-3719689be297",
+    "user": {
+      "id": 4079,
+      "login": "hkmoths",
+      "user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/thumb.jpg?1619358393",
+      "medium_user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/medium.jpg?1619358393"
+    },
+    "parent": {
+      "id": 100,
+      "title": "Hong Kong Moths  香港蛾類",
+      "icon_url": "https://static.inaturalist.org/projects/100-icon-span2.jpg?1505453589"
+    }
+  },
+  {
+    "id": 46265,
+    "parent_id": 100,
+    "parent_type": "Project",
+    "user_id": 4079,
+    "published_at": "2021-02-08T15:36:32.451Z",
+    "title": "Taxonomy | Geometridae | Obeidia tigrata",
+    "body": "Well here's news that affects one of the most observed moth species in Hong Kong..... <B><I>Obeidia tigrata</i></b>\r\n\r\nI have been rumaging through the newly available issues of Tinea (pdf) <a href=\"http://www.moth.jp/pubs/tinea\">(volumes 10 to 22)</a>, and finally found where the change of genus from <I>Obeidia</i> to <I>Epobeidia</i> came from - Inoue, 2003, <I>Tinea</i> <b>17</b>:  143.\r\n\r\nFurther - the HK version is referable to the nominate subspecies, with all orange ground colour. Now.... I've done the necessary updates to the iNat database, but there are hundreds of observations that will be in need of the id refining to subspecies......\r\nAll the Hong Kong (and Macau, Vietnam, India & southern mainland China) observations with no white on the hindwings are now referable to <B><I>Epobeidia tigrata tigrata</i></B>.\r\nThe other subspecies are <i>E. t. leopardaria</i> <small>(Oberthür, 1881)</small> from western Honshu (Japan), the Korean peninsula, as well as (at least) Shanxi and Shaanxi provinces in mainland China; and <i>E. t. maxima</i>, which is restricted to the island of Taiwan.",
+    "created_at": "2021-02-08T15:36:32.452Z",
+    "updated_at": "2021-02-08T15:43:13.953Z",
+    "start_time": null,
+    "stop_time": null,
+    "place_id": null,
+    "latitude": null,
+    "longitude": null,
+    "radius": null,
+    "distance": null,
+    "number": null,
+    "uuid": "d3e9bf9f-e1e1-4f45-8763-60ff96f493d8",
+    "user": {
+      "id": 4079,
+      "login": "hkmoths",
+      "user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/thumb.jpg?1619358393",
+      "medium_user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/medium.jpg?1619358393"
+    },
+    "parent": {
+      "id": 100,
+      "title": "Hong Kong Moths  香港蛾類",
+      "icon_url": "https://static.inaturalist.org/projects/100-icon-span2.jpg?1505453589"
+    }
+  },
+  {
+    "id": 39867,
+    "parent_id": 100,
+    "parent_type": "Project",
+    "user_id": 4079,
+    "published_at": "2020-08-28T15:27:57.462Z",
+    "title": "Taxonomy | Tortricidae | Olethreutinae",
+    "body": "<I><B>Sycacantha inodes</B></I> is confirmed for Hong Kong.\r\nSounds easy, but there's a complicated background to this story.\r\n\r\nStarts back in 1981, when the Oxford University Far East Expedition diverted from Borneo to Hong Kong and undertook a few months moth recording here.\r\nAll the Tortricidae material was written up by Dr. John Bradley, a global authority on Tortricidae, for the OUFEE report (1982). He misidentified a fairly commonly recorded tortrix as <I>Sisona albitibiana</i> <small> (Snellen, 1902)</small> in the literature known only from the type material, recorded from Java <small>(Diakonoff, 1973)</small>. \r\n\r\nFor my work in the 1990s in Hong Kong (my BSc final year project and my PhD fieldwork) I recorded the same species (without reference to the Bradley report) as females of <I>Cryptophlebia repletana</i>.\r\n\r\nNow, writing the third (and final) draft of the tortricid section for the forthcoming <I>Illustrated Guide to the Moths of Hong Kong</i>, I have been able to trace the errors of the past through the relative ease of access to information provided on the internet, and updated works on the genus <I>Sycacantha</i>. \r\n\r\nOver the last few years, a number of observations of unidentified olethreutine species from Hong Kong have been placed on iNat. I have finally been able to go through old and new resources that have enabled most of these taxa to be placed to genus (either <I>Sycacantha</i> or <I>Phaecasiophora</i>), as well as some to species rank.  \r\n\r\nOne of the main problems I had was with the \"female\" <I>Cryptophlebia repletana</i>, an identification I was not happy with upon seeing Pinkaew's PhD thesis from 2006 on the Olethreutinae from Kanchanaburi Province, Thailand, which illustrated both <I>Cryptophlebia repletana</i> and a number of <I>Sycacantha</i> species, including one that resembles the \"female\" <I>Cryptophlebia repletana</i> of my fieldwork. \r\n\r\nSearching further for information on <i>Sisona</i> and <i>Sycacantha</I>, I found the recent paper in Zootaxa (Feng et al., 2019) on Chinese <I>Sycacantha</i> listed <I>S. inodes</i> and <I>S. inopinata</i>, the former listing <i>albitibiana</i> Meyrick as a synonym - that's a bit of a red herring!!; also consulted was Razowski's 2009 paper on Diakonoff's type material in the Munich Museum, which listed and illustrated <I>Sycacantha inodes</i> ssp. <I>rubida</i>. To check these leads, I consulted Diakinoff's 1973 tome on South Asiatic Olethreutinae, which explained that Meyrick had confused <i>albitibiana</i> with a number of similar looking <I>Sycacantha</i> species !  Just as J.D.Bradley had for the Hong Kong material.  \r\n\r\nTo further cross check, I used the <a href=\"http://www.tortricidae.com/catalogueSpeciesList.asp\">Tortricid.net global database</a>, which lists <i>albitibiana</i>, but states the type is lost.  Fortunately, Diakonoff stated that the lectotype was in Leiden Museum and the current Lepidoptera curator there, Rob de Vos, is an active participant of various social media for Oriental Lepidoptera. He graciously checked and found the lectotype, sending a photo thereof for comparison with the Hong Kong \"</i>albitibiana</i> / female <i>repletana</i>\", as well as Leiden material of <I>Sycacantha inodes</I>. The HK material matches <I>inodes</i> and <i>albitibiana</i> remains represented only by the lectotype specimen found from Java in the 1880s.\r\n\r\nSo <I>Sycacantha inodes</i> is confirmed for Hong Kong, and is separated from <I>S. inopinata</i> (confirmed for HK by Prof. Li Hou Hun, as reported in Feng et al., 2019, and what Bradley had reported as <i>Sisona albitibiana</i>) by the generally darker ground colour, a more extensive dark brown basal zone and the presence of a dark brown blotch near the forewing termen.  The species <I>Sisona albitibiana</i> does not occur in Hong Kong.\r\nYou have been <I>informed</i> !\r\n\r\nThat's one more taxonomic issue resolved for the Hong Kong moth fauna. Hundreds still awaiting investigation.\r\n\r\n<small><b>References</b>\r\nBradley, J.D., 1982. <I>Report on the Tortricoidea collected in Hong Kong by the Oxford Far East Expedition 1981</i>. In Barnes, M.J.C.; Davies, C.R.; Lewis, G.B. & Matthews, M.J. <I>The Oxford Far East Expedition, 1981. Final Report.</i> The University of Oxford. pp. 90-92.\r\nDiakonoff, A., 1973. <I>The South Asiatic Olethreutini (Lepidoptera, Tortricidae)</i>. E.J.Brill, Leiden. (<I>Zoölogische Monographieën van het Rijksmuseum van Natuurlijke Historie</i> <b>1</b>). xxi + 699 pp.; 732 figs., 15 plates\r\nFeng, W.X.; Zhuang, J.L. & Yu, H.L., 2019. <I>Sycacantha</i> Diakonoff, 1959 from China, with the descriptions of three new species (Lepidoptera: Tortricidae: Olethreutinae). <I>Zootaxa</i> <B>4691</b> (3): 201–214. https://doi.org/10.11646/zootaxa.4691.3.1\r\nKendrick, R.C., 2002. <I>Moths (Insecta: Lepidoptera) of Hong Kong</i>. Ph.D. thesis, The University of Hong Kong.  xvi + 660pp, 47 plates, 40 figs\r\nPinkaew, N., 2006. <I>Taxonomy of Olethreutinae (Lepidoptera: Tortricidae) of Thong Pha Phum National Park, Kanchanaburi Province, Thailand</i>. Ph.D. thesis, Kasetart Univeristy, Thailand. 578 pp.\r\nRazowski, J., 2009. Tortricidae from Vietnam in the collection of the Berlin Museum. 6. Olethreutinae (Lepidoptera: Tortricidae). <I>SHILAP Revista de Lepidopterología</i> <B>37</b> (145): 115-143</small>",
+    "created_at": "2020-08-28T15:27:57.463Z",
+    "updated_at": "2020-08-29T13:12:49.236Z",
+    "start_time": null,
+    "stop_time": null,
+    "place_id": null,
+    "latitude": null,
+    "longitude": null,
+    "radius": null,
+    "distance": null,
+    "number": null,
+    "uuid": "1bd34fa1-d973-4984-82f2-f427d0fa3958",
+    "user": {
+      "id": 4079,
+      "login": "hkmoths",
+      "user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/thumb.jpg?1619358393",
+      "medium_user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/medium.jpg?1619358393"
+    },
+    "parent": {
+      "id": 100,
+      "title": "Hong Kong Moths  香港蛾類",
+      "icon_url": "https://static.inaturalist.org/projects/100-icon-span2.jpg?1505453589"
+    }
+  },
+  {
+    "id": 31079,
+    "parent_id": 100,
+    "parent_type": "Project",
+    "user_id": 4079,
+    "published_at": "2020-02-25T10:50:06.984Z",
+    "title": "Taxonomy | Euteliidae",
+    "body": "<h3><B><I>Anuga</I></B></h3>\r\n\r\npreviously the <I>Anuga</i> species recorded in Hong Kong was thought to be <I>Anuga multiplicans</i>\r\n\r\nHere's the text from my forthcoming book.....\r\n<h3><I><B>Anuga indigofera</b></i> Holloway, 1976  (Plate XX: nn; Figure XX)\t茵殿尾夜蛾</h3>\r\n\r\n<B>Distribution</b>: Thailand, China (GD, HK), Malay peninsula, Singapore, Borneo, Sumatra, Philippines (Holloway, 1985; Jia & Yu, 2018); widespread in Hong Kong.\r\n<B>Status & ecology</b>: frequent, found from February through November in secondary forest, plantation forest, tall shrubland, mangroves, abandoned agricultural land and grassland up to 470m elevation. Reared from Rhus hypoleuca [K. Li].\r\n<B>Similar species</b>: <I>Anuga supraconstricta</i> Yoshimoto (1993), recently recorded from Nan Ling (Wang & Kishida, 2011) has a paler costal third to the h/w, making the dark discal stigma more obvious. The f/w orbicular stigma in <I>A. indigofera</i> has only the basal edge infilled with black, rather than the whole stigmata infilled with black.\r\n<B>Taxonomy</b>: previously listed for Hong Kong as <I>Anuga multiplicans</i>, the South Asian sister species, which Holloway (1985) notes has the same key internal and external morphology.\r\n",
+    "created_at": "2020-02-25T10:46:28.954Z",
+    "updated_at": "2020-04-19T13:00:11.710Z",
+    "start_time": null,
+    "stop_time": null,
+    "place_id": null,
+    "latitude": null,
+    "longitude": null,
+    "radius": null,
+    "distance": null,
+    "number": null,
+    "uuid": "d65f165c-b579-4ffb-af54-90742ee6cb2a",
+    "user": {
+      "id": 4079,
+      "login": "hkmoths",
+      "user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/thumb.jpg?1619358393",
+      "medium_user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/medium.jpg?1619358393"
+    },
+    "parent": {
+      "id": 100,
+      "title": "Hong Kong Moths  香港蛾類",
+      "icon_url": "https://static.inaturalist.org/projects/100-icon-span2.jpg?1505453589"
+    }
+  },
+  {
+    "id": 29509,
+    "parent_id": 100,
+    "parent_type": "Project",
+    "user_id": 4079,
+    "published_at": "2019-12-20T11:39:28.218Z",
+    "title": "Taxonomy | Geometridae | Geometrinae (again!) | genus Maxates",
+    "body": "Following on from the <a href=\"https://www.inaturalist.org/projects/hong-kong-moths/journal/28462-taxonomy-geometridae-geometrinae-genus-berta\">post</a> on the <i>Berta</i> complex, here are more geometrine issues.\r\n\r\nThe genus <i>Maxates</i> (=<i>Gelasma</i>) has many species in Hong Kong, with at least two complexes that comprise species not reliably separable in the field.\r\n\r\nThese two complexes are now represented by taxon entries on the iNat database......\r\n\r\nFirst up: <i>hemitheoides / lactipuncta / microdonta</i>\r\nhttps://www.inaturalist.org/taxa/980867-Maxates-hemitheoides-lactipuncta-microdonta\r\nThe species in this group are similar in size, with <I>lactipuncta</i> supposedly slightly smaller than the other two. All are about the same size as <I>Hemithea tritonaria</i>, though there is no abdominal \"bird dropping\" dorsal blotch, the wing margin has a fine green terminal fascia that is pretty much concolorous with the ground colour and white or pale marginal dots, the largest dot being in the hindwing caudal tail. There is a caveat (when isn't there!!) - the forewing costa for these three species as illustrated in <i>Fauna Sinica Insecta</i> <B>54</B> all show a green costa with yellow flecks. In some of the Hong Kong individuals, there is a form that has a yellow costa with green flecks..... It is not yet known if this phenotype actually belongs in this complex. For now, observations of either form should be assigned to the complex.  All three species (as described) are only reliably identifiable by the internal reproductive morphology or molecular analysis.\r\n\r\nSecond complex: <I>quadripunctata / subtaminata / submacularia</i>\r\nhttps://www.inaturalist.org/taxa/980918-Maxates-quadripunctata-subtaminata-submacularia\r\nThe three species in this complex are large - about the same size as <I>M. coelataria</i> or perhaps a little bigger. All three have a fine black terminal fascia. <I>M. quadripunctata</i> has a dark discal spot on the f/w, strong tail, ventral wing surface with dark patches on f/w tornus and h/w apex, larger on f/w;  <I>M. subtaminata</i> no/weak f/w discal spot, ventral dark patches stronger on h/w, less on f/w; <I>M. submacularia</i> almost identical to <I>subtaminata</i> on external morphology, just a bit bigger.\r\n",
+    "created_at": "2019-12-20T11:39:28.219Z",
+    "updated_at": "2019-12-20T14:30:01.006Z",
+    "start_time": null,
+    "stop_time": null,
+    "place_id": null,
+    "latitude": null,
+    "longitude": null,
+    "radius": null,
+    "distance": null,
+    "number": null,
+    "uuid": "1283cc27-7fe1-4460-8e46-0de50ce97d86",
+    "user": {
+      "id": 4079,
+      "login": "hkmoths",
+      "user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/thumb.jpg?1619358393",
+      "medium_user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/medium.jpg?1619358393"
+    },
+    "parent": {
+      "id": 100,
+      "title": "Hong Kong Moths  香港蛾類",
+      "icon_url": "https://static.inaturalist.org/projects/100-icon-span2.jpg?1505453589"
+    }
+  },
+  {
+    "id": 29322,
+    "parent_id": 100,
+    "parent_type": "Project",
+    "user_id": 4079,
+    "published_at": "2019-12-08T14:13:43.032Z",
+    "title": "Project summary for 2019",
+    "body": "<br><B>all data <I>observed and uploaded</i> to <a href=\"https://www.inaturalist.org/observations?created_d2=2019-12-31&d2=2019-12-31&place_id=any&project_id=hong-kong-moths\">2019-12-31</a> (<a href=\"https://www.inaturalist.org/observations?created_d2=2019-12-31&d2=2018-12-31&place_id=any&project_id=hong-kong-moths\">2018-12-31</a>)</b>\r\n<a href=\"https://www.inaturalist.org/observations?project_id=100&place_id=any&verifiable=any&captive=any&view=observerations\">Observations 56,504</a> (38,063) || <a href=\"https://www.inaturalist.org/observations?project_id=100&place_id=any&verifiable=any&captive=any&view=species\">Species 1,732</a> (1,628) || <a href=\"https://www.inaturalist.org/observations?project_id=100&place_id=any&verifiable=any&captive=any&view=identifiers\">Identifiers 647</a> (506) || <a href=\"https://www.inaturalist.org/observations?project_id=100&place_id=any&verifiable=any&captive=any&view=observers\">Observers 1,053</a> (671)\r\n\r\n<B>Most Observations</b>\r\nsk2 13,525 (8,138) || hkmoths 5,545 (4,067) || chanddgreen 4,633 (2,906) || sunnetchan 3,614 (2,614) || hoiling 2,974 (2,974)\r\n\r\n<B>Most Species</b>\r\nhkmoths 1,151 (1,063) || sk2 1,104 (992) || chanddgreen 827 (700) || sunnetchan 677 (569) || hoiling 610 (610)\r\n<p><br>\r\n<B>rank of top 10 observed taxa</b> (genus or species) to the end of 2019 from the start of the project (cumulative data)\r\n<table><TR><td>rank at end 2019 (cf. 2018)</td><TD>taxon</TD><td>obs. at end 2018</td><td>obs. at end 2019</td><td>% increase in observations</TR>\r\n<TR><td>1 (=)</td><TD><I>Orvasca subnotata</i></TD><td>340</td><td>533</td><td>57</td></TR>\r\n<TR><td>2 (↑ 4)</td><TD>genus <I>Artaxa</i></TD><td>247</td><td>498</td><td>102</td></TR>\r\n<TR><td>3 (↑ 2)</td><TD><I>Orgyia postica</i></TD><td>279</td><td>485</td><td>66</td></TR>\r\n<TR><td>4 (↓ 2)</td><TD><I>Lyssa zampa</i></TD><td>293</td><td>462</td><td>58</td></TR>\r\n<TR><td>5 (↑ 7)</td><TD><I>Dasychira chekiangensis</i></TD><td>190</td><td>423</td><td>121</td></TR>\r\n<TR><td>6 (↑ 2)</td><TD><I>Dysphania militaris</i></TD><td>281</td><td>382</td><td>36</td></TR>\r\n<TR><td>7 (↑ 1)</td><TD><I>Hyposidra talaca</i></TD><td>232</td><td>394</td><td>70</td></TR>\r\n<TR><td>8 (↓ 5)</td><TD><I>Perina nuda</i></TD><td>285</td><td>382</td><td>34</td></TR>\r\n<TR><td>9 (↓ 2)</td><TD><I>Syntomoides imaon</i></TD><td>232</td><td>368</td><td>59</td></TR>\r\n<TR><td>10 (=)</td><TD><I>Traminda aventiaria</i></TD><td>194</td><td>339</td><td>75</td></TR>\r\n</table>\r\n\r\n<hr>\r\n<small>data as of 1 January 2020</small>",
+    "created_at": "2019-12-08T09:14:50.221Z",
+    "updated_at": "2020-01-01T13:26:08.186Z",
+    "start_time": null,
+    "stop_time": null,
+    "place_id": null,
+    "latitude": null,
+    "longitude": null,
+    "radius": null,
+    "distance": null,
+    "number": null,
+    "uuid": "15a362e8-2875-46dd-821b-2f4174dee4da",
+    "user": {
+      "id": 4079,
+      "login": "hkmoths",
+      "user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/thumb.jpg?1619358393",
+      "medium_user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/medium.jpg?1619358393"
+    },
+    "parent": {
+      "id": 100,
+      "title": "Hong Kong Moths  香港蛾類",
+      "icon_url": "https://static.inaturalist.org/projects/100-icon-span2.jpg?1505453589"
+    }
+  },
+  {
+    "id": 28462,
+    "parent_id": 100,
+    "parent_type": "Project",
+    "user_id": 4079,
+    "published_at": "2019-10-30T13:05:32.558Z",
+    "title": "Taxonomy | Geometridae | Geometrinae | genus Berta",
+    "body": "There are three <I>Berta</i> species found in Hong Kong, all confirmed by dissection and, for two species, rearing.\r\nThey are <B><I>B. chrysolineata; B. rugosivalva</i> & <I>B. zygophyxia</i></B>.\r\n\r\nWhilst preparing the genus write up for the forthcoming <I>Illustrated Guide to the Moths of Hong Kong</i>, I have been head scratching a lot to try and figure out if it is possible to id these three species in the field. Looking at all the posts on iNat from Hong Kong, plus conflicting literature (Moths of Borneo, Fauna Sinica Insecta, Moths of Wutongshan, plus various websites covering the Oriental region), I was none the wiser, and getting a few more white hairs.  Time to reach out to others and see what gives.  So an email to Sir Anthony Galsworthy, who described <i>B. rugosivalva</i>, and to Mark Sterling, who has faced this dilemma by wielding the dissecting gear, resulted in confirmation that field id is not a realistic proposition. Chop Chop time if one wants an id to species rank.\r\n\r\nConsequently, for Hong Kong observations of any <I>Berta</i> individual, no matter how different it might look, I have created the iNat <B>taxon complex</b> for this group - https://www.inaturalist.org/taxa/960018-Berta-chrysolineata-zygophyxia-rugosivalva\r\nAll Hong Kong observations, unless backed by dissection or rearing from larva found on a known host (<I>chrysolineata</i> on lychee; <I>rugosivalva</i> on <I>Castanopsis</i> and <I>zygophyxia</i> on <I>Terminalia</i> and Combretaceae) should be identified to this species complex, please.\r\n\r\nElsewhere in the Oriental region there are other species to consider, in particular <I>B. digitijuxta</i>, <I>B. annulifera</i>, so this complex created for iNat is probably applicable to Hong Kong only.",
+    "created_at": "2019-10-30T13:05:32.558Z",
+    "updated_at": "2019-10-30T13:06:17.049Z",
+    "start_time": null,
+    "stop_time": null,
+    "place_id": null,
+    "latitude": null,
+    "longitude": null,
+    "radius": null,
+    "distance": null,
+    "number": null,
+    "uuid": "7b5038bb-d059-4f1e-867e-0a9da0bb2241",
+    "user": {
+      "id": 4079,
+      "login": "hkmoths",
+      "user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/thumb.jpg?1619358393",
+      "medium_user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/medium.jpg?1619358393"
+    },
+    "parent": {
+      "id": 100,
+      "title": "Hong Kong Moths  香港蛾類",
+      "icon_url": "https://static.inaturalist.org/projects/100-icon-span2.jpg?1505453589"
+    }
+  },
+  {
+    "id": 27041,
+    "parent_id": 100,
+    "parent_type": "Project",
+    "user_id": 4079,
+    "published_at": "2019-08-30T12:39:06.241Z",
+    "title": "Taxonomy - Lasiocampidae - Trabala spp.",
+    "body": "Working on Lasiocampidae at the moment\r\n\r\nGrim news for fans of <I>Trabala vishnou</i>\r\n\r\nI've checked in the two key books:\r\n► Zolotuhin & Pinratana, 2005, <I>Moths of Thailand</i> <b>4</b>: Lasiocampidae\r\n► Liu & Wu, 2006, <I>Fauna Sinica Insecta</I> <B>47</b>: Lasiocampidae\r\n and find we have <I>Trabala pallida</i> for sure, and probably no <i>T. vishnou</i>.\r\n\r\nmale <I>pallida</i> is relatively small, and has the costal end of the medial fascia turning inwards, whereas in <I>vishnou</i>, the end of the fascia meets the costa pointing out to the apex.\r\n\r\nfemales not so easy, but most <i>pallida</i> elsewhere appear to have an extra half fascia - the sub-basal is present on the dorsal half of the forewing, creating a \"sub-basal eye spot\" that is lacking in female <i>vishnou</i>.\r\n\r\nThe grim part is there are nearly 250 HK observations of <i>Trabala</i> on iNat, many of which are larvae. I have no idea how larvae of <i>pallida</i> and <i>vishnou</i> can be told apart, though the Taiwan subspecies of <I>vishnou</i> has far more yellow on the setae, and some continental <i>vishnou</i> (assuming correct id) have more yellow on the thorax and first abdominal segments. All the male HK <I>Trabala</i> are <i>pallida</i>, with the costally in-turned medial fascia. The three larvae I have reared to adult were all male <I>pallida</i>.  They look the same as all the other HK <I>Trabala</i> larvae posted to iNat. It seems likely only <I>pallida</i> occurs here.\r\n\r\nEDIT....  I've now been through Z&P 2005's live habitus photos, and there are illustrations of vishnou and pallida larvae. Larvae of vishnou  have much more blue than the HK larvae; the illustration of pallida is very close to the HK larvae.",
+    "created_at": "2019-08-30T12:39:06.242Z",
+    "updated_at": "2019-08-31T13:09:33.671Z",
+    "start_time": null,
+    "stop_time": null,
+    "place_id": null,
+    "latitude": null,
+    "longitude": null,
+    "radius": null,
+    "distance": null,
+    "number": null,
+    "uuid": "5546e4bb-5c5b-4b04-9669-69e10404d1fc",
+    "user": {
+      "id": 4079,
+      "login": "hkmoths",
+      "user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/thumb.jpg?1619358393",
+      "medium_user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/medium.jpg?1619358393"
+    },
+    "parent": {
+      "id": 100,
+      "title": "Hong Kong Moths  香港蛾類",
+      "icon_url": "https://static.inaturalist.org/projects/100-icon-span2.jpg?1505453589"
+    }
+  },
+  {
+    "id": 26232,
+    "parent_id": 100,
+    "parent_type": "Project",
+    "user_id": 4079,
+    "published_at": "2019-07-18T09:10:33.006Z",
+    "title": "National Moth Week 2019 - July 20th to July 28th",
+    "body": "http://nationalmothweek.org/register-a-nmw-event-2019/\r\n\r\nStill time to register - even for private events that contribute to raising awareness\r\n\r\nI will be running a private event on Sat 27th, probably (weather permitting), but have many other priorities ongoing, so my involvement is limited this year",
+    "created_at": "2019-07-18T09:10:33.007Z",
+    "updated_at": "2019-07-24T15:31:13.531Z",
+    "start_time": null,
+    "stop_time": null,
+    "place_id": null,
+    "latitude": null,
+    "longitude": null,
+    "radius": null,
+    "distance": null,
+    "number": null,
+    "uuid": "3bf117d4-0239-41d5-aa22-3c2bc957e667",
+    "user": {
+      "id": 4079,
+      "login": "hkmoths",
+      "user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/thumb.jpg?1619358393",
+      "medium_user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/medium.jpg?1619358393"
+    },
+    "parent": {
+      "id": 100,
+      "title": "Hong Kong Moths  香港蛾類",
+      "icon_url": "https://static.inaturalist.org/projects/100-icon-span2.jpg?1505453589"
+    }
+  },
+  {
+    "id": 25082,
+    "parent_id": 100,
+    "parent_type": "Project",
+    "user_id": 4079,
+    "published_at": "2019-05-23T06:00:00.358Z",
+    "title": "Taxonomy - Lymantriinae - Carriola spp",
+    "body": "<a href=\"https://www.researchgate.net/profile/Dmitry_Shovkoon\">Dmitry Shovkoon</a> (Steppe Institute Ural Branch of Russian Academy of Sciences) is reviewing the genus <I>Carriola</i> at the moment. Should be ready to publish sometime this year.  He has informed me the Hong Kong species is not <I>ecnomoda</i>, but <a href=\"https://www.inaturalist.org/taxa/885933-Carriola-seminsula\"><I>seminsula</i></a> (and he has HK material to study). So all the HK observations of <I>ecnomoda</i> need reidentifying as <I>C. seminsula</i>.  In case I miss any, please do at least correct your own observations......\r\nMany thanks.",
+    "created_at": "2019-05-23T06:00:00.359Z",
+    "updated_at": "2019-05-23T06:04:28.871Z",
+    "start_time": null,
+    "stop_time": null,
+    "place_id": null,
+    "latitude": null,
+    "longitude": null,
+    "radius": null,
+    "distance": null,
+    "number": null,
+    "uuid": "af513766-e805-4d56-b1e8-eafac54f0da5",
+    "user": {
+      "id": 4079,
+      "login": "hkmoths",
+      "user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/thumb.jpg?1619358393",
+      "medium_user_icon_url": "https://static.inaturalist.org/attachments/users/icons/4079/medium.jpg?1619358393"
+    },
+    "parent": {
+      "id": 100,
+      "title": "Hong Kong Moths  香港蛾類",
+      "icon_url": "https://static.inaturalist.org/projects/100-icon-span2.jpg?1505453589"
+    }
+  }
+]
