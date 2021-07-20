@@ -1,5 +1,5 @@
 # Dockerfile used for running pyinaturalist-notebook with Binder
-FROM  jxcook/pyinaturalist-notebook:0.13.0
+FROM  jxcook/pyinaturalist-notebook:0.14
 COPY . ${HOME}
 USER root
 RUN chown -R ${NB_UID} ${HOME}
