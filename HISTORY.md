@@ -1,6 +1,7 @@
 # History
 
 ## 0.14.1 (2021-07-TBD)
+* Added new function for **Posts** endpoint: `get_posts()`
 * Fix broken `response_format` parameter in `v0.get_observations()`
 
 ## 0.14.0 (2021-07-14)
