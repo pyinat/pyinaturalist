@@ -56,6 +56,7 @@ PUT       /observations/{id}/viewed_updates
 GET       /places/{id}                            :py:func:`.get_places_by_id`
 GET       /places/autocomplete                    :py:func:`.get_places_autocomplete`
 GET       /places/nearby                          :py:func:`.get_places_nearby`
+GET       /posts                                  :py:func:`.get_posts`
 DELETE    /project_observations/{id}
 PUT       /project_observations/{id}
 POST      /project_observations

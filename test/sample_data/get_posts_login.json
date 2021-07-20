@@ -1,0 +1,95 @@
+[
+  {
+    "id": 53863,
+    "parent_id": 3986099,
+    "parent_type": "User",
+    "user_id": 3986099,
+    "published_at": "2021-07-02T20:55:31.339Z",
+    "title": "Cortejo de oropéndolas. Avistamiento de rapaz nocturna",
+    "body": "~ 9 pm: Tuve la suerte de ver una pareja de orópendolas en su ritual de cortejo. El macho voló unas 3 veces verticalmente hacia arriba, para después hacer caída libre girando. Impresionante. La pareja se persiguió saltando entre unos árboles. Después de un rato la hembra se fue volando. Unos minutos después vi a un macho haciendo las mismas acrobacias, supongo que era el mismo cortejando a otra hembra.\r\n\r\nMás info sobre ritual de cortejo en http://www.oiseaux-birds.com/card-eurasian-golden-oriole.html.\r\n\r\nPienso entonces que la pareja que vi en la mañana simplemente estaban en su ritual de cortejo. Aprendí mucho hoy sobre mi ave favorita.\r\n\r\nMás tarde, alrededor de las 22.30, pasó volando una rapaz nocturna frente a mi balcón. Sólo alcancé a ver la parte derecha y trasera, por lo que no tengo mucha información para identificarla. El vuelo silencioso característico, el plumaje, el tamaño y la hora me hacen pensar que era una rapaz nocturna. Sin embargo, escuché luego una pareja llamándose, y no logré identificar el sonido. Use Merlin y videos de YouTube y no logré encontrar el mismo sonido, aunque el de la Òliba es el que más se parecía.",
+    "created_at": "2021-07-02T20:55:31.340Z",
+    "updated_at": "2021-07-02T20:55:31.340Z",
+    "start_time": null,
+    "stop_time": null,
+    "place_id": null,
+    "latitude": null,
+    "longitude": null,
+    "radius": null,
+    "distance": null,
+    "number": null,
+    "uuid": "b0d9dbb4-ec74-4829-a573-114cec9165b5",
+    "user": {
+      "id": 3986099,
+      "login": "eduramirezh",
+      "user_icon_url": null,
+      "medium_user_icon_url": null
+    },
+    "parent": {
+      "id": 3986099,
+      "name": null,
+      "icon_url": null
+    }
+  },
+  {
+    "id": 53830,
+    "parent_id": 3986099,
+    "parent_type": "User",
+    "user_id": 3986099,
+    "published_at": "2021-07-02T07:04:22.275Z",
+    "title": "Pareja de bruels y pareja de oriols",
+    "body": "Esta mañana he visto en el lugar de mi paseo habitual a una pareja de bruels (Regulus ignicapilla) en un árbol pequeño. Estaban muy activamente saltando de una rama a otra y cantando. Eran un macho y una hembra. Los observé durante un par de minutos y no vi a ninguno comer, por lo que sospecho que era un ritual de cortejo.\r\n\r\nEs la primera vez que veo bruels por aquí. Hasta ahora solo los había visto un par de veces por la montaña, en sectores con muy poco tránsito y alejados de las casas.\r\n\r\nTambién vi un comportamiento poco habitual en una pareja de oriols. Los vi muy activamente yendo de un árbol a otro, emitiendo sonidos al volar. Al volver también vi una pareja de oriols parándose brevemente en una conífera en el camino de mi casa, cosa que no había visto antes. \r\n\r\nSospecho que ambas parejas eran la misma, y que quizás sea la pareja afectada por el ataque del cuervo de ayer. Qué pena.\r\n",
+    "created_at": "2021-07-02T07:04:22.276Z",
+    "updated_at": "2021-07-02T07:04:22.276Z",
+    "start_time": null,
+    "stop_time": null,
+    "place_id": null,
+    "latitude": null,
+    "longitude": null,
+    "radius": null,
+    "distance": null,
+    "number": null,
+    "uuid": "94a75bed-c11a-4d35-b3c0-69b5050ac3fc",
+    "user": {
+      "id": 3986099,
+      "login": "eduramirezh",
+      "user_icon_url": null,
+      "medium_user_icon_url": null
+    },
+    "parent": {
+      "id": 3986099,
+      "name": null,
+      "icon_url": null
+    }
+  },
+  {
+    "id": 53805,
+    "parent_id": 3986099,
+    "parent_type": "User",
+    "user_id": 3986099,
+    "published_at": "2021-07-01T13:27:21.408Z",
+    "title": "Avistamiento pelea cuervo vs oropéndolas",
+    "body": "Vi desde la terraza de mi casa un ave grande siendo atacada por al menos 2 aves amarillas más pequeñas.\r\nSospecho que el ave grande era el Corvus corax que he visto volando por la zona antes, y los pequeños eran oropéndolas defendiendo su nido. Como los vi perseguir al cuervo varios segundos, sospecho que el cuervo quizás llevaba a una cría de oropéndola.",
+    "created_at": "2021-07-01T13:27:21.418Z",
+    "updated_at": "2021-07-01T13:27:21.418Z",
+    "start_time": null,
+    "stop_time": null,
+    "place_id": null,
+    "latitude": null,
+    "longitude": null,
+    "radius": null,
+    "distance": null,
+    "number": null,
+    "uuid": "0a51f722-3862-427d-87ab-4d293d3d11e2",
+    "user": {
+      "id": 3986099,
+      "login": "eduramirezh",
+      "user_icon_url": null,
+      "medium_user_icon_url": null
+    },
+    "parent": {
+      "id": 3986099,
+      "name": null,
+      "icon_url": null
+    }
+  }
+]
