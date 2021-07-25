@@ -64,6 +64,7 @@ flake8 = "^3.9"
 isort = "5.8.0"  # locked until issue #1762 is fixed
 mypy = "^0.910"
 pre-commit = {version = "^2.12", python = "^3.6.2"}
+pretty-errors = "^1.2.23"
 pytest = "^6.2"
 pytest-cov = ">=2.11"
 pytest-xdist = ">=2.2"

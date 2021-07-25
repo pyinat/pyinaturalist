@@ -96,5 +96,5 @@ on the `main` branch. Release steps:
   auto-merged and built without any manual action required. Just verify that this completes successfully
   and that the new version can be installed from conda-forge with `conda install -c conda-forge pyinaturalist`.
   - If new depedencies have been added, then those must also be added to the [conda recipe](https://github.com/conda-forge/pyinaturalist-feedstock/blob/master/recipe/meta.yaml).
-- Update and build the Docker image for [pyinaturalist-notebook](https://github.com/JWCook/pyinaturalist-notebook).
-  - TODO: This should be fully automated, and triggered after the Conda build rather than the PyPI build.
+- A Docker build will be triggered for [pyinaturalist-notebook](https://github.com/JWCook/pyinaturalist-notebook).
+  Verfify that this successfully gets deployed to Docker Hub.
