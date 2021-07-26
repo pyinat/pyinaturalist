@@ -7,7 +7,7 @@ from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import get_v1
 
 
-@document_request_params([docs._projects_params, docs._pagination])
+@document_request_params(docs._projects_params, docs._pagination)
 @add_paginate_all(method='page')
 def get_projects(**params) -> JsonResponse:
     """Given zero to many of following parameters, get projects matching the search criteria.

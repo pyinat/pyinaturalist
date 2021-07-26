@@ -127,6 +127,13 @@ def test_request_dry_run(
         assert mock_request.call_count == 0
 
 
+@patch('pyinaturalist.api_requests.Session.request')
+def test_request_dry_run_kwarg(mock_request):
+    response = request('GET', 'http://url', dry_run=True)
+    assert response == MOCK_RESPONSE
+    assert mock_request.call_count == 0
+
+
 # In addition to the test cases above, ensure that the request/response isn't altered with dry-run disabled
 def test_request_dry_run_disabled(requests_mock):
     real_response = {'results': ['response object']}

@@ -337,42 +337,82 @@ Credentials storage with keyring + KeePassXC
 While developing and testing, it can be useful to temporarily mock out HTTP requests, especially
 requests that add, modify, or delete real data. Pyinaturalist has some settings to make this easier.
 
-### Dry-run all requests
-To enable dry-run mode, set the `DRY_RUN_ENABLED` variable. When set, requests will not be sent
-but will be logged instead:
-
+### Dry-run individual requests
+All API request functions take an optional `dry_run` argument. When set to `True`, requests will not
+be sent but will be logged instead:
 ```python
 >>> import logging
->>> import pyinaturalist
->>>
->>> # Enable at least INFO-level logging
+>>> from pyinaturalist import get_taxa
+>>> # Enable at least INFO-level logging to see the request info
 >>> logging.basicConfig(level='INFO')
 >>>
->>> pyinaturalist.DRY_RUN_ENABLED = True
->>> get_taxa(q='warbler', locale=1)
-{'results': \[\], 'total_results': 0}
+>>> get_taxa(q='warbler', locale=1, dry_run=True)
+{'results': [], 'total_results': 0}
 INFO:pyinaturalist.api_requests:Request: GET, https://api.inaturalist.org/v1/taxa,
     params={'q': 'warbler', 'locale': 1},
     headers={'Accept': 'application/json', 'User-Agent': 'Pyinaturalist/0.9.1'}
 ```
 
-You can also set this as an environment variable (case-insensitive):
+### Dry-run all requests
+To enable dry-run mode for all requests, set the `DRY_RUN_ENABLED` environment variable:
 
-```bash
-$ export DRY_RUN_ENABLED=true
-$ python my_script.py
+:::{tab} Python
+```python
+>>> import os
+>>> os.environ['DRY_RUN_ENABLED'] = 'true'
 ```
+:::
+:::{tab} Unix (MacOS / Linux)
+```bash
+export DRY_RUN_ENABLED=true
+```
+:::
+:::{tab} Windows CMD
+```bat
+set DRY_RUN_ENABLED="true"
+```
+:::
+:::{tab} PowerShell
+```powershell
+$Env:DRY_RUN_ENABLED="true"
+```
+:::
+
+You can also set this as a global variable:
+
+:::{warning}
+This usage is deprecated and will be removed in a future release.
+```python
+>>> import pyinaturalist
+>>> pyinaturalist.DRY_RUN_ENABLED = True
+```
+:::
 
 ### Dry-run only write requests
 If you would like to send real `GET` requests but mock out any requests that modify data
-(`POST`, `PUT`, `DELETE`, etc.), you can use the `DRY_RUN_WRITE_ONLY` variable
-instead:
+(`POST`, `PUT`, and `DELETE`), you can use the `DRY_RUN_WRITE_ONLY` variable instead:
+
+:::{tab} Python
 ```python
->>> pyinaturalist.DRY_RUN_WRITE_ONLY = True
->>> # Also works as an environment variable
 >>> import os
->>> os.environ\["DRY_RUN_WRITE_ONLY"\] = 'True'
+>>> os.environ['DRY_RUN_WRITE_ONLY'] = 'true'
 ```
+:::
+:::{tab} Unix (MacOS / Linux)
+```bash
+export DRY_RUN_WRITE_ONLY=true
+```
+:::
+:::{tab} Windows CMD
+```bat
+set DRY_RUN_WRITE_ONLY="true"
+```
+:::
+:::{tab} PowerShell
+```powershell
+$Env:DRY_RUN_WRITE_ONLY="true"
+```
+:::
 
 ## User Agent
 While not mandatory, it's good practice to include a [user-agent](https://en.wikipedia.org/wiki/User_agent) in

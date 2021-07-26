@@ -7,6 +7,7 @@ from inspect import cleandoc, ismethod, signature
 from logging import getLogger
 from typing import Callable, List, get_type_hints
 
+from pyrate_limiter import Limiter
 from requests import Session
 
 from pyinaturalist.constants import TemplateFunction
@@ -14,7 +15,7 @@ from pyinaturalist.constants import TemplateFunction
 logger = getLogger(__name__)
 
 
-def copy_doc_signature(template_functions: List[TemplateFunction]) -> Callable:
+def copy_doc_signature(*template_functions: TemplateFunction, add_common_args: bool = True) -> Callable:
     """Document a function with docstrings, function signatures, and type annotations from
     one or more template functions.
 
@@ -50,8 +51,10 @@ def copy_doc_signature(template_functions: List[TemplateFunction]) -> Callable:
     Args:
         template_functions: Template functions containing docstrings and params to apply to the
             wrapped function
+        add_common_args: Add additional keyword arguments common to most functions
     """
-    template_functions += [_user_agent, _session]
+    if add_common_args:
+        template_functions = list(template_functions) + [_dry_run, _limiter, _session, _user_agent]
 
     def wrapper(func):
         # Modify annotations and docstring
@@ -159,13 +162,25 @@ def _get_combined_revision(target_function: Callable, template_functions: List[T
 
 
 # Param templates that are added to every function signature by default
-def _user_agent(user_agent: str = None):
+def _dry_run(dry_run: bool = False):
     """
-    user_agent: A custom user-agent string to provide to the iNaturalist API
+    dry_run: Just log the request instead of sending a real request
+    """
+
+
+def _limiter(limiter: Limiter = None):
+    """
+    limiter: Custom rate limits to apply to this request
     """
 
 
 def _session(session: Session = None):
     """
-    session: Allows managing your own `Session object <https://docs.python-requests.org/en/latest/user/advanced/>`_
+    session: An existing `Session object <https://docs.python-requests.org/en/latest/user/advanced/>`_  to use instead of creating a new one
+    """
+
+
+def _user_agent(user_agent: str = None):
+    """
+    user_agent: A custom user-agent string to provide to the iNaturalist API
     """

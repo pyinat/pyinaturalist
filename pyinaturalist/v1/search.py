@@ -5,7 +5,7 @@ from pyinaturalist.docs import templates as docs
 from pyinaturalist.v1 import get_v1
 
 
-@document_request_params([docs._search_params, docs._pagination])
+@document_request_params(docs._search_params, docs._pagination)
 def search(q: str, **params) -> JsonResponse:
     """A unified search endpoint for places, projects, taxa, and/or users
 

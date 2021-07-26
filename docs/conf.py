@@ -33,7 +33,7 @@ except ImportError:
 # Add project path so we can import our package
 sys.path.insert(0, '..')
 from pyinaturalist import __version__
-from pyinaturalist.constants import DOCS_DIR, PROJECT_DIR, EXAMPLES_DIR, SAMPLE_DATA_DIR
+from pyinaturalist.constants import DOCS_DIR, EXAMPLES_DIR, PROJECT_DIR, SAMPLE_DATA_DIR
 from pyinaturalist.docs.model_docs import document_models
 
 # Relevant doc directories used in extension settings
