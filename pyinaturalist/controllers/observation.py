@@ -2,7 +2,6 @@
 # TODO: Update examples and example responses
 from typing import Dict, List
 
-from pyinaturalist import api_docs as docs
 from pyinaturalist.constants import (
     API_V1_BASE_URL,
     NODE_OBS_ORDER_BY_PROPERTIES,
@@ -10,11 +9,12 @@ from pyinaturalist.constants import (
     IntOrStr,
 )
 from pyinaturalist.controllers import BaseController
-from pyinaturalist.forge_utils import document_request_params
+from pyinaturalist.converters import convert_histogram
+from pyinaturalist.docs import document_request_params
+from pyinaturalist.docs import templates as docs
 from pyinaturalist.models import LifeList, Observation, Taxon, User
 from pyinaturalist.pagination import add_paginate_all
 from pyinaturalist.request_params import validate_multiple_choice_param
-from pyinaturalist.response_format import format_histogram
 
 
 class ObservationController(BaseController):
@@ -112,7 +112,7 @@ class ObservationController(BaseController):
             'week of year' intervals, and :py:class:`~datetime.datetime` objects for all other intervals.
         """
         response = self.client.get(f'{API_V1_BASE_URL}/observations/histogram', params=params)
-        return format_histogram(response.json())
+        return convert_histogram(response.json())
 
     @document_request_params([*docs._get_observations, docs._pagination])
     def identifiers(self, **params) -> Dict[int, User]:
@@ -171,7 +171,7 @@ class ObservationController(BaseController):
             params={'user_id': user_id},
             user_agent=user_agent,
         )
-        return LifeList.from_taxonomy_json(response.json())
+        return LifeList.from_json(response.json())
 
     # TODO: Separate model for these results? (maybe a User subclass)
     # TODO: Include species_counts

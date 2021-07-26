@@ -4,15 +4,12 @@ or the other way around? Are they better as static functions or instance methods
 Currently leaning towards the latter.
 
 Main features include:
+* Caching
+* Dry-run mode
 * Pagination
 * Rate-limiting
-* Caching (with #158)
-* Dry-run mode
-* Thread-local session factory
 """
-import threading
 from contextlib import contextmanager
-from datetime import date, datetime
 from logging import getLogger
 from typing import Dict, Optional, Tuple
 from unittest.mock import Mock
@@ -31,7 +28,7 @@ from pyinaturalist.constants import (
     RequestParams,
 )
 from pyinaturalist.controllers import ObservationController
-from pyinaturalist.forge_utils import copy_signature
+from pyinaturalist.docs import copy_signature
 from pyinaturalist.request_params import prepare_request, preprocess_request_params, validate_ids
 
 # Mock response content to return in dry-run mode
@@ -73,8 +70,7 @@ class iNatClient:
         self.dry_run = dry_run
         self.dry_run_write_only = dry_run_write_only
         self.limiter = limiter
-        self.local_ctx = threading.local()
-        self.session = session  # TODO: requests_cache.CachedSession options
+        self.session = session or Session()  # TODO: Use requests_cache.CachedSession by default?
         self.user_agent = user_agent
 
         # Controllers
@@ -140,12 +136,10 @@ class iNatClient:
         params: RequestParams = None,
         headers: Dict = None,
         json: Dict = None,
-        session: Session = None,
         raise_for_status: bool = True,
         **kwargs,
     ) -> Response:
-        """Wrapper around :py:func:`requests.request` that supports dry-run mode and rate-limiting,
-        and adds appropriate headers.
+        """Wrapper around :py:func:`requests.request`  with additional options for iNat API requests
 
         Args:
             method: HTTP method
@@ -156,7 +150,6 @@ class iNatClient:
             params: Requests parameters
             headers: Request headers
             json: JSON request body
-            session: Existing Session object to use instead of creating a new one
             kwargs: Additional keyword arguments for :py:meth:`requests.Session.request`
 
         Returns:
@@ -185,42 +178,32 @@ class iNatClient:
                 response.raise_for_status()
             return response
 
-    # @copy_signature(iNatClient.request, exclude='method')
     def delete(self, url: str, **kwargs) -> Response:
-        """Wrapper around :py:func:`requests.delete` that supports dry-run mode and rate-limiting"""
+        """Wrapper around :py:func:`requests.delete` with additional options for iNat API requests"""
         return self.request('DELETE', url, **kwargs)
 
-    # @copy_signature(iNatClient.request, exclude='method')
     def get(self, url: str, **kwargs) -> Response:
-        """Wrapper around :py:func:`requests.get` that supports dry-run mode and rate-limiting"""
+        """Wrapper around :py:func:`requests.get` with additional options for iNat API requests"""
         return self.request('GET', url, **kwargs)
 
-    # @copy_signature(iNatClient.request, exclude='method')
     def post(self, url: str, **kwargs) -> Response:
-        """Wrapper around :py:func:`requests.post` that supports dry-run mode and rate-limiting"""
+        """Wrapper around :py:func:`requests.post` with additional options for iNat API requests"""
         return self.request('POST', url, **kwargs)
 
-    # @copy_signature(iNatClient.request, exclude='method')
     def put(self, url: str, **kwargs) -> Response:
-        """Wrapper around :py:func:`requests.put` that supports dry-run mode and rate-limiting"""
+        """Wrapper around :py:func:`requests.put` with additional options for iNat API requests"""
         return self.request('PUT', url, **kwargs)
-
-    @property
-    def session(self) -> Session:
-        """Get a Session object that will be reused across requests to take advantage of connection
-        pooling. If used in a multi-threaded context (for example, a
-        :py:class:`~concurrent.futures.ThreadPoolExecutor`), a separate session is used per thread.
-        """
-        if not hasattr(self.local_ctx, "session"):
-            self.local_ctx.session = Session()
-        return self.local_ctx.session
-
-    @session.setter
-    def session(self, session: Session):
-        self.local_ctx.session = session
 
 
 def log_request(*args, **kwargs):
     """Log all relevant information about an HTTP request"""
     kwargs_strs = [f'{k}={v}' for k, v in kwargs.items()]
     logger.info('Request: {}'.format(', '.join(list(args) + kwargs_strs)))
+
+
+# Apply function signature changes after class definition
+extend_request = copy_signature(iNatClient.request, exclude='method')
+iNatClient.delete = extend_request(iNatClient.delete)  # type: ignore
+iNatClient.get = extend_request(iNatClient.get)  # type: ignore
+iNatClient.post = extend_request(iNatClient.post)  # type: ignore
+iNatClient.put = extend_request(iNatClient.put)  # type: ignore
