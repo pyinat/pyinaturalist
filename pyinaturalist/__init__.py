@@ -7,7 +7,7 @@ user_agent = DEFAULT_USER_AGENT
 try:
     from pyinaturalist.auth import get_access_token
     from pyinaturalist.constants import *
-    from pyinaturalist.formatters import format_table, pprint
+    from pyinaturalist.formatters import enable_logging, format_table, pprint
     from pyinaturalist.models import *
     from pyinaturalist.v0 import *
     from pyinaturalist.v1 import *

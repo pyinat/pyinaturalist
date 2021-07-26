@@ -10,6 +10,7 @@ These functions will accept any of the following:
 from copy import deepcopy
 from datetime import date, datetime
 from functools import partial
+from logging import basicConfig, getLogger
 from typing import List, Type
 
 from requests import PreparedRequest
@@ -47,6 +48,24 @@ try:
     pretty.install()
 except ImportError:
     pass
+
+
+def enable_logging(level: str = 'INFO'):
+    """Configure logging to standard output with prettier tracebacks and terminal colors (if supported).
+    Logging can of course be configured however you want using the stdlib ``logging`` module; this is
+    just here for convenience.
+
+    Args:
+        level: Logging level to use
+    """
+    from rich.logging import RichHandler
+
+    basicConfig(
+        format='%(message)s',
+        datefmt='[%m-%d %H:%M:%S]',
+        handlers=[RichHandler(rich_tracebacks=True, markup=True)],
+    )
+    getLogger('pyinaturalist').setLevel(level)
 
 
 # Default colors for table headers
