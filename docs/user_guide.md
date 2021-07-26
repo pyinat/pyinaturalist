@@ -333,6 +333,21 @@ macOS and Linux systems. See this guide for setup info:
 Credentials storage with keyring + KeePassXC
 ```
 
+## Rate Limiting
+By default, pyinaturalist applies rate limiting to all requests so they stay within the rates specified by
+iNaturalist's [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices).
+If you want to customize these rate limits, all API request functions take an optional `limiter` argument,
+which takes a [`pyrate_limiter.Limiter`](https://github.com/vutran1710/PyrateLimiter) object.
+
+For example, to increase the rate to 75 requests per minute:
+```python
+>>> from pyinaturalist import get_taxa
+>>> from pyrate_limiter import Duration, Limiter, RequestRate
+>>>
+>>> limiter = Limiter(RequestRate(75, Duration.MINUTE))
+>>> get_taxa(q='warbler', locale=1, limiter=limiter)
+```
+
 ## Dry-run mode
 While developing and testing, it can be useful to temporarily mock out HTTP requests, especially
 requests that add, modify, or delete real data. Pyinaturalist has some settings to make this easier.
