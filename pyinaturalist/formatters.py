@@ -12,6 +12,8 @@ from datetime import date, datetime
 from functools import partial
 from typing import List, Type
 
+from requests import PreparedRequest
+
 from pyinaturalist.constants import ResponseOrResults, ResponseResult
 from pyinaturalist.converters import ensure_list
 from pyinaturalist.models import (
@@ -161,6 +163,17 @@ def format_table(values: ResponseOrObjects):
     for obj in values:
         table.add_row(*[_str(value) for value in obj.row.values()])
     return table
+
+
+def format_request(request: PreparedRequest) -> str:
+    """Format HTTP request info"""
+    headers_dict = request.headers
+    if 'Authorization' in headers_dict:
+        headers_dict['Authorization'] = '[REDACTED]'
+
+    headers = '\n'.join([f'{k}: {v}' for k, v in headers_dict.items()])
+    body = '\n\n{request.body}' if request.body else ''
+    return f'Request: {request.method} {request.url}\n{headers}{body}'
 
 
 # TODO: This maybe belongs in a different module

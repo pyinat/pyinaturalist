@@ -21,6 +21,7 @@ from pyinaturalist.constants import (
     RequestParams,
 )
 from pyinaturalist.docs import copy_signature
+from pyinaturalist.formatters import format_request
 from pyinaturalist.request_params import (
     convert_url_ids,
     preprocess_request_body,
@@ -38,7 +39,7 @@ RATE_LIMITER = Limiter(
 MOCK_RESPONSE = Mock(spec=Response)
 MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0, 'access_token': ''}
 
-logger = getLogger(__name__)
+logger = getLogger('pyinaturalist')
 thread_local = threading.local()
 
 
@@ -93,8 +94,7 @@ def request(
 
     # Make a mock request, if specified
     if dry_run or is_dry_run_enabled(method):
-        logger.debug('Dry-run mode enabled; mocking request')
-        log_request(method, url, params=params, headers=headers)
+        logger.info(format_request(request))
         return MOCK_RESPONSE
     # Otherwise, apply rate-limiting and send the request
     else:
@@ -172,11 +172,19 @@ def get_session() -> Session:
     return thread_local.session
 
 
+# TODO: Drop support for global variables in version 0.16
 def is_dry_run_enabled(method: str) -> bool:
     """A wrapper to determine if dry-run (aka test mode) has been enabled via either
     a constant or an environment variable. Dry-run mode may be enabled for either write
     requests, or all requests.
     """
+    if pyinaturalist.DRY_RUN_ENABLED or pyinaturalist.DRY_RUN_WRITE_ONLY:
+        msg = (
+            'Global varibale usage is deprecated; please use environment variables or dry_run '
+            'keyword argument instead'
+        )
+        warn(DeprecationWarning(msg))
+
     dry_run_enabled = pyinaturalist.DRY_RUN_ENABLED or env_to_bool('DRY_RUN_ENABLED')
     if method in WRITE_HTTP_METHODS:
         return dry_run_enabled or pyinaturalist.DRY_RUN_WRITE_ONLY or env_to_bool('DRY_RUN_WRITE_ONLY')
@@ -189,10 +197,3 @@ def env_to_bool(environment_variable: str) -> bool:
     """
     env_value = getenv(environment_variable)
     return bool(env_value) and str(env_value).lower() not in ['false', 'none']
-
-
-# TODO: Prettier formatting + terminal colors with `rich`
-def log_request(*args, **kwargs):
-    """Log all relevant information about an HTTP request"""
-    kwargs_strs = [f'{k}={v}' for k, v in kwargs.items()]
-    logger.info('Request: {}'.format(', '.join(list(args) + kwargs_strs)))
