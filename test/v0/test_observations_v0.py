@@ -72,7 +72,7 @@ def test_create_observation(requests_mock):
 @patch('pyinaturalist.v0.observations.post')
 def test_create_observation__with_datetime(post, requests_mock):
     """Just test that request param aliases work. Datetimes are converted to strings separately in
-    request_params.prepare_request().
+    prepare_request().
     """
     requests_mock.post(
         f'{API_V0_BASE_URL}/observations.json',

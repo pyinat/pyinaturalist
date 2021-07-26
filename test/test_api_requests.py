@@ -1,11 +1,8 @@
 import pytest
-from time import sleep
 from unittest.mock import MagicMock, patch
 
-from pyrate_limiter import Duration, Limiter, RequestRate
-
 import pyinaturalist
-from pyinaturalist.api_requests import MOCK_RESPONSE, delete, get, post, put, ratelimit, request
+from pyinaturalist.api_requests import MOCK_RESPONSE, delete, get, post, put, request
 
 
 # Just test that the wrapper methods call requests.request with the appropriate HTTP method
@@ -13,17 +10,18 @@ from pyinaturalist.api_requests import MOCK_RESPONSE, delete, get, post, put, ra
     'http_func, http_method',
     [(delete, 'DELETE'), (get, 'GET'), (post, 'POST'), (put, 'PUT')],
 )
-@patch('pyinaturalist.api_requests.Session.request')
-def test_http_methods(mock_request, http_func, http_method):
+@patch('pyinaturalist.api_requests.Session.send')
+def test_http_methods(mock_send, http_func, http_method):
     http_func('https://url', key='value', session=None)
-    mock_request.assert_called_with(
-        http_method,
-        'https://url',
-        params={'key': 'value'},
-        headers={'Accept': 'application/json', 'User-Agent': pyinaturalist.user_agent},
-        json=None,
-        timeout=5,
-    )
+    request_obj = mock_send.call_args[0][0]
+    kwargs = mock_send.call_args[1]
+
+    assert kwargs['timeout'] == 5
+    assert request_obj.method == http_method
+    assert request_obj.url == 'https://url/?key=value'
+    assert request_obj.headers['User-Agent'] == pyinaturalist.user_agent
+    assert request_obj.headers['Accept'] == 'application/json'
+    assert request_obj.body is None
 
 
 # Test that the requests() wrapper passes along expected headers; just tests kwargs, not mock response
@@ -45,18 +43,18 @@ def test_http_methods(mock_request, http_func, http_method):
         ),
     ],
 )
-@patch('pyinaturalist.api_requests.Session.request')
-def test_request_headers(mock_request, input_kwargs, expected_headers):
+@patch('pyinaturalist.api_requests.Session.send')
+def test_request_headers(mock_send, input_kwargs, expected_headers):
     request('GET', 'https://url', **input_kwargs)
-    request_kwargs = mock_request.call_args[1]
-    assert request_kwargs['headers'] == expected_headers
+    request_obj = mock_send.call_args[0][0]
+    assert request_obj.headers == expected_headers
 
 
 @patch('pyinaturalist.api_requests.get_session')
 def test_request_session(mock_get_session):
     mock_session = MagicMock()
     request('GET', 'https://url', session=mock_session)
-    mock_session.request.assert_called()
+    mock_session.send.assert_called()
     mock_get_session.assert_not_called()
 
 
@@ -93,9 +91,9 @@ def test_request_session(mock_get_session):
     ],
 )
 @patch('pyinaturalist.api_requests.getenv')
-@patch('pyinaturalist.api_requests.Session.request')
+@patch('pyinaturalist.api_requests.Session.send')
 def test_request_dry_run(
-    mock_request,
+    mock_send,
     mock_getenv,
     enabled_const,
     enabled_env,
@@ -116,18 +114,18 @@ def test_request_dry_run(
     with patch('pyinaturalist.api_requests.pyinaturalist') as settings:
         settings.DRY_RUN_ENABLED = enabled_const
         settings.DRY_RUN_WRITE_ONLY = write_only_const
-        response = request(method, 'http://url')
+        response = request(method, 'http://url', user_agent='pytest')
 
     # Verify that the request was or wasn't mocked based on settings
     if expected_real_request:
-        assert mock_request.call_count == 1
-        assert response == mock_request()
+        assert mock_send.call_count == 1
+        assert response == mock_send()
     else:
         assert response == MOCK_RESPONSE
-        assert mock_request.call_count == 0
+        assert mock_send.call_count == 0
 
 
-@patch('pyinaturalist.api_requests.Session.request')
+@patch('pyinaturalist.api_requests.Session.send')
 def test_request_dry_run_kwarg(mock_request):
     response = request('GET', 'http://url', dry_run=True)
     assert response == MOCK_RESPONSE
@@ -140,27 +138,3 @@ def test_request_dry_run_disabled(requests_mock):
     requests_mock.get('http://url', json={'results': ['response object']}, status_code=200)
 
     assert request('GET', 'http://url').json() == real_response
-
-
-@patch('pyinaturalist.api_requests.RATE_LIMITER', Limiter(RequestRate(5, Duration.SECOND)))
-@patch('pyrate_limiter.limit_context_decorator.sleep', side_effect=sleep)
-def test_ratelimit(mock_sleep):
-    mock_func = MagicMock()
-
-    for i in range(6):
-        with ratelimit(bucket='pytest-1'):
-            mock_func()
-
-    # With 6 requests and a limit of 5 request/second, there should be a delay for the final request
-    assert mock_func.call_count == 6
-    assert mock_sleep.call_count == 1
-
-
-@patch('pyinaturalist.api_requests.RATE_LIMITER', None)
-@patch('pyrate_limiter.limit_context_decorator.sleep')
-def test_ratelimit__no_limiter(mock_sleep):
-    for i in range(70):
-        with ratelimit():
-            pass
-
-    assert mock_sleep.call_count == 0
