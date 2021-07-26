@@ -8,7 +8,7 @@ from pyinaturalist.docs import templates as docs
 from pyinaturalist.pagination import add_paginate_all
 
 
-@document_request_params([docs._search_query, docs._pagination])
+@document_request_params(docs._search_query, docs._pagination)
 @add_paginate_all(method='page')
 def get_observation_fields(**params) -> JsonResponse:
     """Search observation fields. Observation fields are basically typed data fields that

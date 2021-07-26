@@ -1,6 +1,10 @@
 # History
 
-## 0.14.1 (2021-07-TBD)
+## 0.15.0 (2021-TBD)
+* Allow all API request functions to accept a `limiter` argument to override rate-limiting settings
+* Allow all API request functions to accept a `dry_run` argument to dry-run an individual request
+
+## 0.14.1 (2021-07-21)
 * Added new function for **Posts** endpoint: `get_posts()`
 * Fix broken `response_format` parameter in `v0.get_observations()`
 

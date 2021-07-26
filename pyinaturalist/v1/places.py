@@ -37,7 +37,7 @@ def get_places_by_id(place_id: MultiInt, **params) -> JsonResponse:
     return places
 
 
-@document_request_params([docs._bounding_box, docs._name])
+@document_request_params(docs._bounding_box, docs._name)
 def get_places_nearby(**params) -> JsonResponse:
     """
     Given an bounding box, and an optional name query, return places nearby
@@ -75,7 +75,7 @@ def get_places_nearby(**params) -> JsonResponse:
     return convert_all_place_coordinates(response.json())
 
 
-@document_request_params([docs._search_query, docs._pagination])
+@document_request_params(docs._search_query, docs._pagination)
 @add_paginate_all(method='autocomplete')
 def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
     """Given a query string, get places with names starting with the search term

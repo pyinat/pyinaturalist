@@ -7,7 +7,7 @@ from pyinaturalist.request_params import convert_rank_range
 from pyinaturalist.v1 import get_v1
 
 
-@document_request_params([docs._taxon_params, docs._taxon_id_params, docs._pagination])
+@document_request_params(docs._taxon_params, docs._taxon_id_params, docs._pagination)
 @add_paginate_all(method='page')
 def get_taxa(**params) -> JsonResponse:
     """Given zero to many of following parameters, get taxa matching the search criteria.
@@ -73,7 +73,7 @@ def get_taxa_by_id(taxon_id: MultiInt, **params) -> JsonResponse:
     return taxa
 
 
-@document_request_params([docs._taxon_params])
+@document_request_params(docs._taxon_params)
 def get_taxa_autocomplete(**params) -> JsonResponse:
     """Given a query string, return taxa with names starting with the search term
 

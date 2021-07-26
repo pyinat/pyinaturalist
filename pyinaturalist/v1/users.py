@@ -38,7 +38,7 @@ def get_user_by_id(user_id: int, **params) -> JsonResponse:
     return convert_generic_timestamps(results[0])
 
 
-@document_request_params([docs._search_query, docs._project_id, docs._pagination])
+@document_request_params(docs._search_query, docs._project_id, docs._pagination)
 def get_users_autocomplete(q: str, **params) -> JsonResponse:
     """Given a query string, return users with names or logins starting with the search term
 

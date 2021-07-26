@@ -33,7 +33,7 @@ def get_identifications_by_id(identification_id: MultiInt, **params) -> JsonResp
     return identifications
 
 
-@document_request_params([docs._identification_params, docs._pagination, docs._only_id])
+@document_request_params(docs._identification_params, docs._pagination, docs._only_id)
 @add_paginate_all(method='page')
 def get_identifications(**params) -> JsonResponse:
     """Search identifications.

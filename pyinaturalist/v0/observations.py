@@ -25,12 +25,10 @@ logger = getLogger(__name__)
 
 
 @document_request_params(
-    [
-        docs._observation_common,
-        docs._observation_rest_only,
-        docs._bounding_box,
-        docs._pagination,
-    ]
+    docs._observation_common,
+    docs._observation_rest_only,
+    docs._bounding_box,
+    docs._pagination,
 )
 @add_paginate_all(method='page')
 def get_observations(**params) -> Union[List, str]:
@@ -83,8 +81,6 @@ def get_observations(**params) -> Union[List, str]:
         Return type will be ``dict`` for the ``json`` response format, and ``str`` for all others.
     """
     response_format = params.pop('response_format', 'json')
-    if response_format == 'geojson':
-        raise ValueError('For geojson format, use pyinaturalist.v1.get_geojson_observations')
     if response_format not in OBSERVATION_FORMATS:
         raise ValueError('Invalid response format')
     validate_multiple_choice_param(params, 'order_by', REST_OBS_ORDER_BY_PROPERTIES)
@@ -99,7 +95,7 @@ def get_observations(**params) -> Union[List, str]:
         return response.text
 
 
-@document_request_params([docs._access_token, docs._create_observation])
+@document_request_params(docs._access_token, docs._create_observation)
 def create_observation(access_token: str, **params) -> ListResponse:
     """Create a new observation.
 
@@ -155,12 +151,10 @@ def create_observation(access_token: str, **params) -> ListResponse:
 
 
 @document_request_params(
-    [
-        docs._observation_id,
-        docs._access_token,
-        docs._create_observation,
-        docs._update_observation,
-    ]
+    docs._observation_id,
+    docs._access_token,
+    docs._create_observation,
+    docs._update_observation,
 )
 def update_observation(observation_id: int, access_token: str, **params) -> ListResponse:
     """
@@ -332,7 +326,7 @@ def upload_sounds(observation_id: int, sounds: MultiFile, access_token: str, **p
     return [response.json() for response in responses]
 
 
-@document_request_params([docs._observation_id, docs._access_token])
+@document_request_params(docs._observation_id, docs._access_token)
 def delete_observation(observation_id: int, access_token: str = None, **params):
     """
     Delete an observation.

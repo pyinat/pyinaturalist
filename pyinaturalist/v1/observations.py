@@ -50,7 +50,7 @@ def get_observation(observation_id: int, **params) -> JsonResponse:
     raise ObservationNotFound()
 
 
-@document_request_params([*docs._get_observations, docs._observation_histogram])
+@document_request_params(*docs._get_observations, docs._observation_histogram)
 def get_observation_histogram(**params) -> HistogramResponse:
     """Search observations and return histogram data for the given time interval
 
@@ -104,7 +104,7 @@ def get_observation_histogram(**params) -> HistogramResponse:
     return convert_histogram(response.json())
 
 
-@document_request_params([*docs._get_observations, docs._pagination, docs._only_id])
+@document_request_params(*docs._get_observations, docs._pagination, docs._only_id)
 @add_paginate_all(method='id')
 def get_observations(**params) -> JsonResponse:
     """Search observations.
@@ -149,7 +149,7 @@ def get_observations(**params) -> JsonResponse:
     return observations
 
 
-@document_request_params([*docs._get_observations, docs._pagination])
+@document_request_params(*docs._get_observations, docs._pagination)
 @add_paginate_all(method='page')
 def get_observation_species_counts(**params) -> JsonResponse:
     """Get all species (or other 'leaf taxa') associated with observations matching the search
@@ -178,7 +178,7 @@ def get_observation_species_counts(**params) -> JsonResponse:
     return response.json()
 
 
-@document_request_params([*docs._get_observations, docs._pagination])
+@document_request_params(*docs._get_observations, docs._pagination)
 def get_observation_observers(**params) -> JsonResponse:
     """Get observers of observations matching the search criteria and the count of
     observations and distinct taxa of rank species they have observed.
@@ -212,7 +212,7 @@ def get_observation_observers(**params) -> JsonResponse:
     return response.json()
 
 
-@document_request_params([*docs._get_observations, docs._pagination])
+@document_request_params(*docs._get_observations, docs._pagination)
 def get_observation_identifiers(**params) -> JsonResponse:
     """Get identifiers of observations matching the search criteria and the count of
     observations they have identified. By default, results are sorted by ID count in descending.

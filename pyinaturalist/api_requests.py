@@ -1,4 +1,5 @@
 """Some common functions for HTTP requests used by all API modules"""
+# TODO: Default retry and backoff settings
 import threading
 from contextlib import contextmanager
 from logging import getLogger
@@ -6,6 +7,7 @@ from os import getenv
 from typing import Dict
 from unittest.mock import Mock
 
+from pyrate_limiter import Duration, Limiter, RequestRate
 from requests import Response, Session
 
 import pyinaturalist
@@ -21,6 +23,13 @@ from pyinaturalist.constants import (
 from pyinaturalist.docs import copy_signature
 from pyinaturalist.request_params import prepare_request
 
+# Default rate-limiting settings
+RATE_LIMITER = Limiter(
+    RequestRate(REQUESTS_PER_SECOND, Duration.SECOND),
+    RequestRate(REQUESTS_PER_MINUTE, Duration.MINUTE),
+    RequestRate(REQUESTS_PER_DAY, Duration.DAY),
+)
+
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=Response)
 MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0, 'access_token': ''}
@@ -33,29 +42,32 @@ def request(
     method: str,
     url: str,
     access_token: str = None,
-    user_agent: str = None,
-    ids: MultiInt = None,
+    dry_run: bool = False,
     headers: Dict = None,
+    ids: MultiInt = None,
     json: Dict = None,
+    limiter: Limiter = None,
     session: Session = None,
     raise_for_status: bool = True,
     timeout: float = 5,
+    user_agent: str = None,
     **params: RequestParams,
 ) -> Response:
-    """Wrapper around :py:func:`requests.request` that supports dry-run mode and rate-limiting,
-    and adds appropriate headers.
+    """Wrapper around :py:func:`requests.request` with additional options specific to iNat API requests
 
     Args:
         method: HTTP method
         url: Request URL
         access_token: access_token: the access token, as returned by :func:`get_access_token()`
-        user_agent: A custom user-agent string to provide to the iNaturalist API
+        dry_run: Just log the request instead of sending a real request
         ids: One or more integer IDs used as REST resource(s) to request
         headers: Request headers
         json: JSON request body
-        session: Existing Session object to use instead of creating a new one
+        limiter: Custom rate limits to apply to this request
+        session: An existing Session object to use instead of creating a new one
         timeout: Time (in seconds) to wait for a response from the server; if exceeded, a
             :py:exc:`requests.exceptions.Timeout` will be raised.
+        user_agent: A custom user-agent string to provide to the iNaturalist API
         params: All other keyword arguments are interpreted as request parameters
 
     Returns:
@@ -70,10 +82,11 @@ def request(
         headers,
         json,
     )
+    limiter = limiter or RATE_LIMITER
     session = session or get_session()
 
     # Run either real request or mock request depending on settings
-    if is_dry_run_enabled(method):
+    if dry_run or is_dry_run_enabled(method):
         logger.debug('Dry-run mode enabled; mocking request')
         log_request(method, url, params=params, headers=headers)
         return MOCK_RESPONSE
@@ -89,25 +102,25 @@ def request(
 
 @copy_signature(request, exclude='method')
 def delete(url: str, **kwargs) -> Response:
-    """Wrapper around :py:func:`requests.delete` that supports dry-run mode and rate-limiting"""
+    """Wrapper around :py:func:`requests.delete` with additional options specific to iNat API requests"""
     return request('DELETE', url, **kwargs)
 
 
 @copy_signature(request, exclude='method')
 def get(url: str, **kwargs) -> Response:
-    """Wrapper around :py:func:`requests.get` that supports dry-run mode and rate-limiting"""
+    """Wrapper around :py:func:`requests.get` with additional options specific to iNat API requests"""
     return request('GET', url, **kwargs)
 
 
 @copy_signature(request, exclude='method')
 def post(url: str, **kwargs) -> Response:
-    """Wrapper around :py:func:`requests.post` that supports dry-run mode and rate-limiting"""
+    """Wrapper around :py:func:`requests.post` with additional options specific to iNat API requests"""
     return request('POST', url, **kwargs)
 
 
 @copy_signature(request, exclude='method')
 def put(url: str, **kwargs) -> Response:
-    """Wrapper around :py:func:`requests.put` that supports dry-run mode and rate-limiting"""
+    """Wrapper around :py:func:`requests.put` with additional options specific to iNat API requests"""
     return request('PUT', url, **kwargs)
 
 
@@ -122,21 +135,6 @@ def ratelimit(bucket=pyinaturalist.user_agent):
             yield
     else:
         yield
-
-
-def get_limiter():
-    """Get a rate limiter object, if pyrate-limiter is installed"""
-    try:
-        from pyrate_limiter import Duration, Limiter, RequestRate
-
-        requst_rates = [
-            RequestRate(REQUESTS_PER_SECOND, Duration.SECOND),
-            RequestRate(REQUESTS_PER_MINUTE, Duration.MINUTE),
-            RequestRate(REQUESTS_PER_DAY, Duration.DAY),
-        ]
-        return Limiter(*requst_rates)
-    except ImportError:
-        return None
 
 
 def get_session() -> Session:
@@ -173,6 +171,3 @@ def log_request(*args, **kwargs):
     """Log all relevant information about an HTTP request"""
     kwargs_strs = [f'{k}={v}' for k, v in kwargs.items()]
     logger.info('Request: {}'.format(', '.join(list(args) + kwargs_strs)))
-
-
-RATE_LIMITER = get_limiter()

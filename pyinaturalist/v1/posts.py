@@ -5,7 +5,7 @@ from pyinaturalist.docs import templates as docs
 from pyinaturalist.v1 import get_v1
 
 
-@document_request_params([docs._get_posts])
+@document_request_params(docs._get_posts)
 def get_posts(**params) -> ListResponse:
     """Search posts.
 
