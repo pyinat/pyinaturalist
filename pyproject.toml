@@ -60,6 +60,8 @@ black = {version = "21.7b0", python = ">=3.6.2, <3.10"}
 flake8 = "^3.9"
 isort = "5.8.0"  # locked until issue #1762 is fixed
 mypy = "^0.910"
+nox = {version = "^2021.6.12", python = "^3.6.2"}
+nox-poetry = {version = "^0.8.6", python = "^3.6.2"}
 pre-commit = {version = "^2.12", python = "^3.6.2"}
 pretty-errors = "^1.2.23"
 pytest = "^6.2"
@@ -67,8 +69,6 @@ pytest-cov = ">=2.11"
 pytest-xdist = ">=2.2"
 requests-mock = "^1.8"
 sphinx-autobuild = ">=2021.3.14"
-tox = "^3.24"
-tox-poetry-installer = {version = "~=0.8.1", python = "^3.6.2"}
 types-python-dateutil = ">=0.1.2"
 types-requests = ">=0.1.8"
 
