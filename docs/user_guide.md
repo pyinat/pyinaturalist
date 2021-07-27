@@ -348,24 +348,41 @@ For example, to increase the rate to 75 requests per minute:
 >>> get_taxa(q='warbler', locale=1, limiter=limiter)
 ```
 
+## Logging
+You can configure logging for pyinaturalist using the standard Python `logging` module, for example
+with {py:func}`logging.basicConfig`:
+```python
+import logging
+logging.basicConfig()
+logging.getLogger('pyinaturalist').setLevel('INFO')
+```
+
+For convenience, an {py:func}`.enable_logging` function is included that will apply some recommended
+settings, including colorized output (if viewed in a terminal) and better traceback formatting,
+using the [rich](https://rich.readthedocs.io) library.
+```python
+>>> from pyinaturalist import enable_logging
+>>> enable_logging()
+```
+
 ## Dry-run mode
 While developing and testing, it can be useful to temporarily mock out HTTP requests, especially
 requests that add, modify, or delete real data. Pyinaturalist has some settings to make this easier.
 
 ### Dry-run individual requests
 All API request functions take an optional `dry_run` argument. When set to `True`, requests will not
-be sent but will be logged instead:
+be sent but will be logged instead.
+
+```{note}
+You must enable at least INFO-level logging to see the logged request info
+```
 ```python
->>> import logging
 >>> from pyinaturalist import get_taxa
->>> # Enable at least INFO-level logging to see the request info
->>> logging.basicConfig(level='INFO')
->>>
 >>> get_taxa(q='warbler', locale=1, dry_run=True)
 {'results': [], 'total_results': 0}
-INFO:pyinaturalist.api_requests:Request: GET, https://api.inaturalist.org/v1/taxa,
-    params={'q': 'warbler', 'locale': 1},
-    headers={'Accept': 'application/json', 'User-Agent': 'Pyinaturalist/0.9.1'}
+[07-26 18:55:50] INFO  Request: GET https://api.inaturalist.org/v1/taxa?q=warbler&locale=1
+User-Agent: pyinaturalist/0.15.0                                                 
+Accept: application/json                                                         
 ```
 
 ### Dry-run all requests

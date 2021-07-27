@@ -1,14 +1,14 @@
 """Some common functions for HTTP requests used by all API modules"""
 # TODO: Default retry and backoff settings
 import threading
-from contextlib import contextmanager
 from logging import getLogger
 from os import getenv
 from typing import Dict
 from unittest.mock import Mock
+from warnings import warn
 
 from pyrate_limiter import Duration, Limiter, RequestRate
-from requests import Response, Session
+from requests import PreparedRequest, Request, Response, Session
 
 import pyinaturalist
 from pyinaturalist.constants import (
@@ -21,7 +21,12 @@ from pyinaturalist.constants import (
     RequestParams,
 )
 from pyinaturalist.docs import copy_signature
-from pyinaturalist.request_params import prepare_request
+from pyinaturalist.formatters import format_request
+from pyinaturalist.request_params import (
+    convert_url_ids,
+    preprocess_request_body,
+    preprocess_request_params,
+)
 
 # Default rate-limiting settings
 RATE_LIMITER = Limiter(
@@ -34,7 +39,7 @@ RATE_LIMITER = Limiter(
 MOCK_RESPONSE = Mock(spec=Response)
 MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0, 'access_token': ''}
 
-logger = getLogger(__name__)
+logger = getLogger('pyinaturalist')
 thread_local = threading.local()
 
 
@@ -73,7 +78,8 @@ def request(
     Returns:
         API response
     """
-    url, params, headers, json = prepare_request(
+    request = prepare_request(
+        method,
         url,
         access_token,
         user_agent,
@@ -82,22 +88,53 @@ def request(
         headers,
         json,
     )
+    bucket = request.headers.get('User-Agent') or 'pyinaturalist'
     limiter = limiter or RATE_LIMITER
     session = session or get_session()
 
-    # Run either real request or mock request depending on settings
+    # Make a mock request, if specified
     if dry_run or is_dry_run_enabled(method):
-        logger.debug('Dry-run mode enabled; mocking request')
-        log_request(method, url, params=params, headers=headers)
+        logger.info(format_request(request))
         return MOCK_RESPONSE
+    # Otherwise, apply rate-limiting and send the request
     else:
-        with ratelimit():
-            response = session.request(
-                method, url, params=params, headers=headers, json=json, timeout=timeout
-            )
+        with limiter.ratelimit(bucket=bucket, delay=True, max_delay=MAX_DELAY):
+            response = session.send(request, timeout=timeout)
         if raise_for_status:
             response.raise_for_status()
         return response
+
+
+def prepare_request(
+    method: str,
+    url: str,
+    access_token: str = None,
+    user_agent: str = None,
+    ids: MultiInt = None,
+    params: RequestParams = None,
+    headers: Dict = None,
+    json: Dict = None,
+    **kwargs,
+) -> PreparedRequest:
+    """Translate ``pyinaturalist``-specific options into standard request arguments."""
+    # Prepare request params and URL
+    params = preprocess_request_params(params)
+    url = convert_url_ids(url, ids)
+
+    # Prepare user-agent and authentication headers
+    headers = headers or {}
+    headers['User-Agent'] = user_agent or pyinaturalist.user_agent
+    headers['Accept'] = 'application/json'
+    if access_token:
+        headers['Authorization'] = f'Bearer {access_token}'
+
+    # Convert any datetimes to strings in request body
+    if json:
+        headers['Content-type'] = 'application/json'
+        json = preprocess_request_body(json)
+
+    request = Request(method=method, url=url, headers=headers, json=json, params=params, **kwargs)
+    return request.prepare()
 
 
 @copy_signature(request, exclude='method')
@@ -124,19 +161,6 @@ def put(url: str, **kwargs) -> Response:
     return request('PUT', url, **kwargs)
 
 
-# TODO: Handle error 429 if we still somehow exceed the rate limit?
-@contextmanager
-def ratelimit(bucket=pyinaturalist.user_agent):
-    """Add delays in between requests to stay within the rate limits. If pyrate-limiter is
-    not installed, this will quietly do nothing.
-    """
-    if RATE_LIMITER:
-        with RATE_LIMITER.ratelimit(bucket, delay=True, max_delay=MAX_DELAY):
-            yield
-    else:
-        yield
-
-
 def get_session() -> Session:
     """Get a Session object that will be reused across requests to take advantage of connection
     pooling. This is especially relevant for large paginated requests. If used in a multi-threaded
@@ -148,11 +172,19 @@ def get_session() -> Session:
     return thread_local.session
 
 
+# TODO: Drop support for global variables in version 0.16
 def is_dry_run_enabled(method: str) -> bool:
     """A wrapper to determine if dry-run (aka test mode) has been enabled via either
     a constant or an environment variable. Dry-run mode may be enabled for either write
     requests, or all requests.
     """
+    if pyinaturalist.DRY_RUN_ENABLED or pyinaturalist.DRY_RUN_WRITE_ONLY:
+        msg = (
+            'Global varibale usage is deprecated; please use environment variables or dry_run '
+            'keyword argument instead'
+        )
+        warn(DeprecationWarning(msg))
+
     dry_run_enabled = pyinaturalist.DRY_RUN_ENABLED or env_to_bool('DRY_RUN_ENABLED')
     if method in WRITE_HTTP_METHODS:
         return dry_run_enabled or pyinaturalist.DRY_RUN_WRITE_ONLY or env_to_bool('DRY_RUN_WRITE_ONLY')
@@ -165,9 +197,3 @@ def env_to_bool(environment_variable: str) -> bool:
     """
     env_value = getenv(environment_variable)
     return bool(env_value) and str(env_value).lower() not in ['false', 'none']
-
-
-def log_request(*args, **kwargs):
-    """Log all relevant information about an HTTP request"""
-    kwargs_strs = [f'{k}={v}' for k, v in kwargs.items()]
-    logger.info('Request: {}'.format(', '.join(list(args) + kwargs_strs)))

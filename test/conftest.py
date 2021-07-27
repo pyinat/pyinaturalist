@@ -45,7 +45,7 @@ logging.getLogger('pyinaturalist').setLevel('DEBUG')
 @pytest.fixture(scope='function', autouse=True)
 def patch_ratelimit():
     """Disable rate-limiting during test session"""
-    with patch('pyinaturalist.api_requests.ratelimit'):
+    with patch('pyinaturalist.api_requests.RATE_LIMITER'):
         yield
 
 

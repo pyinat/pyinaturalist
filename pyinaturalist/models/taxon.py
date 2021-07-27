@@ -27,7 +27,6 @@ from pyinaturalist.models import (
     field,
     upper,
 )
-from pyinaturalist.v1 import get_taxa_by_id
 
 
 # TODO: Some more properties to consolidate differences between endpoints? (place_id vs. place, etc.)
@@ -241,6 +240,8 @@ class Taxon(BaseModel):
     @classmethod
     def from_id(cls, id: int) -> 'Taxon':
         """Lookup and create a new Taxon object by ID"""
+        from pyinaturalist.v1 import get_taxa_by_id
+
         r = get_taxa_by_id(id)
         return cls.from_json(r['results'][0])  # type: ignore
 

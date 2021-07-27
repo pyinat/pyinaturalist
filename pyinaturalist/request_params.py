@@ -5,9 +5,8 @@ them into standard request parameters, along with request validation that makes 
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from logging import getLogger
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Iterable, List, Optional, Tuple
 
-import pyinaturalist
 from pyinaturalist.constants import *  # noqa: F401, F403  # Imports for backwards-compatibility
 from pyinaturalist.constants import (
     DATETIME_PARAMS,
@@ -29,44 +28,6 @@ MULTIPLE_CHOICE_ERROR_MSG = (
 )
 
 logger = getLogger(__name__)
-
-
-def prepare_request(
-    url: str,
-    access_token: str = None,
-    user_agent: str = None,
-    ids: MultiInt = None,
-    params: RequestParams = None,
-    headers: Dict = None,
-    json: Dict = None,
-) -> Tuple[str, RequestParams, Dict, Optional[Dict]]:
-    """Translate some ``pyinaturalist``-specific params into standard params and headers,
-    and other request param preprocessing. This is made non-``requests``-specific
-    so it could potentially be reused for ``aiohttp`` requests.
-
-    Returns:
-        Tuple of ``(URL, params, headers, data)``
-    """
-    # Prepare request params
-    params = preprocess_request_params(params)
-
-    # Prepare user-agent and authentication headers
-    headers = headers or {}
-    headers['User-Agent'] = user_agent or pyinaturalist.user_agent
-    headers['Accept'] = 'application/json'
-    if access_token:
-        headers['Authorization'] = f'Bearer {access_token}'
-
-    # If one or more resources are requested by ID, valudate and update the request URL accordingly
-    if ids:
-        url = url.rstrip('/') + '/' + validate_ids(ids)
-
-    # Convert any datetimes to strings in request body
-    if json:
-        headers['Content-type'] = 'application/json'
-        json = preprocess_request_body(json)
-
-    return url, params, headers, json
 
 
 def preprocess_request_body(body: Optional[RequestParams]) -> RequestParams:
@@ -100,6 +61,13 @@ def convert_bool_params(params: RequestParams) -> RequestParams:
         if isinstance(v, bool):
             params[k] = str(v).lower()
     return params
+
+
+def convert_url_ids(url: str, ids: MultiInt = None) -> str:
+    """If one or more resources are requested by ID, validate and update the request URL accordingly"""
+    if ids:
+        url = url.rstrip('/') + '/' + validate_ids(ids)
+    return url
 
 
 def convert_datetime_params(params: RequestParams) -> RequestParams:

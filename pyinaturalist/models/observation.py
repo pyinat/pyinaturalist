@@ -33,7 +33,6 @@ from pyinaturalist.models import (
     field,
     upper,
 )
-from pyinaturalist.v1 import get_observation
 
 
 @define(auto_attribs=False, init=False, field_transformer=add_lazy_attrs)
@@ -201,6 +200,8 @@ class Observation(BaseModel):
     @classmethod
     def from_id(cls, id: int):
         """Lookup and create a new Observation object from an ID"""
+        from pyinaturalist.v1 import get_observation
+
         json = get_observation(id)
         return cls.from_json(json)
 
