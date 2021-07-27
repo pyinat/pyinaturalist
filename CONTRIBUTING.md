@@ -28,6 +28,11 @@ $ open docs/_build/html/index.html
 $ xdg-open docs/_build/html/index.html
 ```
 
+Or to auto-build the docs and live reload in the browser whenver doc contents change:
+```bash
+$ make -C docs livehtml
+```
+
 Project documentation is generated using [Sphinx](https://www.sphinx-doc.org),
 [MyST](https://myst-parser.readthedocs.io), and several Sphinx extensions and custom templates.
 See [conf.py](https://github.com/niconoe/pyinaturalist/blob/main/docs/conf.py) for more details.
