@@ -1,7 +1,7 @@
 """Notes:
-* For tests, nox will create python version-specific envs, and install dependencies using the
-  versions defined in poetry.lock
-* For linting & docs, the current environment will be used instaed of creating new ones
+* 'test' command: nox will use poetry.lock to determine dependency versions
+* 'lint' command: tools and environments are managed by pre-commit
+* All other commands: the current environment will be used instead of creating new ones
 """
 from os.path import join
 from shutil import rmtree
@@ -51,21 +51,26 @@ def docs(session):
 @session(python=False)
 def livedocs(session):
     """Auto-build docs with live reload in browser.
-    Use -o or --open to open the browser after starting.
+    Add `-- open` to also open the browser after starting.
     """
     args = [f'--ignore {pattern}' for pattern in LIVE_DOCS_IGNORE]
     args += [f'--port {LIVE_DOCS_PORT}', '-j auto']
-    if session.posargs and session.posargs[0] in ['-o', '--open']:
+    if session.posargs == ['open']:
         args.append('--open-browser')
 
-    cmd = 'sphinx-autobuild docs docs/_build/html' + ' '.join(args)
+    cmd = 'sphinx-autobuild docs docs/_build/html ' + ' '.join(args)
     session.run(*cmd.split(' '))
 
 
 @session(python=False)
 def lint(session):
-    """Run linters and code formatters"""
-    session.run('black', '.')
-    session.run('isort', '.')
-    session.run('flake8', '.')
-    session.run('mypy', 'pyinaturalist')
+    """Run linters and code formatters via pre-commit"""
+    cmd = 'pre-commit run --all-files'
+    session.run(*cmd.split(' '))
+
+
+@session(python=False)
+def mypy(session):
+    """Run mypy only (without pre-commit)"""
+    cmd = 'mypy --install-types --non-interactive'
+    session.run(*cmd.split(' '))
