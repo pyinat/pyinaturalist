@@ -12,7 +12,7 @@
 
 .. autoclass:: {{ objname }}
    :show-inheritance:
-   
+
    {% block attributes_summary %}
    {% if attributes %}
    .. rubric:: Attributes Summary

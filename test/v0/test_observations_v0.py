@@ -1,9 +1,9 @@
-import pytest
 from datetime import datetime, timedelta
-from dateutil.tz import tzutc
 from io import BytesIO
 from unittest.mock import patch
 
+import pytest
+from dateutil.tz import tzutc
 from requests import HTTPError
 
 from pyinaturalist.constants import API_V0_BASE_URL, OBSERVATION_FORMATS

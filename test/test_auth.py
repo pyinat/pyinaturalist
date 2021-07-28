@@ -1,7 +1,7 @@
 import os
-import pytest
 from unittest.mock import patch
 
+import pytest
 from keyring.errors import KeyringError
 from requests import HTTPError
 

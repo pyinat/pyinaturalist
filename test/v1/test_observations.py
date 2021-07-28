@@ -1,7 +1,8 @@
-import pytest
 from datetime import datetime
-from dateutil.tz import tzoffset, tzutc
 from unittest.mock import patch
+
+import pytest
+from dateutil.tz import tzoffset, tzutc
 
 from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.exceptions import ObservationNotFound

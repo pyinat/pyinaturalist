@@ -24,7 +24,7 @@ Collectively, the community produces a rich source of global biodiversity data t
 to anyone from hobbyists to scientists.
 
 **pyinaturalist** is an unofficial client for the [iNaturalist API](https://api.inaturalist.org/v1) that
-aims to make these data easily accessible in the python programming language. 
+aims to make these data easily accessible in the python programming language.
 
 - [Features](#features)
 - [Quickstart](#quickstart)

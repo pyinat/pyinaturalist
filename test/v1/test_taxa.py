@@ -1,6 +1,7 @@
-import pytest
 from unittest.mock import patch
 from urllib.parse import urlencode
+
+import pytest
 
 from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.v1 import get_taxa, get_taxa_autocomplete, get_taxa_by_id

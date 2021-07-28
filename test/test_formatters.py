@@ -1,6 +1,5 @@
 # flake8: noqa: F405
 import pytest
-
 from rich.console import Console
 from rich.table import Table
 

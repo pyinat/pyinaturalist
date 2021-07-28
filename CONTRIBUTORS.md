@@ -1,6 +1,6 @@
 # Contributors
 Thanks to the following individuals for providing pull requests, feedback, bug reports, answering
-questions, and other contributions that have helped to improve pyinaturalist:     
+questions, and other contributions that have helped to improve pyinaturalist:
 
 * [AE Hamrick](https://github.com/AEHamrick)
 * [Ben Armstrong](https://github.com/synrg)
