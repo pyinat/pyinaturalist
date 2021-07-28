@@ -69,8 +69,6 @@ pytest-cov = ">=2.11"
 pytest-xdist = ">=2.2"
 requests-mock = "^1.8"
 sphinx-autobuild = ">=2021.3.14"
-types-python-dateutil = ">=0.1.2"
-types-requests = ">=0.1.8"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -98,9 +96,7 @@ skip = [
     'pyinaturalist/node_api.py',
 ]
 known_first_party = ['test']
-# Things that are common enough they may as well be grouped with stdlib imports
-extra_standard_library = ['dateutil', 'pytest', 'setuptools']
 
 [tool.mypy]
 ignore_missing_imports = true
-exclude = "examples|docs|downloads|dist|build|test"
+files = ['pyinaturalist']
