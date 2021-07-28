@@ -1,22 +1,18 @@
 """Summary of documentation components:
 
-* ``forge`` is used to define and reuse documentation for API request parameters
-* ``apidoc`` is used to generate rst sources for **modules**
-* ``autosummary`` is used to generate rst sources for **packages and summaries**
-* ``automodapi`` + ``pyinaturalist.docs.model_docs`` are used to generate model
-  documentation based on ``attrs`` fields + metadata
-* ``intersphinx`` is used to insert links to other projects' docs
+* `forge` is used to define and reuse documentation for API request parameters
+* `apidoc` is used to generate rst sources for **modules**
+* `autosummary` is used to generate rst sources for **packages and summaries**
+* `automodapi` + `pyinaturalist.docs.model_docs` are used to generate model
+  documentation based on `attrs` fields + metadata
+* `intersphinx` is used to insert links to other projects' docs
 * Jinja templates provide some additional customization:
-    * Show a class summary for ``pyinaturalist.models`` package
-    * Show a function summary for ``pyinaturalist.v*`` packages
-    * Show a function summary for all modules except ``pyinaturalist.models.*``
-* Some Sphinx builder hooks copy some content so it can be accessed relative to ``docs`` dir
+    * Show a class summary for `pyinaturalist.models` package
+    * Show a function summary for `pyinaturalist.v*` packages
+    * Show a function summary for all modules except `pyinaturalist.models.*`
+* Some Sphinx builder hooks copy some content so it can be accessed relative to `docs` dir
 * Some CSS and JS adds collapsible drop-down container
 * On Readthedocs, CSS and JS is automatically added for a version dropdown
-
-TODO:
-* Customization for package-level docs that can be done with module docstrings instead of templates?
-* Automatically generate list of versions for version dropdown?
 """
 # flake8: noqa: E402
 import sys
