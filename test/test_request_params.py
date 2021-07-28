@@ -1,7 +1,8 @@
-import pytest
 from datetime import date, datetime
-from dateutil.tz import gettz
 from unittest.mock import patch
+
+import pytest
+from dateutil.tz import gettz
 
 from pyinaturalist.request_params import (
     convert_bool_params,

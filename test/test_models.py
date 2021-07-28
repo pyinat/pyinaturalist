@@ -7,9 +7,10 @@
 * Any additional properties or aliases on the model
 * Formatting in the model's __str__ method
 """
+from datetime import datetime
+
 # flake8: noqa: F405
 import pytest
-from datetime import datetime
 from dateutil.tz import tzoffset, tzutc
 
 from pyinaturalist.constants import ICONIC_TAXA, INAT_BASE_URL, PHOTO_INFO_BASE_URL, PHOTO_SIZES

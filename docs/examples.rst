@@ -34,7 +34,7 @@ Docker image, which you can also use to run these examples on a local Jupyter se
 Scripts
 -------
 
-Convert observations to GPX                     
+Convert observations to GPX
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. include:: ../examples/observations_to_gpx.py
     :start-line: 2
@@ -46,7 +46,7 @@ Convert observations to GPX
     .. literalinclude:: ../examples/observations_to_gpx.py
         :lines: 1,8-
 
-Observation photo metadata                
+Observation photo metadata
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. include:: ../examples/observation_photo_metadata.py
     :start-line: 2

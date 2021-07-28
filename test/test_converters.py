@@ -1,8 +1,9 @@
-import pytest
 from datetime import datetime
-from dateutil.tz import tzoffset
 from io import BytesIO
 from tempfile import NamedTemporaryFile
+
+import pytest
+from dateutil.tz import tzoffset
 
 from pyinaturalist.converters import (
     convert_histogram,
