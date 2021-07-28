@@ -381,8 +381,8 @@ You must enable at least INFO-level logging to see the logged request info
 >>> get_taxa(q='warbler', locale=1, dry_run=True)
 {'results': [], 'total_results': 0}
 [07-26 18:55:50] INFO  Request: GET https://api.inaturalist.org/v1/taxa?q=warbler&locale=1
-User-Agent: pyinaturalist/0.15.0                                                 
-Accept: application/json                                                         
+User-Agent: pyinaturalist/0.15.0
+Accept: application/json
 ```
 
 ### Dry-run all requests

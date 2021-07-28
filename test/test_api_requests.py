@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 import pyinaturalist
 from pyinaturalist.api_requests import MOCK_RESPONSE, delete, get, post, put, request

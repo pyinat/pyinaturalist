@@ -57,7 +57,7 @@ Models:
     * ProjectUser
 * SearchResult
 * Taxon
-    * ConservationStatus 
+    * ConservationStatus
     * EstablishmentMeans
     * TaxonCount
     * TaxonCounts

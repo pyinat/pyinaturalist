@@ -5,7 +5,7 @@ import csv
 from inspect import getmembers, isclass
 from os import makedirs
 from os.path import join
-from typing import Any, List, Tuple, Type, get_type_hints
+from typing import TYPE_CHECKING, Any, List, Tuple, Type, get_type_hints
 
 from attr import Attribute
 from sphinx_autodoc_typehints import format_annotation
@@ -60,7 +60,7 @@ def get_properties(cls: Type) -> List[property]:
         for member in cls.__dict__.values()
         if isinstance(member, property)
         and not isinstance(member, LazyProperty)
-        and member.fget.__name__ not in IGNORE_PROPERTIES
+        and member.fget.__name__ not in IGNORE_PROPERTIES  # type: ignore
     ]
 
 
@@ -70,7 +70,7 @@ def _get_field_doc(field: Attribute) -> Tuple[str, str, str]:
     doc = field.metadata.get('doc', '')
     options = field.metadata.get('options', [])
     if options:
-        options = ', '.join([f'``{opt}``' for opt in filter(None, options)])
+        options = ', '.join([f'``{opt}``' for opt in options if opt])
         doc += f'\n\n**Options:** {options}'
     return (f'**{field.name}**', rtype, doc)
 
@@ -79,6 +79,9 @@ def _get_property_doc(prop: property) -> Tuple[str, str, str]:
     """Get a row documenting a regular @property"""
     fget_rtype = get_type_hints(prop.fget).get('return', Any)
     rtype = format_annotation(fget_rtype)
+    if TYPE_CHECKING:
+        assert prop.fget is not None
+
     doc = (prop.fget.__doc__ or '').split('\n')[0]
     return (f'**{prop.fget.__name__}** ({PROPERTY_TYPE})', rtype, doc)
 
@@ -86,7 +89,7 @@ def _get_property_doc(prop: property) -> Tuple[str, str, str]:
 def _get_lazy_property_doc(prop: LazyProperty) -> Tuple[str, str, str]:
     """Get a row documenting a LazyProperty"""
     rtype = format_annotation(prop.type)
-    return (f'**{prop.__name__}** ({LAZY_PROPERTY_TYPE})', rtype, prop.__doc__)
+    return (f'**{prop.__name__}** ({LAZY_PROPERTY_TYPE})', rtype, prop.__doc__ or '')
 
 
 def export_model_doc(model_name, doc_table):

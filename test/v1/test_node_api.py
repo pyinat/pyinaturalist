@@ -1,7 +1,8 @@
 import os
 from datetime import datetime
-from dateutil.tz import tzutc
 from unittest.mock import patch
+
+from dateutil.tz import tzutc
 
 import pyinaturalist
 from pyinaturalist.constants import API_V1_BASE_URL

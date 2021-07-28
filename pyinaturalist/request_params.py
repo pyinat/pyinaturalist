@@ -3,9 +3,10 @@ The main purpose of these functions is to support some python-specific convenien
 them into standard request parameters, along with request validation that makes debugging easier.
 """
 from datetime import date, datetime
-from dateutil.relativedelta import relativedelta
 from logging import getLogger
 from typing import Any, Iterable, List, Optional, Tuple
+
+from dateutil.relativedelta import relativedelta
 
 from pyinaturalist.constants import *  # noqa: F401, F403  # Imports for backwards-compatibility
 from pyinaturalist.constants import (

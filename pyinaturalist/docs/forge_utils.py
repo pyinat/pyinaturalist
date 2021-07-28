@@ -54,7 +54,7 @@ def copy_doc_signature(*template_functions: TemplateFunction, add_common_args: b
         add_common_args: Add additional keyword arguments common to most functions
     """
     if add_common_args:
-        template_functions = list(template_functions) + [_dry_run, _limiter, _session, _user_agent]
+        template_functions += (_dry_run, _limiter, _session, _user_agent)
 
     def wrapper(func):
         # Modify annotations and docstring

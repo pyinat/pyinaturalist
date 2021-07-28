@@ -1,14 +1,15 @@
 """Type conversion utilities"""
 from datetime import date, datetime, timedelta
-from dateutil.parser import UnknownTimezoneWarning  # type: ignore  # (missing from type stubs)
-from dateutil.parser import parse as parse_date
-from dateutil.tz import tzlocal, tzoffset
 from io import BytesIO
 from logging import getLogger
 from os.path import abspath, expanduser
 from pathlib import Path
 from typing import IO, Any, Dict, List, MutableSequence, Optional, Union
 from warnings import catch_warnings, simplefilter
+
+from dateutil.parser import UnknownTimezoneWarning  # type: ignore  # (missing from type stubs)
+from dateutil.parser import parse as parse_date
+from dateutil.tz import tzlocal, tzoffset
 
 from pyinaturalist.constants import (
     AnyFile,

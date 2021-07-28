@@ -5,11 +5,12 @@ Pytest will also automatically pick up any fixtures defined here.
 import json
 import logging
 import os
-import pytest
 import re
 from inspect import Parameter, getmembers, isfunction, signature
 from os.path import join
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 # If ipdb is installed, register it as the default debugger
 from pyinaturalist.constants import SAMPLE_DATA_DIR
