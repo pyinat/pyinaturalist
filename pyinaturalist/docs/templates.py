@@ -55,7 +55,7 @@ def _identification_params(
     id_above: int = None,
     id_below: int = None,
 ):
-    """
+    """Args:
     current_taxon: ID's taxon is the same it's observation's taxon
     own_observation: ID was added by the observer
     is_change: ID was created as a results of a taxon change
@@ -114,7 +114,7 @@ def _observation_common(
     iconic_taxa: MultiStr = None,
     updated_since: AnyDateTime = None,
 ):
-    """
+    """Args:
     q: Search observation properties
     d1: Must be observed on or after this date
     d2: Must be observed on or before this date
@@ -198,7 +198,7 @@ def _observation_node_only(
     preferred_place_id: int = None,
     ttl: str = None,
 ):
-    """
+    """Args:
     acc: Whether or not positional accuracy / coordinate uncertainty has been specified
     captive: Captive or cultivated observations
     endemic: Observations whose taxa are endemic to their location
@@ -285,7 +285,7 @@ def _observation_rest_only(
     extra: str = None,
     response_format: str = 'json',
 ):
-    """
+    """Args:
     has: Catch-all for some boolean selectors. This can be used multiple times, e.g.
         ``has=['photos', 'geo']``
     m1: First month of a month range
@@ -306,7 +306,7 @@ def _observation_histogram(
     date_field: str = 'observed',
     interval: str = 'month_of_year',
 ):
-    """
+    """Args:
     date_field: Histogram basis: either when the observation was created or observed
     interval: Time interval for histogram, with groups starting on or contained within the group value.
     """
@@ -335,7 +335,7 @@ def _create_observation(
     photos: MultiFile = None,
     sounds: MultiFile = None,
 ):
-    """
+    """Args:
     species_guess: Equivalent to the 'What did you see?' field on the observation form.
         iNat will try to choose a single taxon based on this, but it may fail if it's ambuguous
     taxon_id: ID of the taxon to associate with this observation
@@ -361,7 +361,7 @@ def _create_observation(
     facebook_photos: Facebook photo IDs to add as photos for this observation. User must have
         their Facebook and iNat accounts connected, and the user must own the photo on Facebook.
     photos: Image files, file-like objects, and/or paths
-    sounds: Sound files, file-like objects, and/or pathss
+    sounds: Sound files, file-like objects, and/or paths
     """
 
 
@@ -369,10 +369,8 @@ def _update_observation(
     # _method: str = None,  # Exposed as a client-specific workaround; not needed w/ `requests`
     ignore_photos: bool = True,
 ):
-    """
-    ignore_photos
-        If photos exist on the observation but are missing in the request, simply ignore them
-        instead of deleting the missing observation photos
+    """Args:
+    ignore_photos: If photos exist on the observation but are missing in the request, ignore them instead of deleting the missing observation photos
     """
 
 
@@ -398,7 +396,7 @@ def _projects_params(
     has_params: bool = None,
     has_posts: bool = None,
 ):
-    """
+    """Args:
     q: Project name must begin with this value
     id: Must have this ID
     not_id: Must not have this ID
@@ -433,7 +431,7 @@ def _search_params(
     locale: str = None,
     preferred_place_id: int = None,
 ):
-    """
+    """Args:
     q: Search query
     sources: Object types to search
     place_id: Results must be associated with this place
@@ -458,7 +456,7 @@ def _taxon_params(
     preferred_place_id: int = None,
     all_names: bool = None,
 ):
-    """
+    """Args:
     q: Name must begin with this value
     is_active: Taxon is active
     taxon_id: Only show taxa with this ID, or its descendants
@@ -479,7 +477,7 @@ def _taxon_id_params(
     only_id: int = None,
     parent_id: int = None,
 ):
-    """
+    """Args:
     id_above: Must have an ID above this value
     id_below: Must have an ID below this value
     only_id: Return only the record IDs
@@ -492,7 +490,7 @@ def _taxon_id_params(
 
 
 def _get_posts(login: str = None, project_id: int = None, page: int = None, per_page: int = None):
-    """
+    """Args:
     login: Return posts by this user
     project_id: Return posts from this project
     page: Pagination page number
@@ -505,9 +503,8 @@ def _get_posts(login: str = None, project_id: int = None, page: int = None, per_
 
 
 def _access_token(access_token: str = None):
-    """
-    access_token: An access token required for user authentication, as returned by
-        :py:func:`get_access_token()`
+    """Args:
+    access_token: An access token required for user authentication, as returned by :py:func:`get_access_token()`
     """
 
 
@@ -517,7 +514,7 @@ def _bounding_box(
     swlat: float = None,
     swlng: float = None,
 ):
-    """
+    """Args:
     nelat: NE latitude of bounding box
     nelng: NE longitude of bounding box
     swlat: SW latitude of bounding box
@@ -526,31 +523,31 @@ def _bounding_box(
 
 
 def _geojson_properties(properties: List[str] = None):
-    """
+    """Args:
     properties: Properties from observation results to include as GeoJSON properties
     """
 
 
 def _name(name: str = None):
-    """
+    """Args:
     name: Name must match this value
     """
 
 
 def _only_id(only_id: bool = False):
-    """
+    """Args:
     only_id: Return only the record IDs
     """
 
 
 def _observation_id(observation_id: int):
-    """
+    """Args:
     observation_id: iNaturalist observation ID
     """
 
 
 def _project_id(observation_id: int = None):
-    """
+    """Args:
     project_id: Only show users who are members of this project
     """
 
@@ -562,7 +559,7 @@ def _pagination(
     order_by: str = None,
     count_only: bool = None,
 ):
-    """
+    """Args:
     page: Page number of results to return
     per_page: Number of results to return in a page. The maximum value is generally 200,
         unless otherwise noted
@@ -580,7 +577,7 @@ _get_observations = [
 
 
 def _search_query(q: str = None):
-    """
+    """Args:
     q: Search query
     """
 

@@ -58,8 +58,8 @@ def get_observation_histogram(**params) -> HistogramResponse:
 
     **Notes:**
 
-    * Search parameters are the same as :py:func:`.get_observations()`, with the addition of
-      ``date_field`` and ``interval``.
+    * Search parameters are the same as :py:func:`~pyinaturalist.v1.observations.get_observations()`,
+        with the addition of ``date_field`` and ``interval``.
     * ``date_field`` may be either 'observed' (default) or 'created'.
     * Observed date ranges can be filtered by parameters ``d1`` and ``d2``
     * Created date ranges can be filtered by parameters ``created_d1`` and ``created_d2``

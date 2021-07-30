@@ -22,7 +22,7 @@ def test(session):
     """Run tests for a specific python version"""
     test_paths = session.posargs or ['test']
     session.install('.', 'pytest', 'pytest-xdist', 'requests-mock')
-    session.run('pytest', '-n', 'auto', *test_paths)
+    session.run('pytest', '-vv', '-n', 'auto', *test_paths)
 
 
 @session(python=False)
@@ -58,6 +58,7 @@ def livedocs(session):
     if session.posargs == ['open']:
         args.append('--open-browser')
 
+    clean(session)
     cmd = 'sphinx-autobuild docs docs/_build/html ' + ' '.join(args)
     session.run(*cmd.split(' '))
 

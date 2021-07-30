@@ -1,21 +1,24 @@
-"""Utilities built on top of ``python-forge`` that simplify defining API docs by combining
-function signature modification with docstring modification.
-This module makes ``python-forge`` optional; if not installed, these functions will quietly fail
-without modifying the target functions.
-"""
-from inspect import cleandoc, ismethod, signature
+"""Utilities for modifying function signatures using ``python-forge``"""
+from functools import partial
+from inspect import ismethod, signature
 from logging import getLogger
-from typing import Callable, List, get_type_hints
+from typing import Callable, List
 
 from pyrate_limiter import Limiter
 from requests import Session
 
 from pyinaturalist.constants import TemplateFunction
+from pyinaturalist.docs import copy_annotations, copy_docstrings
 
 logger = getLogger(__name__)
 
 
-def copy_doc_signature(*template_functions: TemplateFunction, add_common_args: bool = True) -> Callable:
+def copy_doc_signature(
+    *template_functions: TemplateFunction,
+    add_common_args: bool = True,
+    include_sections: List[str] = None,
+    include_return_annotation: bool = True,
+) -> Callable:
     """Document a function with docstrings, function signatures, and type annotations from
     one or more template functions.
 
@@ -52,14 +55,15 @@ def copy_doc_signature(*template_functions: TemplateFunction, add_common_args: b
         template_functions: Template functions containing docstrings and params to apply to the
             wrapped function
         add_common_args: Add additional keyword arguments common to most functions
+        include: Docstring sections to include; if not specified, all sections will be included
     """
     if add_common_args:
         template_functions += (_dry_run, _limiter, _session, _user_agent)
 
     def wrapper(func):
         # Modify annotations and docstring
-        func = copy_annotations(func, template_functions)
-        func = copy_docstrings(func, template_functions)
+        func = copy_annotations(func, template_functions, include_return=include_return_annotation)
+        func = copy_docstrings(func, template_functions, include=include_sections)
 
         # If forge is installed, modify signature; otherwise, silently ignore it
         try:
@@ -72,52 +76,14 @@ def copy_doc_signature(*template_functions: TemplateFunction, add_common_args: b
     return wrapper
 
 
-# Alias specifically for API functions
+# Aliases specifically for API functions and controller functions, respectively
 document_request_params = copy_doc_signature
-
-
-def copy_annotations(target_function: Callable, template_functions: List[TemplateFunction]) -> Callable:
-    """Copy type annotations from one or more template functions to a target function"""
-    for template_function in template_functions:
-        for k, v in get_type_hints(template_function).items():
-            target_function.__annotations__[k] = v
-    return target_function
-
-
-def copy_docstrings(target_function: Callable, template_functions: List[TemplateFunction]) -> Callable:
-    """Copy docstrings from one or more template functions to a target function.
-    Assumes Google-style docstrings.
-
-    Args:
-        target_function: Function to modify
-        template_functions: Functions containing docstrings to apply to ``target_function``
-    """
-    # Start with initial function description only
-    docstring, return_value_desc = _split_docstring(target_function.__doc__ or '')
-
-    # Insert 'Args' section
-    docstring += '\n\nArgs:'
-    for template_function in template_functions:
-        docstring += template_function.__doc__ or ''
-        docstring = docstring.rstrip()
-
-    # Insert 'Returns' section, if present
-    if return_value_desc:
-        docstring += f'\n\nReturns:\n    {return_value_desc}'
-
-    target_function.__doc__ = docstring
-    return target_function
-
-
-def _split_docstring(docstring):
-    """Split a docstring into a function description + return value description, if present"""
-    if 'Returns:' in docstring:
-        function_desc, return_value_desc = docstring.split('Returns:')
-    else:
-        function_desc = docstring
-        return_value_desc = ''
-
-    return cleandoc(function_desc.strip()), cleandoc(return_value_desc.strip())
+document_controller_params = partial(
+    copy_doc_signature,
+    add_common_args=False,
+    include_sections=['Description', 'Args'],
+    include_return_annotation=False,
+)
 
 
 def copy_signature(template_function: Callable, include=None, exclude=None) -> Callable:
@@ -163,24 +129,24 @@ def _get_combined_revision(target_function: Callable, template_functions: List[T
 
 # Param templates that are added to every function signature by default
 def _dry_run(dry_run: bool = False):
-    """
+    """Args:
     dry_run: Just log the request instead of sending a real request
     """
 
 
 def _limiter(limiter: Limiter = None):
-    """
+    """Args:
     limiter: Custom rate limits to apply to this request
     """
 
 
 def _session(session: Session = None):
-    """
-    session: An existing `Session object <https://docs.python-requests.org/en/latest/user/advanced/>`_  to use instead of creating a new one
+    """Args:
+    session: An existing `Session object <https://docs.python-requests.org/en/latest/user/advanced/>`_ to use instead of creating a new one
     """
 
 
 def _user_agent(user_agent: str = None):
-    """
+    """Args:
     user_agent: A custom user-agent string to provide to the iNaturalist API
     """
