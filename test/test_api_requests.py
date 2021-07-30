@@ -39,7 +39,7 @@ def test_http_methods(mock_send, http_func, http_method):
             {
                 'Accept': 'application/json',
                 'User-Agent': pyinaturalist.user_agent,
-                'Authorization': 'Bearer token',
+                'Authorization': '[REDACTED]',
             },
         ),
     ],

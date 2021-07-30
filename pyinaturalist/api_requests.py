@@ -98,7 +98,7 @@ def request(
         return MOCK_RESPONSE
     # Otherwise, apply rate-limiting and send the request
     else:
-        with limiter.ratelimit(bucket=bucket, delay=True, max_delay=MAX_DELAY):
+        with limiter.ratelimit(bucket, delay=True, max_delay=MAX_DELAY):
             response = session.send(request, timeout=timeout)
         if raise_for_status:
             response.raise_for_status()
