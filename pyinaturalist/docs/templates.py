@@ -420,6 +420,14 @@ def _projects_params(
     """
 
 
+def _project_observation_params(access_token: str, project_id: int, observation_id: int):
+    """Args:
+    access_token: An access token required for user authentication, as returned by :py:func:`.get_access_token()`
+    project_id: ID of project to add onto
+    observation_id: ID of observation to add
+    """
+
+
 # Main Search
 # --------------------
 
@@ -504,7 +512,7 @@ def _get_posts(login: str = None, project_id: int = None, page: int = None, per_
 
 def _access_token(access_token: str = None):
     """Args:
-    access_token: An access token required for user authentication, as returned by :py:func:`get_access_token()`
+    access_token: An access token required for user authentication, as returned by :py:func:`.get_access_token()`
     """
 
 

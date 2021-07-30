@@ -4,7 +4,7 @@ from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.pagination import add_paginate_all
 from pyinaturalist.request_params import validate_multiple_choice_param
-from pyinaturalist.v1 import get_v1
+from pyinaturalist.v1 import delete_v1, get_v1, post_v1
 
 
 @document_request_params(docs._projects_params, docs._pagination)
@@ -83,3 +83,65 @@ def get_projects_by_id(project_id: MultiInt, rule_details: bool = None, **params
     projects['results'] = convert_all_coordinates(projects['results'])
     projects['results'] = convert_all_timestamps(projects['results'])
     return projects
+
+
+@document_request_params(docs._project_observation_params)
+def add_project_observation(
+    access_token: str, project_id: int, observation_id: int, **params
+) -> JsonResponse:
+    """Add an observation to a project
+
+    **API reference:**
+
+    * https://api.inaturalist.org/v1/docs/#!/Projects/post_projects_id_add
+    * https://api.inaturalist.org/v1/docs/#!/Project_Observations/post_project_observations
+
+    Example:
+
+        >>> add_project_observation(access_token, 24237, 1234)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/add_project_observation.json
+                :language: JSON
+
+    Returns:
+        Information about the added project observation
+    """
+    response = post_v1(
+        'project_observations',
+        access_token=access_token,
+        json={'observation_id': observation_id, 'project_id': project_id},
+        **params,
+    )
+    return response.json()
+
+
+# TODO: This may not yet be working as intended
+@document_request_params(docs._project_observation_params)
+def delete_project_observation(access_token: str, project_id: int, observation_id: int, **params):
+    """Remove an observation from a project
+
+    **API reference:**
+
+    * https://api.inaturalist.org/v1/docs/#!/Projects/delete_projects_id_remove
+    * https://api.inaturalist.org/v1/docs/#!/Project_Observations/delete_project_observations_id
+
+    Example:
+
+        >>> delete_project_observation(access_token, 24237, 1234)
+    """
+    return delete_v1(
+        f'projects/{project_id}/remove',
+        access_token=access_token,
+        json={'observation_id': observation_id},
+        **params,
+    )
+    # This version takes a separate 'project observation' ID (from association table?)
+    # delete_v1(
+    #     'project_observations',
+    #     access_token=access_token,
+    #     json={'observation_id': observation_id, 'project_id': project_id},
+    #     **params,
+    # )
