@@ -92,9 +92,9 @@ def request(
     limiter = limiter or RATE_LIMITER
     session = session or get_session()
 
+    logger.info(format_request(request))
     # Make a mock request, if specified
     if dry_run or is_dry_run_enabled(method):
-        logger.info(format_request(request))
         return MOCK_RESPONSE
     # Otherwise, apply rate-limiting and send the request
     else:

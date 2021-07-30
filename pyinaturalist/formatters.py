@@ -191,8 +191,8 @@ def format_request(request: PreparedRequest) -> str:
         headers_dict['Authorization'] = '[REDACTED]'
 
     headers = '\n'.join([f'{k}: {v}' for k, v in headers_dict.items()])
-    body = '\n\n{request.body}' if request.body else ''
-    return f'Request: {request.method} {request.url}\n{headers}{body}'
+    body = f'\n\n{request.body}' if request.body else ''  # type: ignore
+    return f'{request.method} {request.url}\n{headers}{body}'
 
 
 # TODO: This maybe belongs in a different module
