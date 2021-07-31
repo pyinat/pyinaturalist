@@ -51,20 +51,24 @@ class ObservationController(BaseController):
 
     @document_controller_params(get_observation_species_counts)
     def species_counts(self, **params) -> Dict[int, Taxon]:
+        params.setdefault('access_token', self.client.access_token)
         response = get_observation_species_counts(**params, **self.client.settings)
         return TaxonCounts.from_json(response)  # type: ignore
 
     # TODO: create observations with Observation objects
     def _create(self, *observations: Observation, **params):
+        params.setdefault('access_token', self.client.access_token)
         for obs in observations:
             create_observation(obs.to_json(), **params, **self.client.settings)
 
     @document_controller_params(delete_observation)
     def delete(self, *observation_ids: int, **params):
+        params.setdefault('access_token', self.client.access_token)
         for obs_id in observation_ids:
             delete_observation(obs_id, **params, **self.client.settings)
 
     # TODO: Add model for sound files, return list of model objects
     @document_controller_params(upload)
     def upload(self, **params) -> ListResponse:
+        params.setdefault('access_token', self.client.access_token)
         return upload(**params, **self.client.settings)
