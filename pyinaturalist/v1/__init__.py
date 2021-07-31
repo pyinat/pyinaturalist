@@ -34,6 +34,8 @@ def delete_v1(endpoint: str, **kwargs) -> Response:
 from pyinaturalist.v1.controlled_terms import get_controlled_terms
 from pyinaturalist.v1.identifications import get_identifications, get_identifications_by_id
 from pyinaturalist.v1.observations import (
+    create_observation,
+    delete_observation,
     get_observation,
     get_observation_histogram,
     get_observation_identifiers,
@@ -41,6 +43,7 @@ from pyinaturalist.v1.observations import (
     get_observation_species_counts,
     get_observation_taxonomy,
     get_observations,
+    upload,
 )
 from pyinaturalist.v1.places import get_places_autocomplete, get_places_by_id, get_places_nearby
 from pyinaturalist.v1.posts import get_posts

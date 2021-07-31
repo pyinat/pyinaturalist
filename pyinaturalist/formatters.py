@@ -11,7 +11,6 @@ import json
 from copy import deepcopy
 from datetime import date, datetime
 from functools import partial
-from json import JSONDecodeError
 from logging import basicConfig, getLogger
 from typing import List, Type
 
@@ -198,14 +197,16 @@ def format_request(request: PreparedRequest) -> str:
 
 
 def _format_body(body):
+    if not body:
+        return ''
     try:
         body = json.loads(body)
         for key in ['password', 'client_secret']:
             if key in body:
                 body[key] = '[REDACTED]'
         return body
-    except (JSONDecodeError, TypeError):
-        return body
+    except Exception:
+        return '(non-JSON request body)'
 
 
 # TODO: This maybe belongs in a different module

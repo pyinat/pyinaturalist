@@ -8,7 +8,7 @@ from pyinaturalist.request_params import (
     convert_bool_params,
     convert_datetime_params,
     convert_list_params,
-    convert_observation_fields,
+    convert_observation_field_params,
     convert_pagination_params,
     get_interval_ranges,
     preprocess_request_body,
@@ -65,7 +65,7 @@ def test_convert_list_params():
 
 
 def test_convert_observation_fields():
-    params = convert_observation_fields(TEST_PARAMS)
+    params = convert_observation_field_params(TEST_PARAMS)
     assert params['observation_field_values_attributes'] == [
         {'observation_field_id': 1, 'value': 'value'}
     ]

@@ -17,9 +17,11 @@ from pyinaturalist.constants import (
     REQUESTS_PER_MINUTE,
     REQUESTS_PER_SECOND,
     WRITE_HTTP_METHODS,
+    FileOrPath,
     MultiInt,
     RequestParams,
 )
+from pyinaturalist.converters import ensure_file_obj
 from pyinaturalist.docs import copy_signature
 from pyinaturalist.formatters import format_request
 from pyinaturalist.request_params import (
@@ -48,6 +50,7 @@ def request(
     url: str,
     access_token: str = None,
     dry_run: bool = False,
+    files: FileOrPath = None,
     headers: Dict = None,
     ids: MultiInt = None,
     json: Dict = None,
@@ -65,8 +68,9 @@ def request(
         url: Request URL
         access_token: access_token: the access token, as returned by :func:`get_access_token()`
         dry_run: Just log the request instead of sending a real request
-        ids: One or more integer IDs used as REST resource(s) to request
+        files: File path or object to upload
         headers: Request headers
+        ids: One or more integer IDs used as REST resource(s) to request
         json: JSON request body
         limiter: Custom rate limits to apply to this request
         session: An existing Session object to use instead of creating a new one
@@ -79,14 +83,15 @@ def request(
         API response
     """
     request = prepare_request(
-        method,
-        url,
-        access_token,
-        user_agent,
-        ids,
-        params,
-        headers,
-        json,
+        method=method,
+        url=url,
+        access_token=access_token,
+        files=files,
+        headers=headers,
+        ids=ids,
+        json=json,
+        params=params,
+        user_agent=user_agent,
     )
     bucket = request.headers.get('User-Agent') or 'pyinaturalist'
     limiter = limiter or RATE_LIMITER
@@ -109,11 +114,12 @@ def prepare_request(
     method: str,
     url: str,
     access_token: str = None,
-    user_agent: str = None,
-    ids: MultiInt = None,
-    params: RequestParams = None,
+    files: FileOrPath = None,
     headers: Dict = None,
+    ids: MultiInt = None,
     json: Dict = None,
+    params: RequestParams = None,
+    user_agent: str = None,
     **kwargs,
 ) -> PreparedRequest:
     """Translate ``pyinaturalist``-specific options into standard request arguments."""
@@ -133,7 +139,13 @@ def prepare_request(
         headers['Content-type'] = 'application/json'
         json = preprocess_request_body(json)
 
-    request = Request(method=method, url=url, headers=headers, json=json, params=params, **kwargs)
+    # Read any files for uploading
+    if files:
+        files = {'file': ensure_file_obj(files)}  # type: ignore
+
+    request = Request(
+        method=method, url=url, files=files, headers=headers, json=json, params=params, **kwargs
+    )
     return request.prepare()
 
 
