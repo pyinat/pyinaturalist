@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from pyinaturalist.constants import HistogramResponse, ListResponse
-from pyinaturalist.controllers import BaseController
+from pyinaturalist.controllers import BaseController, authenticated
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import LifeList, Observation, Taxon, User
 from pyinaturalist.models.taxon import TaxonCounts
@@ -50,25 +50,31 @@ class ObservationController(BaseController):
         return {r['count']: User.from_json(r['user']) for r in response['results']}  # type: ignore
 
     @document_controller_params(get_observation_species_counts)
+    @authenticated
     def species_counts(self, **params) -> Dict[int, Taxon]:
-        params.setdefault('access_token', self.client.access_token)
         response = get_observation_species_counts(**params, **self.client.settings)
         return TaxonCounts.from_json(response)  # type: ignore
 
-    # TODO: create observations with Observation objects
-    def _create(self, *observations: Observation, **params):
-        params.setdefault('access_token', self.client.access_token)
-        for obs in observations:
-            create_observation(obs.to_json(), **params, **self.client.settings)
+    @document_controller_params(create_observation)
+    @authenticated
+    def create(self, **params) -> Observation:
+        response = create_observation(**params, **self.client.settings)
+        return Observation.from_json(response)  # type: ignore
 
-    @document_controller_params(delete_observation)
+    # TODO: create observations with Observation objects; requires model updates
+    # @authenticated
+    # def _reate(self, *observations: Observation, **params):
+    #     for obs in observations:
+    #         create_observation(obs.to_json(), **params, **self.client.settings)
+
+    @authenticated
     def delete(self, *observation_ids: int, **params):
-        params.setdefault('access_token', self.client.access_token)
+        """Delete one or more observations"""
         for obs_id in observation_ids:
             delete_observation(obs_id, **params, **self.client.settings)
 
     # TODO: Add model for sound files, return list of model objects
     @document_controller_params(upload)
+    @authenticated
     def upload(self, **params) -> ListResponse:
-        params.setdefault('access_token', self.client.access_token)
         return upload(**params, **self.client.settings)
