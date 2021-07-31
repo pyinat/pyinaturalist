@@ -24,6 +24,7 @@ from pyinaturalist.converters import (
     try_int,
 )
 
+COMMON_PARAMS = ['access_token', 'dry_run', 'limiter', 'user_agent', 'session']
 MULTIPLE_CHOICE_ERROR_MSG = (
     'Parameter "{}" must have one of the following values: {}\n\tValue provided: {}'
 )
@@ -93,7 +94,28 @@ def convert_list_params(params: RequestParams) -> RequestParams:
     return {k: convert_csv_list(v) for k, v in params.items()}
 
 
-def convert_observation_fields(params: RequestParams) -> RequestParams:
+def convert_observation_params(params):
+    """Some common conversions needed by observation CRUD endpoints"""
+    params = convert_observation_field_params(params)
+    if params.get('observed_on'):
+        params['observed_on_string'] = params.pop('observed_on')
+
+    # Split out photos and sounds to upload separately
+    photos = ensure_list(params.pop('local_photos', None))
+    photos.extend(ensure_list(params.pop('photos', None)))  # Alias for 'local_photos'
+    sounds = ensure_list(params.pop('sounds', None))
+
+    # Note: this is the only Boolean parameter that's specified as an int
+    if 'ignore_photos' in params:
+        params['ignore_photos'] = int(params['ignore_photos'])
+    else:
+        params['ignore_photos'] = 1
+
+    params, kwargs = split_common_params(params)
+    return params, photos, sounds, kwargs
+
+
+def convert_observation_field_params(params: RequestParams) -> RequestParams:
     """Translate simplified format of observation field values into API-compatible format"""
     if 'observation_fields' in params:
         params['observation_field_values_attributes'] = params.pop('observation_fields')
@@ -164,6 +186,12 @@ def get_interval_ranges(
 def is_int_list(values: Any) -> bool:
     """Determine if a value contains one or more valid integers"""
     return all([try_int(v) is not None for v in ensure_list(values, convert_csv=True)])
+
+
+def split_common_params(params: RequestParams) -> Tuple[RequestParams, RequestParams]:
+    """Separate common keyword args from request params"""
+    kwargs = {k: params.pop(k, None) for k in COMMON_PARAMS}
+    return params, kwargs
 
 
 def validate_ids(ids: Any) -> str:
