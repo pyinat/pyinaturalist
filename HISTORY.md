@@ -4,6 +4,7 @@
 * Improved logging output for dry-run mode: now shows formatted `PreparedRequest` details
   instead of `request()` keyword args
 * Added an `enable_logging()` function to optionally show prettier logs with `rich`
+* Redact all credentials from logged API requests
 * Allow all API request functions to accept a `limiter` argument to override rate-limiting settings
 * Allow all API request functions to accept a `dry_run` argument to dry-run an individual request
 

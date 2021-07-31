@@ -7,9 +7,11 @@ These functions will accept any of the following:
 * A list of response objects
 * A single response object
 """
+import json
 from copy import deepcopy
 from datetime import date, datetime
 from functools import partial
+from json import JSONDecodeError
 from logging import basicConfig, getLogger
 from typing import List, Type
 
@@ -186,13 +188,24 @@ def format_table(values: ResponseOrObjects):
 
 def format_request(request: PreparedRequest) -> str:
     """Format HTTP request info"""
-    headers_dict = request.headers
+    headers_dict = request.headers.copy()
     if 'Authorization' in headers_dict:
         headers_dict['Authorization'] = '[REDACTED]'
 
     headers = '\n'.join([f'{k}: {v}' for k, v in headers_dict.items()])
-    body = '\n\n{request.body}' if request.body else ''
-    return f'Request: {request.method} {request.url}\n{headers}{body}'
+    body = _format_body(request.body)
+    return f'{request.method} {request.url}\n{headers}\n{body}'
+
+
+def _format_body(body):
+    try:
+        body = json.loads(body)
+        for key in ['password', 'client_secret']:
+            if key in body:
+                body[key] = '[REDACTED]'
+        return body
+    except (JSONDecodeError, TypeError):
+        return body
 
 
 # TODO: This maybe belongs in a different module
