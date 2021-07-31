@@ -22,6 +22,7 @@ KEYRING_KEY = '/inaturalist'
 PER_PAGE_RESULTS = 200  # Default number of records per page for paginated queries
 THROTTLING_DELAY = 1.0  # Delay between paginated queries, in seconds
 MAX_DELAY = 60  # Maximum time to wait for rate-limiting before aborting
+MAX_RETRIES = 5  # Maximum number of retries for a failed request
 REQUESTS_PER_SECOND = 2
 REQUESTS_PER_MINUTE = 60
 REQUESTS_PER_DAY = 10000
