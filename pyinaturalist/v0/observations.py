@@ -253,7 +253,7 @@ def upload_photos(observation_id: int, photos: MultiFile, access_token: str, **p
     Args:
         observation_id: the ID of the observation
         photo: An image file, file-like object, or path
-        access_token: the access token, as returned by :func:`get_access_token()`
+        access_token: Access token for user authentication, as returned by :func:`get_access_token()`
 
     Returns:
         Information about the uploaded photo(s)
@@ -302,7 +302,7 @@ def upload_sounds(observation_id: int, sounds: MultiFile, access_token: str, **p
     Args:
         observation_id: the ID of the observation
         sound: An audio file, file-like object, or path
-        access_token: the access token, as returned by :func:`get_access_token()`
+        access_token: Access token for user authentication, as returned by :func:`get_access_token()`
 
     Returns:
         Information about the uploaded sound(s)

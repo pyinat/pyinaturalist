@@ -3,7 +3,12 @@ from datetime import datetime
 from dateutil.tz import tzutc
 
 from pyinaturalist.constants import API_V1_BASE_URL
-from pyinaturalist.v1 import get_projects, get_projects_by_id
+from pyinaturalist.v1 import (
+    add_project_observation,
+    delete_project_observation,
+    get_projects,
+    get_projects_by_id,
+)
 from test.conftest import load_sample_data
 
 
@@ -42,3 +47,22 @@ def test_get_projects_by_id(requests_mock):
     assert first_result['location'] == [32.2264416406, -110.9617278383]
     assert first_result['created_at'] == datetime(2016, 7, 26, 23, 8, 47, tzinfo=tzutc())
     assert first_result['updated_at'] == datetime(2017, 9, 16, 1, 51, 1, tzinfo=tzutc())
+
+
+def test_add_project_observation(requests_mock):
+    requests_mock.post(
+        f'{API_V1_BASE_URL}/project_observations',
+        json=load_sample_data('add_project_observation.json'),
+        status_code=200,
+    )
+    response = add_project_observation('token', project_id=1234, observation_id=5678)
+    assert response['id'] == 54986584
+
+
+def test_delete_project_observation(requests_mock):
+    requests_mock.delete(
+        f'{API_V1_BASE_URL}/projects/1234/remove',
+        status_code=200,
+    )
+    response = delete_project_observation('token', project_id=1234, observation_id=5678)
+    assert response.status_code == 200

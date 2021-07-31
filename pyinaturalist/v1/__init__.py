@@ -44,7 +44,12 @@ from pyinaturalist.v1.observations import (
 )
 from pyinaturalist.v1.places import get_places_autocomplete, get_places_by_id, get_places_nearby
 from pyinaturalist.v1.posts import get_posts
-from pyinaturalist.v1.projects import get_projects, get_projects_by_id
+from pyinaturalist.v1.projects import (
+    add_project_observation,
+    delete_project_observation,
+    get_projects,
+    get_projects_by_id,
+)
 from pyinaturalist.v1.search import search
 from pyinaturalist.v1.taxa import get_taxa, get_taxa_autocomplete, get_taxa_by_id
 from pyinaturalist.v1.users import get_user_by_id, get_users_autocomplete

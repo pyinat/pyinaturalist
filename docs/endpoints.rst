@@ -57,15 +57,13 @@ GET       /places/{id}                            :py:func:`.get_places_by_id`
 GET       /places/autocomplete                    :py:func:`.get_places_autocomplete`
 GET       /places/nearby                          :py:func:`.get_places_nearby`
 GET       /posts                                  :py:func:`.get_posts`
-DELETE    /project_observations/{id}
-PUT       /project_observations/{id}
 POST      /project_observations
 GET       /projects                               :py:func:`.get_projects`
 GET       /projects/{id}                          :py:func:`.get_projects_by_id`
 GET       /projects/{id}/members
 GET       /projects/{id}/subscriptions
-POST      /projects/{id}/add
-DELETE    /projects/{id}/remove
+POST      /projects/{id}/add                      :py:func:`.add_project_observation`
+DELETE    /projects/{id}/remove                   :py:func:`.delete_project_observation`
 GET       /projects/autocomplete
 GET       /search                                 :py:func:`.search`
 GET       /taxa/{id}                              :py:func:`.get_taxa_by_id`

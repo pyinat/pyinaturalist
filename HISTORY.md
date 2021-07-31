@@ -1,6 +1,7 @@
 # History
 
 ## 0.15.0 (2021-TBD)
+* Added new functions for **Project Observation** endpoints: `add_project_observation()` and `delete_project_observation()`
 * Improved logging output for dry-run mode: now shows formatted `PreparedRequest` details
   instead of `request()` keyword args
 * Added an `enable_logging()` function to optionally show prettier logs with `rich`
