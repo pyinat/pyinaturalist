@@ -1,17 +1,20 @@
 from typing import Dict, List
 
-from pyinaturalist.constants import HistogramResponse
+from pyinaturalist.constants import HistogramResponse, ListResponse
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import LifeList, Observation, Taxon, User
 from pyinaturalist.models.taxon import TaxonCounts
 from pyinaturalist.v1 import (
+    create_observation,
+    delete_observation,
     get_observation_histogram,
     get_observation_identifiers,
     get_observation_observers,
     get_observation_species_counts,
     get_observation_taxonomy,
     get_observations,
+    upload,
 )
 
 
@@ -50,3 +53,18 @@ class ObservationController(BaseController):
     def species_counts(self, **params) -> Dict[int, Taxon]:
         response = get_observation_species_counts(**params, **self.client.settings)
         return TaxonCounts.from_json(response)  # type: ignore
+
+    # TODO: create observations with Observation objects
+    def _create(self, *observations: Observation, **params):
+        for obs in observations:
+            create_observation(obs.to_json(), **params, **self.client.settings)
+
+    @document_controller_params(delete_observation)
+    def delete(self, *observation_ids: int, **params):
+        for obs_id in observation_ids:
+            delete_observation(obs_id, **params, **self.client.settings)
+
+    # TODO: Add model for sound files, return list of model objects
+    @document_controller_params(upload)
+    def upload(self, **params) -> ListResponse:
+        return upload(**params, **self.client.settings)

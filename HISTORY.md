@@ -1,11 +1,23 @@
 # History
 
 ## 0.15.0 (2021-TBD)
-* Added new functions for **Project Observation** endpoints: `add_project_observation()` and `delete_project_observation()`
+
+### New Endpoints
+* Added new functions for v1 **Observation** endpoints. These are now preferred over the older v0 endpoints:
+  * `create_observation()`  (also updates observations)
+  * `delete_observation()`
+  * `upload()` (uploads both photos and sounds)
+* Added new functions for **Project Observation** endpoints:
+  * `add_project_observation()`
+  * `delete_project_observation()`
+
+### Logging
 * Improved logging output for dry-run mode: now shows formatted `PreparedRequest` details
   instead of `request()` keyword args
 * Added an `enable_logging()` function to optionally show prettier logs with `rich`
 * Redact all credentials from logged API requests
+
+### Other Changes
 * Allow all API request functions to accept a `limiter` argument to override rate-limiting settings
 * Allow all API request functions to accept a `dry_run` argument to dry-run an individual request
 

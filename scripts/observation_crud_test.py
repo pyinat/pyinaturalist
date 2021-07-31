@@ -15,23 +15,24 @@ python scripts/obs_crud_test.py
 ```
 """
 from datetime import datetime
-from logging import basicConfig
 from os.path import join
 from pprint import pprint
 
 from pyinaturalist import (
     create_observation,
     delete_observation,
+    enable_logging,
     get_access_token,
     get_observation,
     put_observation_field_values,
     update_observation,
-    upload_photos,
+    upload,
 )
 from pyinaturalist.constants import SAMPLE_DATA_DIR
 
 SAMPLE_PHOTO = join(SAMPLE_DATA_DIR, 'obs_image.jpg')
-basicConfig(level='INFO')
+SAMPLE_SOUND = join(SAMPLE_DATA_DIR, 'obs_sound.wav')
+enable_logging()
 
 
 def run_observation_crud_test():
@@ -52,16 +53,14 @@ def create_test_obs(token):
             'This is a test observation used for testing [pyinaturalist](https://github.com/niconoe/pyinaturalist), '
             'and will be deleted shortly.'
         ),
-        tag_list='wasp, Belgium',
-        latitude=50.647143,
-        longitude=4.360216,
         positional_accuracy=50,
         geoprivacy='open',
         access_token=token,
         observation_fields={297: 1},
         photos=[SAMPLE_PHOTO, SAMPLE_PHOTO],
+        sounds=[SAMPLE_SOUND, SAMPLE_SOUND],
     )
-    test_obs_id = response[0]['id']
+    test_obs_id = response['id']
     print(f'Created new observation: {test_obs_id}')
 
     obs = get_observation(test_obs_id)
@@ -71,9 +70,9 @@ def create_test_obs(token):
 
 
 def update_test_obs(test_obs_id, token):
-    response = upload_photos(
+    response = upload(
         test_obs_id,
-        photo=SAMPLE_PHOTO,
+        photos=SAMPLE_PHOTO,
         access_token=token,
     )
     photo_id = response.get('photo').get('id')

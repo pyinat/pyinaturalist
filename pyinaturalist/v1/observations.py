@@ -3,19 +3,22 @@ from pyinaturalist.constants import (
     HistogramResponse,
     IntOrStr,
     JsonResponse,
+    ListResponse,
+    MultiFile,
 )
 from pyinaturalist.converters import (
     convert_all_coordinates,
     convert_all_timestamps,
     convert_histogram,
     convert_observation_timestamps,
+    ensure_list,
 )
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.pagination import add_paginate_all
-from pyinaturalist.request_params import validate_multiple_choice_param
-from pyinaturalist.v1 import get_v1
+from pyinaturalist.request_params import convert_observation_params, validate_multiple_choice_param
+from pyinaturalist.v1 import delete_v1, get_v1, post_v1
 
 
 def get_observation(observation_id: int, **params) -> JsonResponse:
@@ -265,3 +268,133 @@ def get_observation_taxonomy(user_id: IntOrStr, **params) -> JsonResponse:
     """
     response = get_v1('observations/taxonomy', user_id=user_id, **params)
     return response.json()
+
+
+@document_request_params(docs._access_token, docs._create_observation)
+def create_observation(**params) -> JsonResponse:
+    """Create or update a new observation.
+
+    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/post_observations
+
+    Example:
+        >>> token = get_access_token()
+        >>> # Create a new observation:
+        >>> create_observation(
+        ...     access_token=token,
+        ...     species_guess='Pieris rapae',
+        ...     photos='~/observation_photos/2020_09_01_14003156.jpg',
+        ...     observation_fields={297: 1},  # 297 is the obs. field ID for 'Number of individuals'
+        ... )
+        >>>
+        >>> # Update an existing observation:
+        >>> create_observation(
+        ...     access_token=token,
+        ...     uuid='53411fc2-bdf0-434e-afce-4dac33970173',
+        ...     description='Updated description!',
+        ... )
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/create_observation_node.json
+                :language: JSON
+
+    Returns:
+        JSON response containing the newly created observation(s)
+    """
+    params, photos, sounds, kwargs = convert_observation_params(params)
+    response = post_v1('observations', json={'observation': params}, **kwargs)
+    response_json = response.json()
+    observation_id = response_json['id']
+
+    upload(observation_id, photos=photos, sounds=sounds, **kwargs)
+    return response_json
+
+
+def upload(
+    observation_id: int, sounds: MultiFile = None, photos: MultiFile = None, **params
+) -> ListResponse:
+    """Upload one or more local photo and/or sound files, and add them to an existing observation.
+
+    Example:
+
+        >>> token = get_access_token()
+        >>> upload(
+        ...     1234,
+        ...     photos=['~/observations/2020_09_01_140031.jpg', '~/observations/2020_09_01_140042.jpg'],
+        ...     sounds='~/observations/2020_09_01_140031.mp3',
+        ...     access_token=token,
+        ... )
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/upload_photos_and_sounds.json
+                :language: JSON
+
+    Args:
+        observation_id: the ID of the observation
+        photos: One or more image files, file-like objects, or paths
+        sounds: One or more audio files, file-like objects, or paths
+        access_token: Access token for user authentication, as returned by :func:`get_access_token()`
+
+    Returns:
+        Information about the uploaded file(s)
+    """
+    params['raise_for_status'] = False
+    responses = []
+
+    # Upload photos
+    for photo in ensure_list(photos):
+        response = post_v1(
+            'observation_photos',
+            files=photo,
+            **{'observation_photo[observation_id]': observation_id},
+            **params,
+        )
+        responses.append(response)
+
+    # Upload sounds
+    for sound in ensure_list(sounds):
+        response = post_v1(
+            'observation_sounds',
+            files=sound,
+            **{'observation_sound[observation_id]': observation_id},
+            **params,
+        )
+        responses.append(response)
+
+    # Wait until all uploads complete to raise errors for any failed uploads
+    for response in responses:
+        response.raise_for_status()
+    return [response.json() for response in responses]
+
+
+@document_request_params(docs._observation_id, docs._access_token)
+def delete_observation(observation_id: int, access_token: str = None, **params):
+    """
+    Delete an observation.
+
+    **API reference:** https://www.inaturalist.org/pages/api+reference#delete-observations-id
+
+    Example:
+
+        >>> token = get_access_token()
+        >>> delete_observation(17932425, token)
+
+    Returns:
+        If successful, no response is returned from this endpoint
+
+    Raises:
+        :py:exc:`.ObservationNotFound` if the requested observation doesn't exist
+        :py:exc:`requests.HTTPError` (403) if the observation belongs to another user
+    """
+    response = delete_v1(
+        f'observations/{observation_id}',
+        access_token=access_token,
+        raise_for_status=False,
+        **params,
+    )
+    if response.status_code == 404:
+        raise ObservationNotFound
+    response.raise_for_status()

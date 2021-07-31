@@ -37,14 +37,15 @@ DELETE    /observation_field_values/{id}
 PUT       /observation_field_values/{id}
 POST      /observation_field_values
 DELETE    /observation_photos/{id}
-PUT       /observation_photos/{id}
-POST      /observation_photos
-DELETE    /observations/{id}
+POST      /observation_photos                     :py:func:`.upload`
+DELETE    /observation_sounds/{id}
+POST      /observation_sounds                     :py:func:`.upload`
+DELETE    /observations/{id}                      :py:func:`~pyinaturalist.v1.observations.delete_observation`
 GET       /observations/{id}                      :py:func:`.get_observation`
 PUT       /observations/{id}
 GET       /observations/{id}/taxon_summary
 GET       /observations                           :py:func:`~pyinaturalist.v1.observations.get_observations`
-POST      /observations
+POST      /observations                           :py:func:`~pyinaturalist.v1.observations.create_observation`
 GET       /observations/histogram                 :py:func:`.get_observation_histogram`
 GET       /observations/identifiers               :py:func:`.get_observation_identifiers`
 GET       /observations/observers                 :py:func:`.get_observation_observers`
@@ -84,9 +85,9 @@ For all available endpoints, see: https://www.inaturalist.org/pages/api+referenc
 Method    Endpoint                            Function
 ========= =================================== ====================
 GET       /observations                       :py:func:`~pyinaturalist.v0.observations.get_observations`
-POST      /observations                       :py:func:`.create_observation`
-PUT       /observations/{id}                  :py:func:`.update_observation`
-DELETE    /observations/{id}                  :py:func:`.delete_observation`
+POST      /observations                       :py:func:`~pyinaturalist.v0.observations.create_observation`
+PUT       /observations/{id}                  :py:func:`~pyinaturalist.v0.observations.update_observation`
+DELETE    /observations/{id}                  :py:func:`~pyinaturalist.v0.observations.delete_observation`
 GET       /observation_fields                 :py:func:`.get_observation_fields`
 POST      /observation_field_values
 PUT       /observation_field_values/{id}      :py:func:`.put_observation_field_values`

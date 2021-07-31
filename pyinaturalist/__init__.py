@@ -16,6 +16,6 @@ try:
 
     # For disambiguation
     from pyinaturalist.v0 import get_observations as get_observations_v0
-    from pyinaturalist.v1 import get_observations as get_observations_v1
+    from pyinaturalist.v0 import create_observation as create_observation_v0
 except ImportError as e:
     print(e)
