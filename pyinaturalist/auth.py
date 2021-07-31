@@ -2,80 +2,11 @@ from logging import getLogger
 from os import getenv
 from typing import Dict, Optional
 
-from oauthlib.oauth2 import LegacyApplicationClient
-from requests_oauthlib import OAuth2Session
-
 from pyinaturalist.api_requests import post
 from pyinaturalist.constants import API_V0_BASE_URL, KEYRING_KEY
 from pyinaturalist.exceptions import AuthenticationError
 
 logger = getLogger(__name__)
-
-
-def refresh():
-    token = {
-        'access_token': 'eswfld123kjhn1v5423',
-        'refresh_token': 'asdfkljh23490sdf',
-        'token_type': 'Bearer',
-        'expires_in': '-30',  # initially 3600, need to be updated by you
-    }
-    client_id = r'foo'
-    refresh_url = 'https://provider.com/token'
-    protected_url = 'https://provider.com/secret'
-
-    # most providers will ask you for extra credentials to be passed along
-    # when refreshing tokens, usually for authentication purposes.
-    extra = {
-        'client_id': client_id,
-        'client_secret': r'potato',
-    }
-
-    # After updating the token you will most likely want to save it.
-    def token_saver(token):
-        """save token in database / session"""
-
-    from requests_oauthlib import OAuth2Session
-
-    client = OAuth2Session(
-        client_id,
-        token=token,
-        auto_refresh_url=refresh_url,
-        auto_refresh_kwargs=extra,
-        token_updater=token_saver,
-    )
-    response = client.get(protected_url)
-
-
-def get_access_token_v2(
-    username: str = None,
-    password: str = None,
-    app_id: str = None,
-    app_secret: str = None,
-    session: OAuth2Session = None,
-) -> str:
-    session = session or OAuth2Session(client=LegacyApplicationClient(client_id=app_id))
-    payload = {
-        'username': username or getenv('INAT_USERNAME'),
-        'password': password or getenv('INAT_PASSWORD'),
-        'client_id': app_id or getenv('INAT_APP_ID'),
-        'client_secret': app_secret or getenv('INAT_APP_SECRET'),
-        'grant_type': 'password',
-    }
-
-    # If neither args nor envars were given, then check the keyring
-    if not all(payload.values()):
-        payload.update(get_keyring_credentials())
-    if not all(payload.values()):
-        raise AuthenticationError('Not all authentication parameters were provided')
-
-    response = session.fetch_token(
-        token_url=f'{API_V0_BASE_URL}/oauth/token',
-        username=username,
-        password=password,
-        client_id=app_id,
-        client_secret=app_secret,
-    )
-    return response['access_token']
 
 
 def get_access_token(

@@ -33,7 +33,6 @@ pyrate-limiter = ">=2.3.3"
 python-dateutil = ">=2.0"
 python-forge = ">=18.6.0"
 requests = ">=2.20"
-requests-oauthlib = "^1.3.0"
 rich = ">=10.0"
 
 # Documentation dependencies needed for Readthedocs builds (rtd doesn't support poetry.dev-dependencies)

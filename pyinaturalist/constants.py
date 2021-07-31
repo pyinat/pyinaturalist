@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from os.path import abspath, dirname, join
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Optional, Tuple, Union
@@ -27,6 +27,7 @@ REQUESTS_PER_SECOND = 2
 REQUESTS_PER_MINUTE = 60
 REQUESTS_PER_DAY = 10000
 LARGE_REQUEST_WARNING = 5000  # Show a warning for queries that will return over this many results
+TOKEN_EXPIRATION = timedelta(hours=1)
 
 PHOTO_SIZES = ['square', 'small', 'medium', 'large', 'original']
 
