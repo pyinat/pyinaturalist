@@ -9,17 +9,17 @@ from pyinaturalist.v1 import get_v1
 def search(q: str, **params) -> JsonResponse:
     """A unified search endpoint for places, projects, taxa, and/or users
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Search/get_search
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /search <Search/get_search>`
 
     Example:
-
         >>> response = search(q='odonat')
         >>> pprint(response)
         [Taxon  ] [47792   ] Order: Odonata (Dragonflies and Damselflies)
         [Place  ] [113562  ] Odonates of Peninsular India and Sri Lanka
         [Project] [9978    ] Ohio Dragonfly Survey  (Ohio Odonata Survey)
         [User   ] [113886  ] odonatanb (Gilles Belliveau)
-
 
         .. admonition:: Example Response
             :class: toggle

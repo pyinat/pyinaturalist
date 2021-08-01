@@ -24,10 +24,11 @@ from pyinaturalist.v1 import delete_v1, get_v1, post_v1
 def get_observation(observation_id: int, **params) -> JsonResponse:
     """Get details about a single observation by ID
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_id
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /observations/{id} <Observations/get_observations_id>`
 
     Example:
-
         >>> response = get_observation(16227955)
         >>> pprint(response)
         [16227955] [493595] Species: Lixus bardanae observed on 2018-09-05 14:06:00+01:00 by niconoe at 54 rue des Badauds
@@ -57,12 +58,11 @@ def get_observation(observation_id: int, **params) -> JsonResponse:
 def get_observation_histogram(**params) -> HistogramResponse:
     """Search observations and return histogram data for the given time interval
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_histogram
+    .. rubric:: Notes
 
-    **Notes:**
-
+    * API reference: :v1:`GET /observations/histogram <Observations/get_observations_histogram>`
     * Search parameters are the same as :py:func:`~pyinaturalist.v1.observations.get_observations()`,
-        with the addition of ``date_field`` and ``interval``.
+      with the addition of ``date_field`` and ``interval``.
     * ``date_field`` may be either 'observed' (default) or 'created'.
     * Observed date ranges can be filtered by parameters ``d1`` and ``d2``
     * Created date ranges can be filtered by parameters ``created_d1`` and ``created_d2``
@@ -74,7 +74,6 @@ def get_observation_histogram(**params) -> HistogramResponse:
     * The 'hour' interval only works with ``date_field='created'``
 
     Example:
-
         Get observations per month during 2020 in Austria (place ID 8057)
 
         >>> response = get_observation_histogram(
@@ -110,9 +109,11 @@ def get_observation_histogram(**params) -> HistogramResponse:
 @document_request_params(*docs._get_observations, docs._pagination, docs._only_id)
 @add_paginate_all(method='id')
 def get_observations(**params) -> JsonResponse:
-    """Search observations.
+    """Search observations
 
-    **API reference:** http://api.inaturalist.org/v1/docs/#!/Observations/get_observations
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /observations <Observations/get_observations>`
 
     Example:
 
@@ -159,7 +160,9 @@ def get_observation_species_counts(**params) -> JsonResponse:
     criteria, and the count of observations they are associated with.
     **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_species_counts
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /observations/species_counts <Observations/get_observations_species_counts>`
 
     Example:
         >>> response = get_observation_species_counts(user_login='my_username', quality_grade='research')
@@ -186,12 +189,12 @@ def get_observation_observers(**params) -> JsonResponse:
     """Get observers of observations matching the search criteria and the count of
     observations and distinct taxa of rank species they have observed.
 
-    Notes:
-        * Options for ``order_by`` are 'observation_count' (default) or 'species_count'
-        * This endpoint will only return up to 500 results
-        * See this issue for more details: https://github.com/inaturalist/iNaturalistAPI/issues/235
+    .. rubric:: Notes
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_observers
+    * API reference: :v1:`GET /observations/observers <Observations/get_observations_observers>`
+    * Options for ``order_by`` are 'observation_count' (default) or 'species_count'
+    * This endpoint will only return up to 500 results
+    * See this issue for more details: https://github.com/inaturalist/iNaturalistAPI/issues/235
 
     Example:
         >>> response = get_observation_observers(place_id=72645, order_by='species_count')
@@ -220,9 +223,10 @@ def get_observation_identifiers(**params) -> JsonResponse:
     """Get identifiers of observations matching the search criteria and the count of
     observations they have identified. By default, results are sorted by ID count in descending.
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_identifiers
+    .. rubric:: Notes
 
-    Note: This endpoint will only return up to 500 results.
+    * API reference: :v1:`GET /observations/identifiers <Observations/get_observations_identifiers>`
+    * This endpoint will only return up to 500 results.
 
     Example:
         >>> response = get_observation_identifiers(place_id=72645)
@@ -274,7 +278,10 @@ def get_observation_taxonomy(user_id: IntOrStr, **params) -> JsonResponse:
 def create_observation(**params) -> JsonResponse:
     """Create or update a new observation.
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Observations/post_observations
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v1:`POST /observations <Observations/post_observations>`
 
     Example:
         >>> token = get_access_token()
@@ -315,6 +322,11 @@ def upload(
     observation_id: int, sounds: MultiFile = None, photos: MultiFile = None, **params
 ) -> ListResponse:
     """Upload one or more local photo and/or sound files, and add them to an existing observation.
+
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v1:`POST /observation_photos <Observation_Photos/post_observation_photos>`
 
     Example:
 
@@ -372,13 +384,14 @@ def upload(
 
 @document_request_params(docs._observation_id, docs._access_token)
 def delete_observation(observation_id: int, access_token: str = None, **params):
-    """
-    Delete an observation.
+    """Delete an observation
 
-    **API reference:** https://www.inaturalist.org/pages/api+reference#delete-observations-id
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v1:`DELETE /observations/{id} <Observations/delete_observations_id>`
 
     Example:
-
         >>> token = get_access_token()
         >>> delete_observation(17932425, token)
 

@@ -59,7 +59,7 @@ def get_access_token(
         user_agent: A custom user-agent string to provide to the iNaturalist API
 
     Raises:
-        :py:exc:`requests.HTTPError` (401) if credentials are invalid
+        :py:exc:`requests.HTTPError`: (401) if credentials are invalid
     """
     payload = {
         'username': username or getenv('INAT_USERNAME'),

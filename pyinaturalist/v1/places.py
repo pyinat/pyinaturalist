@@ -7,10 +7,11 @@ from pyinaturalist.v1 import get_v1
 
 
 def get_places_by_id(place_id: MultiInt, **params) -> JsonResponse:
-    """
-    Get one or more places by ID.
+    """Get one or more places by ID
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Places/get_places_id
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /places/{id} <Places/get_places_id>`
 
     Example:
         >>> response = get_places_by_id([67591, 89191])
@@ -39,10 +40,11 @@ def get_places_by_id(place_id: MultiInt, **params) -> JsonResponse:
 
 @document_request_params(docs._bounding_box, docs._name)
 def get_places_nearby(**params) -> JsonResponse:
-    """
-    Given an bounding box, and an optional name query, return places nearby
+    """Search for places near a given location
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Places/get_places_nearby
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /places/nearby <get_places_nearby>`
 
     Example:
         >>> bounding_box = (150.0, -50.0, -149.999, -49.999)
@@ -80,11 +82,12 @@ def get_places_nearby(**params) -> JsonResponse:
 def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
     """Given a query string, get places with names starting with the search term
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Places/get_places_autocomplete
+    .. rubric:: Notes
 
-    **Note:** This endpoint accepts a ``per_page`` param, up to a max of 20 (default 10). Pages
-    beyond the first page cannot be retrieved. Use ``page=all`` to attempt to retrieve additional
-    results. See :py:func:`.paginate_autocomplete` for more info.
+    * API reference: :v1:`GET /places/autocomplete <Places/get_places_autocomplete>`
+    * This endpoint accepts a ``per_page`` param, up to a max of 20 (default 10)
+    * Pages beyond the first page cannot be retrieved. Use ``page=all`` to attempt to retrieve
+      additional results. See :py:func:`.paginate_autocomplete` for more info.
 
     Example:
         >>> response = get_places_autocomplete('Irkutsk')

@@ -10,15 +10,16 @@ logger = getLogger(__name__)
 
 
 def get_user_by_id(user_id: int, **params) -> JsonResponse:
-    """Get a user by ID.
+    """Get a user by ID
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Users/get_users_id
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /users/{id} <Users/get_users_id>`
 
     Args:
         user_id: Get the user with this ID. Only a single ID is allowed per request.
 
     Example:
-
         >>> response = get_user_by_id(123456)
         >>> pprint(response)
         [1234] my_username
@@ -42,12 +43,12 @@ def get_user_by_id(user_id: int, **params) -> JsonResponse:
 def get_users_autocomplete(q: str, **params) -> JsonResponse:
     """Given a query string, return users with names or logins starting with the search term
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Users/get_users_autocomplete
+    .. rubric:: Notes
 
-    Note: Pagination is supported; default page size is 6, and max is 100.
+    * API reference: :v1:`GET /users/autocomplete <Users/get_users_autocomplete>`
+    * Pagination is supported; default page size is 6, and max is 100.
 
     Example:
-
         >>> response = get_taxa_autocomplete(q='my_userna')
         >>> pprint(response)
         [1234] my_username

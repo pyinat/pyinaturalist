@@ -4,17 +4,16 @@ from pyinaturalist.v1 import get_v1
 
 
 def get_controlled_terms(taxon_id: int = None, **params) -> JsonResponse:
-    """List controlled terms and their possible values.
-    A taxon ID can optionally be provided to show only terms that are valid for that taxon.
-    Otherwise, all controlled terms will be returned.
+    """List controlled terms and their possible values
 
-    **API reference:**
+    .. rubric:: Notes
 
-    * https://api.inaturalist.org/v1/docs/#!/Controlled_Terms/get_controlled_terms
-    * https://api.inaturalist.org/v1/docs/#!/Controlled_Terms/get_controlled_terms_for_taxon
+    * API reference: :v1:`GET /controlled_terms <Controlled_Terms/get_controlled_terms>`
+    * API reference: :v1:`GET /controlled_terms/for_taxon <Controlled_Terms/get_controlled_terms_for_taxon>`
+    * A taxon ID can optionally be provided to show only terms that are valid for that taxon.
+      Otherwise, all controlled terms will be returned.
 
     Example:
-
         >>> response = get_controlled_terms()
         >>> pprint(response)
         1: Life Stage
@@ -41,7 +40,7 @@ def get_controlled_terms(taxon_id: int = None, **params) -> JsonResponse:
         A dict containing details on controlled terms and their values
 
     Raises:
-        :py:exc:`.TaxonNotFound` If an invalid taxon_id is specified
+        :py:exc:`.TaxonNotFound`: If an invalid ``taxon_id`` is specified
     """
     # This is actually two endpoints, but they are so similar it seems best to combine them
     endpoint = 'controlled_terms/for_taxon' if taxon_id else 'controlled_terms'

@@ -14,7 +14,9 @@ def get_observation_fields(**params) -> JsonResponse:
     """Search observation fields. Observation fields are basically typed data fields that
     users can attach to observation.
 
-    **API reference:** https://www.inaturalist.org/pages/api+reference#get-observation_fields
+    .. rubric:: Notes
+
+    * API reference: :v0:`GET /observation_fields <get-observation_fields>`
 
     Example:
 
@@ -48,13 +50,15 @@ def put_observation_field_values(
     # TODO: Return some meaningful exception if it fails because the field is already set.
     # TODO: It appears pushing the same value/pair twice in a row (but deleting it meanwhile via the UI)...
     # TODO: ...triggers an error 404 the second time (report to iNaturalist?)
-    """Set an observation field (value) on an observation.
-    Will fail if this observation field is already set for this observation.
+    """Set an observation field (value) on an observation
 
-    To find an `observation_field_id`, either user :py:func:`.get_observation_fields` or search
-    on iNaturalist: https://www.inaturalist.org/observation_fields
+    .. rubric:: Notes
 
-    **API reference:** https://www.inaturalist.org/pages/api+reference#put-observation_field_values-id
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v0:`PUT /observation_field_values/{id} <put-observation_field_values-id>`
+    * The request will fail if this observation field is already set for this observation
+    * To find an ``observation_field_id``, either user :py:func:`.get_observation_fields` or
+      `search observation fields on iNaturalist <https://www.inaturalist.org/observation_fields>`_
 
     Example:
         >>> # First find an observation field by name, if the ID is unknown

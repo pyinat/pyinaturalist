@@ -63,6 +63,7 @@ docs/modules/
 .~*
 .idea/
 .ipynb_checkpoints/
+.tmp
 .vim/
 .vscode/
 swagger.json
