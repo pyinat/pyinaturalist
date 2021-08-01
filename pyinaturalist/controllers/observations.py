@@ -3,8 +3,7 @@ from typing import Dict, List
 from pyinaturalist.constants import HistogramResponse, ListResponse
 from pyinaturalist.controllers import BaseController, authenticated
 from pyinaturalist.docs import document_controller_params
-from pyinaturalist.models import LifeList, Observation, Taxon, User
-from pyinaturalist.models.taxon import TaxonCounts
+from pyinaturalist.models import LifeList, Observation, Taxon, TaxonCounts, User
 from pyinaturalist.v1 import (
     create_observation,
     delete_observation,
@@ -18,9 +17,20 @@ from pyinaturalist.v1 import (
 )
 
 
-# TODO: Fix type checking for return types
+# TODO: Fix type checking for return types (BaseModel.from_json)
+# TODO: Batch from_id requests if max GET URL length is exceeded
+# TODO: Consistent naming for /{id} requests. from_id(), id(), by_id(), other?
 class ObservationController(BaseController):
     """Controller for observation requests"""
+
+    def from_id(self, *observation_ids, **params) -> List[Observation]:
+        """Get observations by ID
+
+        Args:
+            observation_ids: One or more observation IDs
+        """
+        response = get_observations(id=observation_ids, **params, **self.client.settings)
+        return Observation.from_json_list(response)  # type: ignore
 
     @document_controller_params(get_observations)
     def search(self, **params) -> List[Observation]:
@@ -69,7 +79,11 @@ class ObservationController(BaseController):
 
     @authenticated
     def delete(self, *observation_ids: int, **params):
-        """Delete one or more observations"""
+        """Delete observations
+
+        Args:
+            observation_ids: One or more observation IDs
+        """
         for obs_id in observation_ids:
             delete_observation(obs_id, **params, **self.client.settings)
 

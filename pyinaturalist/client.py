@@ -12,7 +12,7 @@ from pyinaturalist import DEFAULT_USER_AGENT
 from pyinaturalist.api_requests import RATE_LIMITER
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import TOKEN_EXPIRATION
-from pyinaturalist.controllers import ObservationController
+from pyinaturalist.controllers import ObservationController, TaxonController
 
 logger = getLogger(__name__)
 
@@ -88,8 +88,7 @@ class iNatClient:
 
         # Controllers
         self.observations = ObservationController(self)
-        # self.taxa = TaxonController(self)
-        # etc.
+        self.taxa = TaxonController(self)
 
     @property
     def retry(self) -> Retry:
