@@ -124,7 +124,7 @@ autodoc_typehints = 'none'
 # apidoc settings
 apidoc_module_dir = PACKAGE_DIR
 apidoc_output_dir = MODULE_DOCS_DIR
-apidoc_excluded_paths = ['docs/*', 'models/*', 'node_api.py', 'rest_api.py']
+apidoc_excluded_paths = ['controllers/*', 'docs/*', 'models/*', 'node_api.py', 'rest_api.py']
 apidoc_extra_args = ['--templatedir=_templates']
 apidoc_module_first = True
 apidoc_separate_modules = True

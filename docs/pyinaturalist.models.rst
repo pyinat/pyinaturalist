@@ -1,3 +1,5 @@
+.. _models:
+
 pyinaturalist.models
 ====================
 .. automodule:: pyinaturalist.models
