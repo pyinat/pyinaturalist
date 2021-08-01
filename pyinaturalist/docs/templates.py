@@ -1,12 +1,17 @@
-"""
-Reusable template functions used for API documentation.
-Each template function contains a portion of an endpoint's request parameters, with corresponding
-type annotations and docstrings.
+"""Reusable template functions used for API documentation.
+Each template function contains all or part of an endpoint's request parameters, type annotations,
+and docstrings. These are then applied with :py:func:`.copy_doc_signature`.
+
+This is intended to reduce large amounts of duplicated code + docs. For request functions with a
+smaller number of params, using a template isn't necessary.
+
+Note: Since the templates are applied dynamically at import time, this adds a tiny amount of overhead
+(about 20 milliseconds as of v0.14) to the import time of the library. If this ever becomes a problem,
+an option could be added to disable ``copy_doc_signature``, e.g. via environment variable.
 """
 from typing import List
 
 from pyinaturalist.constants import (
-    MULTIPLE_CHOICE_PARAMS,
     AnyDate,
     AnyDateTime,
     IntOrStr,
@@ -95,7 +100,7 @@ def _identification_params(
 # --------------------
 
 
-# Params that are in most observation-related endpoints in both Node and REST APIs
+# Params that are in most observation-related endpoints in all API versions
 def _observation_common(
     q: str = None,
     d1: AnyDate = None,
@@ -134,8 +139,8 @@ def _observation_common(
     """
 
 
-# Observation params that are only in the Node API
-def _observation_node_only(
+# Observation params that are only in the v1 API
+def _observation_v1(
     acc: bool = None,
     captive: bool = None,
     endemic: bool = None,
@@ -274,8 +279,8 @@ def _observation_node_only(
     """
 
 
-# Observation params that are only in the REST API
-def _observation_rest_only(
+# Observation params that are only in the v0 API
+def _observation_v0(
     has: MultiStr = None,
     on: AnyDate = None,
     m1: AnyDate = None,
@@ -371,6 +376,19 @@ def _update_observation(
 ):
     """Args:
     ignore_photos: If photos exist on the observation but are missing in the request, ignore them instead of deleting the missing observation photos
+    """
+
+
+# Posts
+# --------------------
+
+
+def _get_posts(login: str = None, project_id: int = None, page: int = None, per_page: int = None):
+    """Args:
+    login: Return posts by this user
+    project_id: Return posts from this project
+    page: Pagination page number
+    per_page: Number of results to return in a page. The maximum value is generally 200 unless otherwise noted
     """
 
 
@@ -493,19 +511,6 @@ def _taxon_id_params(
     """
 
 
-# Posts
-# --------------------
-
-
-def _get_posts(login: str = None, project_id: int = None, page: int = None, per_page: int = None):
-    """Args:
-    login: Return posts by this user
-    project_id: Return posts from this project
-    page: Pagination page number
-    per_page: Number of results to return in a page. The maximum value is generally 200 unless otherwise noted
-    """
-
-
 # Individual/common params
 # ------------------------
 
@@ -579,7 +584,7 @@ def _pagination(
 
 _get_observations = [
     _observation_common,
-    _observation_node_only,
+    _observation_v1,
     _bounding_box,
 ]
 
@@ -588,10 +593,3 @@ def _search_query(q: str = None):
     """Args:
     q: Search query
     """
-
-
-def _format_param_choices():
-    return '\n'.join([f'  * {param}: {choices}' for param, choices in MULTIPLE_CHOICE_PARAMS.items()])
-
-
-MULTIPLE_CHOICE_PARAM_DOCS = '**Multiple-Choice Parameters:**\n' + _format_param_choices()
