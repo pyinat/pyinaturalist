@@ -50,7 +50,7 @@ class ProjectObservationField(ObservationField):
         obs_field['project_observation_field_id'] = value['id']
         obs_field['position'] = value['position']
         obs_field['required'] = value['required']
-        return super(ProjectObservationField, cls).from_json(obs_field, **kwargs)  # type: ignore
+        return super(ProjectObservationField, cls).from_json(obs_field, **kwargs)
 
 
 @define_model
@@ -68,7 +68,7 @@ class ProjectUser(User):
         user['project_id'] = value['project_id']
         user['project_user_id'] = value['id']
         user['role'] = value['role']
-        return super(ProjectUser, cls).from_json(user, **kwargs)  # type: ignore
+        return super(ProjectUser, cls).from_json(user, **kwargs)
 
 
 @define_model

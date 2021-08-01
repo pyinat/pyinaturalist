@@ -3,7 +3,7 @@ from typing import Dict, List
 from pyinaturalist.constants import HistogramResponse, ListResponse
 from pyinaturalist.controllers import BaseController, authenticated
 from pyinaturalist.docs import document_controller_params
-from pyinaturalist.models import LifeList, Observation, Taxon, TaxonCounts, User
+from pyinaturalist.models import LifeList, Observation, TaxonCounts, User
 from pyinaturalist.v1 import (
     create_observation,
     delete_observation,
@@ -17,7 +17,6 @@ from pyinaturalist.v1 import (
 )
 
 
-# TODO: Fix type checking for return types (BaseModel.from_json)
 # TODO: Batch from_id requests if max GET URL length is exceeded
 # TODO: Consistent naming for /{id} requests. from_id(), id(), by_id(), other?
 class ObservationController(BaseController):
@@ -30,12 +29,12 @@ class ObservationController(BaseController):
             observation_ids: One or more observation IDs
         """
         response = get_observations(id=observation_ids, **params, **self.client.settings)
-        return Observation.from_json_list(response)  # type: ignore
+        return Observation.from_json_list(response)
 
     @document_controller_params(get_observations)
     def search(self, **params) -> List[Observation]:
         response = get_observations(**params, **self.client.settings)
-        return Observation.from_json_list(response)  # type: ignore
+        return Observation.from_json_list(response)
 
     # TODO: Does this need a model with utility functions, or is {datetime: count} sufficient?
     @document_controller_params(get_observation_histogram)
@@ -45,31 +44,31 @@ class ObservationController(BaseController):
     @document_controller_params(get_observation_identifiers)
     def identifiers(self, **params) -> Dict[int, User]:
         response = get_observation_identifiers(**params, **self.client.settings)
-        return {r['count']: User.from_json(r['user']) for r in response['results']}  # type: ignore
+        return {r['count']: User.from_json(r['user']) for r in response['results']}
 
     @document_controller_params(get_observation_taxonomy, add_common_args=False)
     def life_list(self, *args, **params) -> LifeList:
         response = get_observation_taxonomy(*args, **params, **self.client.settings)
-        return LifeList.from_json(response.json())  # type: ignore
+        return LifeList.from_json(response.json())
 
     # TODO: Separate model for these results? (maybe a User subclass)
     # TODO: Include species_counts
     @document_controller_params(get_observation_observers)
     def observers(self, **params) -> Dict[int, User]:
         response = get_observation_observers(**params, **self.client.settings)
-        return {r['count']: User.from_json(r['user']) for r in response['results']}  # type: ignore
+        return {r['count']: User.from_json(r['user']) for r in response['results']}
 
     @document_controller_params(get_observation_species_counts)
     @authenticated
-    def species_counts(self, **params) -> Dict[int, Taxon]:
+    def species_counts(self, **params) -> TaxonCounts:
         response = get_observation_species_counts(**params, **self.client.settings)
-        return TaxonCounts.from_json(response)  # type: ignore
+        return TaxonCounts.from_json(response)
 
     @document_controller_params(create_observation)
     @authenticated
     def create(self, **params) -> Observation:
         response = create_observation(**params, **self.client.settings)
-        return Observation.from_json(response)  # type: ignore
+        return Observation.from_json(response)
 
     # TODO: create observations with Observation objects; requires model updates
     # @authenticated

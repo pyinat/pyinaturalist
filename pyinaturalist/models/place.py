@@ -52,12 +52,12 @@ class Place(BaseModel):
     slug: str = field(default=None, doc='Place URL slug')
 
     @classmethod
-    def from_json(cls, value: JsonResponse, category: str = None, **kwargs) -> BaseModel:
+    def from_json(cls, value: JsonResponse, category: str = None, **kwargs) -> 'Place':
         value.setdefault('category', category)
         return super(Place, cls).from_json(value)
 
     @classmethod
-    def from_json_list(cls, value: ResponseOrResults, **kwargs) -> List[BaseModel]:
+    def from_json_list(cls, value: ResponseOrResults, **kwargs) -> List['Place']:
         """Optionally use results from /places/nearby to set Place.category"""
         json_value = dict(ensure_list(value)[0])
         if 'results' in json_value:

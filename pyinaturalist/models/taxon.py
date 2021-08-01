@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, Generic, List, TypeVar
 
 from attr import fields_dict
 
@@ -190,7 +190,7 @@ class Taxon(BaseModel):
         """Sort Taxon objects by rank then by name"""
         taxa = cls.from_json_list(value)
         taxa.sort(key=_get_rank_name_idx)
-        return taxa  # type: ignore
+        return taxa
 
     @property
     def ancestry(self) -> str:
@@ -243,7 +243,7 @@ class Taxon(BaseModel):
         from pyinaturalist.v1 import get_taxa_by_id
 
         r = get_taxa_by_id(id)
-        return cls.from_json(r['results'][0])  # type: ignore
+        return cls.from_json(r['results'][0])
 
     def load_full_record(self):
         """Update this Taxon with full taxon info, including ancestors + children"""
@@ -280,7 +280,7 @@ class TaxonCount(Taxon):
             value = value['results']
         if 'taxon' in value:
             value.update(value.pop('taxon'))
-        return super(TaxonCount, cls).from_json(value)  # type: ignore
+        return super(TaxonCount, cls).from_json(value)
 
     @property
     def row(self) -> TableRow:
@@ -295,14 +295,17 @@ class TaxonCount(Taxon):
         return f'[{self.id}] {self.full_name}: {self.count}'
 
 
+T = TypeVar('T', bound='TaxonCount')
+
+
 @define_model_collection
-class TaxonCounts(BaseModelCollection):
+class TaxonCounts(BaseModelCollection, Generic[T]):
     """:fa:`dove,style=fas` :fa:`list` A collection of taxa with an associated counts. Used with
     `GET /observations/species_counts <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_species_counts>`_.
     as well as :py:class:`.LifeList`.
     """
 
-    data: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
+    data: List[T] = field(factory=list, converter=TaxonCount.from_json_list)
     _taxon_counts: Dict[int, int] = field(default=None, init=False, repr=False)
 
     def count(self, taxon_id: int) -> int:

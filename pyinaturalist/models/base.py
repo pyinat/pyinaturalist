@@ -1,10 +1,4 @@
-"""Base class and utilities for model objects.
-
-Note: when using classmethods as converters, mypy will raise a false positive error, hence all the
-``type: ignore`` statements in BaseModel subclasses. See:
-https://github.com/python/mypy/issues/6172
-https://github.com/python/mypy/issues/7912
-"""
+"""Base class and utilities for data models"""
 import json
 from collections import UserList
 from logging import getLogger
@@ -18,6 +12,7 @@ from pyinaturalist.constants import AnyFile, JsonResponse, ResponseOrFile, Respo
 from pyinaturalist.converters import ensure_list
 
 T = TypeVar('T', bound='BaseModel')
+TC = TypeVar('TC', bound='BaseModelCollection')
 logger = getLogger(__name__)
 
 
@@ -30,7 +25,7 @@ class BaseModel:
     headers: Dict[str, str] = {}
 
     @classmethod
-    def from_json(cls: Type[T], value: JsonResponse, **kwargs) -> 'BaseModel':
+    def from_json(cls: Type[T], value: JsonResponse, **kwargs) -> T:
         """Initialize a single model object from an API response or response result.
         Omits any invalid fields and ``None`` values, so we use our default factories instead
         (e.g. for empty dicts and lists).
@@ -43,18 +38,16 @@ class BaseModel:
             attr_names.extend(cls.temp_attrs)
 
         valid_json = {k: v for k, v in value.items() if k in attr_names and v is not None}
-        return cls(**valid_json, **kwargs)  # type: ignore
+        return cls(**valid_json, **kwargs)
 
     @classmethod
-    def from_json_file(cls: Type[T], value: AnyFile) -> List['BaseModel']:
+    def from_json_file(cls: Type[T], value: AnyFile) -> List[T]:
         """Initialize a collection of model objects from a JSON string, file path, or file-like object"""
         return cls.from_json_list(load_json(value))
 
     @classmethod
-    def from_json_list(cls: Type[T], value: ResponseOrResults) -> List['BaseModel']:
-        """Initialize a collection of model objects from a JSON path, file-like object, string, or
-        API response
-        """
+    def from_json_list(cls: Type[T], value: ResponseOrResults) -> List[T]:
+        """Initialize a collection of model objects from an API response or response results"""
         return [cls.from_json(item) for item in ensure_list(value)]
 
     @property
@@ -77,19 +70,19 @@ class BaseModelCollection(BaseModel, UserList, Generic[T]):
     data: List[T] = field(factory=list, init=False, repr=False)
 
     @classmethod
-    def from_json(cls, value: JsonResponse, **kwargs) -> 'BaseModelCollection':
+    def from_json(cls: Type[TC], value: JsonResponse, **kwargs) -> TC:
         if 'results' in value:
             value = value['results']
         if 'data' not in value:
             value = {'data': value}
-        return super(BaseModelCollection, cls).from_json(value)  # type: ignore
+        return super(BaseModelCollection, cls).from_json(value)
 
     @classmethod
-    def from_json_list(cls, value: JsonResponse, **kwargs) -> 'BaseModelCollection':  # type: ignore
+    def from_json_list(cls: Type[TC], value: JsonResponse, **kwargs) -> TC:  # type: ignore
         """For model collections, initializing from a list should return an instance of ``cls``
         instead of a builtin ``list``
         """
-        return cls.from_json(value)  # type: ignore
+        return cls.from_json(value)
 
 
 def load_json(value: ResponseOrFile) -> ResponseOrResults:

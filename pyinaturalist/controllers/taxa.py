@@ -16,14 +16,14 @@ class TaxonController(BaseController):
             taxon_ids: One or more taxon IDs
         """
         response = get_taxa_by_id(taxon_ids, **params, **self.client.settings)
-        return Taxon.from_json_list(response)  # type: ignore
+        return Taxon.from_json_list(response)
 
     @document_controller_params(get_taxa_autocomplete)
     def autocomplete(self, **params) -> List[Taxon]:
         response = get_taxa_autocomplete(**params, **self.client.settings)
-        return Taxon.from_json_list(response)  # type: ignore
+        return Taxon.from_json_list(response)
 
     @document_controller_params(get_taxa)
     def search(self, **params) -> List[Taxon]:
         response = get_taxa(**params, **self.client.settings)
-        return Taxon.from_json_list(response)  # type: ignore
+        return Taxon.from_json_list(response)
