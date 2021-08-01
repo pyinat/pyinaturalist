@@ -7,7 +7,7 @@ from pyinaturalist.v1 import get_taxa, get_taxa_autocomplete, get_taxa_by_id
 
 
 class TaxonController(BaseController):
-    """Controller for taxon requests"""
+    """:fa:`dove,style=fas` Controller for taxon requests"""
 
     def from_id(self, *taxon_ids, **params) -> List[Taxon]:
         """Get taxa by ID

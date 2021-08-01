@@ -24,6 +24,8 @@ Also see {ref}`endpoints` for an overview of which iNaturalist endpoints are cur
 modules/pyinaturalist.v0
 modules/pyinaturalist.v1
 modules/pyinaturalist.v2
+modules/pyinaturalist.client
+pyinaturalist.controllers
 pyinaturalist.models
 ```
 
@@ -32,5 +34,5 @@ pyinaturalist.models
 :glob: true
 :maxdepth: 1
 
-modules/pyinaturalist.[!vm]*
+modules/pyinaturalist.[!vmc]*
 ```
