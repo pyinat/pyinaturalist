@@ -14,6 +14,7 @@ nox.options.sessions = ['lint', 'cov']
 
 LIVE_DOCS_PORT = 8181
 LIVE_DOCS_IGNORE = ['*.csv', '**/modules/*']
+LIVE_DOCS_WATCH = ['pyinaturalist', 'examples/*.py']
 CLEAN_DIRS = ['dist', 'build', join('docs', '_build'), join('docs', 'models'), join('docs', 'modules')]
 
 
@@ -53,7 +54,9 @@ def livedocs(session):
     """Auto-build docs with live reload in browser.
     Add `-- open` to also open the browser after starting.
     """
-    args = [f'--ignore {pattern}' for pattern in LIVE_DOCS_IGNORE]
+    args = ['-a']
+    args += [f'--watch {pattern}' for pattern in LIVE_DOCS_WATCH]
+    args += [f'--ignore {pattern}' for pattern in LIVE_DOCS_IGNORE]
     args += [f'--port {LIVE_DOCS_PORT}', '-j auto']
     if session.posargs == ['open']:
         args.append('--open-browser')
