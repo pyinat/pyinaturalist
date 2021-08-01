@@ -1,5 +1,4 @@
 """Some common functions for HTTP requests used by all API modules"""
-# TODO: Default retry and backoff settings
 import threading
 from logging import getLogger
 from os import getenv
@@ -7,6 +6,7 @@ from typing import Dict
 from unittest.mock import Mock
 from warnings import warn
 
+import forge
 from pyrate_limiter import Duration, Limiter, RequestRate
 from requests import PreparedRequest, Request, Response, Session
 
@@ -22,7 +22,6 @@ from pyinaturalist.constants import (
     RequestParams,
 )
 from pyinaturalist.converters import ensure_file_obj
-from pyinaturalist.docs import copy_signature
 from pyinaturalist.formatters import format_request
 from pyinaturalist.request_params import (
     convert_url_ids,
@@ -149,25 +148,25 @@ def prepare_request(
     return request.prepare()
 
 
-@copy_signature(request, exclude='method')
+@forge.copy(request, exclude='method')
 def delete(url: str, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.delete` with additional options specific to iNat API requests"""
     return request('DELETE', url, **kwargs)
 
 
-@copy_signature(request, exclude='method')
+@forge.copy(request, exclude='method')
 def get(url: str, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.get` with additional options specific to iNat API requests"""
     return request('GET', url, **kwargs)
 
 
-@copy_signature(request, exclude='method')
+@forge.copy(request, exclude='method')
 def post(url: str, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.post` with additional options specific to iNat API requests"""
     return request('POST', url, **kwargs)
 
 
-@copy_signature(request, exclude='method')
+@forge.copy(request, exclude='method')
 def put(url: str, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.put` with additional options specific to iNat API requests"""
     return request('PUT', url, **kwargs)

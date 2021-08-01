@@ -21,7 +21,7 @@ logger = getLogger(__name__)
 
 @document_request_params(
     docs._observation_common,
-    docs._observation_rest_only,
+    docs._observation_v0,
     docs._bounding_box,
     docs._pagination,
 )
