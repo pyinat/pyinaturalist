@@ -100,7 +100,7 @@ def test_get_access_token__invalid_creds(requests_mock):
 # -------------------------
 
 
-@patch('keyring.get_password', side_effect=list(MOCK_CREDS_OAUTH.values()))
+@patch('pyinaturalist.auth.get_password', side_effect=list(MOCK_CREDS_OAUTH.values()))
 def test_get_keyring_credentials(get_password):
     assert get_keyring_credentials() == MOCK_CREDS_OAUTH
 
@@ -109,7 +109,7 @@ def test_get_keyring_credentials__not_installed():
     pass
 
 
-@patch('keyring.get_password', side_effect=KeyringError)
+@patch('pyinaturalist.auth.get_password', side_effect=KeyringError)
 def test_get_keyring_credentials__no_backend(get_password):
     assert get_keyring_credentials() == {}
 
@@ -118,7 +118,7 @@ def test_get_keyring_credentials__no_backend(get_password):
 # -------------------------
 
 
-@patch('keyring.set_password')
+@patch('pyinaturalist.auth.set_password')
 def test_set_keyring_credentials(set_password):
     set_keyring_credentials('username', 'password', 'app_id', 'app_secret')
     assert set_password.call_count == 4

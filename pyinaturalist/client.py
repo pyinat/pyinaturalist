@@ -41,10 +41,6 @@ class iNatClient:
         ... }
         >>> client = iNatClient(creds=creds)
 
-        >>> # If you prefer, you can manually get and refresh your access token:
-        >>> token = get_access_token(**creds)
-        >>> client.access_token = token
-
         >>> # Custom rate-limiting settings: increase rate to 75 requests per minute:
         >>> from pyrate_limiter import Duration, Limiter, RequestRate
         >>> limiter = Limiter(RequestRate(75, Duration.MINUTE))

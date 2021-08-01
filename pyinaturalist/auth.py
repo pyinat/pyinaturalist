@@ -2,6 +2,9 @@ from logging import getLogger
 from os import getenv
 from typing import Dict, Optional
 
+from keyring import get_password, set_password
+from keyring.errors import KeyringError
+
 from pyinaturalist.api_requests import post
 from pyinaturalist.constants import API_V0_BASE_URL, KEYRING_KEY
 from pyinaturalist.exceptions import AuthenticationError
@@ -69,14 +72,12 @@ def get_access_token(
     # If neither args nor envars were given, then check the keyring
     if not all(payload.values()):
         payload.update(get_keyring_credentials())
-    if not all(payload.values()):
+    if all(payload.values()):
+        logger.info('Retrieved credentials from keyring')
+    else:
         raise AuthenticationError('Not all authentication parameters were provided')
 
-    response = post(
-        f'{API_V0_BASE_URL}/oauth/token',
-        json=payload,
-        user_agent=user_agent,
-    )
+    response = post(f'{API_V0_BASE_URL}/oauth/token', json=payload, user_agent=user_agent)
     response.raise_for_status()
     return response.json()['access_token']
 
@@ -87,15 +88,6 @@ def get_keyring_credentials() -> Dict[str, Optional[str]]:
     Returns:
         OAuth-compatible credentials dict
     """
-    # Quietly fail if keyring package is not installed
-    try:
-        from keyring import get_password
-        from keyring.errors import KeyringError
-    except ImportError:
-        logger.warning('Optional dependency `keyring` not installed')
-        return {}
-
-    # Quietly fail if keyring backend is not available
     try:
         return {
             'username': get_password(KEYRING_KEY, 'username'),
@@ -123,8 +115,6 @@ def set_keyring_credentials(
         app_id: iNaturalist application ID
         app_secret: iNaturalist application secret
     """
-    from keyring import set_password
-
     set_password(KEYRING_KEY, 'username', username)
     set_password(KEYRING_KEY, 'password', password)
     set_password(KEYRING_KEY, 'app_id', app_id)
