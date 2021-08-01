@@ -14,6 +14,7 @@ from pyinaturalist.constants import (
     TableRow,
 )
 from pyinaturalist.converters import convert_observation_timestamp
+from pyinaturalist.docs import extend_init_signature
 from pyinaturalist.models import (
     Annotation,
     BaseModel,
@@ -175,8 +176,7 @@ class Observation(BaseModel):
         'time_zone_offset',
     ]
 
-    # Convert observation timestamps prior to attrs init
-    # TODO: better function signature for docs; use forge?
+    # Convert observation timestamps prior to __attrs_init__
     def __init__(
         self,
         created_at_details: Dict = None,
@@ -267,3 +267,7 @@ class Observations(BaseModelCollection):
     def thumbnail_urls(self) -> List[str]:
         """Get thumbnails for all observation default photos"""
         return [obs.thumbnail_url for obs in self.data if obs.thumbnail_url]
+
+
+# Fix __init__ and class docstring
+Observation = extend_init_signature(Observation.__attrs_init__)(Observation)  # type: ignore

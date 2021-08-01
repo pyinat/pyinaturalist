@@ -63,6 +63,7 @@ class ApiDocstring:
     @staticmethod
     def _split_sections(docstring: str) -> Dict[str, str]:
         """Split a docstring into a dict of ``{section_title: section_content}``"""
+        docstring = docstring or ''
         sections = {k: '' for k in DEFAULT_SECTIONS}
         current_section = 'Description'
 
@@ -93,8 +94,9 @@ def copy_annotations(
         annotations = get_type_hints(template_function)
         if not include_return:
             annotations.pop('return', None)
-        for k, v in annotations.items():
-            target_function.__annotations__[k] = v
+        if hasattr(target_function, '__annotations__'):
+            for k, v in annotations.items():
+                target_function.__annotations__[k] = v
 
     return target_function
 

@@ -11,4 +11,5 @@ from pyinaturalist.docs.signatures import (
     copy_signatures,
     document_controller_params,
     document_request_params,
+    extend_init_signature,
 )
