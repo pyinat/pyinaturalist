@@ -1,4 +1,5 @@
 from datetime import datetime
+from io import BytesIO
 from unittest.mock import patch
 
 import pytest
@@ -7,6 +8,8 @@ from dateutil.tz import tzoffset, tzutc
 from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.v1 import (
+    create_observation,
+    delete_observation,
     get_observation,
     get_observation_histogram,
     get_observation_identifiers,
@@ -14,6 +17,7 @@ from pyinaturalist.v1 import (
     get_observation_species_counts,
     get_observation_taxonomy,
     get_observations,
+    upload,
 )
 from test.conftest import load_sample_data
 
@@ -195,3 +199,60 @@ def test_get_observation_taxonomy(requests_mock):
     assert first_result['id'] == 1
     assert first_result['name'] == 'Animalia'
     assert first_result['descendant_obs_count'] == 3023
+
+
+def test_create_observation(requests_mock):
+    requests_mock.post(
+        f'{API_V1_BASE_URL}/observations',
+        json=load_sample_data('create_observation_v1.json'),
+        status_code=200,
+    )
+
+    response = create_observation(
+        species_guess='Pieris rapae', observed_on='2021-09-09', access_token='token'
+    )
+    assert response['id'] == 54986584
+    assert response['uuid'] == '3595235e-96b1-450f-92ec-49162721cc6f'
+
+
+@patch('pyinaturalist.v1.observations.upload')
+@patch('pyinaturalist.v1.observations.post_v1')
+def test_create_observation__with_files(mock_post, mock_upload):
+    create_observation(
+        access_token='token',
+        photos=['photo_1.jpg', 'photo_2.jpg'],
+        sounds=['sound_1.mp3', 'sound_2.wav'],
+    )
+
+    request_params = mock_post.call_args[1]['json']['observation']
+    assert 'local_photos' not in request_params
+    assert 'sounds' not in request_params
+    mock_upload.assert_called_once()
+
+
+def test_upload(requests_mock):
+    requests_mock.post(
+        f'{API_V1_BASE_URL}/observation_photos',
+        json=load_sample_data('post_observation_photos.json'),
+        status_code=200,
+    )
+    requests_mock.post(
+        f'{API_V1_BASE_URL}/observation_sounds',
+        json=load_sample_data('post_observation_sounds.json'),
+        status_code=200,
+    )
+
+    response = upload(1234, BytesIO(), BytesIO(), access_token='token')
+    assert response[0]['id'] == 1234
+    assert response[0]['created_at'] == '2020-09-24T21:06:16.964-05:00'
+    assert response[0]['photo']['native_username'] == 'username'
+
+    assert response[1]['id'] == 233946
+    assert response[1]['created_at'] == '2021-05-30T17:36:40.286-05:00'
+    assert response[1]['sound']['file_content_type'] == 'audio/mpeg'
+
+
+def test_delete_observation(requests_mock):
+    requests_mock.delete(f'{API_V1_BASE_URL}/observations/24774619', status_code=200)
+    response = delete_observation(observation_id=24774619, access_token='valid token')
+    assert response is None
