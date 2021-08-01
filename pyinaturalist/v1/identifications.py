@@ -8,12 +8,13 @@ from pyinaturalist.v1 import get_v1
 
 
 def get_identifications_by_id(identification_id: MultiInt, **params) -> JsonResponse:
-    """Get one or more identification records by ID.
+    """Get one or more identification records by ID
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications_id
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /identifications/{id} <Identifications/get_identifications_id>`
 
     Example:
-
         >>> get_identifications_by_id(155554373)
 
         .. admonition:: Example Response
@@ -36,12 +37,13 @@ def get_identifications_by_id(identification_id: MultiInt, **params) -> JsonResp
 @document_request_params(docs._identification_params, docs._pagination, docs._only_id)
 @add_paginate_all(method='page')
 def get_identifications(**params) -> JsonResponse:
-    """Search identifications.
+    """Search identifications
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Identifications/get_identifications
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /identifications <Identifications/get_identifications>`
 
     Example:
-
         Get all of your own species-level identifications:
 
         >>> response = get_identifications(user_login='my_username', rank='species')

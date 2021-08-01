@@ -27,11 +27,11 @@ logger = getLogger(__name__)
 )
 @add_paginate_all(method='page')
 def get_observations(**params) -> Union[List, str]:
-    """Get observation data, optionally in an alternative format. Also see
-    :py:func:`.get_geojson_observations` for GeoJSON format (not included here because it wraps
-    a separate API endpoint).
+    """Get observation data, optionally in an alternative format
 
-    **API reference:** https://www.inaturalist.org/pages/api+reference#get-observations
+    .. rubric:: Notes
+
+    * API reference: :v0:`GET /observations <get-observations>`
 
     Example:
 
@@ -92,9 +92,12 @@ def get_observations(**params) -> Union[List, str]:
 
 @document_request_params(docs._access_token, docs._create_observation)
 def create_observation(**params) -> ListResponse:
-    """Create a new observation.
+    """Create a new observation
 
-    **API reference:** https://www.inaturalist.org/pages/api+reference#post-observations
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v0:`POST /observations <post-observations>`
 
     Example:
         >>> token = get_access_token()
@@ -121,10 +124,7 @@ def create_observation(**params) -> ListResponse:
         JSON response containing the newly created observation(s)
 
     Raises:
-        :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an
-        error 422 (unprocessable entity) if it rejects the observation data (for example an
-        observation date in the future or a latitude > 90. In that case the exception's
-        ``response`` attribute gives more details about the errors.
+        :py:exc:`~urllib3.exceptions.HTTPError`: If the call is not successful. The exception's ``response`` attribute gives more details about the errors.
     """
     params, photos, sounds, kwargs = convert_observation_params(params)
     response = post(
@@ -149,10 +149,12 @@ def create_observation(**params) -> ListResponse:
     docs._update_observation,
 )
 def update_observation(observation_id: int, **params) -> ListResponse:
-    """
-    Update a single observation.
+    """Update a single observation
 
-    **API reference:** https://www.inaturalist.org/pages/api+reference#put-observations-id
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v0:`PUT /observations/{id} <put-observations-id>`
 
     .. note::
 
@@ -180,8 +182,7 @@ def update_observation(observation_id: int, **params) -> ListResponse:
         JSON response containing the newly updated observation(s)
 
     Raises:
-        :py:exc:`requests.HTTPError`, if the call is not successful. iNaturalist returns an
-            error 410 if the observation doesn't exists or belongs to another user.
+        :py:exc:`~urllib3.exceptions.HTTPError`: if the call is not successful. iNaturalist returns an error 410 if the observation doesn't exists or belongs to another user.
     """
     params, photos, sounds, kwargs = convert_observation_params(params)
     response = put(
@@ -198,10 +199,14 @@ def update_observation(observation_id: int, **params) -> ListResponse:
 
 
 def upload_photos(observation_id: int, photos: MultiFile, **params) -> ListResponse:
-    """Upload a local photo and assign it to an existing observation.
+    """Upload a local photo and assign it to an existing observation
+
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v0:`POST /observation_photos <post-observation_photos>`
 
     Example:
-
         >>> token = get_access_token()
         >>> upload_photos(1234, '~/observations/2020_09_01_14003156.jpg', access_token=token)
 
@@ -246,10 +251,13 @@ def upload_photos(observation_id: int, photos: MultiFile, **params) -> ListRespo
 
 
 def upload_sounds(observation_id: int, sounds: MultiFile, **params) -> ListResponse:
-    """Upload a local sound file and assign it to an existing observation.
+    """Upload a local sound file and assign it to an existing observation
+
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
 
     Example:
-
         >>> token = get_access_token()
         >>> upload_sounds(1234, '~/observations/2020_09_01_14003156.mp3', access_token=token)
 
@@ -296,12 +304,14 @@ def upload_sounds(observation_id: int, sounds: MultiFile, **params) -> ListRespo
 @document_request_params(docs._observation_id, docs._access_token)
 def delete_observation(observation_id: int, **params):
     """
-    Delete an observation.
+    Delete an observation
 
-    **API reference:** https://www.inaturalist.org/pages/api+reference#delete-observations-id
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v0:`DELETE /observations/{id} <delete-observations-id>`
 
     Example:
-
         >>> token = get_access_token()
         >>> delete_observation(17932425, token)
 
@@ -309,8 +319,8 @@ def delete_observation(observation_id: int, **params):
         If successful, no response is returned from this endpoint
 
     Raises:
-        :py:exc:`.ObservationNotFound` if the requested observation doesn't exist
-        :py:exc:`requests.HTTPError` (403) if the observation belongs to another user
+        :py:exc:`.ObservationNotFound`: if the requested observation doesn't exist
+        :py:exc:`~urllib3.exceptions.HTTPError`: 403 if the observation belongs to another user
     """
     response = delete(
         url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',

@@ -10,12 +10,13 @@ from pyinaturalist.v1 import delete_v1, get_v1, post_v1
 @document_request_params(docs._projects_params, docs._pagination)
 @add_paginate_all(method='page')
 def get_projects(**params) -> JsonResponse:
-    """Given zero to many of following parameters, get projects matching the search criteria.
+    """Search projects
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Projects/get_projects
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /projects <Projects/get_projects>`
 
     Example:
-
         Search for projects about invasive species within 400km of Vancouver, BC:
 
         >>> response = get_projects(
@@ -33,7 +34,6 @@ def get_projects(**params) -> JsonResponse:
         [19200   ] King County (WA) Noxious and Invasive Weeds
         [102925  ] Keechelus/Kachess Invasive Plants
         ...
-
 
         .. admonition:: Example Response
             :class: toggle
@@ -53,12 +53,13 @@ def get_projects(**params) -> JsonResponse:
 
 
 def get_projects_by_id(project_id: MultiInt, rule_details: bool = None, **params) -> JsonResponse:
-    """Get one or more projects by ID.
+    """Get one or more projects by ID
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Projects/get_projects_id
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /projects/{id} <Projects/get_projects_id>`
 
     Example:
-
         >>> response = get_projects_by_id([8348, 6432])
         >>> pprint(response)
         [8348] Tucson High Native and Invasive Species Inventory
@@ -91,13 +92,13 @@ def add_project_observation(
 ) -> JsonResponse:
     """Add an observation to a project
 
-    **API reference:**
+    .. rubric:: Notes
 
-    * https://api.inaturalist.org/v1/docs/#!/Projects/post_projects_id_add
-    * https://api.inaturalist.org/v1/docs/#!/Project_Observations/post_project_observations
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v1:`POST projects/{id}/add <Projects/post_projects_id_add>`
+    * API reference: :v1:`POST /project_observations <Project_Observations/post_project_observations>`
 
     Example:
-
         >>> add_project_observation(access_token, 24237, 1234)
 
         .. admonition:: Example Response
@@ -123,10 +124,11 @@ def add_project_observation(
 def delete_project_observation(access_token: str, project_id: int, observation_id: int, **params):
     """Remove an observation from a project
 
-    **API reference:**
+    .. rubric:: Notes
 
-    * https://api.inaturalist.org/v1/docs/#!/Projects/delete_projects_id_remove
-    * https://api.inaturalist.org/v1/docs/#!/Project_Observations/delete_project_observations_id
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v1:`DELETE /projects/{id}/remove <Projects/delete_projects_id_remove>`
+    * API reference: :v1:`DELETE /project_observations <Project_Observations/delete_project_observations_id>`
 
     Example:
 

@@ -56,6 +56,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.autosectionlabel',
+    'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
     'sphinx_autodoc_typehints',
@@ -80,10 +81,19 @@ myst_enable_extensions = [
 
 nbsphinx_allow_errors = True
 
+# Prefixes to shorten common links
+extlinks = {
+    'issue': ('https://github.com/niconoe/pyinaturalist/issues/%s', 'issue #%s'),
+    'v0': ('https://www.inaturalist.org/pages/api+reference#', '%s'),
+    'v1': ('https://api.inaturalist.org/v1/docs/#/%s', '%s'),
+    'v2': ('https://api.inaturalist.org/v2/docs/#/%s', '%s'),
+}
+
 # Enable automatic links to other projects' Sphinx docs
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
     'requests': ('https://requests.readthedocs.io/en/master/', None),
+    'urllib3': ('https://urllib3.readthedocs.io/en/stable/', None),
 }
 
 # Generate labels in the format <page>:<section>

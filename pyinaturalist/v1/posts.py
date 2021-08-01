@@ -7,17 +7,16 @@ from pyinaturalist.v1 import get_v1
 
 @document_request_params(docs._get_posts)
 def get_posts(**params) -> ListResponse:
-    """Search posts.
+    """Search posts
 
-    **API reference:** https://api.inaturalist.org/v1/docs/#!/Posts/get_posts
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /posts <Posts/get_posts>`
 
     Example:
-
         Get journal posts from user 'username'
 
-        >>> response = get_posts(
-        >>>     login=myusername
-        >>> )
+        >>> response = get_posts(login='username')
 
     Returns:
         List containing journal posts from the iNaturalist site
