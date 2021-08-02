@@ -19,10 +19,7 @@ def load_all_sample_data() -> Dict[str, Dict]:
     sample_data = {}
     for file_path in glob(join(SAMPLE_DATA_DIR, '*.json')):
         name = splitext(basename(file_path))[0]
-        try:
-            sample_data[name] = json.load(open(file_path))
-        except:
-            breakpoint()
+        sample_data[name] = json.load(open(file_path))
     return sample_data
 
 
@@ -35,6 +32,8 @@ j_observation_1 = SAMPLE_DATA['get_observation']['results'][0]
 j_observation_2 = SAMPLE_DATA['get_observations_node_page1']['results'][0]
 j_observation_3_ofvs = SAMPLE_DATA['get_observation_with_ofvs']['results'][0]
 j_observation_4_sounds = SAMPLE_DATA['get_observation_with_sounds']
+j_observation_identifiers = SAMPLE_DATA['get_observation_identifiers_node_page1']
+j_observation_observers = SAMPLE_DATA['get_observation_observers_node_page1']
 j_taxon_1 = SAMPLE_DATA['get_taxa_by_id']['results'][0]
 j_taxon_2_partial = SAMPLE_DATA['get_taxa']['results'][0]
 j_taxon_3_no_common_name = SAMPLE_DATA['get_taxa']['results'][2]

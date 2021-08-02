@@ -1,9 +1,9 @@
-from typing import Dict, List
+from typing import List
 
 from pyinaturalist.constants import HistogramResponse, ListResponse
 from pyinaturalist.controllers import BaseController, authenticated
 from pyinaturalist.docs import document_controller_params
-from pyinaturalist.models import LifeList, Observation, TaxonCounts, User
+from pyinaturalist.models import LifeList, Observation, TaxonCounts, UserCounts
 from pyinaturalist.v1 import (
     create_observation,
     delete_observation,
@@ -42,24 +42,21 @@ class ObservationController(BaseController):
         return get_observation_histogram(**params, **self.client.settings)
 
     @document_controller_params(get_observation_identifiers)
-    def identifiers(self, **params) -> Dict[int, User]:
+    def identifiers(self, **params) -> UserCounts:
         response = get_observation_identifiers(**params, **self.client.settings)
-        return {r['count']: User.from_json(r['user']) for r in response['results']}
+        return UserCounts.from_json(response)
+
+    @document_controller_params(get_observation_observers)
+    def observers(self, **params) -> UserCounts:
+        response = get_observation_observers(**params, **self.client.settings)
+        return UserCounts.from_json(response)
 
     @document_controller_params(get_observation_taxonomy, add_common_args=False)
     def life_list(self, *args, **params) -> LifeList:
         response = get_observation_taxonomy(*args, **params, **self.client.settings)
-        return LifeList.from_json(response.json())
-
-    # TODO: Separate model for these results? (maybe a User subclass)
-    # TODO: Include species_counts
-    @document_controller_params(get_observation_observers)
-    def observers(self, **params) -> Dict[int, User]:
-        response = get_observation_observers(**params, **self.client.settings)
-        return {r['count']: User.from_json(r['user']) for r in response['results']}
+        return LifeList.from_json(response)
 
     @document_controller_params(get_observation_species_counts)
-    @authenticated
     def species_counts(self, **params) -> TaxonCounts:
         response = get_observation_species_counts(**params, **self.client.settings)
         return TaxonCounts.from_json(response)
@@ -72,7 +69,7 @@ class ObservationController(BaseController):
 
     # TODO: create observations with Observation objects; requires model updates
     # @authenticated
-    # def _reate(self, *observations: Observation, **params):
+    # def create(self, *observations: Observation, **params):
     #     for obs in observations:
     #         create_observation(obs.to_json(), **params, **self.client.settings)
 

@@ -68,6 +68,7 @@ class BaseModelCollection(BaseModel, UserList, Generic[T]):
     """
 
     data: List[T] = field(factory=list, init=False, repr=False)
+    _id_map: Dict[int, T] = field(default=None, init=False, repr=False)
 
     @classmethod
     def from_json(cls: Type[TC], value: JsonResponse, **kwargs) -> TC:
@@ -83,6 +84,26 @@ class BaseModelCollection(BaseModel, UserList, Generic[T]):
         instead of a builtin ``list``
         """
         return cls.from_json(value)
+
+    @property
+    def id_map(self) -> Dict[int, T]:
+        """A mapping of objects by unique identifier"""
+        if self._id_map is None:
+            self._id_map = {obj.id: obj for obj in self.data}
+        return self._id_map
+
+    def deduplicate(self):
+        """Remove any duplicates from this collection based on ID"""
+        self.data = list(self.id_map.values())
+
+    def get_count(self, id: int, count_field: str = 'count') -> int:
+        """Get a count associated with the given ID.
+        Returns 0 if the collection type is not countable or the ID doesn't exist.
+        """
+        return getattr(self.id_map.get(id), count_field, 0)
+
+    def __str__(self) -> str:
+        return '\n'.join([str(obj) for obj in self.data])
 
 
 def load_json(value: ResponseOrFile) -> ResponseOrResults:
