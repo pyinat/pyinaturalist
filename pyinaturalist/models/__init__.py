@@ -14,8 +14,8 @@ from pyinaturalist.models.base import BaseModel, BaseModelCollection, load_json
 from pyinaturalist.models.lazy_property import (
     LazyProperty,
     add_lazy_attrs,
+    get_lazy_attrs,
     get_lazy_properties,
-    get_model_fields,
 )
 
 
