@@ -115,7 +115,7 @@ def test_comment__empty():
 
 def test_comment__str():
     comment = Comment.from_json(j_comment_1)
-    assert str(comment) == 'samroom at 2020-08-28 12:04:18+00:00: Thankyou '
+    assert str(comment) == 'samroom on Aug 28, 2020: Thankyou'
 
 
 # Identifications
@@ -138,7 +138,7 @@ def test_identification__str():
     identification = ID.from_json(j_identification_3)
     assert str(identification) == (
         '[126501311] 🦋 Species: Danaus plexippus (Monarch) (improving) added on '
-        '2020-08-27 13:00:51-05:00 by samroom'
+        'Aug 27, 2020 by samroom'
     )
 
 

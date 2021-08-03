@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pyinaturalist.constants import ID_CATEGORIES, TableRow
+from pyinaturalist.constants import DATETIME_SHORT_FORMAT, ID_CATEGORIES, TableRow
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
@@ -61,6 +61,7 @@ class Identification(BaseModel):
     def __str__(self) -> str:
         """Format into a condensed summary: id, what, when, and who"""
         return (
-            f'[{self.id}] {self.taxon.full_name} ({self.category}) added on {self.created_at} '
+            f'[{self.id}] {self.taxon.full_name} ({self.category}) '
+            f'added on {self.created_at.strftime(DATETIME_SHORT_FORMAT)} '
             f'by {self.user.login}'
         )

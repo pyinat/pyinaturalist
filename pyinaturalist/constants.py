@@ -185,8 +185,9 @@ DATETIME_PARAMS = [
     'older_than',
     'on',
     'since',
-    'updated_since',  # TODO: test if this one behaves differently in Node API vs REST API
+    'updated_since',
 ]
+DATETIME_SHORT_FORMAT = '%b %d, %Y'
 
 # Type aliases
 Coordinates = Tuple[float, float]

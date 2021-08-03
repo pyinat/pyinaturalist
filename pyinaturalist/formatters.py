@@ -12,11 +12,12 @@ from copy import deepcopy
 from datetime import date, datetime
 from functools import partial
 from logging import basicConfig, getLogger
-from typing import List, Type
+from typing import Any, Iterable, List, Type
 
+from attr import Attribute
 from requests import PreparedRequest
 
-from pyinaturalist.constants import ResponseOrResults, ResponseResult
+from pyinaturalist.constants import DATETIME_SHORT_FORMAT, ResponseOrResults, ResponseResult
 from pyinaturalist.converters import ensure_list
 from pyinaturalist.models import (
     Annotation,
@@ -38,17 +39,8 @@ from pyinaturalist.models import (
     Taxon,
     TaxonCount,
     User,
-    get_model_fields,
+    get_lazy_attrs,
 )
-
-# If rich is installed, update its pretty-printer to include model properties
-try:
-    from rich import pretty, print
-
-    pretty._get_attr_fields = get_model_fields
-    pretty.install()
-except ImportError:
-    pass
 
 
 def enable_logging(level: str = 'INFO'):
@@ -174,7 +166,7 @@ def format_table(values: ResponseOrObjects):
     # Display any date/datetime values in short format
     def _str(value):
         if isinstance(value, (date, datetime)):
-            return value.strftime('%b %d, %Y')
+            return value.strftime(DATETIME_SHORT_FORMAT)
         return str(value) if value is not None else ''
 
     columns = [Column(header, style=style) for header, style in headers.items()]
@@ -254,3 +246,37 @@ format_search_results = partial(_format_model_objects, cls=SearchResult)
 format_species_counts = partial(_format_model_objects, cls=TaxonCount)
 format_taxa = partial(_format_model_objects, cls=Taxon)
 format_users = partial(_format_model_objects, cls=User)
+
+
+def get_model_fields(obj: Any) -> Iterable[Attribute]:
+    """Modification for rich's pretty-printer (specifically, ``rich.pretty._get_attr_fields``).
+
+    Adds placeholder attributes for lazy-loaded model properties so they get included in the output.
+    This is particularly useful for previewing in Jupyter or another REPL. These nested objects are
+    shown in condensed format so the preview is more readable. Otherwise, some objects]
+    (especially observations) can turn into a huge wall of text several pages long.
+
+    Does not change behavior for anything except :py:class:`.BaseModel` subclasses.
+    """
+
+    def condense_nested_models(obj):
+        tab = '    '
+        if obj and isinstance(obj, list):
+            condensed_objs = f',\n{tab}{tab}'.join([str(o) for o in obj])
+            return f'[\n{tab}{tab}{condensed_objs}\n{tab}]'
+        return str(obj)
+
+    attrs = list(obj.__attrs_attrs__)
+    if isinstance(obj, BaseModel):
+        attrs += get_lazy_attrs(obj, repr=condense_nested_models)
+    return attrs
+
+
+# If rich is installed, update its pretty-printer to include model properties
+try:
+    from rich import pretty, print
+
+    pretty._get_attr_fields = get_model_fields
+    pretty.install()
+except ImportError:
+    pass

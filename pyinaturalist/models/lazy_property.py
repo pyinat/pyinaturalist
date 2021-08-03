@@ -1,6 +1,6 @@
 from functools import update_wrapper
 from inspect import signature
-from typing import Any, Callable, Dict, Iterable, List, Type
+from typing import Callable, Dict, List, Type
 
 from attr import Attribute, Factory
 
@@ -95,14 +95,9 @@ def add_lazy_attrs(cls, fields):
     return list(fields) + [p.get_lazy_attr() for p in lazy_properties]
 
 
-def get_model_fields(obj: Any) -> Iterable[Attribute]:
-    """Add placeholder attributes for lazy-loaded model properties so they get picked up by rich's
-    pretty-printer. Does not change behavior for anything except :py:class:`.BaseModel` subclasses.
-    """
-    attrs = list(obj.__attrs_attrs__)
-    if isinstance(obj, BaseModel):
-        attrs += [make_attribute(p) for p in get_lazy_properties(type(obj))]
-    return attrs
+def get_lazy_attrs(obj, **kwargs) -> List[Attribute]:
+    """Get placeholder attributes for lazy-loaded model properties"""
+    return [make_attribute(p, **kwargs) for p in get_lazy_properties(type(obj))]
 
 
 def get_lazy_properties(cls: Type[BaseModel]) -> Dict[str, LazyProperty]:
