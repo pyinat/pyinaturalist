@@ -6,6 +6,7 @@ from attr import define
 
 from pyinaturalist.constants import (
     ALL_LICENSES,
+    DATETIME_SHORT_FORMAT,
     GEOPRIVACY_LEVELS,
     QUALITY_GRADES,
     Coordinates,
@@ -233,8 +234,8 @@ class Observation(BaseModel):
     def __str__(self) -> str:
         return (
             f'[{self.id}] {self.taxon.full_name} '
-            f'observed on {self.observed_on} by {self.user.login} '
-            f'at {self.place_guess or self.location}'
+            f'observed on {self.observed_on.strftime(DATETIME_SHORT_FORMAT)} '
+            f'by {self.user.login} at {self.place_guess or self.location}'
         )
 
 

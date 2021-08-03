@@ -16,7 +16,7 @@ from typing import List, Type
 
 from requests import PreparedRequest
 
-from pyinaturalist.constants import ResponseOrResults, ResponseResult
+from pyinaturalist.constants import DATETIME_SHORT_FORMAT, ResponseOrResults, ResponseResult
 from pyinaturalist.converters import ensure_list
 from pyinaturalist.models import (
     Annotation,
@@ -174,7 +174,7 @@ def format_table(values: ResponseOrObjects):
     # Display any date/datetime values in short format
     def _str(value):
         if isinstance(value, (date, datetime)):
-            return value.strftime('%b %d, %Y')
+            return value.strftime(DATETIME_SHORT_FORMAT)
         return str(value) if value is not None else ''
 
     columns = [Column(header, style=style) for header, style in headers.items()]

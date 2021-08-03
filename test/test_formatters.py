@@ -64,14 +64,14 @@ def test_format_controlled_terms(input):
 
 @pytest.mark.parametrize('input', get_variations(j_identification_1))
 def test_format_identifications(input):
-    expected_str = '[155554373] Species: 60132 (supporting) added on 2021-02-18 20:31:32-06:00 by jkcook'
+    expected_str = '[155554373] Species: 60132 (supporting) added on Feb 18, 2021 by jkcook'
     assert format_identifications(input) == expected_str
 
 
 @pytest.mark.parametrize('input', get_variations(j_observation_1))
 def test_format_observation(input):
     expected_str = (
-        '[16227955] 🪲 Species: Lixus bardanae observed on 2018-09-05 14:06:00+01:00 '
+        '[16227955] 🪲 Species: Lixus bardanae observed on Sep 05, 2018 '
         'by niconoe at 54 rue des Badauds'
     )
     assert format_observations(input) == expected_str

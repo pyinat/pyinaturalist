@@ -96,12 +96,28 @@ def add_lazy_attrs(cls, fields):
 
 
 def get_model_fields(obj: Any) -> Iterable[Attribute]:
-    """Add placeholder attributes for lazy-loaded model properties so they get picked up by rich's
-    pretty-printer. Does not change behavior for anything except :py:class:`.BaseModel` subclasses.
+    """Modification for rich's pretty-printer (specifically, ``rich.pretty._get_attr_fields``).
+
+    Adds placeholder attributes for lazy-loaded model properties so they get included in the output.
+    This is particularly useful for previewing in Jupyter or another REPL. These nested objects are
+    shown in condensed format so the preview is more readable. Otherwise, some objects]
+    (especially observations) can turn into a huge wall of text several pages long.
+
+    Does not change behavior for anything except :py:class:`.BaseModel` subclasses.
     """
+
+    def condense_nested_models(obj):
+        if obj and isinstance(obj, list):
+            condensed_objs = ',\n        '.join([str(o) for o in obj])
+            return f'[\n{condensed_objs}\n    ]'
+        return str(obj)
+
     attrs = list(obj.__attrs_attrs__)
     if isinstance(obj, BaseModel):
-        attrs += [make_attribute(p) for p in get_lazy_properties(type(obj))]
+        attrs += [
+            make_attribute(property, repr=condense_nested_models)
+            for property in get_lazy_properties(type(obj))
+        ]
     return attrs
 
 
