@@ -13,6 +13,7 @@ from requests import PreparedRequest, Request, Response, Session
 import pyinaturalist
 from pyinaturalist.constants import (
     MAX_DELAY,
+    REQUEST_BURST_RATE,
     REQUESTS_PER_DAY,
     REQUESTS_PER_MINUTE,
     REQUESTS_PER_SECOND,
@@ -29,19 +30,34 @@ from pyinaturalist.request_params import (
     preprocess_request_params,
 )
 
-# Default rate-limiting settings
-RATE_LIMITER = Limiter(
-    RequestRate(REQUESTS_PER_SECOND, Duration.SECOND),
-    RequestRate(REQUESTS_PER_MINUTE, Duration.MINUTE),
-    RequestRate(REQUESTS_PER_DAY, Duration.DAY),
-)
-
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=Response)
 MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0, 'access_token': ''}
 
 logger = getLogger('pyinaturalist')
 thread_local = threading.local()
+
+
+def get_limiter(
+    per_second: int = REQUESTS_PER_SECOND,
+    per_minute: int = REQUESTS_PER_MINUTE,
+    burst: int = REQUEST_BURST_RATE,
+) -> Limiter:
+    """Get a rate-limiter, optionally with modified rate limits
+
+    Args:
+        per_second: Max number of requests per second
+        per_minute: Max number of requests per minute
+        burst: Max number of consecutive requests allowed before applying rate-limiting delays
+    """
+    return Limiter(
+        RequestRate(per_second * burst, Duration.SECOND * burst),
+        RequestRate(per_minute, Duration.MINUTE),
+        RequestRate(REQUESTS_PER_DAY, Duration.DAY),
+    )
+
+
+RATE_LIMITER = get_limiter()
 
 
 def request(
