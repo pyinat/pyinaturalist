@@ -143,6 +143,9 @@ def convert_generic_timestamps(result: ResponseResult) -> ResponseResult:
     **Note:** Compared to observation timestamps, these are generally more reliable. These seem to
     be consistently in ISO 8601 format.
     """
+    if not result:
+        return result
+
     # Format inner record if present, e.g. for search results
     if 'record' in result:
         result['record'] = convert_generic_timestamps(result['record'])

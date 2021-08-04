@@ -9,6 +9,7 @@ from pyinaturalist.constants import (
 from pyinaturalist.converters import (
     convert_all_coordinates,
     convert_all_timestamps,
+    convert_generic_timestamps,
     convert_histogram,
     convert_observation_timestamps,
     ensure_list,
@@ -272,6 +273,36 @@ def get_observation_taxonomy(user_id: IntOrStr, **params) -> JsonResponse:
     """
     response = get_v1('observations/taxonomy', user_id=user_id, **params)
     return response.json()
+
+
+@document_common_args
+def get_observation_taxon_summary(observation_id: int, **params) -> JsonResponse:
+    """Get information about an observation's taxon, within the context of the observation's location
+
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /observations/{id}/taxon_summary <Observations/get_observations_id_taxon_summary>`
+
+    Args:
+        observation_id: iNaturalist user ID or username
+
+    Example:
+        >>> response = get_observation_taxon_summary(1234)
+        ...
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_taxon_summary_conserved.json
+                :language: JSON
+
+    Returns:
+        Response dict containing taxon records with counts
+    """
+    results = get_v1(f'observations/{observation_id}/taxon_summary', **params).json()
+    results['conservation_status'] == convert_generic_timestamps(results['conservation_status'])
+    results['listed_taxon'] == convert_generic_timestamps(results['listed_taxon'])
+    return results
 
 
 @document_request_params(docs._access_token, docs._create_observation)

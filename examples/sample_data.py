@@ -29,6 +29,7 @@ search_results = SearchResult.from_json_list(j_search_results)
 taxon = Taxon.from_json(j_taxon_1)
 taxon_partial = Taxon.from_json(j_taxon_2_partial)
 taxon_counts = TaxonCounts.from_json(j_obs_species_counts)
+taxon_summary = TaxonSummary.from_json(j_taxon_summary_2_listed)
 user = User.from_json(j_user_1)
 
 # Sample tables

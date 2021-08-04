@@ -1,3 +1,4 @@
+# flake8: noqa: F405
 from datetime import datetime
 from io import BytesIO
 from unittest.mock import patch
@@ -15,11 +16,13 @@ from pyinaturalist.v1 import (
     get_observation_identifiers,
     get_observation_observers,
     get_observation_species_counts,
+    get_observation_taxon_summary,
     get_observation_taxonomy,
     get_observations,
     upload,
 )
 from test.conftest import load_sample_data
+from test.sample_data import *
 
 
 def test_get_observation(requests_mock):
@@ -199,6 +202,35 @@ def test_get_observation_taxonomy(requests_mock):
     assert first_result['id'] == 1
     assert first_result['name'] == 'Animalia'
     assert first_result['descendant_obs_count'] == 3023
+
+
+def test_get_observation_taxon_summary__with_conservation_status(requests_mock):
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/observations/89238647/taxon_summary',
+        json=j_taxon_summary_1_conserved,
+        status_code=200,
+    )
+    response = get_observation_taxon_summary(89238647)
+    assert response['conservation_status']['taxon_id'] == 4747
+    assert response['conservation_status']['status'] == 'NT'
+    assert response['conservation_status']['created_at'] == datetime(
+        2013, 2, 16, 0, 50, 56, 264000, tzinfo=tzutc()
+    )
+
+
+def test_get_observation_taxon_summary__with_listed_taxon(requests_mock):
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/observations/7849808/taxon_summary',
+        json=j_taxon_summary_2_listed,
+        status_code=200,
+    )
+    response = get_observation_taxon_summary(7849808)
+    assert response['listed_taxon']['taxon_id'] == 47219
+    assert response['listed_taxon']['place']['id'] == 144952
+    assert response['listed_taxon']['created_at'] == datetime(
+        2019, 11, 20, 16, 26, 47, 604000, tzinfo=tzutc()
+    )
+    assert 'western honey bee' in response['wikipedia_summary']
 
 
 def test_create_observation(requests_mock):

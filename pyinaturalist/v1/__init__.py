@@ -41,6 +41,7 @@ from pyinaturalist.v1.observations import (
     get_observation_identifiers,
     get_observation_observers,
     get_observation_species_counts,
+    get_observation_taxon_summary,
     get_observation_taxonomy,
     get_observations,
     upload,
