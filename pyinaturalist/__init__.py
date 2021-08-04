@@ -5,6 +5,7 @@ user_agent = DEFAULT_USER_AGENT
 
 # Ignore ImportErrors if this is imported outside a virtualenv
 try:
+    from pyinaturalist.api_requests import get_limiter
     from pyinaturalist.auth import get_access_token
     from pyinaturalist.client import iNatClient
     from pyinaturalist.constants import *

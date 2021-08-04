@@ -339,12 +339,12 @@ iNaturalist's [API Recommended Practices](https://www.inaturalist.org/pages/api+
 If you want to customize these rate limits, all API request functions take an optional `limiter` argument,
 which takes a [`pyrate_limiter.Limiter`](https://github.com/vutran1710/PyrateLimiter) object.
 
-For example, to increase the rate to 75 requests per minute:
+For example, to reduce the rate to 50 requests per minute:
 ```python
->>> from pyinaturalist import get_taxa
+>>> from pyinaturalist import get_limiter, get_taxa
 >>> from pyrate_limiter import Duration, Limiter, RequestRate
 >>>
->>> limiter = Limiter(RequestRate(75, Duration.MINUTE))
+>>> limiter = get_limiter(per_minute=50)
 >>> get_taxa(q='warbler', locale=1, limiter=limiter)
 ```
 
