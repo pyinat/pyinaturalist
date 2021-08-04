@@ -3,13 +3,18 @@
 ## 0.15.0 (2021-TBD)
 
 ### New Endpoints
-* Added new functions for v1 **Observation** endpoints. These are now preferred over the older v0 endpoints:
+* Added new create/delete functions for v1 **Observation** endpoints. These are now preferred over
+  the older v0 endpoints:
   * `create_observation()`  (also updates observations)
   * `delete_observation()`
   * `upload()` (uploads both photos and sounds)
-* Added new functions for **Project Observation** endpoints:
+* Added new function for **Observation taxon summary**: `get_observation_taxon_summary()`
+* Added new functions for **Project observation** endpoints:
   * `add_project_observation()`
   * `delete_project_observation()`
+* Added new data models:
+  * ListedTaxon
+  * TaxonSummary
 
 ### Logging
 * Improved logging output for dry-run mode: now shows formatted `PreparedRequest` details
