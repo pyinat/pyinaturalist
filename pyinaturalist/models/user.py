@@ -1,8 +1,15 @@
 from datetime import datetime
 from typing import List
 
-from pyinaturalist.constants import INAT_BASE_URL, TableRow
-from pyinaturalist.models import BaseModel, datetime_now_field, define_model, field
+from pyinaturalist.constants import INAT_BASE_URL, JsonResponse, TableRow
+from pyinaturalist.models import (
+    BaseModel,
+    BaseModelCollection,
+    datetime_now_field,
+    define_model,
+    define_model_collection,
+    field,
+)
 
 
 @define_model
@@ -66,3 +73,42 @@ class User(BaseModel):
     def __str__(self) -> str:
         real_name = f' ({self.name})' if self.name else ''
         return f"[{self.id}] {self.login}{real_name}"
+
+
+@define_model
+class UserCount(User):
+    """:fa:`user` An iNaturalist user, with an associated count of filtered IDs or observations"""
+
+    count: int = field(default=0, doc='Filtered count for the user')
+    observation_count: int = field(default=0, doc="Filtered count for the user's observations")
+    species_count: int = field(default=0, doc="Filtered count for the user's unique species observed")
+
+    @classmethod
+    def from_json(cls, value: JsonResponse, **kwargs) -> 'UserCount':
+        """Flatten out count + user fields into a single-level dict before initializing"""
+        if 'results' in value:
+            value = value['results']
+        if 'user' in value:
+            value.update(value.pop('user'))
+        if 'observation_count' in value and 'count' not in value:
+            value['count'] = value['observation_count']
+        return super(UserCount, cls).from_json(value)
+
+    @property
+    def row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Username': self.username,
+            'Display name': self.display_name,
+            'Count': self.count,
+        }
+
+    def __str__(self) -> str:
+        return super().__str__() + f': {self.count}'
+
+
+@define_model_collection
+class UserCounts(BaseModelCollection):
+    """:fa:`user` :fa:`list` A collection of users with an associated counts"""
+
+    data: List[UserCount] = field(factory=list, converter=UserCount.from_json_list)

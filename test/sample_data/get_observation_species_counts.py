@@ -4,7 +4,7 @@
     'per_page': 500,
     'results': [
         {
-            'count': 32,
+            'count': 31,
             'taxon': {
                 'observations_count': 81696,
                 'taxon_schemes_count': 2,

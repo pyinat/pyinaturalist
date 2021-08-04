@@ -31,7 +31,7 @@ class LifeListTaxon(TaxonCount):
         return {
             'ID': self.id,
             'Rank': self.rank,
-            'Name': {self.name},
+            'Name': self.name,
             'Count': self.count,
         }
 
@@ -44,8 +44,8 @@ class LifeListTaxon(TaxonCount):
 class LifeList(TaxonCounts):
     """:fa:`dove,style=fas` :fa:`list` A user's life list, based on the schema of ``GET /observations/taxonomy``"""
 
-    count_without_taxon: int = field(default=0)
     data: List[LifeListTaxon] = field(factory=list, converter=LifeListTaxon.from_json_list)
+    count_without_taxon: int = field(default=0, doc='Number of observations without a taxon')
     user_id: int = field(default=None)
 
     @classmethod
@@ -56,6 +56,14 @@ class LifeList(TaxonCounts):
 
         life_list_json = {'data': value, 'user_id': user_id, 'count_without_taxon': count_without_taxon}
         return super(LifeList, cls).from_json(life_list_json)
+
+    def get_count(self, taxon_id: int, count_field='descendant_obs_count') -> int:
+        """Get an observation count for the specified taxon and its descendants, and handle unlisted taxa.
+        **Note:** ``-1`` can be used an alias for ``count_without_taxon``.
+        """
+        if taxon_id == -1:
+            return self.count_without_taxon
+        return super().get_count(taxon_id, count_field=count_field)
 
     def tree(self):
         """**Experimental**

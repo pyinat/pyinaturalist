@@ -353,6 +353,7 @@ You can configure logging for pyinaturalist using the standard Python `logging` 
 with {py:func}`logging.basicConfig`:
 ```python
 import logging
+
 logging.basicConfig()
 logging.getLogger('pyinaturalist').setLevel('INFO')
 ```

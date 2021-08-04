@@ -1,8 +1,8 @@
 """Utilities for modifying function signatures using ``python-forge``"""
 from functools import partial
-from inspect import ismethod, signature
+from inspect import Parameter, ismethod, signature
 from logging import getLogger
-from typing import Callable, Iterable, List
+from typing import Callable, Dict, Iterable, List, Type
 
 import forge
 from pyrate_limiter import Limiter
@@ -12,13 +12,14 @@ from pyinaturalist.constants import TemplateFunction
 from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import copy_annotations, copy_docstrings
 
+AUTOMETHOD_INIT = '.. automethod:: __init__'
 COMMON_PARAMS = ['dry_run', 'limiter', 'user_agent', 'session']
 logger = getLogger(__name__)
 
 
 def copy_doc_signature(
     *template_functions: TemplateFunction,
-    add_common_args: bool = True,
+    add_common_args: bool = False,
     include_sections: Iterable[str] = None,
     include_return_annotation: bool = True,
     exclude_args: Iterable[str] = None,
@@ -29,10 +30,9 @@ def copy_doc_signature(
     If used with other decorators, this should go first (e.g., last in the call order).
 
     Example:
-
         >>> # 1. Template function with individual request params + docs
         >>> def get_foo_template(arg_1: str = None, arg_2: bool = False):
-        >>>     '''
+        >>>     '''Args:
         >>>     arg_1: Example request parameter 1
         >>>     arg_2: Example request parameter 2
         >>>     '''
@@ -78,14 +78,32 @@ def copy_doc_signature(
 
 
 # Aliases specifically for basic request functions and controller functions, respectively
-document_request_params = copy_doc_signature
+document_request_params = partial(copy_doc_signature, add_common_args=True)
 document_controller_params = partial(
     copy_doc_signature,
-    add_common_args=False,
     include_sections=['Description', 'Args'],
     include_return_annotation=False,
     exclude_args=COMMON_PARAMS,
 )
+
+
+def extend_init_signature(*template_functions: Callable) -> Callable:
+    """A class decorator that behaves like :py:func:`.copy_doc_signature`, but modifies a class
+    docstring and its ``__init__`` function signature, and extends them instead of replacing them.
+    """
+
+    def wrapper(target_class: Type):
+        # Modify init signature + docstring
+        revision = copy_doc_signature(*template_functions, target_class.__init__)
+        target_class.__init__ = revision(target_class.__init__)
+
+        # Include init docs in class docs
+        target_class.__doc__ = target_class.__doc__ or ''
+        if AUTOMETHOD_INIT not in target_class.__doc__:
+            target_class.__doc__ += f'\n\n    {AUTOMETHOD_INIT}\n'
+        return target_class
+
+    return wrapper
 
 
 def copy_signatures(
@@ -93,7 +111,8 @@ def copy_signatures(
     template_functions: List[TemplateFunction],
     exclude_args: Iterable[str] = None,
 ) -> Callable:
-    """Decorator to copy function signatures from one or more template functions to a target function.
+    """A decorator that copies function signatures from one or more template functions to a
+    target function.
 
     Args:
         target_function: Function to modify
@@ -104,16 +123,39 @@ def copy_signatures(
     if 'self' in signature(target_function).parameters or ismethod(target_function):
         fparams['self'] = forge.self
 
-    # Add and combine parameters from all template functions (also removes duplicates)
+    # Add and combine parameters from all template functions, excluding duplicates, self, and *args
     for func in template_functions:
-        fparams.update(forge.copy(func).signature.parameters)
+        new_fparams = {
+            k: v
+            for k, v in forge.copy(func).signature.parameters.items()
+            if k != 'self' and v.kind != Parameter.VAR_POSITIONAL
+        }
+        fparams.update(new_fparams)
 
     # Manually remove any excluded parameters
     for key in ensure_list(exclude_args):
         fparams.pop(key, None)
 
+    fparams = deduplicate_var_kwargs(fparams)
     revision = forge.sign(*fparams.values())
     return revision(target_function)
+
+
+def deduplicate_var_kwargs(params: Dict) -> Dict:
+    """If a list of params contains one or more variadic keyword args (e.g., ``**kwargs``),
+    ensure there are no duplicates and move it to the end.
+    """
+    # Check for **kwargs by param type instead of by name
+    has_var_kwargs = False
+    for k, v in params.copy().items():
+        if v.kind == Parameter.VAR_KEYWORD:
+            has_var_kwargs = True
+            params.pop(k)
+
+    # If it was present, add **kwargs as the last param
+    if has_var_kwargs:
+        params.update(forge.kwargs)
+    return params
 
 
 # Templates for common params that are added to every request function by default

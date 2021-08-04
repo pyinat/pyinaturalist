@@ -14,7 +14,7 @@ class BaseController:
 
 def authenticated(func):
     """Decorator that will add an authentication token to request params, unless one has already
-    been manually provided. This requires credentials to be provided either via :yp:class:`.iNatClient`
+    been manually provided. This requires credentials to be provided either via :py:class:`.iNatClient`
     arguments, environment variables, or keyring.
     """
 

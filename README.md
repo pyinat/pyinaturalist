@@ -148,9 +148,9 @@ response = create_observation(
     tag_list='wasp, Belgium',
     latitude=50.647143,
     longitude=4.360216,
-    positional_accuracy=50, # GPS accuracy in meters
+    positional_accuracy=50,  # GPS accuracy in meters
     access_token=token,
-    photos=['~/observations/wasp1.jpg', '~/observations/wasp2.jpg']
+    photos=['~/observations/wasp1.jpg', '~/observations/wasp2.jpg'],
 )
 
 # Save the new observation ID

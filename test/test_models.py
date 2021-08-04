@@ -156,15 +156,15 @@ def test_life_list__converters():
 def test_life_list__empty():
     life_list = LifeList()
     life_list.data == []
-    life_list._taxon_counts is None
+    life_list._id_map is None
 
 
-def test_life_list__count():
+def test_life_list__get_count():
     life_list = LifeList.from_json(j_life_list)
-    assert life_list.count(1) == 3023  # Animalia
-    assert life_list.count(981) == 2  # Phasianus colchicus
-    assert life_list.count(-1) == 4  # Observations with no taxon
-    assert life_list.count(9999999) == 0  # Unobserved taxon
+    assert life_list.get_count(1) == 3023  # Animalia
+    assert life_list.get_count(981) == 2  # Phasianus colchicus
+    assert life_list.get_count(-1) == 4  # Observations with no taxon
+    assert life_list.get_count(9999999) == 0  # Unobserved taxon
 
 
 # Observations
@@ -519,6 +519,7 @@ def test_taxon_counts__converters():
 def test_taxon_counts__empty():
     taxon_counts = TaxonCounts()
     assert taxon_counts.data == []
+    assert taxon_counts.id_map == {}
 
 
 # Users
@@ -551,3 +552,28 @@ def test_user__properties():
 def test_user__str():
     user = User.from_json(j_user_1)
     assert str(user) == '[1] kueda (Ken-ichi Ueda)'
+
+
+def test_user_count__str():
+    user_count = UserCount.from_json(j_observation_identifiers['results'][0])
+    assert str(user_count) == '[112514] earthstephen (Stephen): 1'
+
+
+def test_user_counts__identifiers():
+    user_counts = UserCounts.from_json(j_observation_identifiers)
+    assert user_counts.data[0] == user_counts[0]
+    assert len(user_counts) == 3
+    assert isinstance(user_counts.data[0], UserCount) and user_counts.data[0].count == 1
+
+
+def test_user_counts__observers():
+    user_counts = UserCounts.from_json(j_observation_observers)
+    assert user_counts.data[0] == user_counts[0]
+    assert len(user_counts) == 2
+    assert isinstance(user_counts.data[0], UserCount) and user_counts.data[0].count == 750
+
+
+def test_user_counts__empty():
+    user_counts = UserCounts()
+    assert user_counts.data == []
+    assert user_counts.id_map == {}
