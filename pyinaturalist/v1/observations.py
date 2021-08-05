@@ -261,7 +261,6 @@ def get_observation_taxonomy(user_id: IntOrStr, **params) -> JsonResponse:
 
     Example:
         >>> response = get_observation_taxonomy(user_id='my_username')
-        ...
 
         .. admonition:: Example Response
             :class: toggle
@@ -288,17 +287,15 @@ def get_observation_taxon_summary(observation_id: int, **params) -> JsonResponse
         observation_id: iNaturalist user ID or username
 
     Example:
-        >>> response = get_observation_taxon_summary(1234)
-        ...
+        >>> response = get_observation_taxon_summary(7849808)
 
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_observation_taxon_summary_conserved.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_observation_taxon_summary.py
 
     Returns:
-        Response dict containing taxon records with counts
+        Response dict containing taxon summary, optionally with conservation status and listed taxon
     """
     results = get_v1(f'observations/{observation_id}/taxon_summary', **params).json()
     results['conservation_status'] == convert_generic_timestamps(results['conservation_status'])

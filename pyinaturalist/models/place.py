@@ -48,7 +48,8 @@ class Place(BaseModel):
         doc='Location in ``(latitude, logitude)`` decimal degrees',
     )
     name: str = field(default=None, doc='Place name')
-    place_type: int = field(default=None, doc='Numeric value indicating place type')
+    place_type: int = field(default=None, doc='Place type ID')
+    place_type_name: str = field(default=None, doc='Place type name')
     slug: str = field(default=None, doc='Place URL slug')
 
     @classmethod

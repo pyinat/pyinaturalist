@@ -30,6 +30,7 @@ class BaseModel:
         Omits any invalid fields and ``None`` values, so we use our default factories instead
         (e.g. for empty dicts and lists).
         """
+        value = value or {}
         if isinstance(value, cls):
             return value
 

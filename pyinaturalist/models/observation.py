@@ -40,7 +40,7 @@ from pyinaturalist.models import (
 @define(auto_attribs=False, init=False, field_transformer=add_lazy_attrs)
 class Observation(BaseModel):
     """:fa:`binoculars` An observation, based the schema of
-    `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
+    :v1:`GET /observations <Observations/get_observations>`
     """
 
     created_at: datetime = datetime_now_field(doc='Date and time the observation was created')

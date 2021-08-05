@@ -39,6 +39,7 @@ tables = [
     format_table(ControlledTerm.from_json_list(j_controlled_terms)),
     format_table(observation.identifications),
     format_table(life_list),
+    format_table([taxon_summary.listed_taxon, ListedTaxon.from_json(j_listed_taxon_2_partial)]),
     format_table([observation, observation_with_ofvs]),
     format_table(ObservationField.from_json_list(j_obs_fields)),
     format_table(observation_with_ofvs.ofvs),

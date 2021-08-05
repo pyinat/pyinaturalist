@@ -453,6 +453,17 @@ def test_taxon__conservation_status():
     assert isinstance(cs, ConservationStatus)
     assert cs.authority == 'NatureServe'
     assert cs.status_name == 'imperiled'
+    assert str(cs) == 'S2B (imperiled) via NatureServe'
+
+
+def test_taxon__conservation_status_aliases():
+    cs = Taxon.from_json(j_taxon_5_cs_status).conservation_status
+    cs.user_id = 111
+    cs.updater_id = 222
+    cs.place_id = 333
+    assert cs.user.id == cs.user_id == 111
+    assert cs.updater.id == cs.updater_id == 222
+    assert cs.place.id == cs.place_id == 333
 
 
 def test_taxon__conservation_statuses():
@@ -468,6 +479,15 @@ def test_taxon__establishment_means():
     assert isinstance(es, EstablishmentMeans)
     assert es.id == 5660131
     assert es.establishment_means == str(es) == 'introduced'
+
+
+def test_taxon__listed_taxa():
+    taxon = Taxon.from_json(j_taxon_1)
+    listed_taxon = taxon.listed_taxa[0]
+    assert isinstance(listed_taxon, ListedTaxon)
+    assert listed_taxon.taxon_id == taxon.id
+    assert taxon.listed_taxa_count == 4
+    assert str(listed_taxon) == '[70118] (native): 0 observations, 0 comments'
 
 
 def test_taxon__taxonomy():
