@@ -87,6 +87,14 @@ document_controller_params = partial(
 )
 
 
+def document_common_args(func):
+    """Just add common args to a function's docstring without modifying the signature"""
+    template_functions = (_dry_run, _limiter, _session, _user_agent)
+    func = copy_annotations(func, template_functions)
+    func = copy_docstrings(func, template_functions)
+    return func
+
+
 def extend_init_signature(*template_functions: Callable) -> Callable:
     """A class decorator that behaves like :py:func:`.copy_doc_signature`, but modifies a class
     docstring and its ``__init__`` function signature, and extends them instead of replacing them.

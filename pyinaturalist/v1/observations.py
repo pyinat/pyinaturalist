@@ -14,7 +14,7 @@ from pyinaturalist.converters import (
     convert_observation_timestamps,
     ensure_list,
 )
-from pyinaturalist.docs import document_request_params
+from pyinaturalist.docs import document_common_args, document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.pagination import add_paginate_all
@@ -22,6 +22,7 @@ from pyinaturalist.request_params import convert_observation_params, validate_mu
 from pyinaturalist.v1 import delete_v1, get_v1, post_v1
 
 
+@document_common_args
 def get_observation(observation_id: int, **params) -> JsonResponse:
     """Get details about a single observation by ID
 
@@ -349,6 +350,7 @@ def create_observation(**params) -> JsonResponse:
     return response_json
 
 
+@document_common_args
 def upload(
     observation_id: int, sounds: MultiFile = None, photos: MultiFile = None, **params
 ) -> ListResponse:
