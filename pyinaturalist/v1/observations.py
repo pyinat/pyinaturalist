@@ -284,7 +284,7 @@ def get_observation_taxon_summary(observation_id: int, **params) -> JsonResponse
     * API reference: :v1:`GET /observations/{id}/taxon_summary <Observations/get_observations_id_taxon_summary>`
 
     Args:
-        observation_id: iNaturalist user ID or username
+        observation_id: Observation ID to get taxon summary for
 
     Example:
         >>> response = get_observation_taxon_summary(7849808)
