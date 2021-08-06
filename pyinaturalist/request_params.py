@@ -3,8 +3,9 @@ The main purpose of these functions is to support some python-specific convenien
 them into standard request parameters, along with request validation that makes debugging easier.
 """
 from datetime import date, datetime
+from inspect import signature
 from logging import getLogger
-from typing import Any, Iterable, List, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
 
 from dateutil.relativedelta import relativedelta
 
@@ -181,6 +182,12 @@ def get_interval_ranges(
         interval_ranges.append((incremental_date, incremental_date + delta - relativedelta(days=1)))
         incremental_date += delta
     return interval_ranges
+
+
+def get_valid_kwargs(func: Callable, kwargs: Dict) -> Dict:
+    """Get the subset of non-None ``kwargs`` that are valid params for ``func``"""
+    sig_params = list(signature(func).parameters)
+    return {k: v for k, v in kwargs.items() if k in sig_params and v is not None}
 
 
 def is_int_list(values: Any) -> bool:
