@@ -14,9 +14,7 @@ from pyinaturalist.models import (
 
 @define_model
 class User(BaseModel):
-    """:fa:`user` An iNaturalist user, based on the schema of
-    `GET /users/{id} <https://api.inaturalist.org/v1/docs/#!/Users/get_users_id>`_.
-    """
+    """:fa:`user` An iNaturalist user, based on the schema of :v1:`GET /users/{id} <Users/get_users_id>`"""
 
     activity_count: int = field(
         default=0,
@@ -66,8 +64,8 @@ class User(BaseModel):
             'ID': self.id,
             'Username': self.username,
             'Display name': self.display_name,
-            'Obs. count': self.observations_count,
-            'ID count': self.identifications_count,
+            'Observations': self.observations_count,
+            'Identifications': self.identifications_count,
         }
 
     def __str__(self) -> str:

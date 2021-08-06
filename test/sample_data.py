@@ -1,4 +1,4 @@
-"Get sample responses of every type to experiment with"
+"Sample responses representing different variations on all supported resource types"
 # flake8: noqa: F401, F403
 import json
 from glob import glob
@@ -42,6 +42,8 @@ j_taxon_5_cs_status = j_observation_2['taxon']
 j_taxon_6_cs_statuses = SAMPLE_DATA['get_taxa_by_id_conservation_statuses']['results'][0]
 j_taxon_7_autocomplete = SAMPLE_DATA['get_taxa_autocomplete']['results'][0]
 j_taxon_8_all_names = SAMPLE_DATA['get_taxa_with_all_names']['results'][0]
+j_taxon_summary_1_conserved = SAMPLE_DATA['get_observation_taxon_summary_conserved']
+j_taxon_summary_2_listed = SAMPLE_DATA['get_observation_taxon_summary_listed']
 
 j_annotation_1 = j_observation_3_ofvs['annotations'][0]
 j_comments = j_observation_2['comments']
@@ -55,6 +57,8 @@ j_identification_1 = SAMPLE_DATA['get_identifications']['results'][0]
 j_identification_2 = SAMPLE_DATA['get_identifications']['results'][1]
 j_identification_3 = j_observation_2['identifications'][0]
 j_life_list = SAMPLE_DATA['get_observation_taxonomy']
+j_listed_taxon_1 = j_taxon_summary_2_listed['listed_taxon']
+j_listed_taxon_2_partial = j_taxon_1['listed_taxa'][0]
 j_obs_fields = SAMPLE_DATA['get_observation_fields_page1']
 j_obs_field_1 = j_obs_fields[0]
 j_obs_field_2 = j_obs_fields[1]

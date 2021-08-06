@@ -1,0 +1,32 @@
+{
+  "conservation_status": null,
+  "listed_taxon": {
+    "id": 46798449,
+    "taxon_id": 47219,
+    "list_id": 2684267,
+    "last_observation_id": 89579306,
+    "created_at": "2019-11-20T16:26:47.604Z",
+    "updated_at": "2021-08-02T03:06:51.275Z",
+    "place_id": 144952,
+    "description": null,
+    "comments_count": 0,
+    "user_id": null,
+    "updater_id": null,
+    "occurrence_status_level": null,
+    "establishment_means": "introduced",
+    "first_observation_id": 7849808,
+    "observations_count": 20,
+    "taxon_range_id": null,
+    "source_id": null,
+    "manually_added": false,
+    "primary_listing": true,
+    "establishment_means_label": "Introduced",
+    "establishment_means_description": "arrived in the region via anthropogenic means",
+    "place": {
+      "id": 144952,
+      "display_name": "HRM District 13 Hammonds Plains-St Margarets, NS, CA",
+      "place_type_name": "Constituency"
+    }
+  },
+  "wikipedia_summary": "The <b>western honey bee</b> or <b>European honey bee</b> (<i>Apis mellifera</i>) is the most common of the 7\u201312 species of honey bee worldwide. The genus name <i>Apis</i> is Latin for \"bee\", and <i>mellifera</i> is the Latin for \"honey-bearing\", referring to the species' production of honey for the winter."
+}

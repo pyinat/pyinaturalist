@@ -43,7 +43,7 @@ POST      /observation_sounds                     :py:func:`.upload`
 DELETE    /observations/{id}                      :py:func:`~pyinaturalist.v1.observations.delete_observation`
 GET       /observations/{id}                      :py:func:`.get_observation`
 PUT       /observations/{id}
-GET       /observations/{id}/taxon_summary
+GET       /observations/{id}/taxon_summary        :py:func:`.get_observation_taxon_summary`
 GET       /observations                           :py:func:`~pyinaturalist.v1.observations.get_observations`
 POST      /observations                           :py:func:`~pyinaturalist.v1.observations.create_observation`
 GET       /observations/histogram                 :py:func:`.get_observation_histogram`
@@ -52,13 +52,11 @@ GET       /observations/observers                 :py:func:`.get_observation_obs
 GET       /observations/popular_field_values
 GET       /observations/species_counts            :py:func:`.get_observation_species_counts`
 GET       /observations/taxonomy                  :py:func:`.get_observation_taxonomy`
-GET       /observations/updates
 PUT       /observations/{id}/viewed_updates
 GET       /places/{id}                            :py:func:`.get_places_by_id`
 GET       /places/autocomplete                    :py:func:`.get_places_autocomplete`
 GET       /places/nearby                          :py:func:`.get_places_nearby`
 GET       /posts                                  :py:func:`.get_posts`
-POST      /project_observations
 GET       /projects                               :py:func:`.get_projects`
 GET       /projects/{id}                          :py:func:`.get_projects_by_id`
 GET       /projects/{id}/members
@@ -89,9 +87,7 @@ POST      /observations                       :py:func:`~pyinaturalist.v0.observ
 PUT       /observations/{id}                  :py:func:`~pyinaturalist.v0.observations.update_observation`
 DELETE    /observations/{id}                  :py:func:`~pyinaturalist.v0.observations.delete_observation`
 GET       /observation_fields                 :py:func:`.get_observation_fields`
-POST      /observation_field_values
 PUT       /observation_field_values/{id}      :py:func:`.put_observation_field_values`
-DELETE    /observation_field_values/{id}
 POST      /observation_photos                 :py:func:`.upload_photos`
 POST      /observation_sounds                 :py:func:`.upload_sounds`
 ========= =================================== ====================

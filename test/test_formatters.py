@@ -16,6 +16,7 @@ TABULAR_RESPONSES = [
     [j_observation_1, j_observation_2],
     j_obs_species_counts,
     j_life_list,
+    [j_listed_taxon_1, j_listed_taxon_2_partial],
     [j_photo_1, j_photo_2_partial],
     [j_place_1, j_place_2],
     j_places_nearby,
@@ -42,9 +43,9 @@ def test_format_table(response):
 
     # Just make sure at least object IDs show up in the table
     console = Console()
-    rendered_table = '\n'.join([str(line) for line in console.render_lines(table)])
+    rendered = '\n'.join([str(line) for line in console.render_lines(table)])
     if isinstance(response, list):
-        assert all([_get_id(value) in rendered_table for value in response])
+        assert all([_get_id(value) in rendered for value in response])
 
     # for obj in response:
     #     assert all([value in rendered_table for value in obj.row.values()])
@@ -53,7 +54,10 @@ def test_format_table(response):
 # TODO: Test content written to stdout. For now, just make sure it doesn't explode.
 @pytest.mark.parametrize('response', TABULAR_RESPONSES)
 def test_pprint(response):
-    pprint(response)
+    console = Console(force_terminal=False, width=120)
+    with console.capture() as output:
+        pprint(response)
+    rendered = output.get()
 
 
 @pytest.mark.parametrize('input', get_variations(j_controlled_term_1))

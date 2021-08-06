@@ -9,11 +9,12 @@ from pyinaturalist.constants import (
 from pyinaturalist.converters import (
     convert_all_coordinates,
     convert_all_timestamps,
+    convert_generic_timestamps,
     convert_histogram,
     convert_observation_timestamps,
     ensure_list,
 )
-from pyinaturalist.docs import document_request_params
+from pyinaturalist.docs import document_common_args, document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.pagination import add_paginate_all
@@ -21,6 +22,7 @@ from pyinaturalist.request_params import convert_observation_params, validate_mu
 from pyinaturalist.v1 import delete_v1, get_v1, post_v1
 
 
+@document_common_args
 def get_observation(observation_id: int, **params) -> JsonResponse:
     """Get details about a single observation by ID
 
@@ -259,7 +261,6 @@ def get_observation_taxonomy(user_id: IntOrStr, **params) -> JsonResponse:
 
     Example:
         >>> response = get_observation_taxonomy(user_id='my_username')
-        ...
 
         .. admonition:: Example Response
             :class: toggle
@@ -272,6 +273,34 @@ def get_observation_taxonomy(user_id: IntOrStr, **params) -> JsonResponse:
     """
     response = get_v1('observations/taxonomy', user_id=user_id, **params)
     return response.json()
+
+
+@document_common_args
+def get_observation_taxon_summary(observation_id: int, **params) -> JsonResponse:
+    """Get information about an observation's taxon, within the context of the observation's location
+
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /observations/{id}/taxon_summary <Observations/get_observations_id_taxon_summary>`
+
+    Args:
+        observation_id: Observation ID to get taxon summary for
+
+    Example:
+        >>> response = get_observation_taxon_summary(7849808)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_taxon_summary.py
+
+    Returns:
+        Response dict containing taxon summary, optionally with conservation status and listed taxon
+    """
+    results = get_v1(f'observations/{observation_id}/taxon_summary', **params).json()
+    results['conservation_status'] == convert_generic_timestamps(results['conservation_status'])
+    results['listed_taxon'] == convert_generic_timestamps(results['listed_taxon'])
+    return results
 
 
 @document_request_params(docs._access_token, docs._create_observation)
@@ -303,7 +332,7 @@ def create_observation(**params) -> JsonResponse:
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/create_observation_node.json
+            .. literalinclude:: ../sample_data/create_observation_v1.json
                 :language: JSON
 
     Returns:
@@ -318,6 +347,7 @@ def create_observation(**params) -> JsonResponse:
     return response_json
 
 
+@document_common_args
 def upload(
     observation_id: int, sounds: MultiFile = None, photos: MultiFile = None, **params
 ) -> ListResponse:

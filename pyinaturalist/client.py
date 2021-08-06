@@ -1,7 +1,7 @@
 # TODO: Use requests_cache.CachedSession by default
 from datetime import datetime
 from logging import getLogger
-from typing import Dict
+from typing import Any, Dict
 
 from pyrate_limiter import Limiter
 from requests import Session
@@ -19,10 +19,12 @@ logger = getLogger(__name__)
 
 # 'iNatClient' is nonstandard casing, but 'InatClient' just looks wrong. Deal with it, pep8.
 class iNatClient:
-    """**WIP/Experimental** API Client class. This provides a higher-level interface that is easier
+    """**WIP/Experimental**
+
+    API Client class. This provides a higher-level interface that is easier
     to configure, maintains some basic state information, and returns
     :py:mod:`model objects <pyinaturalist.models>` instead of JSON.
-    See :py:mod:`.controllers` documentation for request details.
+    See :ref:`Controller classes <controllers>` for request details.
 
     Examples:
 
@@ -87,12 +89,13 @@ class iNatClient:
         self._token_expires = None
 
         # Controllers
-        self.observations = ObservationController(self)
-        self.taxa = TaxonController(self)
+        # TODO: Improve Sphinx docs generated for these attributes
+        self.observations = ObservationController(self)  #: Interface for observation requests
+        self.taxa = TaxonController(self)  #: Interface for taxon requests
 
     @property
     def retry(self) -> Retry:
-        """The current retry settings"""
+        """Get or modify retry settings via an adapter on the session"""
         adapter = self.session.adapters['https://']
         return adapter.max_retries
 
@@ -104,7 +107,7 @@ class iNatClient:
         self.session.mount('https://', adapter)
 
     @property
-    def settings(self):
+    def settings(self) -> Dict[str, Any]:
         """Get client settings to pass to an API request"""
         return {
             'dry_run': self.dry_run,

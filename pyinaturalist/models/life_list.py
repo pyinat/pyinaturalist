@@ -3,9 +3,9 @@ from typing import List
 
 from pyinaturalist.constants import JsonResponse, TableRow
 from pyinaturalist.models import (
+    BaseModelCollection,
     Taxon,
     TaxonCount,
-    TaxonCounts,
     define_model,
     define_model_collection,
     field,
@@ -41,7 +41,7 @@ class LifeListTaxon(TaxonCount):
 
 
 @define_model_collection
-class LifeList(TaxonCounts):
+class LifeList(BaseModelCollection):
     """:fa:`dove,style=fas` :fa:`list` A user's life list, based on the schema of ``GET /observations/taxonomy``"""
 
     data: List[LifeListTaxon] = field(factory=list, converter=LifeListTaxon.from_json_list)
@@ -67,6 +67,7 @@ class LifeList(TaxonCounts):
 
     def tree(self):
         """**Experimental**
+
         Organize this life list into a taxonomic tree
 
         Returns:

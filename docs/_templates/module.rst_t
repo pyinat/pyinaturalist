@@ -5,8 +5,8 @@ Summary
 .. automodsumm:: {{ qualname }}
    :functions-only:
 
-Details
-^^^^^^^
+Module Contents
+^^^^^^^^^^^^^^^
 .. automodule:: {{ qualname }}
 {%- for option in automodule_options %}
    :{{ option }}:

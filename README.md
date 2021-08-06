@@ -42,25 +42,16 @@ aims to make these data easily accessible in the python programming language.
   so you can be nice to the iNaturalist servers and not worry about rate-limiting errors
 * **Test-friendly:** A dry-run mode to preview your requests before potentially modifying data
 
-Many of the most relevant API endpoints are included, and more are on the way:
-* **Searching for:**
-    * controlled terms
-    * identifications
-    * observations (multiple formats)
-    * observation fields
-    * observation species counts
-    * places
-    * projects
-    * species
-* **Text search autocompletion for:**
-    * places
-    * species
-    * users
-* **Creating and updating:**
-    * observations
-    * observation fields
-    * observation photos
-    * observation sounds
+Many of the most relevant API endpoints are supported, including:
+* annotations and observation fields
+* identifications
+* observations (multiple formats)
+* observation photos + sounds
+* observation observers, identifiers, histograms, life lists, and species counts
+* places
+* projects
+* species
+* users
 
 ## Quickstart
 Here are usage examples for some of the most commonly used features.

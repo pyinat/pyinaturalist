@@ -27,9 +27,11 @@ class BaseModel:
     @classmethod
     def from_json(cls: Type[T], value: JsonResponse, **kwargs) -> T:
         """Initialize a single model object from an API response or response result.
-        Omits any invalid fields and ``None`` values, so we use our default factories instead
+
+        Omits any invalid fields and ``None`` values, so default factories are used instead
         (e.g. for empty dicts and lists).
         """
+        value = value or {}
         if isinstance(value, cls):
             return value
 
@@ -56,7 +58,8 @@ class BaseModel:
         raise NotImplementedError
 
     # TODO: Use cattr.unstructure() to handle recursion properly (for nested model objects)?
-    def to_json(self) -> Dict:
+    def to_json(self) -> JsonResponse:
+        """Convert this object back to JSON (dict) format"""
         return asdict(self)
 
 

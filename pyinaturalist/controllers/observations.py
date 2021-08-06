@@ -4,6 +4,7 @@ from pyinaturalist.constants import HistogramResponse, ListResponse
 from pyinaturalist.controllers import BaseController, authenticated
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import LifeList, Observation, TaxonCounts, UserCounts
+from pyinaturalist.models.taxon_meta import TaxonSummary
 from pyinaturalist.v1 import (
     create_observation,
     delete_observation,
@@ -11,6 +12,7 @@ from pyinaturalist.v1 import (
     get_observation_identifiers,
     get_observation_observers,
     get_observation_species_counts,
+    get_observation_taxon_summary,
     get_observation_taxonomy,
     get_observations,
     upload,
@@ -60,6 +62,11 @@ class ObservationController(BaseController):
     def species_counts(self, **params) -> TaxonCounts:
         response = get_observation_species_counts(**params, **self.client.settings)
         return TaxonCounts.from_json(response)
+
+    @document_controller_params(get_observation_taxon_summary)
+    def taxon_summary(self, observation_id: int, **params) -> TaxonSummary:
+        response = get_observation_taxon_summary(observation_id, **params)
+        return TaxonSummary.from_json(response)
 
     @document_controller_params(create_observation)
     @authenticated

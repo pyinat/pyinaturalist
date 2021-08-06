@@ -13,7 +13,7 @@ nox.options.reuse_existing_virtualenvs = True
 nox.options.sessions = ['lint', 'cov']
 
 LIVE_DOCS_PORT = 8181
-LIVE_DOCS_IGNORE = ['*.csv', '*.tmp', '*.pyc', '**/modules/*']
+LIVE_DOCS_IGNORE = ['*.csv', '*.ipynb', '*.pyc', '*.tmp', '**/modules/*']
 LIVE_DOCS_WATCH = ['pyinaturalist', 'examples']
 CLEAN_DIRS = ['dist', 'build', join('docs', '_build'), join('docs', 'models'), join('docs', 'modules')]
 
@@ -45,7 +45,7 @@ def coverage(session):
 @session(python=False)
 def docs(session):
     """Build Sphinx documentation"""
-    cmd = 'sphinx-build -M html docs docs/_build -j auto'
+    cmd = 'sphinx-build docs docs/_build/html -j auto'
     session.run(*cmd.split(' '))
 
 

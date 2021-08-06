@@ -1,10 +1,8 @@
-from typing import Dict, Generic, List, TypeVar
+from typing import Dict, List
 
 from attr import fields_dict
 
 from pyinaturalist.constants import (
-    CONSERVATION_STATUSES,
-    ESTABLISTMENT_MEANS,
     ICONIC_EMOJI,
     ICONIC_TAXA_BASE_URL,
     INAT_BASE_URL,
@@ -17,74 +15,16 @@ from pyinaturalist.docs import EMOJI
 from pyinaturalist.models import (
     BaseModel,
     BaseModelCollection,
+    ConservationStatus,
+    EstablishmentMeans,
     LazyProperty,
+    ListedTaxon,
     Photo,
-    Place,
-    User,
     datetime_field,
     define_model,
     define_model_collection,
     field,
-    upper,
 )
-
-
-# TODO: Some more properties to consolidate differences between endpoints? (place_id vs. place, etc.)
-# TODO: Include codes from other sources? Currently only including IUCN codes.
-@define_model
-class ConservationStatus(BaseModel):
-    """:fa:`exclamation-triangle` The conservation status of a taxon in a given location, based on the schema of:
-
-    * ``Taxon.conservation_status`` from `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`_
-    * ``Observation.taxon.conservation_statuses`` from `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_
-    """
-
-    authority: str = field(default=None, doc='Data source for conservation status')
-    created_at: DateTime = datetime_field(doc='Date and time the conservation status was created')
-    description: str = field(default=None, doc='Description of conservation status')
-    geoprivacy: str = field(
-        default=None, doc='Default geoprivacy level; may be obscured or private for protected species'
-    )
-    iucn: int = field(default=None, doc='IUCD ID, if applicable')
-    place_id: int = field(default=None)
-    source_id: int = field(default=None)
-    status: str = field(
-        default=None,
-        converter=upper,
-        options=CONSERVATION_STATUSES,
-        doc='Short code for conservation status',
-    )
-    status_name: str = field(default=None, doc='Full name of conservation status')
-    taxon_id: int = field(default=None, doc='Taxon ID')
-    updated_at: DateTime = datetime_field(doc='Date and time the conservation status was last updated')
-    updater_id: int = field(default=None)
-    url: str = field(default=None, doc='Link to data source with more details')
-
-    # Lazy-loaded nested model objects
-    place: property = LazyProperty(
-        Place.from_json, type=Place, doc='Location that the conservation status applies to'
-    )
-    updater: property = LazyProperty(
-        User.from_json, type=User, doc='User that last updated the conservation status'
-    )
-    user: property = LazyProperty(
-        User.from_json, type=User, doc='User that created the conservation status'
-    )
-
-
-@define_model
-class EstablishmentMeans(BaseModel):
-    """:fa:`exclamation-triangle` The establishment means for a taxon in a given location"""
-
-    establishment_means: str = field(
-        default=None, options=ESTABLISTMENT_MEANS, doc='Establishment means description'
-    )
-    place: property = LazyProperty(
-        Place.from_json_list, type=Place, doc='Location that the establishment means applies to'
-    )
-
-    def __str__(self) -> str:
-        return self.establishment_means
 
 
 @define_model
@@ -119,7 +59,6 @@ class Taxon(BaseModel):
     is_active: bool = field(
         default=None, doc='Indicates if the taxon is active (and not renamed, moved, etc.)'
     )
-    listed_taxa: List[int] = field(factory=list, doc='Listed taxon IDs')
     listed_taxa_count: int = field(
         default=None, doc='Number of listed taxa from this taxon + descendants'
     )
@@ -148,10 +87,8 @@ class Taxon(BaseModel):
     vision: bool = field(
         default=None, doc='Indicates if this taxon is included in the computer vision model'
     )
-    wikipedia_summary: str = field(
-        default=None, doc='Taxon summary from Wikipedia article, if available'
-    )
-    wikipedia_url: str = field(default=None, doc='URL to Wikipedia article for the taxon, if available')
+    wikipedia_summary: str = field(default=None, doc='Taxon summary from Wikipedia article')
+    wikipedia_url: str = field(default=None, doc='URL to Wikipedia article for the taxon')
 
     # Lazy-loaded model objects
     ancestors: property = LazyProperty(BaseModel.from_json_list)
@@ -172,6 +109,11 @@ class Taxon(BaseModel):
         type=EstablishmentMeans,
         doc='Establishment means for a taxon in a given location',
     )
+    listed_taxa: property = LazyProperty(
+        ListedTaxon.from_json_list,
+        type=List[ListedTaxon],
+        doc='Details about this taxon associated with a list',
+    )
     taxon_photos: property = LazyProperty(
         Photo.from_json_list, type=List[Photo], doc='All taxon photos shown on taxon info page'
     )
@@ -179,7 +121,7 @@ class Taxon(BaseModel):
     # Unused attributes
     # atlas_id: int = field(default=None)
     # flag_counts: Dict[str, int] = field(factory=dict)  # {"unresolved": 1, "resolved": 2}
-    # min_species_ancestry: str = field(default=None)  #: Used internally by iNaturalist for Elasticsearch aggregations
+    # min_species_ancestry: str = field(default=None)  # Used internally by iNaturalist for Elasticsearch aggregations
     # min_species_taxon_id: int = field(default=None)
     # partial: bool = field(default=None, repr=False)
     # photos_locked: bool = field(default=None)
@@ -267,8 +209,8 @@ class Taxon(BaseModel):
 
 @define_model
 class TaxonCount(Taxon):
-    """:fa:`dove,style=fas` :fa:`list` A :py:class:`.Taxon` with an associated count, used in a :py:class:`.TaxonCounts`
-    collection
+    """:fa:`dove,style=fas` :fa:`list` A :py:class:`.Taxon` with an associated count, used in a
+    :py:class:`.TaxonCounts` collection
     """
 
     count: int = field(default=0, doc='Number of observations of this taxon')
@@ -287,7 +229,7 @@ class TaxonCount(Taxon):
         return {
             'ID': self.id,
             'Rank': self.rank,
-            'Name': f'{self.emoji} {self.name}',
+            'Scientific name': f'{self.emoji} {self.name}',
             'Count': self.count,
         }
 
@@ -295,17 +237,14 @@ class TaxonCount(Taxon):
         return f'[{self.id}] {self.full_name}: {self.count}'
 
 
-T = TypeVar('T', bound='TaxonCount')
-
-
 @define_model_collection
-class TaxonCounts(BaseModelCollection, Generic[T]):
+class TaxonCounts(BaseModelCollection):
     """:fa:`dove,style=fas` :fa:`list` A collection of taxa with an associated counts. Used with
-    `GET /observations/species_counts <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations_species_counts>`_.
+    :v1:`GET /observations/species_counts <Observations/get_observations_species_counts>`.
     as well as :py:class:`.LifeList`.
     """
 
-    data: List[T] = field(factory=list, converter=TaxonCount.from_json_list)
+    data: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
 
 
 # Since these use Taxon classmethods, they must be added after Taxon is defined
