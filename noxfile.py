@@ -45,7 +45,7 @@ def coverage(session):
 @session(python=False)
 def docs(session):
     """Build Sphinx documentation"""
-    cmd = 'sphinx-build -M html docs docs/_build -j auto'
+    cmd = 'sphinx-build docs docs/_build/html -j auto'
     session.run(*cmd.split(' '))
 
 

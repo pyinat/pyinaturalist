@@ -36,6 +36,7 @@ from pyinaturalist.docs.model_docs import document_models
 CSS_DIR = join(DOCS_DIR, '_static')
 MODULE_DOCS_DIR = 'modules'
 PACKAGE_DIR = join(PROJECT_DIR, 'pyinaturalist')
+TEMPLATE_DIR = join(DOCS_DIR, '_templates')
 
 # Symlink paths for static content outside docs directory
 DATA_DIR_SYMLINK = join(DOCS_DIR, 'sample_data')
@@ -125,7 +126,7 @@ autodoc_typehints = 'none'
 apidoc_module_dir = PACKAGE_DIR
 apidoc_output_dir = MODULE_DOCS_DIR
 apidoc_excluded_paths = ['controllers/*', 'docs/*', 'models/*', 'node_api.py', 'rest_api.py']
-apidoc_extra_args = ['--templatedir=_templates']
+apidoc_extra_args = [f'--templatedir={TEMPLATE_DIR}']  # Note: Must be an absolute path
 apidoc_module_first = True
 apidoc_separate_modules = True
 apidoc_toc_file = False
