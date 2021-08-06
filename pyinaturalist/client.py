@@ -1,7 +1,7 @@
 # TODO: Use requests_cache.CachedSession by default
 from datetime import datetime
 from logging import getLogger
-from typing import Any, Dict
+from typing import Any, Callable, Dict
 
 from pyrate_limiter import Limiter
 from requests import Session
@@ -11,8 +11,9 @@ from urllib3.util import Retry
 from pyinaturalist import DEFAULT_USER_AGENT
 from pyinaturalist.api_requests import RATE_LIMITER
 from pyinaturalist.auth import get_access_token
-from pyinaturalist.constants import TOKEN_EXPIRATION
+from pyinaturalist.constants import MAX_RETRIES, TOKEN_EXPIRATION, JsonResponse
 from pyinaturalist.controllers import ObservationController, TaxonController
+from pyinaturalist.request_params import get_valid_kwargs, strip_empty_values
 
 logger = getLogger(__name__)
 
@@ -23,18 +24,19 @@ class iNatClient:
 
     API Client class. This provides a higher-level interface that is easier
     to configure, maintains some basic state information, and returns
-    :py:mod:`model objects <pyinaturalist.models>` instead of JSON.
+    :ref:`model objects <models>` instead of JSON.
     See :ref:`Controller classes <controllers>` for request details.
 
     Examples:
+        Basic usage:
 
-        >>> # Basic usage:
         >>> from pyinaturalist import iNatClient
         >>> client = iNatClient()
         >>> observations = client.observations.search(taxon_name='Danaus plexippus')
 
-        >>> # Add credentials needed for authenticated requests:
-        >>> # Note: Passing credentials via environment variables or keyring is preferred
+        Add credentials needed for authenticated requests:
+        Note: Passing credentials via environment variables or keyring is preferred
+
         >>> creds = {
         ...     'username': 'my_inaturalist_username',
         ...     'password': 'my_inaturalist_password',
@@ -43,17 +45,26 @@ class iNatClient:
         ... }
         >>> client = iNatClient(creds=creds)
 
-        >>> # Custom rate-limiting settings: increase rate to 75 requests per minute:
+        Add default ``locale`` and ``preferred_place_id`` request params to pass to any requests
+        that use them:
+
+        >>> default_params={'locale': 'en', 'preferred_place_id': 1}
+        >>> client = iNatClient(default_params=default_params)
+
+        Custom rate-limiting settings: increase rate to 75 requests per minute:
+
         >>> from pyrate_limiter import Duration, Limiter, RequestRate
         >>> limiter = Limiter(RequestRate(75, Duration.MINUTE))
         >>> client = iNatClient(limiter=limiter)
 
-        >>> # Custom retry settings: add longer delays, and only retry on 5xx errors:
+        Custom retry settings: add longer delays, and only retry on 5xx errors:
+
         >>> from urllib3.util import Retry
         >>> Retry(total=10, backoff_factor=2, status_forcelist=[500, 501, 502, 503, 504])
         >>> client = iNatClient(retry=retry)
 
-        >>> # All settings can also be modified after creating the client object:
+        All settings can also be modified after creating the client object:
+
         >>> client.limiter = limiter
         >>> client.retry = retry
         >>> client.user_agent = 'My custom user agent'
@@ -62,6 +73,7 @@ class iNatClient:
     Args:
         creds: Optional arguments for :py:func:`.get_access_token`, used to get and refresh access
             tokens as needed.
+        default_params: Default request parameters to pass to any applicable API requests.
         dry_run: Just log all requests instead of sending real requests
         limiter: Rate-limiting settings to use instead of the default
         retry: Retry settings to use instead of the default
@@ -72,6 +84,7 @@ class iNatClient:
     def __init__(
         self,
         creds: Dict[str, str] = None,
+        default_params: Dict[str, Any] = None,
         dry_run: bool = False,
         limiter: Limiter = RATE_LIMITER,
         retry: Retry = None,
@@ -79,10 +92,11 @@ class iNatClient:
         user_agent: str = DEFAULT_USER_AGENT,
     ):
         self.creds = creds or {}
+        self.default_params = default_params or {}
         self.dry_run = dry_run
         self.limiter = limiter
         self.session = session or Session()
-        self.retry = retry or Retry(total=5, backoff_factor=0.5)
+        self.retry = retry or Retry(total=MAX_RETRIES, backoff_factor=0.5)
         self.user_agent = user_agent
 
         self._access_token = None
@@ -101,20 +115,10 @@ class iNatClient:
 
     @retry.setter
     def retry(self, value: Retry):
-        """Add or modify retry settings by mounting an adapter to the session"""
+        """Add or update retry settings by mounting an adapter to the session"""
         adapter = HTTPAdapter(max_retries=value)
         self.session.mount('http://', adapter)
         self.session.mount('https://', adapter)
-
-    @property
-    def settings(self) -> Dict[str, Any]:
-        """Get client settings to pass to an API request"""
-        return {
-            'dry_run': self.dry_run,
-            'limiter': self.limiter,
-            'session': self.session,
-            'user_agent': self.user_agent,
-        }
 
     @property
     def access_token(self):
@@ -134,3 +138,30 @@ class iNatClient:
     def _is_expired(self):
         initialized = self._access_token and self._token_expires
         return not (initialized and datetime.utcnow() < self._token_expires)
+
+    def request(self, request_function: Callable, *args, auth: bool = False, **params) -> JsonResponse:
+        """Apply any applicable client settings to request parameters before making the specified
+        request. Explicit keyword arguments will override any client settings.
+
+        Args:
+            request_function: The API request function to call, which should return a JSON response
+            args: Any positional arguments to pass to the request function
+            auth: Indicates that the request requires authentication
+            params: Original request parameters
+        """
+        params = strip_empty_values(params)
+        client_settings = {
+            'dry_run': self.dry_run,
+            'limiter': self.limiter,
+            'session': self.session,
+            'user_agent': self.user_agent,
+        }
+
+        # Add access token and default params, if applicable
+        if auth:
+            client_settings['access_token'] = self.access_token
+        client_settings.update(get_valid_kwargs(request_function, self.default_params))
+
+        for k, v in client_settings.items():
+            params.setdefault(k, v)
+        return request_function(*args, **params)
