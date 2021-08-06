@@ -332,7 +332,7 @@ def create_observation(**params) -> JsonResponse:
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/create_observation_node.json
+            .. literalinclude:: ../sample_data/create_observation_v1.json
                 :language: JSON
 
     Returns:

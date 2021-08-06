@@ -15,7 +15,7 @@
 
    {% block attributes_summary %}
    {% if attributes %}
-   .. rubric:: Attributes Summary
+   .. rubric:: Attributes
 
    .. csv-table::
       :class: docutils

@@ -1,3 +1,4 @@
+.. Note: class docs are generated with a custom template using automodapi
 .. _controllers:
 
 pyinaturalist.controllers

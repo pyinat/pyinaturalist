@@ -67,6 +67,7 @@ class LifeList(BaseModelCollection):
 
     def tree(self):
         """**Experimental**
+
         Organize this life list into a taxonomic tree
 
         Returns:

@@ -134,7 +134,7 @@ apidoc_toc_file = False
 # autosummary + automodapi settings
 automodapi_inheritance_diagram = False
 automodapi_toctreedirnm = MODULE_DOCS_DIR
-automodsumm_inherited_members = False
+automodsumm_inherited_members = True
 autosummary_generate = True
 autosummary_generate_overwrite = True
 autosummary_imported_members = False
