@@ -1,5 +1,5 @@
 from pyinaturalist.constants import (
-    NODE_OBS_ORDER_BY_PROPERTIES,
+    V1_OBS_ORDER_BY_PROPERTIES,
     HistogramResponse,
     IntOrStr,
     JsonResponse,
@@ -145,7 +145,7 @@ def get_observations(**params) -> JsonResponse:
     Returns:
         Response dict containing observation records
     """
-    validate_multiple_choice_param(params, 'order_by', NODE_OBS_ORDER_BY_PROPERTIES)
+    validate_multiple_choice_param(params, 'order_by', V1_OBS_ORDER_BY_PROPERTIES)
     response = get_v1('observations', **params)
 
     observations = response.json()

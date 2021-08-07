@@ -9,7 +9,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 
 from pyinaturalist import DEFAULT_USER_AGENT
-from pyinaturalist.api_requests import RATE_LIMITER
+from pyinaturalist.api_requests import RATE_LIMITER, get_session
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import MAX_RETRIES, TOKEN_EXPIRATION, JsonResponse
 from pyinaturalist.controllers import ObservationController, ProjectController, TaxonController
@@ -28,11 +28,13 @@ class iNatClient:
     See :ref:`Controller classes <controllers>` for request details.
 
     Examples:
-        Basic usage:
+        **Basic usage**
 
         >>> from pyinaturalist import iNatClient
         >>> client = iNatClient()
         >>> observations = client.observations.search(taxon_name='Danaus plexippus')
+
+        **Authentication**
 
         Add credentials needed for authenticated requests:
         Note: Passing credentials via environment variables or keyring is preferred
@@ -45,11 +47,15 @@ class iNatClient:
         ... }
         >>> client = iNatClient(creds=creds)
 
+        **Default request parameters:**
+
         Add default ``locale`` and ``preferred_place_id`` request params to pass to any requests
         that use them:
 
         >>> default_params={'locale': 'en', 'preferred_place_id': 1}
         >>> client = iNatClient(default_params=default_params)
+
+        **Rate-limiting**
 
         Custom rate-limiting settings: increase rate to 75 requests per minute:
 
@@ -57,20 +63,63 @@ class iNatClient:
         >>> limiter = Limiter(RequestRate(75, Duration.MINUTE))
         >>> client = iNatClient(limiter=limiter)
 
+        **Retries**
+
         Custom retry settings: add longer delays, and only retry on 5xx errors:
 
         >>> from urllib3.util import Retry
         >>> Retry(total=10, backoff_factor=2, status_forcelist=[500, 501, 502, 503, 504])
         >>> client = iNatClient(retry=retry)
 
-        All settings can also be modified after creating the client object:
+        **Caching**
 
+        All API requests are cached by default. These expire in 1 hour for most endpoints, and
+        longer for some infrequently-changing data (like taxa and places). To disable caching:
+
+        >>> client = iNatClient(cache=False)
+
+        Alternatively, you can use a :py:class:`~requests_cache.session.CachedSession` to customize
+        cache settings. See the requests-cache
+        `User Guide <https://requests-cache.readthedocs.io/en/stable/user_guide.html>`_
+        for more details.
+
+        >>> from datetime import timedelta
+        >>> from requests_cache import CachedSession
+        >>>
+        >>> # Only cache requests for 15 minutes
+        >>> session = CachedSession(
+        ...     cache_name='api_requests.db',
+        ...     expire_after=timedelta(minutes=15),
+        ... )
+        >>> client = iNatClient(session=session)
+        >>>
+        >>> # Or, cache requests without expiration
+        >>> session = CachedSession(
+        ...     cache_name='api_requests.db',
+        ...     expire_after=-1,
+        ... )
+        >>> client = iNatClient(session=session)
+        >>>
+        >>> # Manually clear the cache
+        >>> client.session.cache.clear()
+
+        **Updating settings**
+
+        All settings can also be modified after creating the client:
+
+        >>> client.session = Session()
+        >>> client.creds['username'] = 'my_inaturalist_username'
+        >>> client.default_params['locale'] = 'es'
+        >>> client.dry_run = True
         >>> client.limiter = limiter
         >>> client.retry = retry
         >>> client.user_agent = 'My custom user agent'
-        >>> client.dry_run = True
+
+        .. note:: The ``cache`` and ``retry`` settings are stored on the session object, so updating
+            ``client.session`` will override these settings as well.
 
     Args:
+        cache: Cache API requests
         creds: Optional arguments for :py:func:`.get_access_token`, used to get and refresh access
             tokens as needed.
         default_params: Default request parameters to pass to any applicable API requests.
@@ -83,6 +132,7 @@ class iNatClient:
 
     def __init__(
         self,
+        cache: bool = False,
         creds: Dict[str, str] = None,
         default_params: Dict[str, Any] = None,
         dry_run: bool = False,
@@ -95,7 +145,7 @@ class iNatClient:
         self.default_params = default_params or {}
         self.dry_run = dry_run
         self.limiter = limiter
-        self.session = session or Session()
+        self.session = session or get_session(cache=cache)
         self.retry = retry or Retry(total=MAX_RETRIES, backoff_factor=0.5)
         self.user_agent = user_agent
 

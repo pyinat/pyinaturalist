@@ -25,6 +25,8 @@
 ### Other Changes
 * Allow all API request functions to accept a `limiter` argument to override rate-limiting settings
 * Allow all API request functions to accept a `dry_run` argument to dry-run an individual request
+* Add API request caching with [requests-cache](https://github.com/reclosedev/requests-cache)
+  (can be disabled or customized via `session` parameter)
 * Fix bug with `rule_details` param for `get_projects_by_id()`
 
 ## 0.14.1 (2021-07-21)

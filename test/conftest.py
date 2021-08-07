@@ -3,7 +3,6 @@ Shared unit test-related utilities.
 Pytest will also automatically pick up any fixtures defined here.
 """
 import json
-import logging
 import os
 import re
 from inspect import Parameter, getmembers, isfunction, signature
@@ -11,10 +10,12 @@ from os.path import join
 from unittest.mock import MagicMock, patch
 
 import pytest
+from requests import Session
 
-# If ipdb is installed, register it as the default debugger
+from pyinaturalist import enable_logging
 from pyinaturalist.constants import SAMPLE_DATA_DIR
 
+# If ipdb is installed, register it as the default debugger
 try:
     import ipdb  # noqa: F401
 
@@ -39,8 +40,14 @@ MOCK_CREDS_OAUTH = {
 }
 
 # Enable logging for urllib and other external loggers
-logging.basicConfig(level='INFO')
-logging.getLogger('pyinaturalist').setLevel('DEBUG')
+enable_logging('DEBUG')
+
+
+@pytest.fixture(scope='function', autouse=True)
+def patch_cached_session():
+    """Disable request caching during test session"""
+    with patch('pyinaturalist.api_requests.get_session', return_value=Session()):
+        yield
 
 
 @pytest.fixture(scope='function', autouse=True)

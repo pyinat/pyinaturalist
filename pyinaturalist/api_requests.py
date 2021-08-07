@@ -9,9 +9,12 @@ from warnings import warn
 import forge
 from pyrate_limiter import Duration, Limiter, RequestRate
 from requests import PreparedRequest, Request, Response, Session
+from requests_cache import CachedSession
 
 import pyinaturalist
 from pyinaturalist.constants import (
+    CACHE_EXPIRATION,
+    CACHE_FILE,
     MAX_DELAY,
     REQUEST_BURST_RATE,
     REQUESTS_PER_DAY,
@@ -188,14 +191,23 @@ def put(url: str, **kwargs) -> Response:
     return request('PUT', url, **kwargs)
 
 
-def get_session() -> Session:
-    """Get a Session object that will be reused across requests to take advantage of connection
-    pooling. This is especially relevant for large paginated requests. If used in a multi-threaded
-    context (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), a separate session
-    is used for each thread.
+def get_session(cache: bool = True) -> Session:
+    """Get a Session object with default settings. This will be reused across requests to take
+    advantage of connection pooling and (optionally) caching. If used in a multi-threaded context
+    (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), a separate session is used
+    for each thread.
     """
-    if not hasattr(thread_local, "session"):
-        thread_local.session = Session()
+    if not hasattr(thread_local, 'session'):
+        if cache:
+            thread_local.session = CachedSession(
+                CACHE_FILE,
+                backend='sqlite',
+                ignored_parameters=['access_token'],
+                old_data_on_error=True,
+                urls_expire_after=CACHE_EXPIRATION,  # type: ignore  # False positive; can't reproduce locally
+            )
+        else:
+            thread_local.session = Session()
     return thread_local.session
 
 

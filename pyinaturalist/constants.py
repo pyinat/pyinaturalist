@@ -3,6 +3,8 @@ from os.path import abspath, dirname, join
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Optional, Tuple, Union
 
+from appdirs import user_cache_dir
+
 # iNaturalist URLs
 API_V0_BASE_URL = 'https://www.inaturalist.org'
 API_V1_BASE_URL = 'https://api.inaturalist.org/v1'
@@ -28,9 +30,6 @@ REQUESTS_PER_SECOND = 1
 REQUESTS_PER_MINUTE = 60
 REQUESTS_PER_DAY = 10000
 LARGE_REQUEST_WARNING = 5000  # Show a warning for queries that will return over this many results
-TOKEN_EXPIRATION = timedelta(hours=1)
-
-PHOTO_SIZES = ['square', 'small', 'medium', 'large', 'original']
 
 # Toggle dry-run mode: this will run and log mock HTTP requests instead of real ones
 DRY_RUN_ENABLED = False  # Mock all requests, including GET
@@ -39,10 +38,21 @@ WRITE_HTTP_METHODS = ['PATCH', 'POST', 'PUT', 'DELETE']
 
 # Project directories
 PROJECT_DIR = abspath(dirname(dirname(__file__)))
+CACHE_DIR = user_cache_dir('pyinaturalist')
 DOCS_DIR = join(PROJECT_DIR, 'docs')
 DOWNLOAD_DIR = join(PROJECT_DIR, 'downloads')
 EXAMPLES_DIR = join(PROJECT_DIR, 'examples')
 SAMPLE_DATA_DIR = join(PROJECT_DIR, 'test', 'sample_data')
+
+# Cache settings
+CACHE_EXPIRATION = {
+    'api.inaturalist.org/v*/controlled_terms*': timedelta(days=30),
+    'api.inaturalist.org/v*/places*': timedelta(days=7),
+    'api.inaturalist.org/v*/taxa*': timedelta(days=30),
+    '*': timedelta(hours=1),
+}
+CACHE_FILE = join(CACHE_DIR, 'api_requests.db')
+TOKEN_EXPIRATION = timedelta(hours=1)
 
 # Response formats supported by GET /observations endpoint
 OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
@@ -115,11 +125,6 @@ RANKS = [
     'kingdom',
 ]
 
-# Endpoint-specific options for multiple choice parameters
-NODE_OBS_ORDER_BY_PROPERTIES = ['created_at', 'id', 'observed_on', 'species_guess', 'votes']
-REST_OBS_ORDER_BY_PROPERTIES = ['date_added', 'observed_on']
-PROJECT_ORDER_BY_PROPERTIES = ['created', 'distance', 'featured', 'recent_posts', 'updated']
-
 # Options for multiple choice parameters (non-endpoint-specific)
 CC_LICENSES = ['CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0']
 ALL_LICENSES = CC_LICENSES + ['ALL RIGHTS RESERVED']
@@ -132,11 +137,17 @@ HISTOGRAM_DATE_FIELDS = ['created', 'observed']
 HISTOGRAM_INTERVALS = ['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
 ID_CATEGORIES = ['improving', 'supporting', 'leading', 'maverick']
 ORDER_DIRECTIONS = ['asc', 'desc']
+PHOTO_SIZES = ['square', 'small', 'medium', 'large', 'original']
 PLACE_CATEGORIES = ['standard', 'community']
 PROJECT_TYPES = ['assessment', 'bioblitz', 'collection', 'umbrella']
 QUALITY_GRADES = ['casual', 'needs_id', 'research']
 SEARCH_PROPERTIES = ['names', 'tags', 'description', 'place']
 SOURCES = ['places', 'projects', 'taxa', 'users']
+
+# Endpoint-specific options for multiple choice parameters
+V0_OBS_ORDER_BY_PROPERTIES = ['date_added', 'observed_on']
+V1_OBS_ORDER_BY_PROPERTIES = ['created_at', 'id', 'observed_on', 'species_guess', 'votes']
+PROJECT_ORDER_BY_PROPERTIES = ['created', 'distance', 'featured', 'recent_posts', 'updated']
 
 # Multiple-choice request parameters, with keys mapped to their possible choices (non-endpoint-specific)
 MULTIPLE_CHOICE_PARAMS = {
@@ -168,7 +179,7 @@ MULTIPLE_CHOICE_PARAMS = {
     'type': PROJECT_TYPES,
 }
 
-# All request parameters from both Node API and REST (Rails) API that accept date or datetime strings
+# Request parameters from all API versions that accept date or datetime strings
 DATETIME_PARAMS = [
     'created_after',
     'created_d1',
