@@ -5,7 +5,7 @@ from pyinaturalist.api_requests import delete, get, post, put
 from pyinaturalist.constants import (
     API_V0_BASE_URL,
     OBSERVATION_FORMATS,
-    REST_OBS_ORDER_BY_PROPERTIES,
+    V0_OBS_ORDER_BY_PROPERTIES,
     ListResponse,
     MultiFile,
 )
@@ -78,7 +78,7 @@ def get_observations(**params) -> Union[List, str]:
     response_format = params.pop('response_format', 'json')
     if response_format not in OBSERVATION_FORMATS:
         raise ValueError('Invalid response format')
-    validate_multiple_choice_param(params, 'order_by', REST_OBS_ORDER_BY_PROPERTIES)
+    validate_multiple_choice_param(params, 'order_by', V0_OBS_ORDER_BY_PROPERTIES)
 
     response = get(f'{API_V0_BASE_URL}/observations.{response_format}', **params)
     if response_format == 'json':
