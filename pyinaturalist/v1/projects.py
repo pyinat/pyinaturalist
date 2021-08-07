@@ -78,7 +78,7 @@ def get_projects_by_id(project_id: MultiInt, rule_details: bool = None, **params
     Returns:
         Response dict containing project records
     """
-    response = get_v1('projects', ids=project_id, params={'rule_details': rule_details}, **params)
+    response = get_v1('projects', ids=project_id, rule_details=rule_details, **params)
 
     projects = response.json()
     projects['results'] = convert_all_coordinates(projects['results'])
@@ -88,7 +88,7 @@ def get_projects_by_id(project_id: MultiInt, rule_details: bool = None, **params
 
 @document_request_params(docs._project_observation_params)
 def add_project_observation(
-    access_token: str, project_id: int, observation_id: int, **params
+    project_id: int, observation_id: int, access_token: str = None, **params
 ) -> JsonResponse:
     """Add an observation to a project
 
@@ -99,7 +99,7 @@ def add_project_observation(
     * API reference: :v1:`POST /project_observations <Project_Observations/post_project_observations>`
 
     Example:
-        >>> add_project_observation(access_token, 24237, 1234)
+        >>> add_project_observation(24237, 1234, access_token)
 
         .. admonition:: Example Response
             :class: toggle
@@ -121,7 +121,7 @@ def add_project_observation(
 
 # TODO: This may not yet be working as intended
 @document_request_params(docs._project_observation_params)
-def delete_project_observation(access_token: str, project_id: int, observation_id: int, **params):
+def delete_project_observation(project_id: int, observation_id: int, access_token: str = None, **params):
     """Remove an observation from a project
 
     .. rubric:: Notes
@@ -132,7 +132,7 @@ def delete_project_observation(access_token: str, project_id: int, observation_i
 
     Example:
 
-        >>> delete_project_observation(access_token, 24237, 1234)
+        >>> delete_project_observation(24237, 1234, access_token)
     """
     return delete_v1(
         f'projects/{project_id}/remove',
