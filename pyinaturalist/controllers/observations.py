@@ -3,8 +3,7 @@ from typing import List
 from pyinaturalist.constants import HistogramResponse, ListResponse
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
-from pyinaturalist.models import LifeList, Observation, TaxonCounts, UserCounts
-from pyinaturalist.models.taxon_meta import TaxonSummary
+from pyinaturalist.models import LifeList, Observation, TaxonCounts, TaxonSummary, UserCounts
 from pyinaturalist.v1 import (
     create_observation,
     delete_observation,

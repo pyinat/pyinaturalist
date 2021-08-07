@@ -12,7 +12,7 @@ from pyinaturalist import DEFAULT_USER_AGENT
 from pyinaturalist.api_requests import RATE_LIMITER
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import MAX_RETRIES, TOKEN_EXPIRATION, JsonResponse
-from pyinaturalist.controllers import ObservationController, TaxonController
+from pyinaturalist.controllers import ObservationController, ProjectController, TaxonController
 from pyinaturalist.request_params import get_valid_kwargs, strip_empty_values
 
 logger = getLogger(__name__)
@@ -105,6 +105,7 @@ class iNatClient:
         # Controllers
         # TODO: Improve Sphinx docs generated for these attributes
         self.observations = ObservationController(self)  #: Interface for observation requests
+        self.projects = ProjectController(self)  #: Interface for project requests
         self.taxa = TaxonController(self)  #: Interface for taxon requests
 
     @property

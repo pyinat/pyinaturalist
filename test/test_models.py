@@ -1,3 +1,4 @@
+# TODO: Move most of these test cases to controller tests
 """Things to test for each model:
 
 * Load with sample response JSON, make sure it doesn't explode
@@ -353,19 +354,6 @@ def test_places__nearby():
 # --------------------
 
 
-def test_project__converters():
-    project = Project.from_json(j_project_1)
-    assert project.location == (48.777404, -122.306929)
-    assert project.project_observation_rules == project.obs_rules
-    assert project.obs_rules[0]['id'] == 616862
-    assert project.search_parameters[0]['field'] == 'quality_grade'
-    assert project.user_ids[-1] == 3387092 and len(project.user_ids) == 33
-
-    admin = project.admins[0]
-    assert isinstance(admin, ProjectUser) and admin.id == 233188 and admin.role == 'manager'
-    assert isinstance(project.user, User) and project.user.id == 233188
-
-
 def test_project__empty():
     project = Project()
     assert project.admins == []
@@ -374,15 +362,6 @@ def test_project__empty():
     assert project.project_observation_rules == []
     assert project.search_parameters == []
     assert project.user is None
-
-
-def test_project__with_obs_fields():
-    project = Project.from_json(j_project_3_obs_fields)
-    obs_field = project.project_observation_fields[0]
-    assert isinstance(obs_field, ProjectObservationField)
-    assert obs_field.id == 30
-    assert obs_field.position == 0
-    assert obs_field.required is False
 
 
 # Search
