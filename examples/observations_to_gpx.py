@@ -9,7 +9,7 @@ from logging import getLogger
 
 from gpxpy.gpx import GPX, GPXTrack, GPXTrackPoint, GPXTrackSegment, GPXWaypoint
 
-from pyinaturalist import format_observations, get_observations
+from pyinaturalist import Observation, get_observations
 from pyinaturalist.constants import JsonResponse, List
 from pyinaturalist.response_format import convert_observation_timestamps
 
@@ -69,7 +69,7 @@ def observation_to_gpx_point(observation: JsonResponse, track: bool = True):
         latitude=lat,
         longitude=long,
         time=convert_observation_timestamps(observation),
-        comment=format_observations(observation),
+        comment=str(Observation.from_json(observation)),
     )
     point.description = observation["description"]
     point.link = link

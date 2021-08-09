@@ -59,7 +59,7 @@ def test_ensure_file_obj__file_obj():
         (1, [1]),
         ('a,b', ['a,b']),
         ({'results': 1}, [1]),
-        (tuple([1, 2, 3]), [1, 2, 3]),
+        ((1, 2, 3), [1, 2, 3]),
     ],
 )
 def test_ensure_list(input, expected_output):

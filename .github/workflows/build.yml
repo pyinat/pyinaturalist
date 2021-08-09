@@ -11,7 +11,6 @@ env:
   LATEST_PY_VERSION: '3.9'
   COVERAGE_ARGS: '--cov --cov-report=term --cov-report=html'
 
-
 jobs:
   # Run unit tests for each supported python version
   test:
@@ -44,7 +43,23 @@ jobs:
       - name: Run unit tests
         run: poetry run pytest -n auto
 
-  # Run code analysis checks, reports, etc.
+      # Run tests with coverage report
+      - name: Run tests
+        run: >
+          poetry run pytest -rs -x -vv --numprocesses=auto
+          --cov --cov-report=term --cov-report=html
+
+      # Latest python version: send coverage report to coveralls
+      - name: Run coveralls
+        if: ${{ matrix.python-version == env.LATEST_PY_VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          source $VENV
+          pip install coveralls
+          coveralls --service=github
+
+  # Run code analysis checks via pre-commit hooks
   analyze:
     runs-on: ubuntu-18.04
     steps:
@@ -52,34 +67,5 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ env.LATEST_PY_VERSION }}
-      - uses: snok/install-poetry@v1.1.6
-        with:
-          version: 1.2.0a2
-          virtualenvs-in-project: true
-
-      # Cache packages and reuse until lockfile changes
-      - name: Cache python packages
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: venv-${{ env.LATEST_PY_VERSION }}-${{ hashFiles('poetry.lock') }}
-      - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: poetry install -v
-
-      - name: Run style checks, type checks, and linting
-        run: |
-          source $VENV
-          black --check --diff .
-          isort --check --diff .
-          flake8 .
-          mypy --install-types --non-interactive
-      - name: Generate and send code coverage report to Coveralls
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          source $VENV
-          pytest -n auto ${{ env.COVERAGE_ARGS }}
-          pip install coveralls
-          coveralls --service=github
+      - name: Run style checks & linting
+        uses: pre-commit/action@v2.0.3

@@ -22,8 +22,8 @@ CLEAN_DIRS = ['dist', 'build', join('docs', '_build'), join('docs', 'models'), j
 def test(session):
     """Run tests for a specific python version"""
     test_paths = session.posargs or ['test']
-    session.install('.', 'pytest', 'pytest-xdist', 'requests-mock')
-    session.run('pytest', '-vv', '-n', 'auto', *test_paths)
+    session.install('.', 'pytest', 'pytest-sugar', 'pytest-xdist', 'requests-mock')
+    session.run('pytest', '-n', 'auto', *test_paths)
 
 
 @session(python=False)
