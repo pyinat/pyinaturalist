@@ -39,7 +39,7 @@ rich = ">=10.0"
 
 # Documentation dependencies needed for Readthedocs builds (rtd doesn't support poetry.dev-dependencies)
 # [tool.poetry.dev-dependencies]
-furo = {version = "2021.7.5b38", optional = true}
+furo = {version = "2021.8.11b42", optional = true}
 ipython = {version = "^7.25.0", optional = true, python = ">=3.7"}
 linkify-it-py = {version = "^1.0.1", optional = true}
 myst-parser = {version = "^0.15.1", optional = true}
