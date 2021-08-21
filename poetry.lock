@@ -1317,7 +1317,7 @@ rtd = ["sphinx", "ipython", "sphinx-book-theme"]
 
 [[package]]
 name = "sphinx-inline-tabs"
-version = "2021.4.11b9"
+version = "2021.8.17b10"
 description = "Add inline tabbed content to your Sphinx documentation."
 category = "main"
 optional = true
@@ -2246,8 +2246,8 @@ sphinx-copybutton = [
     {file = "sphinx_copybutton-0.4.0-py3-none-any.whl", hash = "sha256:4340d33c169dac6dd82dce2c83333412aa786a42dd01a81a8decac3b130dc8b0"},
 ]
 sphinx-inline-tabs = [
-    {file = "sphinx_inline_tabs-2021.4.11b9-py3-none-any.whl", hash = "sha256:5fddeefb97630df3334341a2fd5434f62ed6d76301ff30a81cb50363abf98fb9"},
-    {file = "sphinx_inline_tabs-2021.4.11b9.tar.gz", hash = "sha256:09267b9980b405bada41e63f9912769a394731e0e015068cda7feab1a13f8fe5"},
+    {file = "sphinx_inline_tabs-2021.8.17b10-py3-none-any.whl", hash = "sha256:c2408c61d8e7856c0feedec0eb22a8949df519c0638a55fa9b149eac76f36762"},
+    {file = "sphinx_inline_tabs-2021.8.17b10.tar.gz", hash = "sha256:6e37b4aa5f2baa8d946d7da95b87775f70023d8d0719c77c414fc168ff22c636"},
 ]
 sphinx-panels = [
     {file = "sphinx-panels-0.6.0.tar.gz", hash = "sha256:d36dcd26358117e11888f7143db4ac2301ebe90873ac00627bf1fe526bf0f058"},
