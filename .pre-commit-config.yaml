@@ -8,11 +8,11 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/psf/black
-    rev: 21.7b0
+    rev: 21.8b0
     hooks:
       - id: black
   - repo: https://github.com/asottile/blacken-docs
-    rev: v1.10.0
+    rev: v1.11.0
     hooks:
       - id: blacken-docs
         args: [--skip-errors, --skip-string-normalization]
@@ -25,7 +25,6 @@ repos:
     hooks:
       - id: flake8
         additional_dependencies: [flake8-comprehensions]
-  # Temporarily disabling mypy hook; passes locally but fails on attrs classes in CI for some reason
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.910
     hooks:
