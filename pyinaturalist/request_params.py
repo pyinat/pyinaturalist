@@ -125,8 +125,10 @@ def convert_observation_field_params(params: RequestParams) -> RequestParams:
 def convert_pagination_params(params: RequestParams) -> RequestParams:
     """Allow ``count_only=True`` as a slightly more intuitive shortcut to only get a count of
     results"""
-    if params.pop('count_only', None) is True:
+    if params.pop('count_only', False) is True:
         params['per_page'] = 0
+    if params.pop('reverse', False) is True:
+        params['order'] = 'descending'
     return params
 
 
