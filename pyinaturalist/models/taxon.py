@@ -230,6 +230,7 @@ class TaxonCount(Taxon):
             'ID': self.id,
             'Rank': self.rank,
             'Scientific name': f'{self.emoji} {self.name}',
+            'Common name': self.preferred_common_name,
             'Count': self.count,
         }
 
