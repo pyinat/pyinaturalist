@@ -79,9 +79,10 @@ def test_convert_pagination_params():
     assert params['per_page'] == 0
     assert 'count_only' not in params
 
-    params = convert_pagination_params({'per_page': 100, 'count_only': False})
+    params = convert_pagination_params({'per_page': 100, 'count_only': False, 'reverse': True})
     assert params['per_page'] == 100
-    assert 'count_only' not in params
+    assert params['order'] == 'descending'
+    assert 'reverse' not in params
 
 
 def test_get_interval_ranges__monthly():

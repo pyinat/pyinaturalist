@@ -24,8 +24,9 @@
 * Redact all credentials from logged API requests
 
 ### Other Changes
-* Allow all API request functions to accept a `limiter` argument to override rate-limiting settings
-* Allow all API request functions to accept a `dry_run` argument to dry-run an individual request
+* Add a `limiter` argument to all API request functions to override rate-limiting settings
+* Add a `dry_run` argument to all API request functions to dry-run an individual request
+* Add a `reverse` argument to all paginated API request functions to reverse the sort order
 * Add API request caching with [requests-cache](https://github.com/reclosedev/requests-cache)
   (can be disabled or customized via `session` parameter)
 * Fix bug with `rule_details` param for `get_projects_by_id()`
