@@ -1,3 +1,4 @@
+# TODO: Make rich a required dependency for 0.16
 """Utilities for formatting API responses and model objects, for convenience/readability when exploring data.
 Not used directly by API functions.
 
@@ -118,10 +119,10 @@ UNIQUE_RESPONSE_ATTRS = {
     'standard': Place,
     'project_type': Project,
     'score': SearchResult,
-    'rank': Taxon,
     'last_observation_id': ListedTaxon,
     'listed_taxon': TaxonSummary,
     'count': TaxonCount,
+    'rank': Taxon,
     'roles': User,
 }
 
@@ -131,7 +132,10 @@ def pprint(values: ResponseOrObjects):
 
     **Experimental:** May also be used on most raw JSON API responses
     """
-    print(format_table(values))
+    try:
+        print(format_table(values))
+    except ValueError:
+        print(values)
 
 
 def detect_type(value: ResponseResult) -> Type[BaseModel]:
