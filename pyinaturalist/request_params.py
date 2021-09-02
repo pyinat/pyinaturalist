@@ -106,12 +106,6 @@ def convert_observation_params(params):
     photos.extend(ensure_list(params.pop('photos', None)))  # Alias for 'local_photos'
     sounds = ensure_list(params.pop('sounds', None))
 
-    # Note: this is the only Boolean parameter that's specified as an int
-    if 'ignore_photos' in params:
-        params['ignore_photos'] = int(params['ignore_photos'])
-    else:
-        params['ignore_photos'] = 1
-
     params, kwargs = split_common_params(params)
     return params, photos, sounds, kwargs
 

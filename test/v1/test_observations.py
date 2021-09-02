@@ -19,6 +19,7 @@ from pyinaturalist.v1 import (
     get_observation_taxon_summary,
     get_observation_taxonomy,
     get_observations,
+    update_observation,
     upload,
 )
 from test.conftest import load_sample_data
@@ -257,6 +258,33 @@ def test_create_observation__with_files(mock_post, mock_upload):
     )
 
     request_params = mock_post.call_args[1]['json']['observation']
+    assert 'local_photos' not in request_params
+    assert 'sounds' not in request_params
+    mock_upload.assert_called_once()
+
+
+def test_update_observation(requests_mock):
+    requests_mock.put(
+        f'{API_V1_BASE_URL}/observations/17932425',
+        json=load_sample_data('update_observation_result.json'),
+        status_code=200,
+    )
+    response = update_observation(
+        17932425, access_token='valid token', description='updated description v2 !'
+    )
+
+    # If all goes well we got a single element representing the updated observation, enclosed in a list.
+    assert len(response) == 1
+    assert response[0]['id'] == 17932425
+    assert response[0]['description'] == 'updated description v2 !'
+
+
+@patch('pyinaturalist.v1.observations.upload')
+@patch('pyinaturalist.v1.observations.put_v1')
+def test_update_observation__with_photos(mock_put, mock_upload):
+    update_observation(1234, access_token='token', photos='photo.jpg')
+
+    request_params = mock_put.call_args[1]['json']['observation']
     assert 'local_photos' not in request_params
     assert 'sounds' not in request_params
     mock_upload.assert_called_once()

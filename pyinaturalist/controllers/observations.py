@@ -14,6 +14,7 @@ from pyinaturalist.v1 import (
     get_observation_taxon_summary,
     get_observation_taxonomy,
     get_observations,
+    update_observation,
     upload,
 )
 
@@ -88,6 +89,11 @@ class ObservationController(BaseController):
                 observation_id=observation_id,
                 **params,
             )
+
+    @document_controller_params(update_observation)
+    def update(self, **params) -> Observation:
+        response = self.client.request(update_observation, auth=True, **params)
+        return Observation.from_json(response)
 
     # TODO: Add model for sound files, return list of model objects
     @document_controller_params(upload)
