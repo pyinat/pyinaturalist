@@ -68,7 +68,7 @@ from pyinaturalist import *
 
 ### Search observations
 Let's start by searching for all your own observations. There are
-[numerous fields you can search on](https://pyinaturalist.readthedocs.io/en/latest/modules/pyinaturalist.node_api.html#pyinaturalist.node_api.get_observations), but we'll just use `user_id` for now:
+[numerous fields you can search on](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.v1.observations.html#pyinaturalist.v1.observations.create_observation), but we'll just use `user_id` for now:
 ```python
 >>> observations = get_observations(user_id='my_username')
 ```
@@ -83,7 +83,7 @@ The full response will be in JSON format, but we can just print out a few basic 
 ```
 
 You can also get
-[observation counts by species](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.node_api.html#pyinaturalist.node_api.get_observation_species_counts).
+[observation counts by species](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.v1.observations.html#pyinaturalist.v1.observations.get_observation_species_counts).
 On iNaturalist.org, this information can be found on the 'Species' tab of search results.
 For example, to get the counts of all your own research-grade observations:
 ```python
@@ -98,7 +98,7 @@ For example, to get the counts of all your own research-grade observations:
 ```
 
 Another useful format is the
-[observation histogram](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.node_api.html#pyinaturalist.node_api.get_observation_histogram),
+[observation histogram](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.v1.observations.html#pyinaturalist.v1.observations.get_observation_histogram),
 which shows the number of observations over a given interval. The default is `month_of_year`:
 ```python
 >>> histogram = get_observation_histogram(user_id='my_username')
@@ -127,7 +127,7 @@ See
 [Authentication](https://pyinaturalist.readthedocs.io/en/latest/user_guide.html#authentication)
 for additional authentication options, including environment variables, keyrings, and password managers.
 
-Now we can [create a new observation](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.rest_api.html#pyinaturalist.rest_api.create_observation):
+Now we can [create a new observation](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.v1.observations.html#pyinaturalist.v1.observations.create_observation):
 ```python
 from datetime import datetime
 
@@ -148,7 +148,7 @@ response = create_observation(
 new_observation_id = response[0]['id']
 ```
 
-We can then [update the observation](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.rest_api.html#pyinaturalist.rest_api.update_observation) information, photos, or sounds:
+We can then [update the observation](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.v1.observations.html#pyinaturalist.v1.observations.update_observation) information, photos, or sounds:
 ```python
 update_observation(
     17932425,
