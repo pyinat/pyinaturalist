@@ -18,8 +18,9 @@ Docker image, which you can also use to run these examples on a local Jupyter se
 .. toctree::
     :maxdepth: 2
 
-    examples/Tutorial 1 - Observations.ipynb
-    examples/Tutorial 2 - Taxa.ipynb
+    examples/Tutorial_1_Observations.ipynb
+    examples/Tutorial_2_Taxa.ipynb
+    examples/Tutorial_3_Data_Visualizations.ipynb
     examples/Data Visualizations - Regional Activity Report.ipynb
     examples/Data Visualizations - Regional Observation Stats.ipynb
     examples/Data Visualizations - Seaborn.ipynb
