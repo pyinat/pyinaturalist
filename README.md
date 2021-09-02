@@ -180,7 +180,7 @@ Oh, that's right, it was **'Vespidae'**! Now let's find all of its subfamilies u
 from the results above:
 ```python
 >>> response = get_taxa(parent_id=52747)
->>> print(format_taxa(response))
+>>> pprint(response)
 [343248] Subfamily: Polistinae (Paper Wasps)
 [ 84738] Subfamily: Vespinae (Hornets and Yellowjackets)
 [119344] Subfamily: Eumeninae (Potter and Mason Wasps)
@@ -199,7 +199,7 @@ Here is a quick example that will run searches from console input:
 while True:
     query = input("> ")
     response = get_taxa_autocomplete(q=query)
-    print(format_taxa(response, align=True))
+    pprint(response)
 ```
 
 Example usage:
