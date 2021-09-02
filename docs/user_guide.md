@@ -1,4 +1,4 @@
-# User Guide
+# {fa}`book` User Guide
 This page summarizes how to use the main features of pyinaturalist.
 
 ## Installation

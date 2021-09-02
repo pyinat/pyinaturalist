@@ -1,4 +1,4 @@
-# Code of Conduct
+# {fa}`handshake` Code of Conduct
 This Code of Conduct is adapted from
 [Contributor Covenant, version 1.4](https://www.contributor-covenant.org/version/1/4/code-of-conduct.html).
 

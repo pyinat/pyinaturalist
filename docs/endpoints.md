@@ -1,5 +1,5 @@
 (endpoints)=
-# Endpoint Summary
+# {fa}`table` Endpoint Summary
 
 Below is a list of iNaturalist API endpoints that have either been added or may be added in the
 future, along with their corresponding functions in pyinaturalist.

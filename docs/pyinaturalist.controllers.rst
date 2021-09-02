@@ -8,4 +8,4 @@ pyinaturalist.controllers
 .. automodsumm:: pyinaturalist.controllers
     :classes-only:
     :nosignatures:
-    :skip: BaseController, authenticated
+    :skip: BaseController

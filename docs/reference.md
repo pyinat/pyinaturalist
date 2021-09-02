@@ -1,5 +1,5 @@
 (reference-docs)=
-# API Reference
+# {fa}`list` API Reference
 iNaturalist currently provides three API versions:
 
 * The original [Rails-based API](https://www.inaturalist.org/pages/api+reference) (v0)
