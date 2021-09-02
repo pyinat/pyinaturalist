@@ -1,17 +1,19 @@
+# {fa}`handshake` Code of Conduct
+This Code of Conduct is adapted from
+[Contributor Covenant, version 1.4](https://www.contributor-covenant.org/version/1/4/code-of-conduct.html).
 
-# Contributor Covenant Code of Conduct
+## TL;DR
+Human interaction is both more difficult and more important than software development.
+Please be civil and friendly to each other.
 
 ## Our Pledge
-
-In the interest of fostering an open and welcoming environment, we as
-contributors and maintainers pledge to make participation in our project and
-our community a harassment-free experience for everyone, regardless of age, body
-size, disability, ethnicity, sex characteristics, gender identity and expression,
-level of experience, education, socio-economic status, nationality, personal
-appearance, race, religion, or sexual identity and orientation.
+In the interest of fostering an open and welcoming environment, we as contributors and maintainers
+pledge to make participation in our project and our community a harassment-free experience for
+everyone, regardless of age, body size, favorite editor, disability, ethnicity, sex characteristics,
+gender identity and expression, level of experience, education, socio-economic status, nationality,
+personal appearance, race, religion, or sexual identity and orientation.
 
 ## Our Standards
-
 Examples of behavior that contributes to creating a positive environment
 include:
 
@@ -33,7 +35,6 @@ Examples of unacceptable behavior by participants include:
   professional setting
 
 ## Our Responsibilities
-
 Project maintainers are responsible for clarifying the standards of acceptable
 behavior and are expected to take appropriate and fair corrective action in
 response to any instances of unacceptable behavior.
@@ -45,7 +46,6 @@ permanently any contributor for other behaviors that they deem inappropriate,
 threatening, offensive, or harmful.
 
 ## Scope
-
 This Code of Conduct applies within all project spaces, and it also applies when
 an individual is representing the project or its community in public spaces.
 Examples of representing a project or community include using an official
@@ -54,7 +54,6 @@ as an appointed representative at an online or offline event. Representation of
 a project may be further defined and clarified by project maintainers.
 
 ## Enforcement
-
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported by contacting the project team at nicolas@niconoe.eu. All
 complaints will be reviewed and investigated and will result in a response that
@@ -65,13 +64,3 @@ Further details of specific enforcement policies may be posted separately.
 Project maintainers who do not follow or enforce the Code of Conduct in good
 faith may face temporary or permanent repercussions as determined by other
 members of the project's leadership.
-
-## Attribution
-
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
-
-[homepage]: https://www.contributor-covenant.org
-
-For answers to common questions about this code of conduct, see
-https://www.contributor-covenant.org/faq
