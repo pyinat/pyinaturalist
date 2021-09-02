@@ -571,6 +571,7 @@ def _pagination(
     order: str = None,
     order_by: str = None,
     count_only: bool = None,
+    reverse: bool = None,
 ):
     """Args:
     page: Page number of results to return
@@ -579,6 +580,7 @@ def _pagination(
     order: Sort order
     order_by: Field to sort on
     count_only: Only return a count of results; alias for ``per_page=0``
+    reverse: Reverse the order of results; alias for ``order='descending'``
     """
 
 
