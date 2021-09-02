@@ -8,6 +8,7 @@ services:
       - 8888:8888
     volumes:
       - .:/home/jovyan/work
+      - ~/.cache:/home/jovyan/.cache
     restart: unless-stopped
     environment:
       # Enable JupyterLab (comment out to use classic notebook)
