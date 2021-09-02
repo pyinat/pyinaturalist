@@ -76,7 +76,7 @@ Let's start by searching for all your own observations. There are
 The full response will be in JSON format, but we can just print out a few basic details:
 ```python
 >>> for obs in observations['results']:
->>>    print(format_observations(obs))
+>>>    pprint(obs)
 [78242978] Species: Agelastica alni (Alder Leaf Beetle) observed by niconoe on 2021-05-10 18:45:38+01:00 at 1428 Braine-l'Alleud, Belgique
 [78218860] Genus: Bradybatus observed by niconoe on 2021-05-10 15:22:49+01:00 at 1428 Braine-l'Alleud, Belgique
 ...
@@ -88,7 +88,7 @@ On iNaturalist.org, this information can be found on the 'Species' tab of search
 For example, to get the counts of all your own research-grade observations:
 ```python
 >>> counts = get_observation_species_counts(user_id='my_username', quality_grade='research')
->>> print(format_species_counts(counts, align=True))
+>>> pprint(counts, align=True)
 [48473   ]: Species:          Ganoderma applanatum (Artist's bracket): 4
 [50310   ]: Species:         Arisaema triphyllum (Jack-in-the-pulpit): 4
 [50817   ]:   Genus:                     Auricularia (Wood ear fungi): 3
@@ -161,7 +161,7 @@ update_observation(
 
 ### Search species
 Let's say you partially remember either a genus or family name that started with **'vespi'**-something.
-The [taxa endpoint](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.node_api.html#pyinaturalist.node_api.get_taxa)
+The [taxa endpoint](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.v1.taxa.html#pyinaturalist.v1.taxa.get_taxa)
 can be used to search by name, rank, and several other criteria
 ```python
 >>> response = get_taxa(q='vespi', rank=['genus', 'family'])
@@ -169,53 +169,11 @@ can be used to search by name, rank, and several other criteria
 
 As with observations, there is a lot of information in the response, but we'll print just a few basic details:
 ```python
->>> print(format_taxa(response))
+>>> pprint(response)
 [52747] Family: Vespidae (Hornets, Paper Wasps, Potter Wasps, and Allies)
 [92786] Genus: Vespicula
 [84737] Genus: Vespina
 ...
-```
-
-Oh, that's right, it was **'Vespidae'**! Now let's find all of its subfamilies using its taxon ID
-from the results above:
-```python
->>> response = get_taxa(parent_id=52747)
->>> print(format_taxa(response))
-[343248] Subfamily: Polistinae (Paper Wasps)
-[ 84738] Subfamily: Vespinae (Hornets and Yellowjackets)
-[119344] Subfamily: Eumeninae (Potter and Mason Wasps)
-...
-```
-
-Just one last example. There is a [taxon autocomplete](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.node_api.html#pyinaturalist.node_api.get_taxa_autocomplete)
-text search endpoint, which is a bit more niche, and is intended for autocomplete interfaces like
-the one on iNaturalist.org:
-![Taxon autocompletion on iNaturalist.org](docs/images/inat-taxon-autocomplete.png)
-
-But it also provides an easy way to search the iNaturalist taxonomy database by taxon name.
-Here is a quick example that will run searches from console input:
-
-```python
-while True:
-    query = input("> ")
-    response = get_taxa_autocomplete(q=query)
-    print(format_taxa(response, align=True))
-```
-
-Example usage:
-
-```python
-> opilio
-[  527573]        Genus                                              Opilio
-[   47367]        Order                              Opiliones (Harvestmen)
-[   84644]      Species             Phalangium opilio (European Harvestman)
-...
-> coleo
-[  372759]     Subclass     Coleoidea (Octopuses, Squids, and Cuttlefishes)
-[   47208]        Order                                Coleoptera (Beetles)
-[  359229]      Species  Coleotechnites florae (Coleotechnites Flower Moth)
-...
-<Ctrl-C>
 ```
 
 ## Next Steps
