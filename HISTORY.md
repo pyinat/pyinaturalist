@@ -1,11 +1,12 @@
 # History
 
-## 0.15.0 (2021-TBD)
+## 0.15.0 (2021-09-TBD)
 
 ### New Endpoints
 * Added new create/delete functions for v1 **Observation** endpoints. These are now preferred over
   the older v0 endpoints:
-  * `create_observation()`  (also updates observations)
+  * `create_observation()`
+  * `update_observation()`
   * `delete_observation()`
   * `upload()` (uploads both photos and sounds)
 * Added new function for **Observation taxon summary**: `get_observation_taxon_summary()`

@@ -179,7 +179,7 @@ def update_observation(observation_id: int, **params) -> ListResponse:
                 :language: javascript
 
     Returns:
-        JSON response containing the newly updated observation(s)
+        JSON response containing the newly updated observation
 
     Raises:
         :py:exc:`~urllib3.exceptions.HTTPError`: if the call is not successful. iNaturalist returns an error 410 if the observation doesn't exists or belongs to another user.
@@ -188,6 +188,7 @@ def update_observation(observation_id: int, **params) -> ListResponse:
     response = put(
         url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
         json={'observation': params},
+        ignore_photos=1,
         **kwargs,
     )
 

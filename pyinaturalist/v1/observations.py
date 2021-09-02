@@ -19,7 +19,7 @@ from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.pagination import add_paginate_all
 from pyinaturalist.request_params import convert_observation_params, validate_multiple_choice_param
-from pyinaturalist.v1 import delete_v1, get_v1, post_v1
+from pyinaturalist.v1 import delete_v1, get_v1, post_v1, put_v1
 
 
 @document_common_args
@@ -347,9 +347,52 @@ def create_observation(**params) -> JsonResponse:
     return response_json
 
 
+@document_request_params(
+    docs._observation_id,
+    docs._access_token,
+    docs._create_observation,
+)
+def update_observation(observation_id: int, **params) -> ListResponse:
+    """Update a single observation
+
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v1:`PUT /observations <Observations/put_observations>`
+
+    Example:
+
+        >>> token = get_access_token()
+        >>> update_observation(
+        >>>     17932425,
+        >>>     access_token=token,
+        >>>     description='updated description!',
+        >>> )
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/update_observation_result.json
+                :language: javascript
+
+    Returns:
+        JSON response containing the newly updated observation(s)
+    """
+    params, photos, sounds, kwargs = convert_observation_params(params)
+    response = put_v1(
+        f'observations/{observation_id}',
+        json={'observation': params},
+        ignore_photos=True,
+        **kwargs,
+    )
+
+    upload(observation_id, photos=photos, sounds=sounds, **kwargs)
+    return response.json()
+
+
 @document_common_args
 def upload(
-    observation_id: int, sounds: MultiFile = None, photos: MultiFile = None, **params
+    observation_id: int, photos: MultiFile = None, sounds: MultiFile = None, **params
 ) -> ListResponse:
     """Upload one or more local photo and/or sound files, and add them to an existing observation.
 
