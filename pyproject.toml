@@ -59,6 +59,7 @@ docs = ["furo", "ipython", "linkify-it-py", "myst-parser", "nbsphinx", "sphinx",
         "sphinxcontrib-apidoc"]
 
 [tool.poetry.dev-dependencies]
+mypy = "^0.910"
 nox = {version = "^2021.6.12", python = "^3.6.2"}
 nox-poetry = {version = "^0.8.6", python = "^3.6.2"}
 pre-commit = {version = "^2.12", python = "^3.6.2"}
