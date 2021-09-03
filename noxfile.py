@@ -69,12 +69,7 @@ def livedocs(session):
 @session(python=False)
 def lint(session):
     """Run linters and code formatters via pre-commit"""
-    cmd = 'pre-commit run --all-files'
-    session.run(*cmd.split(' '))
-
-
-@session(python=False)
-def mypy(session):
-    """Run mypy only (without pre-commit)"""
-    cmd = 'mypy --install-types --non-interactive'
-    session.run(*cmd.split(' '))
+    cmd_1 = 'pre-commit run --all-files'
+    cmd_2 = 'mypy --install-types --non-interactive'
+    session.run(*cmd_1.split(' '))
+    session.run(*cmd_2.split(' '))
