@@ -1,12 +1,13 @@
 """Helper functions for processing and validating request parameters.
 The main purpose of these functions is to support some python-specific conveniences and translate
-them into standard request parameters, along with request validation that makes debugging easier.
+them into standard API request parameters, along with client-side request validation.
 """
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from inspect import signature
 from logging import getLogger
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
+from dateutil.parser import parse as parse_date
 from dateutil.relativedelta import relativedelta
 
 from pyinaturalist.constants import *  # noqa: F401, F403  # Imports for backwards-compatibility
@@ -14,8 +15,11 @@ from pyinaturalist.constants import (
     DATETIME_PARAMS,
     MULTIPLE_CHOICE_PARAMS,
     RANKS,
+    DateOrStr,
+    DateRange,
     MultiInt,
     RequestParams,
+    TimeInterval,
 )
 from pyinaturalist.converters import (
     convert_csv_list,
@@ -29,6 +33,12 @@ COMMON_PARAMS = ['access_token', 'dry_run', 'user_agent', 'session']
 MULTIPLE_CHOICE_ERROR_MSG = (
     'Parameter "{}" must have one of the following values: {}\n\tValue provided: {}'
 )
+INTERVALS: Dict[str, Union[timedelta, relativedelta]] = {
+    'hour': timedelta(hours=1),
+    'day': timedelta(days=1),
+    'month': relativedelta(months=1),
+    'year': relativedelta(years=1),
+}
 
 logger = getLogger(__name__)
 
@@ -149,35 +159,30 @@ def convert_rank_range(params: RequestParams) -> RequestParams:
     return params
 
 
-def get_interval_ranges(
-    start_date: datetime, end_date: datetime, interval='monthly'
-) -> List[Tuple[datetime, datetime]]:
-    """Get a list of date ranges between ``start_date`` and ``end_date`` with the specified interval
-    Example:
-        >>> # Get date ranges representing months of a year
-        >>> get_interval_ranges(datetime(2020, 1, 1), datetime(2020, 12, 31), 'monthly')
+def get_interval_ranges(start: DateOrStr, end: DateOrStr, interval: TimeInterval) -> List[DateRange]:
+    """Given a date range and a time interval, split the range into a list of smaller ranges
 
     Args:
-        start_date: Starting date of date ranges (inclusive)
-        end_date: End date of date ranges (inclusive)
-        interval: Either 'monthly' or 'yearly'
+        start: Start date or string (inclusive)
+        end: End date or string (inclusive)
+        interval: Time interval (delta or alias: 'hour', 'day', 'month', or 'year')
 
     Returns:
-        List of date ranges in the format: ``[(start_date, end_date), (start_date, end_date), ...]``
+        List of date ranges of size ``interval``, in the format: ``[(start_date, end_date), ...]``
     """
-    if interval == 'monthly':
-        delta = relativedelta(months=1)
-    elif interval == 'yearly':
-        delta = relativedelta(years=1)
-    else:
-        raise ValueError(f'Invalid interval: {interval}')
+    if isinstance(interval, str):
+        interval = INTERVALS[interval]
+    if isinstance(start, str):
+        start = parse_date(start)
+    if isinstance(end, str):
+        end = parse_date(end)
 
-    incremental_date = start_date
-    interval_ranges = []
-    while incremental_date <= end_date:
-        interval_ranges.append((incremental_date, incremental_date + delta - relativedelta(days=1)))
-        incremental_date += delta
-    return interval_ranges
+    ranges = []
+    while start <= end:
+        # API date/datetime request params are inclusive, so subtract 1 minute from end date
+        ranges.append((start, start + interval - timedelta(minutes=1)))
+        start += interval
+    return ranges
 
 
 def get_valid_kwargs(func: Callable, kwargs: Dict) -> Dict:
