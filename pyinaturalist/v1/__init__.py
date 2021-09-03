@@ -33,6 +33,7 @@ def delete_v1(endpoint: str, **kwargs) -> Response:
 
 from pyinaturalist.v1.controlled_terms import get_controlled_terms
 from pyinaturalist.v1.identifications import get_identifications, get_identifications_by_id
+from pyinaturalist.v1.observation_fields import delete_observation_field, set_observation_field
 from pyinaturalist.v1.observations import (
     create_observation,
     delete_observation,
