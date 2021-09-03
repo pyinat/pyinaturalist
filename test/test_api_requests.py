@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 import pyinaturalist
-from pyinaturalist.api_requests import MOCK_RESPONSE, delete, get, post, put, request
+from pyinaturalist.api_requests import MOCK_RESPONSE, REQUEST_TIMEOUT, delete, get, post, put, request
 
 
 # Just test that the wrapper methods call requests.request with the appropriate HTTP method
@@ -17,7 +17,7 @@ def test_http_methods(mock_send, http_func, http_method):
     request_obj = mock_send.call_args[0][0]
     kwargs = mock_send.call_args[1]
 
-    assert kwargs['timeout'] == 5
+    assert kwargs['timeout'] == REQUEST_TIMEOUT
     assert request_obj.method == http_method
     assert request_obj.url == 'https://url/?key=value'
     assert request_obj.headers['User-Agent'] == pyinaturalist.user_agent

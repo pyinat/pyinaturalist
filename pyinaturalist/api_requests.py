@@ -17,6 +17,7 @@ from pyinaturalist.constants import (
     CACHE_FILE,
     MAX_DELAY,
     REQUEST_BURST_RATE,
+    REQUEST_TIMEOUT,
     REQUESTS_PER_DAY,
     REQUESTS_PER_MINUTE,
     REQUESTS_PER_SECOND,
@@ -75,7 +76,7 @@ def request(
     limiter: Limiter = None,
     session: Session = None,
     raise_for_status: bool = True,
-    timeout: float = 5,
+    timeout: float = REQUEST_TIMEOUT,
     user_agent: str = None,
     **params: RequestParams,
 ) -> Response:

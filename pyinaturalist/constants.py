@@ -26,6 +26,7 @@ THROTTLING_DELAY = 1.0  # Delay between paginated queries, in seconds
 MAX_DELAY = 60  # Maximum time to wait for rate-limiting before aborting
 MAX_RETRIES = 5  # Maximum number of retries for a failed request
 REQUEST_BURST_RATE = 5
+REQUEST_TIMEOUT = 10
 REQUESTS_PER_SECOND = 1
 REQUESTS_PER_MINUTE = 60
 REQUESTS_PER_DAY = 10000
