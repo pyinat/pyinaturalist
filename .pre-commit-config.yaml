@@ -29,7 +29,6 @@ repos:
     rev: v0.910
     hooks:
       - id: mypy
-        entry: bash -c 'mypy "$@" || true' --
         additional_dependencies: [types-python-dateutil, types-requests]
   - repo: https://github.com/yunojuno/pre-commit-xenon
     rev: v0.1

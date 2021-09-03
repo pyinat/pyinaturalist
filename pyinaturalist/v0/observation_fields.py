@@ -39,18 +39,15 @@ def get_observation_fields(**params) -> JsonResponse:
     return {'results': obs_fields}
 
 
+@document_request_params(docs._ofvs, docs._access_token)
 def put_observation_field_values(
-    observation_id: int,
-    observation_field_id: int,
-    value: Any,
-    access_token: str,
-    **kwargs,
+    observation_id: int, observation_field_id: int, value: Any, **params
 ) -> JsonResponse:
     # TODO: Also implement a put_or_update_observation_field_values() that deletes then recreates the field_value?
     # TODO: Return some meaningful exception if it fails because the field is already set.
     # TODO: It appears pushing the same value/pair twice in a row (but deleting it meanwhile via the UI)...
     # TODO: ...triggers an error 404 the second time (report to iNaturalist?)
-    """Set an observation field (value) on an observation
+    """Set an observation field value on an observation
 
     .. rubric:: Notes
 
@@ -64,13 +61,13 @@ def put_observation_field_values(
         >>> # First find an observation field by name, if the ID is unknown
         >>> response = get_observation_fields('vespawatch_id')
         >>> observation_field_id = response[0]['id']
-        >>>
+
         >>> put_observation_field_values(
-        >>>     observation_id=7345179,
-        >>>     observation_field_id=observation_field_id,
-        >>>     value=250,
-        >>>     access_token=token,
-        >>> )
+        ...     observation_id=7345179,
+        ...     observation_field_id=observation_field_id,
+        ...     value=250,
+        ...     access_token=token,
+        ... )
 
         .. admonition:: Example Response
             :class: toggle
@@ -78,27 +75,17 @@ def put_observation_field_values(
             .. literalinclude:: ../sample_data/put_observation_field_value_result.json
                 :language: javascript
 
-    Args:
-        observation_id: ID of the observation receiving this observation field value
-        observation_field_id: ID of the observation field for this observation field value
-        value: Value for the observation field
-        access_token: The access token, as returned by :func:`get_access_token()`
-
     Returns:
         The newly updated field value record
     """
-    json_body = {
+    body = {
         'observation_field_value': {
             'observation_id': observation_id,
             'observation_field_id': observation_field_id,
             'value': value,
         }
     }
-
     response = put(
-        f'{API_V0_BASE_URL}/observation_field_values/{observation_field_id}',
-        access_token=access_token,
-        json=json_body,
-        **kwargs,
+        f'{API_V0_BASE_URL}/observation_field_values/{observation_field_id}', json=body, **params
     )
     return response.json()

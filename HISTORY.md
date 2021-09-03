@@ -3,12 +3,15 @@
 ## 0.15.0 (2021-09-TBD)
 
 ### New Endpoints
-* Added new create/delete functions for v1 **Observation** endpoints. These are now preferred over
-  the older v0 endpoints:
+* Added new functions for v1 **Observation** endpoints:
   * `create_observation()`
   * `update_observation()`
   * `delete_observation()`
   * `upload()` (uploads both photos and sounds)
+  * These are now preferred over the older v0 endpoints
+* Added new functions for v1 **Observation field value** endpoints:
+  * `set_observation_field()` (creates and updates observation field values)
+  * `delete_observation_field()`
 * Added new function for **Observation taxon summary**: `get_observation_taxon_summary()`
 * Added new functions for **Project observation** endpoints:
   * `add_project_observation()`
@@ -16,7 +19,12 @@
 * Added new data models:
   * ListedTaxon
   * TaxonSummary
+  * UserCounts
 
+### Modified Endpoints
+* Add a `limiter` argument to all API request functions to override rate-limiting settings
+* Add a `dry_run` argument to all API request functions to dry-run an individual request
+* Add a `reverse` argument to all paginated API request functions to reverse the sort order
 ### Logging
 * Improved logging output for dry-run mode: now shows formatted `PreparedRequest` details
   instead of `request()` keyword args
@@ -24,9 +32,6 @@
 * Redact all credentials from logged API requests
 
 ### Other Changes
-* Add a `limiter` argument to all API request functions to override rate-limiting settings
-* Add a `dry_run` argument to all API request functions to dry-run an individual request
-* Add a `reverse` argument to all paginated API request functions to reverse the sort order
 * Add API request caching with [requests-cache](https://github.com/reclosedev/requests-cache)
   (can be disabled or customized via `session` parameter)
 * Fix bug with `rule_details` param for `get_projects_by_id()`

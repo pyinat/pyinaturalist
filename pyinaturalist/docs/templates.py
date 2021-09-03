@@ -9,7 +9,7 @@ Note: Since the templates are applied dynamically at import time, this adds a ti
 (about 20 milliseconds as of v0.14) to the import time of the library. If this ever becomes a problem,
 an option could be added to disable ``copy_doc_signature``, e.g. via environment variable.
 """
-from typing import List
+from typing import Any, List
 
 from pyinaturalist.constants import (
     AnyDate,
@@ -314,6 +314,14 @@ def _observation_histogram(
     """Args:
     date_field: Histogram basis: either when the observation was created or observed
     interval: Time interval for histogram, with groups starting on or contained within the group value.
+    """
+
+
+def _ofvs(observation_id: int, observation_field_id: int, value: Any):
+    """Args:
+    observation_id: ID of the observation receiving this observation field value
+    observation_field_id: ID of the observation field for this observation field value
+    value: Value for the observation field
     """
 
 
