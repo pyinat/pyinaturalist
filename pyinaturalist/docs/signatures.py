@@ -5,7 +5,6 @@ from logging import getLogger
 from typing import Callable, Dict, Iterable, List, Type
 
 import forge
-from pyrate_limiter import Limiter
 from requests import Session
 
 from pyinaturalist.constants import TemplateFunction
@@ -13,7 +12,7 @@ from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import copy_annotations, copy_docstrings
 
 AUTOMETHOD_INIT = '.. automethod:: __init__'
-COMMON_PARAMS = ['dry_run', 'limiter', 'user_agent', 'session']
+COMMON_PARAMS = ['dry_run', 'user_agent', 'session']
 logger = getLogger(__name__)
 
 
@@ -62,7 +61,7 @@ def copy_doc_signature(
         exclude_args: Arguments to exclude from the new docstring
     """
     if add_common_args:
-        template_functions += (_dry_run, _limiter, _session, _user_agent)
+        template_functions += (_dry_run, _session, _user_agent)
 
     def wrapper(func):
         try:
@@ -89,7 +88,7 @@ document_controller_params = partial(
 
 def document_common_args(func):
     """Just add common args to a function's docstring without modifying the signature"""
-    template_functions = (_dry_run, _limiter, _session, _user_agent)
+    template_functions = (_dry_run, _session, _user_agent)
     func = copy_annotations(func, template_functions)
     func = copy_docstrings(func, template_functions)
     return func
@@ -173,12 +172,6 @@ def deduplicate_var_kwargs(params: Dict) -> Dict:
 def _dry_run(dry_run: bool = False):
     """Args:
     dry_run: Just log the request instead of sending a real request
-    """
-
-
-def _limiter(limiter: Limiter = None):
-    """Args:
-    limiter: Custom rate limits to apply to this request
     """
 
 

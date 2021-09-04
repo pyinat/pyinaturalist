@@ -95,6 +95,7 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
     'requests': ('https://requests.readthedocs.io/en/master/', None),
     'requests_cache': ('https://requests-cache.readthedocs.io/en/stable/', None),
+    'requests_ratelimiter': ('https://requests-ratelimiter.readthedocs.io/en/latest/', None),
     'urllib3': ('https://urllib3.readthedocs.io/en/stable/', None),
 }
 

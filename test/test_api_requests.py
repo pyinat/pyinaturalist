@@ -3,7 +3,17 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 import pyinaturalist
-from pyinaturalist.api_requests import MOCK_RESPONSE, REQUEST_TIMEOUT, delete, get, post, put, request
+from pyinaturalist.api_requests import (
+    CACHE_FILE,
+    MOCK_RESPONSE,
+    REQUEST_TIMEOUT,
+    delete,
+    get,
+    get_session,
+    post,
+    put,
+    request,
+)
 
 
 # Just test that the wrapper methods call requests.request with the appropriate HTTP method
@@ -139,3 +149,19 @@ def test_request_dry_run_disabled(requests_mock):
     requests_mock.get('http://url', json={'results': ['response object']}, status_code=200)
 
     assert request('GET', 'http://url').json() == real_response
+
+
+def test_get_session__with_cache():
+    session = get_session()
+    assert session.cache.responses.db_path == CACHE_FILE
+
+
+def test_get_session__no_cache():
+    session = get_session(cache=False)
+    assert not hasattr(session, 'cache')
+
+
+def test_get_session__custom_retry():
+    session = get_session(per_second=5)
+    per_second_rate = session.limiter._rates[0]
+    assert per_second_rate.limit / per_second_rate.interval == 5

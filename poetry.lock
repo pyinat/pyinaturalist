@@ -1195,6 +1195,21 @@ fixture = ["fixtures"]
 test = ["fixtures", "mock", "purl", "pytest", "sphinx", "testrepository (>=0.0.18)", "testtools"]
 
 [[package]]
+name = "requests-ratelimiter"
+version = "0.2.0"
+description = "Rate-limiting for the requests library"
+category = "main"
+optional = false
+python-versions = ">=3.6.2,<4.0.0"
+
+[package.dependencies]
+pyrate-limiter = ">=2.3,<3.0"
+requests = ">=2.20,<3.0"
+
+[package.extras]
+docs = ["furo (==2021.8.17b43)", "myst-parser (>=0.15.1,<0.16.0)", "sphinx (>=4.0.2,<5.0.0)", "sphinx-autodoc-typehints (>=1.11,<2.0)", "sphinx-copybutton (>=0.3,<0.5)"]
+
+[[package]]
 name = "rich"
 version = "10.9.0"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
@@ -1614,7 +1629,7 @@ docs = ["furo", "ipython", "linkify-it-py", "myst-parser", "nbsphinx", "sphinx",
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "303ce9cee3448db758a02d902a811b8e8ef79bbc244f148c2a82842ae2bb5f97"
+content-hash = "41c6891c97aab40f298b7391a08583b0a93a0109e0c552acfe5d53c58429d352"
 
 [metadata.files]
 alabaster = [
@@ -2239,6 +2254,10 @@ requests-cache = [
 requests-mock = [
     {file = "requests-mock-1.9.3.tar.gz", hash = "sha256:8d72abe54546c1fc9696fa1516672f1031d72a55a1d66c85184f972a24ba0eba"},
     {file = "requests_mock-1.9.3-py2.py3-none-any.whl", hash = "sha256:0a2d38a117c08bb78939ec163522976ad59a6b7fdd82b709e23bb98004a44970"},
+]
+requests-ratelimiter = [
+    {file = "requests-ratelimiter-0.2.0.tar.gz", hash = "sha256:5b9339d9cfa86a9d4b295a122411b8eaedea50f846fced47f6403145dfa0db5e"},
+    {file = "requests_ratelimiter-0.2.0-py3-none-any.whl", hash = "sha256:3f096ccd498f9b99f5115eeb6b81c25e59fccb0ae7744c502dd8e0191b3f5345"},
 ]
 rich = [
     {file = "rich-10.9.0-py3-none-any.whl", hash = "sha256:2c84d9b3459c16bf413fe0f9644c7ae1791971e0bb944dfae56e7c7634b187ab"},

@@ -8,20 +8,16 @@ from pyinaturalist.client import iNatClient
 from pyinaturalist.constants import MAX_RETRIES, TOKEN_EXPIRATION
 from pyinaturalist.docs import document_common_args
 
-mock_limiter_1 = MagicMock()
 mock_session_1 = MagicMock()
-mock_limiter_2 = MagicMock()
 mock_session_2 = MagicMock()
 
 SETTINGS_1 = {
     'dry_run': True,
-    'limiter': mock_limiter_1,
     'session': mock_session_1,
     'user_agent': 'pytest',
 }
 SETTINGS_2 = {
     'dry_run': False,
-    'limiter': mock_limiter_2,
     'session': mock_session_2,
     'user_agent': 'python/requests',
 }
