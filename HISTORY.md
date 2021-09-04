@@ -22,9 +22,9 @@
   * UserCounts
 
 ### Modified Endpoints
-* Add a `limiter` argument to all API request functions to override rate-limiting settings
 * Add a `dry_run` argument to all API request functions to dry-run an individual request
 * Add a `reverse` argument to all paginated API request functions to reverse the sort order
+
 ### Logging
 * Improved logging output for dry-run mode: now shows formatted `PreparedRequest` details
   instead of `request()` keyword args
@@ -34,6 +34,7 @@
 ### Other Changes
 * Add API request caching with [requests-cache](https://github.com/reclosedev/requests-cache)
   (can be disabled or customized via `session` parameter)
+* Make rate-limiting not apply to cached requests
 * Fix bug with `rule_details` param for `get_projects_by_id()`
 
 ## 0.14.1 (2021-07-21)

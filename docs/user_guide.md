@@ -334,28 +334,27 @@ Credentials storage with keyring + KeePassXC
 ```
 
 ## Rate Limiting
-By default, pyinaturalist applies rate limiting to all requests so they stay within the rates specified by
-iNaturalist's [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices).
-If you want to customize these rate limits, all API request functions take an optional `limiter` argument,
-which takes a [`pyrate_limiter.Limiter`](https://github.com/vutran1710/PyrateLimiter) object.
+Rate limiting is applied to all requests so they stay within the rates specified by iNaturalist's
+[API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices).
 
-For example, to reduce the rate to 50 requests per minute:
+If you want to customize these rate limits, you can make a
+[Session](https://docs.python-requests.org/en/latest/user/advanced/#session-objects) to use for API
+requests. The easiest way to do this is with {py:func}`.get_session`. For example, to reduce the
+rate to 50 requests per minute:
+
 ```python
->>> from pyinaturalist import get_limiter, get_taxa
->>> from pyrate_limiter import Duration, Limiter, RequestRate
->>>
->>> limiter = get_limiter(per_minute=50)
->>> get_taxa(q='warbler', locale=1, limiter=limiter)
+>>> from pyinaturalist import get_session, get_taxa
+>>> session = get_session(per_minute=50)
+>>> get_taxa(q='warbler', locale=1, session=session)
 ```
 
 ## Logging
 You can configure logging for pyinaturalist using the standard Python `logging` module, for example
 with {py:func}`logging.basicConfig`:
 ```python
-import logging
-
-logging.basicConfig()
-logging.getLogger('pyinaturalist').setLevel('INFO')
+>>> import logging
+>>> logging.basicConfig()
+>>> logging.getLogger('pyinaturalist').setLevel('INFO')
 ```
 
 For convenience, an {py:func}`.enable_logging` function is included that will apply some recommended

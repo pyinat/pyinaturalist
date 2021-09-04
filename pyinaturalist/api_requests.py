@@ -2,20 +2,20 @@
 import threading
 from logging import getLogger
 from os import getenv
-from typing import Dict
+from typing import Dict, List
 from unittest.mock import Mock
 from warnings import warn
 
 import forge
-from pyrate_limiter import Duration, Limiter, RequestRate
+from pyrate_limiter import Duration, RequestRate
 from requests import PreparedRequest, Request, Response, Session
-from requests_cache import CachedSession
+from requests_cache import CacheMixin
+from requests_ratelimiter import LimiterMixin, LimiterSession
 
 import pyinaturalist
 from pyinaturalist.constants import (
     CACHE_EXPIRATION,
     CACHE_FILE,
-    MAX_DELAY,
     REQUEST_BURST_RATE,
     REQUEST_TIMEOUT,
     REQUESTS_PER_DAY,
@@ -42,26 +42,10 @@ logger = getLogger('pyinaturalist')
 thread_local = threading.local()
 
 
-def get_limiter(
-    per_second: int = REQUESTS_PER_SECOND,
-    per_minute: int = REQUESTS_PER_MINUTE,
-    burst: int = REQUEST_BURST_RATE,
-) -> Limiter:
-    """Get a rate-limiter, optionally with modified rate limits
-
-    Args:
-        per_second: Max number of requests per second
-        per_minute: Max number of requests per minute
-        burst: Max number of consecutive requests allowed before applying rate-limiting delays
+class CachedLimiterSession(CacheMixin, LimiterMixin, Session):  # type: ignore  # false positive
+    """Session class that combines requests-cache with pyrate-limiter + requests-ratelimiter.
+    Caches API requests, and limits the rate of non-cached requests.
     """
-    return Limiter(
-        RequestRate(per_second * burst, Duration.SECOND * burst),
-        RequestRate(per_minute, Duration.MINUTE),
-        RequestRate(REQUESTS_PER_DAY, Duration.DAY),
-    )
-
-
-RATE_LIMITER = get_limiter()
 
 
 def request(
@@ -73,7 +57,6 @@ def request(
     headers: Dict = None,
     ids: MultiInt = None,
     json: Dict = None,
-    limiter: Limiter = None,
     session: Session = None,
     raise_for_status: bool = True,
     timeout: float = REQUEST_TIMEOUT,
@@ -91,7 +74,6 @@ def request(
         headers: Request headers
         ids: One or more integer IDs used as REST resource(s) to request
         json: JSON request body
-        limiter: Custom rate limits to apply to this request
         session: An existing Session object to use instead of creating a new one
         timeout: Time (in seconds) to wait for a response from the server; if exceeded, a
             :py:exc:`requests.exceptions.Timeout` will be raised.
@@ -112,18 +94,15 @@ def request(
         params=params,
         user_agent=user_agent,
     )
-    bucket = request.headers.get('User-Agent') or 'pyinaturalist'
-    limiter = limiter or RATE_LIMITER
-    session = session or get_session()
+    session = session or get_local_session()
 
     logger.info(format_request(request))
     # Make a mock request, if specified
     if dry_run or is_dry_run_enabled(method):
         return MOCK_RESPONSE
-    # Otherwise, apply rate-limiting and send the request
+    # Otherwise, send the request
     else:
-        with limiter.ratelimit(bucket, delay=True, max_delay=MAX_DELAY):
-            response = session.send(request, timeout=timeout)
+        response = session.send(request, timeout=timeout)
         if raise_for_status:
             response.raise_for_status()
         return response
@@ -192,24 +171,75 @@ def put(url: str, **kwargs) -> Response:
     return request('PUT', url, **kwargs)
 
 
-def get_session(cache: bool = True) -> Session:
+def env_to_bool(environment_variable: str) -> bool:
+    """Translate an environment variable to a boolean value, accounting for minor
+    variations (case, None vs. False, etc.)
+    """
+    env_value = getenv(environment_variable)
+    return bool(env_value) and str(env_value).lower() not in ['false', 'none']
+
+
+def get_local_session(**kwargs) -> Session:
+    """Get a thread-local Session object with default settings. If used in a multi-threaded context
+    (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), this will create and store
+    a separate session object for each thread.
+
+    Args:
+        kwargs: Keyword arguments for :py:func:`.get_session`
+    """
+    if not hasattr(thread_local, 'session'):
+        thread_local.session = get_session(**kwargs)
+    return thread_local.session
+
+
+def get_request_rates(per_second: int, per_minute: int, burst: int) -> List[RequestRate]:
+    """Translate request rate values into RequestRate objects"""
+    return [
+        RequestRate(per_second * burst, Duration.SECOND * burst),
+        RequestRate(per_minute, Duration.MINUTE),
+        RequestRate(REQUESTS_PER_DAY, Duration.DAY),
+    ]
+
+
+# TODO: update requests-ratelimit to use max_delay
+def get_session(
+    cache: bool = True,
+    per_second: int = REQUESTS_PER_SECOND,
+    per_minute: int = REQUESTS_PER_MINUTE,
+    burst: int = REQUEST_BURST_RATE,
+) -> Session:
     """Get a Session object with default settings. This will be reused across requests to take
     advantage of connection pooling and (optionally) caching. If used in a multi-threaded context
     (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), a separate session is used
     for each thread.
+
+    Args:
+        cache: Enable API request caching
+        per_second: Max number of requests per second
+        per_minute: Max number of requests per minute
+        burst: Max number of consecutive requests allowed before applying rate-limiting delays
     """
-    if not hasattr(thread_local, 'session'):
-        if cache:
-            thread_local.session = CachedSession(
-                CACHE_FILE,
-                backend='sqlite',
-                ignored_parameters=['access_token'],
-                old_data_on_error=True,
-                urls_expire_after=CACHE_EXPIRATION,  # type: ignore  # False positive; can't reproduce locally
-            )
-        else:
-            thread_local.session = Session()
-    return thread_local.session
+    request_rates = get_request_rates(per_second, per_minute, burst)
+
+    # Session with caching + rate-limiting
+    if cache:
+        session: Session = CachedLimiterSession(
+            cache_name=CACHE_FILE,
+            backend='sqlite',
+            ignored_parameters=['access_token'],
+            old_data_on_error=True,
+            urls_expire_after=CACHE_EXPIRATION,  # type: ignore  # False positive; can't reproduce locally
+            rates=request_rates,
+            # max_delay=MAX_DELAY,
+        )
+    # Session with rate-limiting only
+    else:
+        session = LimiterSession(
+            rates=request_rates,
+            # max_delay=MAX_DELAY,
+        )
+
+    return session
 
 
 # TODO: Drop support for global variables in version 0.16
@@ -229,11 +259,3 @@ def is_dry_run_enabled(method: str) -> bool:
     if method in WRITE_HTTP_METHODS:
         return dry_run_enabled or pyinaturalist.DRY_RUN_WRITE_ONLY or env_to_bool('DRY_RUN_WRITE_ONLY')
     return dry_run_enabled
-
-
-def env_to_bool(environment_variable: str) -> bool:
-    """Translate an environment variable to a boolean value, accounting for minor
-    variations (case, None vs. False, etc.)
-    """
-    env_value = getenv(environment_variable)
-    return bool(env_value) and str(env_value).lower() not in ['false', 'none']

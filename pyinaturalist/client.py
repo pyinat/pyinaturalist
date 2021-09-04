@@ -1,15 +1,13 @@
-# TODO: Use requests_cache.CachedSession by default
 from datetime import datetime
 from logging import getLogger
 from typing import Any, Callable, Dict
 
-from pyrate_limiter import Limiter
 from requests import Session
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 
 from pyinaturalist import DEFAULT_USER_AGENT
-from pyinaturalist.api_requests import RATE_LIMITER, get_session
+from pyinaturalist.api_requests import get_session
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import MAX_RETRIES, TOKEN_EXPIRATION, JsonResponse
 from pyinaturalist.controllers import ObservationController, ProjectController, TaxonController
@@ -57,11 +55,9 @@ class iNatClient:
 
         **Rate-limiting**
 
-        Custom rate-limiting settings: increase rate to 75 requests per minute:
+        Custom rate-limiting settings: reduce rate to 50 requests per minute:
 
-        >>> from pyrate_limiter import Duration, Limiter, RequestRate
-        >>> limiter = Limiter(RequestRate(75, Duration.MINUTE))
-        >>> client = iNatClient(limiter=limiter)
+        >>> client = iNatClient(rate_limits={'per_minute': 50})
 
         **Retries**
 
@@ -105,26 +101,26 @@ class iNatClient:
 
         **Updating settings**
 
-        All settings can also be modified after creating the client:
+        Most settings can also be modified after creating the client:
 
         >>> client.session = Session()
         >>> client.creds['username'] = 'my_inaturalist_username'
         >>> client.default_params['locale'] = 'es'
         >>> client.dry_run = True
-        >>> client.limiter = limiter
         >>> client.retry = retry
         >>> client.user_agent = 'My custom user agent'
 
-        .. note:: The ``cache`` and ``retry`` settings are stored on the session object, so updating
-            ``client.session`` will override these settings as well.
+        .. note:: The ``cache``, ``retry``, and ``rate_limits`` settings are stored on the session
+            object, so updating ``client.session`` will override these settings as well.
 
     Args:
-        cache: Cache API requests
+        cache: Enable API request caching
         creds: Optional arguments for :py:func:`.get_access_token`, used to get and refresh access
             tokens as needed.
         default_params: Default request parameters to pass to any applicable API requests.
         dry_run: Just log all requests instead of sending real requests
-        limiter: Rate-limiting settings to use instead of the default
+        rate_limits: Custom request rate limits to use instead of the default; see
+            :py:func:`.get_session` for options
         retry: Retry settings to use instead of the default
         session: Session object to use instead of creating a new one
         user_agent: User-Agent string to pass to API requests
@@ -136,7 +132,7 @@ class iNatClient:
         creds: Dict[str, str] = None,
         default_params: Dict[str, Any] = None,
         dry_run: bool = False,
-        limiter: Limiter = RATE_LIMITER,
+        rate_limits: Dict[str, int] = None,
         retry: Retry = None,
         session: Session = None,
         user_agent: str = DEFAULT_USER_AGENT,
@@ -144,8 +140,8 @@ class iNatClient:
         self.creds = creds or {}
         self.default_params = default_params or {}
         self.dry_run = dry_run
-        self.limiter = limiter
-        self.session = session or get_session(cache=cache)
+        rate_limits = rate_limits or {}
+        self.session = session or get_session(cache=cache, **rate_limits)
         self.retry = retry or Retry(total=MAX_RETRIES, backoff_factor=0.5)
         self.user_agent = user_agent
 
@@ -203,7 +199,6 @@ class iNatClient:
         params = strip_empty_values(params)
         client_settings = {
             'dry_run': self.dry_run,
-            'limiter': self.limiter,
             'session': self.session,
             'user_agent': self.user_agent,
         }

@@ -25,7 +25,7 @@ from pyinaturalist.converters import (
     try_int,
 )
 
-COMMON_PARAMS = ['access_token', 'dry_run', 'limiter', 'user_agent', 'session']
+COMMON_PARAMS = ['access_token', 'dry_run', 'user_agent', 'session']
 MULTIPLE_CHOICE_ERROR_MSG = (
     'Parameter "{}" must have one of the following values: {}\n\tValue provided: {}'
 )
