@@ -9,7 +9,7 @@ from pyinaturalist.api_requests import (
     REQUEST_TIMEOUT,
     delete,
     get,
-    get_session,
+    iNatSession,
     post,
     put,
     request,
@@ -35,7 +35,7 @@ def test_http_methods(mock_send, http_func, http_method):
     assert request_obj.body is None
 
 
-# Test that the requests() wrapper passes along expected headers; just tests kwargs, not mock response
+# Test that the request() wrapper passes along expected headers; just tests kwargs, not mock response
 @pytest.mark.parametrize(
     'input_kwargs, expected_headers',
     [
@@ -61,12 +61,12 @@ def test_request_headers(mock_send, input_kwargs, expected_headers):
     assert request_obj.headers == expected_headers
 
 
-@patch('pyinaturalist.api_requests.get_session')
-def test_request_session(mock_get_session):
+@patch('pyinaturalist.api_requests.iNatSession')
+def test_request_session(mock_iNatSession):
     mock_session = MagicMock()
     request('GET', 'https://url', session=mock_session)
     mock_session.send.assert_called()
-    mock_get_session.assert_not_called()
+    mock_iNatSession.assert_not_called()
 
 
 # Test relevant combinations of dry-run settings and HTTP methods
@@ -151,17 +151,18 @@ def test_request_dry_run_disabled(requests_mock):
     assert request('GET', 'http://url').json() == real_response
 
 
-def test_get_session__with_cache():
-    session = get_session()
+def test_session__cache_file():
+    session = iNatSession()
     assert session.cache.responses.db_path == CACHE_FILE
 
 
-def test_get_session__no_cache():
-    session = get_session(cache=False)
-    assert not hasattr(session, 'cache')
+def test_session__custom_expiration():
+    session = iNatSession(expire_after=3600)
+    assert session.expire_after == 3600
+    assert session.urls_expire_after is None
 
 
-def test_get_session__custom_retry():
-    session = get_session(per_second=5)
+def test_session__custom_retry():
+    session = iNatSession(per_second=5)
     per_second_rate = session.limiter._rates[0]
     assert per_second_rate.limit / per_second_rate.interval == 5

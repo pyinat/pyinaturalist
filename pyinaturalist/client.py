@@ -3,13 +3,11 @@ from logging import getLogger
 from typing import Any, Callable, Dict
 
 from requests import Session
-from requests.adapters import HTTPAdapter
-from urllib3.util import Retry
 
 from pyinaturalist import DEFAULT_USER_AGENT
-from pyinaturalist.api_requests import get_session
+from pyinaturalist.api_requests import iNatSession
 from pyinaturalist.auth import get_access_token
-from pyinaturalist.constants import MAX_RETRIES, TOKEN_EXPIRATION, JsonResponse
+from pyinaturalist.constants import TOKEN_EXPIRATION, JsonResponse
 from pyinaturalist.controllers import ObservationController, ProjectController, TaxonController
 from pyinaturalist.request_params import get_valid_kwargs, strip_empty_values
 
@@ -57,92 +55,66 @@ class iNatClient:
 
         Custom rate-limiting settings: reduce rate to 50 requests per minute:
 
-        >>> client = iNatClient(rate_limits={'per_minute': 50})
+        >>> client = iNatClient(per_minute=50)
 
         **Retries**
 
-        Custom retry settings: add longer delays, and only retry on 5xx errors:
+        Add additional retries for failed requests:
 
-        >>> from urllib3.util import Retry
-        >>> Retry(total=10, backoff_factor=2, status_forcelist=[500, 501, 502, 503, 504])
-        >>> client = iNatClient(retry=retry)
+        >>> client = iNatClient(retries=10)
 
         **Caching**
 
         All API requests are cached by default. These expire in 1 hour for most endpoints, and
-        longer for some infrequently-changing data (like taxa and places). To disable caching:
+        longer for some infrequently-changing data (like taxa and places). See
+        `requests-cache: Expiration <https://requests-cache.readthedocs.io/en/latest/user_guide/expiration.html>`_
+        for details on cache expiration behavior.
 
-        >>> client = iNatClient(cache=False)
+        For example, to keep cached requests for 5 days:
 
-        Alternatively, you can use a :py:class:`~requests_cache.session.CachedSession` to customize
-        cache settings. See the requests-cache
-        `User Guide <https://requests-cache.readthedocs.io/en/stable/user_guide.html>`_
-        for more details.
+        >>> client = iNatClient(expire_after=timedelta(days=5))
 
-        >>> from datetime import timedelta
-        >>> from requests_cache import CachedSession
-        >>>
-        >>> # Only cache requests for 15 minutes
-        >>> session = CachedSession(
-        ...     cache_name='api_requests.db',
-        ...     expire_after=timedelta(minutes=15),
-        ... )
-        >>> client = iNatClient(session=session)
-        >>>
-        >>> # Or, cache requests without expiration
-        >>> session = CachedSession(
-        ...     cache_name='api_requests.db',
-        ...     expire_after=-1,
-        ... )
-        >>> client = iNatClient(session=session)
-        >>>
-        >>> # Manually clear the cache
+        To store the cache somewhere other than the default cache directory:
+
+        >>> client = iNatClient(cache_name='~/data/api_requests.db')
+
+        To Manually clear the cache:
+
         >>> client.session.cache.clear()
 
         **Updating settings**
 
-        Most settings can also be modified after creating the client:
+        All settings can also be modified after creating the client:
 
         >>> client.session = Session()
         >>> client.creds['username'] = 'my_inaturalist_username'
         >>> client.default_params['locale'] = 'es'
         >>> client.dry_run = True
-        >>> client.retry = retry
         >>> client.user_agent = 'My custom user agent'
 
-        .. note:: The ``cache``, ``retry``, and ``rate_limits`` settings are stored on the session
-            object, so updating ``client.session`` will override these settings as well.
-
     Args:
-        cache: Enable API request caching
         creds: Optional arguments for :py:func:`.get_access_token`, used to get and refresh access
             tokens as needed.
-        default_params: Default request parameters to pass to any applicable API requests.
+        default_params: Default request parameters to pass to any applicable API requests
         dry_run: Just log all requests instead of sending real requests
-        rate_limits: Custom request rate limits to use instead of the default; see
-            :py:func:`.get_session` for options
-        retry: Retry settings to use instead of the default
         session: Session object to use instead of creating a new one
         user_agent: User-Agent string to pass to API requests
+        kwargs: Keyword arguments for :py:class:`.iNatSession`
     """
 
     def __init__(
         self,
-        cache: bool = False,
         creds: Dict[str, str] = None,
         default_params: Dict[str, Any] = None,
         dry_run: bool = False,
-        rate_limits: Dict[str, int] = None,
-        retry: Retry = None,
         session: Session = None,
         user_agent: str = DEFAULT_USER_AGENT,
+        **kwargs,
     ):
         self.creds = creds or {}
         self.default_params = default_params or {}
         self.dry_run = dry_run
-        rate_limits = rate_limits or {}
-        self.session = session or get_session(cache=cache, **rate_limits)
-        self.retry = retry or Retry(total=MAX_RETRIES, backoff_factor=0.5)
+        self.session = session or iNatSession(**kwargs)
         self.user_agent = user_agent
 
         self._access_token = None
@@ -155,22 +127,9 @@ class iNatClient:
         self.taxa = TaxonController(self)  #: Interface for taxon requests
 
     @property
-    def retry(self) -> Retry:
-        """Get or modify retry settings via an adapter on the session"""
-        adapter = self.session.adapters['https://']
-        return adapter.max_retries
-
-    @retry.setter
-    def retry(self, value: Retry):
-        """Add or update retry settings by mounting an adapter to the session"""
-        adapter = HTTPAdapter(max_retries=value)
-        self.session.mount('http://', adapter)
-        self.session.mount('https://', adapter)
-
-    @property
     def access_token(self):
         """Reuse an existing access token, if it's not expired; otherwise, get a new one"""
-        if self._is_expired():
+        if self._is_token_expired():
             logger.info('Access token expired, requesting a new one')
             self._access_token = get_access_token(**self.creds)
             self._token_expires = datetime.utcnow() + TOKEN_EXPIRATION
@@ -178,17 +137,13 @@ class iNatClient:
             logger.debug('Using active access token')
         return self._access_token
 
-    @access_token.setter
-    def access_token(self, value):
-        self._access_token = value
-
-    def _is_expired(self):
+    def _is_token_expired(self):
         initialized = self._access_token and self._token_expires
         return not (initialized and datetime.utcnow() < self._token_expires)
 
     def request(self, request_function: Callable, *args, auth: bool = False, **params) -> JsonResponse:
-        """Apply any applicable client settings to request parameters before making the specified
-        request. Explicit keyword arguments will override any client settings.
+        """Apply any applicable client settings to request parameters before sending a request.
+        Explicit keyword arguments will override any client settings.
 
         Args:
             request_function: The API request function to call, which should return a JSON response

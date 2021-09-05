@@ -189,7 +189,7 @@ def format_table(values: ResponseOrObjects):
     return table
 
 
-def format_request(request: PreparedRequest) -> str:
+def format_request(request: PreparedRequest, dry_run: bool = False) -> str:
     """Format HTTP request info"""
     headers_dict = request.headers.copy()
     if 'Authorization' in headers_dict:
@@ -197,7 +197,8 @@ def format_request(request: PreparedRequest) -> str:
 
     headers = '\n'.join([f'{k}: {v}' for k, v in headers_dict.items()])
     body = _format_body(request.body)
-    return f'{request.method} {request.url}\n{headers}\n{body}'
+    dry_run_str = '(DRY RUN) ' if dry_run else ''
+    return f'{dry_run_str}{request.method} {request.url}\n{headers}\n{body}'
 
 
 def _format_body(body):

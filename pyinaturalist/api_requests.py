@@ -1,4 +1,4 @@
-"""Some common functions for HTTP requests used by all API modules"""
+"""Session class and related functions for preparing and sending API requests"""
 import threading
 from logging import getLogger
 from os import getenv
@@ -9,13 +9,17 @@ from warnings import warn
 import forge
 from pyrate_limiter import Duration, RequestRate
 from requests import PreparedRequest, Request, Response, Session
-from requests_cache import CacheMixin
-from requests_ratelimiter import LimiterMixin, LimiterSession
+from requests.adapters import HTTPAdapter
+from requests_cache import CacheMixin, ExpirationTime
+from requests_ratelimiter import LimiterMixin
+from urllib3.util import Retry
 
 import pyinaturalist
 from pyinaturalist.constants import (
     CACHE_EXPIRATION,
     CACHE_FILE,
+    MAX_DELAY,
+    MAX_RETRIES,
     REQUEST_BURST_RATE,
     REQUEST_TIMEOUT,
     REQUESTS_PER_DAY,
@@ -42,10 +46,75 @@ logger = getLogger('pyinaturalist')
 thread_local = threading.local()
 
 
-class CachedLimiterSession(CacheMixin, LimiterMixin, Session):  # type: ignore  # false positive
-    """Session class that combines requests-cache with pyrate-limiter + requests-ratelimiter.
-    Caches API requests, and limits the rate of non-cached requests.
+class iNatSession(CacheMixin, LimiterMixin, Session):  # type: ignore  # false positive
+    """Custom session class used for sending API requests. Combines the following features:
+
+    * Caching
+    * Rate-limiting (skipped for cached requests)
+    * Retries
+    * Timeouts
+
+    This is the default and recommended session class to use for API requests, but can be safely
+    replaced with any :py:class:`~requests.session.Session`-compatible class via the ``session``
+    argument for API request functions.
     """
+
+    def __init__(
+        self,
+        expire_after: ExpirationTime = None,
+        per_second: int = REQUESTS_PER_SECOND,
+        per_minute: int = REQUESTS_PER_MINUTE,
+        per_day: float = REQUESTS_PER_DAY,
+        burst: int = REQUEST_BURST_RATE,
+        retries: int = MAX_RETRIES,
+        backoff_factor: float = 0.5,
+        timeout: int = 10,
+        **kwargs,
+    ):
+        """Get a Session object, optionally with custom settings for caching and rate-limiting.
+
+        Args:
+            expire_after: How long to keep cached API requests; for advanced options, see
+                `requests-cache: Expiration <https://requests-cache.readthedocs.io/en/latest/user_guide/expiration.html>`_
+            per_second: Max requests per second
+            per_minute: Max requests per minute
+            per_minute: Max requests per day
+            burst: Max number of consecutive requests allowed before applying per-second rate-limiting
+            retries: Maximum number of times to retry a failed request
+            backoff_factor: Factor for increasing delays between retries
+            timeout: Maximum number of seconds to wait for a response from the server
+            kwargs: Additional keyword arguments for :py:class:`~requests_cache.session.CachedSession`
+                and/or :py:class:`~requests_ratelimiter.requests_ratelimiter.LimiterSession`
+        """
+        # If not overridden, use default expiration times per API endpoint
+        if not expire_after:
+            kwargs.setdefault('urls_expire_after', CACHE_EXPIRATION)
+        self.timeout = timeout
+
+        # Initialize with caching and rate-limiting settings
+        super().__init__(
+            cache_name=CACHE_FILE,
+            backend='sqlite',
+            expire_after=expire_after,
+            ignored_parameters=['access_token'],
+            old_data_on_error=True,
+            per_second=per_second,
+            per_minute=per_minute,
+            per_day=per_day,
+            burst=burst,
+            max_delay=MAX_DELAY,
+            **kwargs,
+        )
+
+        # Mount an adapter to apply retry settings
+        retry = Retry(total=retries, backoff_factor=backoff_factor)
+        adapter = HTTPAdapter(max_retries=retry)
+        self.mount('https://', adapter)
+
+    def send(self, request: PreparedRequest, **kwargs) -> Response:  # type: ignore  # false positive
+        """Send a request with caching, rate-limiting, and retries"""
+        kwargs.setdefault('timeout', self.timeout)
+        return super().send(request, **kwargs)
 
 
 def request(
@@ -57,8 +126,8 @@ def request(
     headers: Dict = None,
     ids: MultiInt = None,
     json: Dict = None,
-    session: Session = None,
     raise_for_status: bool = True,
+    session: Session = None,
     timeout: float = REQUEST_TIMEOUT,
     user_agent: str = None,
     **params: RequestParams,
@@ -83,6 +152,7 @@ def request(
     Returns:
         API response
     """
+    session = session or get_local_session()
     request = prepare_request(
         method=method,
         url=url,
@@ -94,18 +164,17 @@ def request(
         params=params,
         user_agent=user_agent,
     )
-    session = session or get_local_session()
+    logger.info(format_request(request, dry_run))
 
-    logger.info(format_request(request))
     # Make a mock request, if specified
     if dry_run or is_dry_run_enabled(method):
         return MOCK_RESPONSE
+
     # Otherwise, send the request
-    else:
-        response = session.send(request, timeout=timeout)
-        if raise_for_status:
-            response.raise_for_status()
-        return response
+    response = session.send(request, timeout=timeout)
+    if raise_for_status:
+        response.raise_for_status()
+    return response
 
 
 def prepare_request(
@@ -120,7 +189,7 @@ def prepare_request(
     user_agent: str = None,
     **kwargs,
 ) -> PreparedRequest:
-    """Translate ``pyinaturalist``-specific options into standard request arguments."""
+    """Translate ``pyinaturalist``-specific options into standard request arguments"""
     # Prepare request params and URL
     params = preprocess_request_params(params)
     url = convert_url_ids(url, ids)
@@ -179,69 +248,6 @@ def env_to_bool(environment_variable: str) -> bool:
     return bool(env_value) and str(env_value).lower() not in ['false', 'none']
 
 
-def get_local_session(**kwargs) -> Session:
-    """Get a thread-local Session object with default settings. If used in a multi-threaded context
-    (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), this will create and store
-    a separate session object for each thread.
-
-    Args:
-        kwargs: Keyword arguments for :py:func:`.get_session`
-    """
-    if not hasattr(thread_local, 'session'):
-        thread_local.session = get_session(**kwargs)
-    return thread_local.session
-
-
-def get_request_rates(per_second: int, per_minute: int, burst: int) -> List[RequestRate]:
-    """Translate request rate values into RequestRate objects"""
-    return [
-        RequestRate(per_second * burst, Duration.SECOND * burst),
-        RequestRate(per_minute, Duration.MINUTE),
-        RequestRate(REQUESTS_PER_DAY, Duration.DAY),
-    ]
-
-
-# TODO: update requests-ratelimit to use max_delay
-def get_session(
-    cache: bool = True,
-    per_second: int = REQUESTS_PER_SECOND,
-    per_minute: int = REQUESTS_PER_MINUTE,
-    burst: int = REQUEST_BURST_RATE,
-) -> Session:
-    """Get a Session object with default settings. This will be reused across requests to take
-    advantage of connection pooling and (optionally) caching. If used in a multi-threaded context
-    (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), a separate session is used
-    for each thread.
-
-    Args:
-        cache: Enable API request caching
-        per_second: Max number of requests per second
-        per_minute: Max number of requests per minute
-        burst: Max number of consecutive requests allowed before applying rate-limiting delays
-    """
-    request_rates = get_request_rates(per_second, per_minute, burst)
-
-    # Session with caching + rate-limiting
-    if cache:
-        session: Session = CachedLimiterSession(
-            cache_name=CACHE_FILE,
-            backend='sqlite',
-            ignored_parameters=['access_token'],
-            old_data_on_error=True,
-            urls_expire_after=CACHE_EXPIRATION,  # type: ignore  # False positive; can't reproduce locally
-            rates=request_rates,
-            # max_delay=MAX_DELAY,
-        )
-    # Session with rate-limiting only
-    else:
-        session = LimiterSession(
-            rates=request_rates,
-            # max_delay=MAX_DELAY,
-        )
-
-    return session
-
-
 # TODO: Drop support for global variables in version 0.16
 def is_dry_run_enabled(method: str) -> bool:
     """A wrapper to determine if dry-run (aka test mode) has been enabled via either
@@ -259,3 +265,26 @@ def is_dry_run_enabled(method: str) -> bool:
     if method in WRITE_HTTP_METHODS:
         return dry_run_enabled or pyinaturalist.DRY_RUN_WRITE_ONLY or env_to_bool('DRY_RUN_WRITE_ONLY')
     return dry_run_enabled
+
+
+def get_local_session(**kwargs) -> Session:
+    """Get a thread-local Session object with default settings. This will be reused across requests
+    to take advantage of connection pooling and (optionally) caching. If used in a multi-threaded
+    context (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), this will create
+    and store a separate session object for each thread.
+
+    Args:
+        kwargs: Keyword arguments for :py:func:`.iNatSession`
+    """
+    if not hasattr(thread_local, 'session'):
+        thread_local.session = iNatSession(**kwargs)
+    return thread_local.session
+
+
+def get_request_rates(per_second: int, per_minute: int, burst: int) -> List[RequestRate]:
+    """Translate request rate values into RequestRate objects"""
+    return [
+        RequestRate(per_second * burst, Duration.SECOND * burst),
+        RequestRate(per_minute, Duration.MINUTE),
+        RequestRate(REQUESTS_PER_DAY, Duration.DAY),
+    ]
