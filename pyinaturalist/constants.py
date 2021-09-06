@@ -22,7 +22,6 @@ KEYRING_KEY = '/inaturalist'
 
 # Pagination settings
 PER_PAGE_RESULTS = 200  # Default number of records per page for paginated queries
-THROTTLING_DELAY = 1.0  # Delay between paginated queries, in seconds
 LARGE_REQUEST_WARNING = 5000  # Show a warning for queries that will return over this many results
 
 # Rate-limiting and retry settings
