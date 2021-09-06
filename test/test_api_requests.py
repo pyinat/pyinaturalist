@@ -6,10 +6,9 @@ import pyinaturalist
 from pyinaturalist.api_requests import (
     CACHE_FILE,
     MOCK_RESPONSE,
-    REQUEST_TIMEOUT,
+    ClientSession,
     delete,
     get,
-    get_session,
     post,
     put,
     request,
@@ -25,9 +24,7 @@ from pyinaturalist.api_requests import (
 def test_http_methods(mock_send, http_func, http_method):
     http_func('https://url', key='value', session=None)
     request_obj = mock_send.call_args[0][0]
-    kwargs = mock_send.call_args[1]
 
-    assert kwargs['timeout'] == REQUEST_TIMEOUT
     assert request_obj.method == http_method
     assert request_obj.url == 'https://url/?key=value'
     assert request_obj.headers['User-Agent'] == pyinaturalist.user_agent
@@ -35,7 +32,7 @@ def test_http_methods(mock_send, http_func, http_method):
     assert request_obj.body is None
 
 
-# Test that the requests() wrapper passes along expected headers; just tests kwargs, not mock response
+# Test that the request() wrapper passes along expected headers; just tests kwargs, not mock response
 @pytest.mark.parametrize(
     'input_kwargs, expected_headers',
     [
@@ -61,12 +58,12 @@ def test_request_headers(mock_send, input_kwargs, expected_headers):
     assert request_obj.headers == expected_headers
 
 
-@patch('pyinaturalist.api_requests.get_session')
-def test_request_session(mock_get_session):
+@patch('pyinaturalist.api_requests.ClientSession')
+def test_request_session(mock_ClientSession):
     mock_session = MagicMock()
     request('GET', 'https://url', session=mock_session)
     mock_session.send.assert_called()
-    mock_get_session.assert_not_called()
+    mock_ClientSession.assert_not_called()
 
 
 # Test relevant combinations of dry-run settings and HTTP methods
@@ -151,17 +148,18 @@ def test_request_dry_run_disabled(requests_mock):
     assert request('GET', 'http://url').json() == real_response
 
 
-def test_get_session__with_cache():
-    session = get_session()
+def test_session__cache_file():
+    session = ClientSession()
     assert session.cache.responses.db_path == CACHE_FILE
 
 
-def test_get_session__no_cache():
-    session = get_session(cache=False)
-    assert not hasattr(session, 'cache')
+def test_session__custom_expiration():
+    session = ClientSession(expire_after=3600)
+    assert session.expire_after == 3600
+    assert session.urls_expire_after is None
 
 
-def test_get_session__custom_retry():
-    session = get_session(per_second=5)
+def test_session__custom_retry():
+    session = ClientSession(per_second=5)
     per_second_rate = session.limiter._rates[0]
     assert per_second_rate.limit / per_second_rate.interval == 5

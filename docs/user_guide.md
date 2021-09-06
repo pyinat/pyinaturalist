@@ -1,3 +1,4 @@
+(user_guide)=
 # {fa}`book` User Guide
 This page summarizes how to use the main features of pyinaturalist.
 
@@ -333,18 +334,49 @@ macOS and Linux systems. See this guide for setup info:
 Credentials storage with keyring + KeePassXC
 ```
 
+## Sessions
+If you want more control over how requests are sent, you can provide your own session object using
+the `session` argument for any API request function. It's recommended to use
+{py:class}`.ClientSession`, but any {py:class}`requests.Session` or compatible object will work.
+
+See Caching and Rate-Limiting sections below for examples.
+
+## Caching
+All API requests are cached by default. These expire in 1 hour for most endpoints, and
+longer for some infrequently-changing data (like taxa and places). See
+[requests-cache: Expiration](https://requests-cache.readthedocs.io/en/latest/user_guide/expiration.html)
+for details on cache expiration behavior.
+
+For example, to keep cached requests for 5 days:
+```python
+>>> from datetime import timedelta
+>>> from pyinaturalist import ClientSession, get_taxa
+>>> session = ClientSession(expire_after=timedelta(days=5))
+>>> get_taxa(q='warbler', locale=1, session=session)
+```
+
+To store the cache somewhere other than the default cache directory:
+```python
+>>> session = ClientSession(cache_name='~/data/api_requests.db')
+```
+
+To Manually clear the cache:
+```python
+>>> session.cache.clear()
+```
+
 ## Rate Limiting
 Rate limiting is applied to all requests so they stay within the rates specified by iNaturalist's
 [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices).
 
 If you want to customize these rate limits, you can make a
 [Session](https://docs.python-requests.org/en/latest/user/advanced/#session-objects) to use for API
-requests. The easiest way to do this is with {py:func}`.get_session`. For example, to reduce the
+requests. The easiest way to do this is with {py:class}`.ClientSession`. For example, to reduce the
 rate to 50 requests per minute:
 
 ```python
->>> from pyinaturalist import get_session, get_taxa
->>> session = get_session(per_minute=50)
+>>> from pyinaturalist import ClientSession, get_taxa
+>>> session = ClientSession(per_minute=50)
 >>> get_taxa(q='warbler', locale=1, session=session)
 ```
 

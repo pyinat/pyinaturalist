@@ -20,19 +20,23 @@ PHOTO_INFO_BASE_URL = 'https://www.inaturalist.org/photos'
 # Prefix used for keyring entries
 KEYRING_KEY = '/inaturalist'
 
-# Pagination and rate-limiting values
+# Pagination settings
 PER_PAGE_RESULTS = 200  # Default number of records per page for paginated queries
 THROTTLING_DELAY = 1.0  # Delay between paginated queries, in seconds
+LARGE_REQUEST_WARNING = 5000  # Show a warning for queries that will return over this many results
+
+# Rate-limiting and retry settings
 MAX_DELAY = 60  # Maximum time to wait for rate-limiting before aborting
-MAX_RETRIES = 5  # Maximum number of retries for a failed request
 REQUEST_BURST_RATE = 5
-REQUEST_TIMEOUT = 10
 REQUESTS_PER_SECOND = 1
 REQUESTS_PER_MINUTE = 60
 REQUESTS_PER_DAY = 10000
-LARGE_REQUEST_WARNING = 5000  # Show a warning for queries that will return over this many results
+REQUEST_TIMEOUT = 10
+REQUEST_RETRIES = 5  # Maximum number of retries for a failed request
+RETRY_BACKOFF = 0.5  # Exponential backoff factor for retries
 
 # Toggle dry-run mode: this will run and log mock HTTP requests instead of real ones
+# Deprecated; use dry_run parameter or DRY_RUN_ENABLED environment variable instead
 DRY_RUN_ENABLED = False  # Mock all requests, including GET
 DRY_RUN_WRITE_ONLY = False  # Only mock 'write' requests
 WRITE_HTTP_METHODS = ['PATCH', 'POST', 'PUT', 'DELETE']

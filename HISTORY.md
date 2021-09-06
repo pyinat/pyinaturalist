@@ -33,9 +33,10 @@
 
 ### Other Changes
 * Add API request caching with [requests-cache](https://github.com/reclosedev/requests-cache)
-  (can be disabled or customized via `session` parameter)
 * Make rate-limiting not apply to cached requests
+* Add custom `ClientSession` class to configure caching, rate-limiting, and retries
 * Fix bug with `rule_details` param for `get_projects_by_id()`
+* Increased default timeout to 10 seconds to accomodate some longer-running queries
 
 ## 0.14.1 (2021-07-21)
 * Added new function for **Posts** endpoint: `get_posts()`
