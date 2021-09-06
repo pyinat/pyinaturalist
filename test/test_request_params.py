@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from unittest.mock import patch
 
 import pytest
@@ -85,46 +85,61 @@ def test_convert_pagination_params():
     assert 'reverse' not in params
 
 
-def test_get_interval_ranges__monthly():
+@pytest.mark.parametrize(
+    'start, end, interval',
+    [
+        (datetime(2020, 1, 1), datetime(2020, 1, 5), 'day'),
+        ('2020-01-01', '2020-01-05', 'day'),
+        ('2020-01-01', '2020-01-05', timedelta(days=1)),
+    ],
+)
+def test_get_interval_ranges__day(start, end, interval):
     expected_ranges = [
-        (datetime(2020, 1, 1, 0, 0), datetime(2020, 1, 31, 0, 0)),
-        (datetime(2020, 2, 1, 0, 0), datetime(2020, 2, 29, 0, 0)),
-        (datetime(2020, 3, 1, 0, 0), datetime(2020, 3, 31, 0, 0)),
-        (datetime(2020, 4, 1, 0, 0), datetime(2020, 4, 30, 0, 0)),
-        (datetime(2020, 5, 1, 0, 0), datetime(2020, 5, 31, 0, 0)),
-        (datetime(2020, 6, 1, 0, 0), datetime(2020, 6, 30, 0, 0)),
-        (datetime(2020, 7, 1, 0, 0), datetime(2020, 7, 31, 0, 0)),
-        (datetime(2020, 8, 1, 0, 0), datetime(2020, 8, 31, 0, 0)),
-        (datetime(2020, 9, 1, 0, 0), datetime(2020, 9, 30, 0, 0)),
-        (datetime(2020, 10, 1, 0, 0), datetime(2020, 10, 31, 0, 0)),
-        (datetime(2020, 11, 1, 0, 0), datetime(2020, 11, 30, 0, 0)),
-        (datetime(2020, 12, 1, 0, 0), datetime(2020, 12, 31, 0, 0)),
+        (datetime(2020, 1, 1, 0, 0), datetime(2020, 1, 1, 23, 59)),
+        (datetime(2020, 1, 2, 0, 0), datetime(2020, 1, 2, 23, 59)),
+        (datetime(2020, 1, 3, 0, 0), datetime(2020, 1, 3, 23, 59)),
+        (datetime(2020, 1, 4, 0, 0), datetime(2020, 1, 4, 23, 59)),
+        (datetime(2020, 1, 5, 0, 0), datetime(2020, 1, 5, 23, 59)),
     ]
-    ranges = get_interval_ranges(datetime(2020, 1, 1), datetime(2020, 12, 31), 'monthly')
+    ranges = get_interval_ranges(start, end, interval)
     assert ranges == expected_ranges
 
 
-def test_get_interval_ranges__yearly():
+def test_get_interval_ranges__month():
     expected_ranges = [
-        (datetime(2010, 1, 1, 0, 0), datetime(2010, 12, 31, 0, 0)),
-        (datetime(2011, 1, 1, 0, 0), datetime(2011, 12, 31, 0, 0)),
-        (datetime(2012, 1, 1, 0, 0), datetime(2012, 12, 31, 0, 0)),
-        (datetime(2013, 1, 1, 0, 0), datetime(2013, 12, 31, 0, 0)),
-        (datetime(2014, 1, 1, 0, 0), datetime(2014, 12, 31, 0, 0)),
-        (datetime(2015, 1, 1, 0, 0), datetime(2015, 12, 31, 0, 0)),
-        (datetime(2016, 1, 1, 0, 0), datetime(2016, 12, 31, 0, 0)),
-        (datetime(2017, 1, 1, 0, 0), datetime(2017, 12, 31, 0, 0)),
-        (datetime(2018, 1, 1, 0, 0), datetime(2018, 12, 31, 0, 0)),
-        (datetime(2019, 1, 1, 0, 0), datetime(2019, 12, 31, 0, 0)),
-        (datetime(2020, 1, 1, 0, 0), datetime(2020, 12, 31, 0, 0)),
+        (datetime(2020, 1, 1, 0, 0), datetime(2020, 1, 31, 23, 59)),
+        (datetime(2020, 2, 1, 0, 0), datetime(2020, 2, 29, 23, 59)),
+        (datetime(2020, 3, 1, 0, 0), datetime(2020, 3, 31, 23, 59)),
+        (datetime(2020, 4, 1, 0, 0), datetime(2020, 4, 30, 23, 59)),
+        (datetime(2020, 5, 1, 0, 0), datetime(2020, 5, 31, 23, 59)),
+        (datetime(2020, 6, 1, 0, 0), datetime(2020, 6, 30, 23, 59)),
+        (datetime(2020, 7, 1, 0, 0), datetime(2020, 7, 31, 23, 59)),
+        (datetime(2020, 8, 1, 0, 0), datetime(2020, 8, 31, 23, 59)),
+        (datetime(2020, 9, 1, 0, 0), datetime(2020, 9, 30, 23, 59)),
+        (datetime(2020, 10, 1, 0, 0), datetime(2020, 10, 31, 23, 59)),
+        (datetime(2020, 11, 1, 0, 0), datetime(2020, 11, 30, 23, 59)),
+        (datetime(2020, 12, 1, 0, 0), datetime(2020, 12, 31, 23, 59)),
     ]
-    ranges = get_interval_ranges(datetime(2010, 1, 1), datetime(2020, 1, 1), 'yearly')
+    ranges = get_interval_ranges(datetime(2020, 1, 1), datetime(2020, 12, 31), 'month')
     assert ranges == expected_ranges
 
 
-def test_get_interval_ranges__invalid():
-    with pytest.raises(ValueError):
-        get_interval_ranges(datetime(2020, 1, 1), datetime(2020, 12, 31), 'daily')
+def test_get_interval_ranges__year():
+    expected_ranges = [
+        (datetime(2010, 1, 1, 0, 0), datetime(2010, 12, 31, 23, 59)),
+        (datetime(2011, 1, 1, 0, 0), datetime(2011, 12, 31, 23, 59)),
+        (datetime(2012, 1, 1, 0, 0), datetime(2012, 12, 31, 23, 59)),
+        (datetime(2013, 1, 1, 0, 0), datetime(2013, 12, 31, 23, 59)),
+        (datetime(2014, 1, 1, 0, 0), datetime(2014, 12, 31, 23, 59)),
+        (datetime(2015, 1, 1, 0, 0), datetime(2015, 12, 31, 23, 59)),
+        (datetime(2016, 1, 1, 0, 0), datetime(2016, 12, 31, 23, 59)),
+        (datetime(2017, 1, 1, 0, 0), datetime(2017, 12, 31, 23, 59)),
+        (datetime(2018, 1, 1, 0, 0), datetime(2018, 12, 31, 23, 59)),
+        (datetime(2019, 1, 1, 0, 0), datetime(2019, 12, 31, 23, 59)),
+        (datetime(2020, 1, 1, 0, 0), datetime(2020, 12, 31, 23, 59)),
+    ]
+    ranges = get_interval_ranges(datetime(2010, 1, 1), datetime(2020, 12, 31), 'year')
+    assert ranges == expected_ranges
 
 
 def test_strip_empty_params():

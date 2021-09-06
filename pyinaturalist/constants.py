@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Optional, Tuple, Union
 
 from appdirs import user_cache_dir
+from dateutil.relativedelta import relativedelta
 
 # iNaturalist URLs
 API_V0_BASE_URL = 'https://www.inaturalist.org'
@@ -212,6 +213,9 @@ AnyDateTime = Union[datetime, str]
 AnyFile = Union[IO, Path, str]
 DateTime = datetime
 DateOrInt = Union[date, datetime, int]
+DateOrStr = Union[date, datetime, str]
+DateOrDatetime = Union[date, datetime]
+DateRange = Tuple[DateOrDatetime, DateOrDatetime]
 Dimensions = Tuple[int, int]
 FileOrPath = Union[BinaryIO, str]
 GeoJson = Dict[str, Any]
@@ -230,6 +234,7 @@ MultiStr = Union[str, Iterable[str]]
 MultiIntOrStr = Union[MultiInt, MultiStr]
 TableRow = Dict[str, Any]
 TemplateFunction = Any  # Cannot use Callable/Protocol, as these will not allow a mix of signatures
+TimeInterval = Union[str, timedelta, relativedelta]
 
 # For type checking purposes, some nullable attrs need to be marked as Optional.
 # For documentation purposes, this is redundant since all keyword args are optional.
