@@ -1,6 +1,6 @@
 # History
 
-## 0.15.0 (2021-09-TBD)
+## 0.15.0 (2021-09-07)
 
 ### New Endpoints
 * Added new functions for v1 **Observation** endpoints:
@@ -16,31 +16,41 @@
 * Added new functions for **Project observation** endpoints:
   * `add_project_observation()`
   * `delete_project_observation()`
+
+### Modified Endpoints
+* Added a `dry_run` argument to all API request functions to dry-run an individual request
+* Added a `reverse` argument to all paginated API request functions to reverse the sort order
+
+### Models
 * Added new data models:
   * ListedTaxon
   * TaxonSummary
   * UserCounts
+* Added a preview version of `iNatClient`, a higher-level interface for API requests, which returns
+  model objects instead of JSON. See issues
+  [#163](https://github.com/niconoe/pyinaturalist/issues/163) and
+  [#217](https://github.com/niconoe/pyinaturalist/issues/217) for details.
 
-### Modified Endpoints
-* Add a `dry_run` argument to all API request functions to dry-run an individual request
-* Add a `reverse` argument to all paginated API request functions to reverse the sort order
+### Performance
+* Added API request caching with [requests-cache](https://github.com/reclosedev/requests-cache)
+* Updated rate-limiting not apply to cached requests
+* Added custom `ClientSession` class to configure caching, rate-limiting, retries, and timeouts
 
 ### Logging
 * Improved logging output for dry-run mode: now shows formatted `PreparedRequest` details
   instead of `request()` keyword args
 * Added an `enable_logging()` function to optionally show prettier logs with `rich`
-* Redact all credentials from logged API requests
+* Updated logging to redact all credentials from logged API requests
 
 ### Other Changes
-* Add API request caching with [requests-cache](https://github.com/reclosedev/requests-cache)
-* Make rate-limiting not apply to cached requests
-* Add custom `ClientSession` class to configure caching, rate-limiting, and retries
-* Fix bug with `rule_details` param for `get_projects_by_id()`
 * Increased default timeout to 10 seconds to accomodate some longer-running queries
+* Added `get_interval_ranges()` function to help with queries over a series of date/time intervals
+* Fixed bug with `rule_details` param for `get_projects_by_id()`
+* Added more tutorial/example notebooks
 
 ## 0.14.1 (2021-07-21)
 * Added new function for **Posts** endpoint: `get_posts()`
-* Fix broken `response_format` parameter in `v0.get_observations()`
+* Fixed broken `response_format` parameter in `v0.get_observations()`
 
 ## 0.14.0 (2021-07-14)
 [See all Issues & PRs for 0.14](https://github.com/niconoe/pyinaturalist/milestone/5?closed=1)
@@ -159,7 +169,7 @@ Model features:
   see [Contributing Guide](https://github.com/niconoe/pyinaturalist/blob/main/CONTRIBUTING.md) for details.
 
 -----
-### 0.12.1 (2021-03-07)
+## 0.12.1 (2021-03-07)
 * Add undocumented `ident_user_id` parameter to `get_observations()`
 
 ## 0.12.0 (2021-02-02)
