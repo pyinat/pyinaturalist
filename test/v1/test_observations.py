@@ -81,8 +81,7 @@ def test_get_observations(requests_mock):
     assert len(first_result['place_ids']) == 13
 
 
-@patch('pyinaturalist.pagination.sleep')
-def test_get_observations__all_pages(sleep, requests_mock):
+def test_get_observations__all_pages(requests_mock):
     page_1 = load_sample_data('get_observations_node_page1.json')
     page_2 = load_sample_data('get_observations_node_page2.json')
 
@@ -155,8 +154,7 @@ def test_get_observation_species_counts(requests_mock):
     assert first_result['taxon']['name'] == 'Harmonia axyridis'
 
 
-@patch('pyinaturalist.pagination.sleep')
-def test_get_observation_species_counts__all_pages(sleep, requests_mock):
+def test_get_observation_species_counts__all_pages(requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/observations/species_counts',
         [

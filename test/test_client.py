@@ -2,10 +2,9 @@ from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
-from urllib3.util import Retry
 
 from pyinaturalist.client import iNatClient
-from pyinaturalist.constants import MAX_RETRIES, TOKEN_EXPIRATION
+from pyinaturalist.constants import TOKEN_EXPIRATION
 from pyinaturalist.docs import document_common_args
 
 mock_session_1 = MagicMock()
@@ -74,22 +73,12 @@ def test_client_auth_refresh(get_access_token):
     # Get an initial access token
     assert client.access_token == 'token_1'
     assert isinstance(client._token_expires, datetime)
-    assert client._is_expired() is False
+    assert client._is_token_expired() is False
 
     # Wait for it to expire
     client._token_expires = datetime.utcnow() - TOKEN_EXPIRATION
-    assert client._is_expired() is True
+    assert client._is_token_expired() is True
 
     # Expect a new access token
     assert client.access_token == 'token_2'
-    assert client._is_expired() is False
-
-
-def test_client_retry():
-    """Custom retry settings should be mounted on the client's session and be retrievable via property"""
-    client_1 = iNatClient()
-    assert client_1.retry.total == MAX_RETRIES
-
-    client_1.retry = Retry(total=2)
-    client_2 = iNatClient(retry=Retry(total=2))
-    assert client_1.retry.total == client_2.retry.total == 2
+    assert client._is_token_expired() is False

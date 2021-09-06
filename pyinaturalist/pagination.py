@@ -1,7 +1,6 @@
 from functools import wraps
 from logging import getLogger
 from math import ceil
-from time import sleep
 from typing import Callable
 
 from pyinaturalist.constants import (
@@ -9,7 +8,6 @@ from pyinaturalist.constants import (
     LARGE_REQUEST_WARNING,
     PER_PAGE_RESULTS,
     REQUESTS_PER_MINUTE,
-    THROTTLING_DELAY,
     JsonResponse,
 )
 
@@ -80,7 +78,6 @@ def paginate_all(api_func: Callable, *args, method: str = 'page', **params) -> J
 
         page_results = api_func(**params).get('results', [])
         results += page_results
-        sleep(THROTTLING_DELAY)
 
     return {
         'results': results,
