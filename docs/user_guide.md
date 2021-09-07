@@ -342,8 +342,8 @@ the `session` argument for any API request function. It's recommended to use
 See Caching and Rate-Limiting sections below for examples.
 
 ## Caching
-All API requests are cached by default. These expire in 1 hour for most endpoints, and
-longer for some infrequently-changing data (like taxa and places). See
+All API requests are cached by default. These expire in 30 minutes for most endpoints, and
+1 day for some infrequently-changing data (like taxa and places). See
 [requests-cache: Expiration](https://requests-cache.readthedocs.io/en/latest/user_guide/expiration.html)
 for details on cache expiration behavior.
 
