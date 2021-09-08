@@ -1,5 +1,5 @@
 # flake8: noqa: F401, F403
-__version__ = '0.15.0'
+__version__ = '0.15.1'
 DEFAULT_USER_AGENT: str = f'pyinaturalist/{__version__}'
 user_agent = DEFAULT_USER_AGENT
 

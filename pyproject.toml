@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyinaturalist"
-version = "0.15.0"
+version = "0.15.1"
 description = "iNaturalist API client for python"
 authors = ["Nicolas Noé <nicolas@niconoe.eu>", "Jordan Cook <Jordan.Cook@pioneer.com>"]
 license = "MIT"
@@ -33,7 +33,7 @@ keyring = ">=22.3"
 python-dateutil = ">=2.0"
 python-forge = ">=18.6"
 requests = ">=2.20"
-requests-cache = "^0.7.4"
+requests-cache = ">=0.7.4"
 requests-ratelimiter = ">=0.2.1"
 rich = ">=10.0"
 

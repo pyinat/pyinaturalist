@@ -80,7 +80,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):  # type: ignore  # false
                 `requests-cache: Expiration <https://requests-cache.readthedocs.io/en/latest/user_guide/expiration.html>`_
             per_second: Max requests per second
             per_minute: Max requests per minute
-            per_minute: Max requests per day
+            per_day: Max requests per day
             burst: Max number of consecutive requests allowed before applying per-second rate-limiting
             retries: Maximum number of times to retry a failed request
             backoff_factor: Factor for increasing delays between retries
@@ -88,8 +88,9 @@ class ClientSession(CacheMixin, LimiterMixin, Session):  # type: ignore  # false
             kwargs: Additional keyword arguments for :py:class:`~requests_cache.session.CachedSession`
                 and/or :py:class:`~requests_ratelimiter.requests_ratelimiter.LimiterSession`
         """
-        # If not overridden, use default expiration times per API endpoint
+        # If not overridden, use Cache-Control when possible, and some default expiration times
         if not expire_after:
+            kwargs.setdefault('cache_control', True)
             kwargs.setdefault('urls_expire_after', CACHE_EXPIRATION)
         self.timeout = timeout
 
