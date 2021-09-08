@@ -72,7 +72,7 @@ def put_observation_field_values(
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/put_observation_field_value_result.json
+            .. literalinclude:: ../sample_data/post_put_observation_field_value.json
                 :language: javascript
 
     Returns:
