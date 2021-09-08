@@ -47,7 +47,7 @@ logger = getLogger('pyinaturalist')
 thread_local = threading.local()
 
 
-class ClientSession(CacheMixin, LimiterMixin, Session):  # type: ignore  # false positive
+class ClientSession(CacheMixin, LimiterMixin, Session):
     """Custom session class used for sending API requests. Combines the following features and
     settings:
 
@@ -95,7 +95,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):  # type: ignore  # false
         self.timeout = timeout
 
         # Initialize with caching and rate-limiting settings
-        super().__init__(
+        super().__init__(  # type: ignore  # false positive
             cache_name=CACHE_FILE,
             backend='sqlite',
             expire_after=expire_after,
