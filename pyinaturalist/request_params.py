@@ -29,7 +29,7 @@ from pyinaturalist.converters import (
     try_int,
 )
 
-COMMON_PARAMS = ['access_token', 'dry_run', 'session']
+COMMON_PARAMS = ['access_token', 'dry_run', 'expire_after', 'limit', 'session', 'user_agent']
 MULTIPLE_CHOICE_ERROR_MSG = (
     'Parameter "{}" must have one of the following values: {}\n\tValue provided: {}'
 )
@@ -66,6 +66,7 @@ def preprocess_request_params(params: Optional[RequestParams]) -> RequestParams:
     params = convert_datetime_params(params)
     params = convert_list_params(params)
     params = strip_empty_values(params)
+    params, _ = split_common_params(params)
     return params
 
 

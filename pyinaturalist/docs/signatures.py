@@ -149,19 +149,16 @@ def copy_signatures(
 
 
 def deduplicate_var_kwargs(params: Dict) -> Dict:
-    """If a list of params contains one or more variadic keyword args (e.g., ``**kwargs``),
-    ensure there are no duplicates and move it to the end.
+    """Add variadic keyword args (e.g., ``**kwargs``) to the end of a function signature, accounting
+    for any duplicates.
     """
     # Check for **kwargs by param type instead of by name
-    has_var_kwargs = False
     for k, v in params.copy().items():
         if v.kind == Parameter.VAR_KEYWORD:
-            has_var_kwargs = True
             params.pop(k)
 
-    # If it was present, add **kwargs as the last param
-    if has_var_kwargs:
-        params.update(forge.kwargs)
+    # Add **kwargs as the last param
+    params.update(forge.kwargs)
     return params
 
 
