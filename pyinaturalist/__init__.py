@@ -9,6 +9,7 @@ try:
     from pyinaturalist.constants import *
     from pyinaturalist.formatters import enable_logging, format_table, pprint
     from pyinaturalist.models import *
+    from pyinaturalist.pagination import Paginator
     from pyinaturalist.request_params import get_interval_ranges
     from pyinaturalist.v0 import *
     from pyinaturalist.v1 import *

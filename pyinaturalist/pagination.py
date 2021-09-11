@@ -1,7 +1,8 @@
+from concurrent.futures import ThreadPoolExecutor
 from functools import wraps
 from logging import getLogger
 from math import ceil
-from typing import Callable
+from typing import AsyncIterable, AsyncIterator, Callable, Generic, Iterable, Iterator, List
 
 from pyinaturalist.constants import (
     EXPORT_URL,
@@ -10,8 +11,139 @@ from pyinaturalist.constants import (
     REQUESTS_PER_MINUTE,
     JsonResponse,
 )
+from pyinaturalist.models import T
 
 logger = getLogger(__name__)
+
+
+# TODO: support autocomplete pseudo-pagination?
+# TODO: code reuse
+class Paginator(Iterable, AsyncIterable, Generic[T]):
+    """Class to handle pagination of API requests, with async support
+
+    Args:
+        request_function: API request function to paginate
+        model: Model class to use for results
+        method: Pagination method; either 'page', 'id', or 'autocomplete' (see below)
+        limit: Maximum number of results to fetch
+        per_page: Maximum number of results to fetch per page
+        params: Original request parameters
+    """
+
+    def __init__(
+        self,
+        request_function: Callable,
+        model: T,
+        method: str = 'page',
+        limit: int = None,
+        per_page: int = None,
+        **kwargs,
+    ):
+        self.limit = limit
+        self.kwargs = kwargs
+        self.request_function = request_function
+        self.method = method
+        self.model = model
+        self.per_page = per_page or PER_PAGE_RESULTS
+
+        self.exhausted = False
+        self.results_fetched = 0
+        self._total_results = -1
+
+        # Set initial pagination params based on pagination method
+        self.kwargs.pop('page', None)
+        self.kwargs.pop('per_page', None)
+        # if self.method == 'autocomplete':
+        #     return paginate_autocomplete(self.request_function, **self.kwargs)
+        if self.method == 'id':
+            self.kwargs['order_by'] = 'id'
+            self.kwargs['order'] = 'asc'
+        else:
+            self.kwargs['page'] = 1
+
+    async def __aiter__(self) -> AsyncIterator[T]:
+        """Iterate over paginated results, with non-blocking requests sent from a separate thread"""
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            while not self.exhausted:
+                for result in executor.submit(self.next_page).result():
+                    yield result
+
+    def __iter__(self) -> Iterator[T]:
+        """Iterate over paginated results"""
+        while not self.exhausted:
+            for result in self.next_page():
+                yield result
+
+    @property
+    def total_results(self) -> int:
+        """Total number of results for this query. Will be fetched if no pages have been fetched
+        yet.
+        """
+        if self._total_results == -1:
+            count_response = self.request_function(**{**self.kwargs, 'per_page': 0})
+            self._total_results = int(count_response['total_results'])
+        return self._total_results
+
+    def all(self) -> List[T]:
+        """Get all results in a single list"""
+        return list(self)
+
+    def next_page(self) -> List[T]:
+        """Get the next page of results"""
+        if self.exhausted:
+            return []
+
+        # If a limit is specified, avoid fetching more results than needed
+        if self.limit and self.results_fetched + self.per_page > self.limit:
+            self.per_page = self.limit - self.results_fetched
+
+        # Fetch results
+        response = self.request_function(**self.kwargs, per_page=self.per_page)
+        self._total_results = response.get('total_results') or len(response)
+        results = response.get('results', response)
+        self.results_fetched += len(results)
+
+        # Set params for next request, if there are more results
+        if (
+            (self.limit and self.results_fetched >= self.limit)
+            or self.results_fetched >= self.total_results
+            or len(results) == 0
+        ):
+            self.exhausted = True
+        else:
+            if self.method == 'id':
+                self.kwargs['id_above'] = results[-1]['id']
+            else:
+                self.kwargs['page'] += 1
+
+        # If this is the first of multiple requests, log the estimated time and number of requests
+        if self.results_fetched == len(results) and not self.exhausted:
+            self._estimate()
+
+        return [self.model.from_json(result) for result in results]
+
+    def _estimate(self):
+        """Log the estimated total number of requests and rate-limiting delay, and show a warning if
+        the request is too large
+        """
+        total_requests = ceil(self.total_results / self.per_page)
+        est_delay = ceil((total_requests / REQUESTS_PER_MINUTE) * 60)
+        logger.info(
+            f'This query will fetch {self.total_results} results in {total_requests} requests. '
+            f'Estimated total rate-limiting delay: {est_delay} seconds'
+        )
+
+        if self.total_results > LARGE_REQUEST_WARNING:
+            logger.warning(
+                'This request is larger than recommended for API usage. For bulk requests, consider '
+                f'using the iNat export tool instead: {EXPORT_URL}'
+            )
+
+    def __str__(self) -> str:
+        return (
+            f'Paginator({self.request_function.__name__}, '
+            f'fetched={self.results_fetched}/{self.total_results})'
+        )
 
 
 def add_paginate_all(method: str = 'page'):
@@ -31,11 +163,16 @@ def add_paginate_all(method: str = 'page'):
     return decorator
 
 
-def paginate_all(api_func: Callable, *args, method: str = 'page', **params) -> JsonResponse:
+# def paginate_all(request_function: Callable, method: str = 'page', **kwargs) -> JsonResponse:
+#     paginator = Paginator(request_function, method=method, **kwargs)
+#     return paginator.all()
+
+
+def paginate_all(request_function: Callable, *args, method: str = 'page', **kwargs) -> JsonResponse:
     """Get all pages of a multi-page request. Explicit pagination parameters will be overridden.
 
     Args:
-        api_func: API endpoint function to paginate
+        request_function: API request function to paginate
         method: Pagination method; either 'page', 'id', or 'autocomplete' (see below)
         params: Original request parameters
 
@@ -47,18 +184,18 @@ def paginate_all(api_func: Callable, *args, method: str = 'page', **params) -> J
     Returns:
         Response dict containing combined results, in the same format as ``api_func``
     """
-    params.pop('page', None)
+    kwargs.pop('page', None)
     if method == 'autocomplete':
-        return paginate_autocomplete(api_func, *args, **params)
+        return paginate_autocomplete(request_function, *args, **kwargs)
     if method == 'id':
-        params['order_by'] = 'id'
-        params['order'] = 'asc'
+        kwargs['order_by'] = 'id'
+        kwargs['order'] = 'asc'
     else:
-        params['page'] = 1
-    params['per_page'] = PER_PAGE_RESULTS
+        kwargs['page'] = 1
+    kwargs['per_page'] = PER_PAGE_RESULTS
 
     # Run an initial request to get request size
-    response = api_func(**params)
+    response = request_function(**kwargs)
     results = page_results = response['results']
     total_results = response.get('total_results')
     estimate_request_size(total_results)
@@ -72,11 +209,11 @@ def paginate_all(api_func: Callable, *args, method: str = 'page', **params) -> J
     # Loop until we get all pages
     while check_results():
         if method == 'id':
-            params['id_above'] = page_results[-1]['id']
+            kwargs['id_above'] = page_results[-1]['id']
         else:
-            params['page'] += 1
+            kwargs['page'] += 1
 
-        page_results = api_func(**params).get('results', [])
+        page_results = request_function(**kwargs).get('results', [])
         results += page_results
 
     return {
@@ -85,7 +222,7 @@ def paginate_all(api_func: Callable, *args, method: str = 'page', **params) -> J
     }
 
 
-def paginate_autocomplete(api_func: Callable, *args, **params) -> JsonResponse:
+def paginate_autocomplete(api_func: Callable, *args, **kwargs) -> JsonResponse:
     """Attempt to get as many results as possible from the places autocomplete endpoint.
     This is necessary for some problematic places for which there are many matches but not ranked
     with the desired match(es) first.
@@ -94,13 +231,13 @@ def paginate_autocomplete(api_func: Callable, *args, **params) -> JsonResponse:
     sorted on, and direction can't be specified, but this can at least provide a few additional
     results beyond the limit of 20.
     """
-    params['per_page'] = 20
-    params.pop('order_by', None)
+    kwargs['per_page'] = 20
+    kwargs.pop('order_by', None)
 
     # Search with default ordering and ordering by area (if there are more than 20 results)
-    page_1 = api_func(*args, **params)
+    page_1 = api_func(*args, **kwargs)
     if page_1['total_results'] > 20:
-        page_2 = api_func(*args, **params, order_by='area')
+        page_2 = api_func(*args, **kwargs, order_by='area')
     else:
         page_2 = {'results': []}
 
