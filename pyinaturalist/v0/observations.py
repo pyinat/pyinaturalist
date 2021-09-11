@@ -25,7 +25,7 @@ logger = getLogger(__name__)
     docs._bounding_box,
     docs._pagination,
 )
-@add_paginate_all(method='page')
+@add_paginate_all()
 def get_observations(**params) -> Union[List, str]:
     """Get observation data, optionally in an alternative format
 

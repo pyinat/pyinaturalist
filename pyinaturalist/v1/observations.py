@@ -156,7 +156,7 @@ def get_observations(**params) -> JsonResponse:
 
 
 @document_request_params(*docs._get_observations, docs._pagination)
-@add_paginate_all(method='page')
+@add_paginate_all()
 def get_observation_species_counts(**params) -> JsonResponse:
     """Get all species (or other 'leaf taxa') associated with observations matching the search
     criteria, and the count of observations they are associated with.
@@ -251,8 +251,8 @@ def get_observation_identifiers(**params) -> JsonResponse:
     return response.json()
 
 
-@add_paginate_all(method='page')
-def get_observation_taxonomy(user_id: IntOrStr, **params) -> JsonResponse:
+@add_paginate_all()
+def get_observation_taxonomy(user_id: IntOrStr = None, **params) -> JsonResponse:
     """Get observation counts for all taxa in a full taxonomic tree. In the web UI, these are used
     for life lists.
 

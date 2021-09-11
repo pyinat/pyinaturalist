@@ -8,7 +8,7 @@ from pyinaturalist.v1 import delete_v1, get_v1, post_v1
 
 
 @document_request_params(docs._projects_params, docs._pagination)
-@add_paginate_all(method='page')
+@add_paginate_all()
 def get_projects(**params) -> JsonResponse:
     """Search projects
 

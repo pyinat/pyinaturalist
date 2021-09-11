@@ -8,7 +8,7 @@ from pyinaturalist.v1 import get_v1
 
 
 @document_request_params(docs._taxon_params, docs._taxon_id_params, docs._pagination)
-@add_paginate_all(method='page')
+@add_paginate_all()
 def get_taxa(**params) -> JsonResponse:
     """Search taxa
 
