@@ -4,7 +4,6 @@ from typing import Any, Callable, Dict
 
 from requests import Session
 
-from pyinaturalist import DEFAULT_USER_AGENT
 from pyinaturalist.api_requests import ClientSession
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import TOKEN_EXPIRATION, JsonResponse
@@ -70,7 +69,6 @@ class iNatClient:
         >>> client.creds['username'] = 'my_inaturalist_username'
         >>> client.default_params['locale'] = 'es'
         >>> client.dry_run = True
-        >>> client.user_agent = 'My custom user agent'
 
     Args:
         creds: Optional arguments for :py:func:`.get_access_token`, used to get and refresh access
@@ -78,7 +76,6 @@ class iNatClient:
         default_params: Default request parameters to pass to any applicable API requests
         dry_run: Just log all requests instead of sending real requests
         session: Session object to use instead of creating a new one
-        user_agent: User-Agent string to pass to API requests
         kwargs: Keyword arguments for :py:class:`.ClientSession`
     """
 
@@ -88,14 +85,12 @@ class iNatClient:
         default_params: Dict[str, Any] = None,
         dry_run: bool = False,
         session: Session = None,
-        user_agent: str = DEFAULT_USER_AGENT,
         **kwargs,
     ):
         self.creds = creds or {}
         self.default_params = default_params or {}
         self.dry_run = dry_run
         self.session = session or ClientSession(**kwargs)
-        self.user_agent = user_agent
 
         self._access_token = None
         self._token_expires = None
@@ -121,7 +116,9 @@ class iNatClient:
         initialized = self._access_token and self._token_expires
         return not (initialized and datetime.utcnow() < self._token_expires)
 
-    def request(self, request_function: Callable, *args, auth: bool = False, **params) -> JsonResponse:
+    def request(
+        self, request_function: Callable, *args, auth: bool = False, **params
+    ) -> JsonResponse:
         """Apply any applicable client settings to request parameters before sending a request.
         Explicit keyword arguments will override any client settings.
 
@@ -135,7 +132,6 @@ class iNatClient:
         client_settings = {
             'dry_run': self.dry_run,
             'session': self.session,
-            'user_agent': self.user_agent,
         }
 
         # Add access token and default params, if applicable

@@ -49,7 +49,9 @@ class Observation(BaseModel):
     )
     community_taxon_id: int = field(default=None, doc='The current community identification taxon')
     description: str = field(default=None, doc='Observation description')
-    faves: List[Dict] = field(factory=list, doc='Details on users who have favorited the observation')
+    faves: List[Dict] = field(
+        factory=list, doc='Details on users who have favorited the observation'
+    )
     geoprivacy: str = field(default=None, options=GEOPRIVACY_LEVELS, doc='Location privacy level')
     identifications_count: int = field(default=None, doc='Total number of identifications')
     identifications_most_agree: bool = field(
@@ -111,12 +113,16 @@ class Observation(BaseModel):
     )
     quality_grade: str = field(default=None, options=QUALITY_GRADES, doc='Quality grade')
     quality_metrics: List[Dict] = field(factory=list, doc='Data quality assessment metrics')
-    reviewed_by: List[int] = field(factory=list, doc='IDs of users who have reviewed the observation')
+    reviewed_by: List[int] = field(
+        factory=list, doc='IDs of users who have reviewed the observation'
+    )
     site_id: int = field(
         default=None, doc='Site ID for iNaturalist network members, or ``1`` for inaturalist.org'
     )
     sounds: List[Dict] = field(factory=list, doc='Observation sound files')
-    species_guess: str = field(default=None, doc="Taxon name from observer's initial identification")
+    species_guess: str = field(
+        default=None, doc="Taxon name from observer's initial identification"
+    )
     tags: List[str] = field(factory=list, doc='Arbitrary user tags added to the observation')
     updated_at: DateTime = datetime_field(doc='Date and time the observation was last updated')
     uri: str = field(default=None, doc='Link to observation details page')
@@ -140,7 +146,9 @@ class Observation(BaseModel):
         type=List[ObservationFieldValue],
         doc='Observation field values',
     )
-    photos: property = LazyProperty(Photo.from_json_list, type=List[Photo], doc='Observation photos')
+    photos: property = LazyProperty(
+        Photo.from_json_list, type=List[Photo], doc='Observation photos'
+    )
     project_observations: property = LazyProperty(
         ProjectObservation.from_json_list,
         type=List[ProjectObservation],

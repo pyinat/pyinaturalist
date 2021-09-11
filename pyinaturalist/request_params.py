@@ -29,7 +29,7 @@ from pyinaturalist.converters import (
     try_int,
 )
 
-COMMON_PARAMS = ['access_token', 'dry_run', 'user_agent', 'session']
+COMMON_PARAMS = ['access_token', 'dry_run', 'session']
 MULTIPLE_CHOICE_ERROR_MSG = (
     'Parameter "{}" must have one of the following values: {}\n\tValue provided: {}'
 )
@@ -44,10 +44,10 @@ INTERVALS: Dict[str, Union[timedelta, relativedelta]] = {
 logger = getLogger(__name__)
 
 
-def preprocess_request_body(body: Optional[RequestParams]) -> RequestParams:
+def preprocess_request_body(body: Optional[RequestParams]) -> Optional[RequestParams]:
     """Perform type conversions, sanity checks, etc. on JSON-formatted request body"""
     if not body:
-        return {}
+        return None
     if 'observation' in body:
         body['observation'] = preprocess_request_params(body['observation'])
     else:
@@ -160,7 +160,9 @@ def convert_rank_range(params: RequestParams) -> RequestParams:
     return params
 
 
-def get_interval_ranges(start: DateOrStr, end: DateOrStr, interval: TimeInterval) -> List[DateRange]:
+def get_interval_ranges(
+    start: DateOrStr, end: DateOrStr, interval: TimeInterval
+) -> List[DateRange]:
     """Given a date range and a time interval, split the range into a list of smaller ranges
 
     Args:
@@ -240,7 +242,9 @@ def validate_multiple_choice_params(params: RequestParams) -> RequestParams:
     return params
 
 
-def validate_multiple_choice_param(params: RequestParams, key: str, choices: Iterable) -> RequestParams:
+def validate_multiple_choice_param(
+    params: RequestParams, key: str, choices: Iterable
+) -> RequestParams:
     """Verify that a multiple-choice request parameter contains valid value(s);
     if not, raise an error.
     **Used for endpoint-specific params.**

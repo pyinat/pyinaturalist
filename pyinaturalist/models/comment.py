@@ -1,7 +1,14 @@
 from datetime import datetime
 
 from pyinaturalist.constants import DATETIME_SHORT_FORMAT, TableRow
-from pyinaturalist.models import BaseModel, LazyProperty, User, datetime_now_field, define_model, field
+from pyinaturalist.models import (
+    BaseModel,
+    LazyProperty,
+    User,
+    datetime_now_field,
+    define_model,
+    field,
+)
 
 
 @define_model

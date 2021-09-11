@@ -12,7 +12,7 @@ from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import copy_annotations, copy_docstrings
 
 AUTOMETHOD_INIT = '.. automethod:: __init__'
-COMMON_PARAMS = ['dry_run', 'user_agent', 'session']
+COMMON_PARAMS = ['dry_run', 'session']
 logger = getLogger(__name__)
 
 
@@ -61,7 +61,7 @@ def copy_doc_signature(
         exclude_args: Arguments to exclude from the new docstring
     """
     if add_common_args:
-        template_functions += (_dry_run, _session, _user_agent)
+        template_functions += (_dry_run, _session)
 
     def wrapper(func):
         try:
@@ -88,7 +88,7 @@ document_controller_params = partial(
 
 def document_common_args(func):
     """Just add common args to a function's docstring without modifying the signature"""
-    template_functions = (_dry_run, _session, _user_agent)
+    template_functions = (_dry_run, _session)
     func = copy_annotations(func, template_functions)
     func = copy_docstrings(func, template_functions)
     return func
@@ -178,10 +178,4 @@ def _dry_run(dry_run: bool = False):
 def _session(session: Session = None):
     """Args:
     session: An existing `Session object <https://docs.python-requests.org/en/latest/user/advanced/>`_ to use instead of creating a new one
-    """
-
-
-def _user_agent(user_agent: str = None):
-    """Args:
-    user_agent: A custom user-agent string to provide to the iNaturalist API
     """

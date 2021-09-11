@@ -263,7 +263,9 @@ def strip_empty_values(values: Dict) -> Dict:
 # -------------------
 
 
-def ensure_list(value: Any, convert_csv: bool = False, delimiter: str = ',') -> MutableSequence[Any]:
+def ensure_list(
+    value: Any, convert_csv: bool = False, delimiter: str = ','
+) -> MutableSequence[Any]:
     """Convert an object, response, or (optionally) comma-separated string into a list"""
     if not value:
         return []

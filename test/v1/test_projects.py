@@ -64,5 +64,7 @@ def test_delete_project_observation(requests_mock):
         f'{API_V1_BASE_URL}/projects/1234/remove',
         status_code=200,
     )
-    response = delete_project_observation(project_id=1234, observation_id=5678, access_token='token')
+    response = delete_project_observation(
+        project_id=1234, observation_id=5678, access_token='token'
+    )
     assert response.status_code == 200

@@ -81,7 +81,8 @@ def test_controlled_term__empty():
 def test_controlled_term__properties():
     controlled_term = ControlledTerm.from_json(j_controlled_term_1)
     assert (
-        controlled_term.value_labels == 'No Evidence of Flowering, Flowering, Fruiting, Flower Budding'
+        controlled_term.value_labels
+        == 'No Evidence of Flowering, Flowering, Fruiting, Flower Budding'
     )
 
 
@@ -214,7 +215,9 @@ def test_observation__project_observations():
 
 def test_observation__thumbnail_url():
     obs = Observation.from_json(j_observation_2)
-    assert obs.thumbnail_url == 'https://static.inaturalist.org/photos/92152429/square.jpg?1598551272'
+    assert (
+        obs.thumbnail_url == 'https://static.inaturalist.org/photos/92152429/square.jpg?1598551272'
+    )
 
 
 def test_observations():
@@ -419,7 +422,12 @@ def test_taxon__empty():
 
 def test_taxon__all_names():
     taxon = Taxon.from_json(j_taxon_8_all_names)
-    assert taxon.names[1] == {'is_valid': True, 'name': 'American Crow', 'position': 0, 'locale': 'en'}
+    assert taxon.names[1] == {
+        'is_valid': True,
+        'name': 'American Crow',
+        'position': 0,
+        'locale': 'en',
+    }
 
 
 def test_taxon__autocomplete():

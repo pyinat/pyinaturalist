@@ -69,7 +69,8 @@ class ConservationStatus(IdWrapperMixin, BaseModel):
     created_at: DateTime = datetime_field(doc='Date and time the record was created')
     description: str = field(default=None, doc='Description of conservation status')
     geoprivacy: str = field(
-        default=None, doc='Default geoprivacy level; may be obscured or private for protected species'
+        default=None,
+        doc='Default geoprivacy level; may be obscured or private for protected species',
     )
     iucn: int = field(default=None, doc='IUCD ID, if applicable')
     source_id: int = field(default=None)
@@ -151,7 +152,9 @@ class ListedTaxon(IdWrapperMixin, EstablishmentMeans):
     manually_added: bool = field(
         default=None, doc='Indicates if the taxon was manually added to the list'
     )
-    observations_count: int = field(default=0, doc='Number of observations of this taxon in the list')
+    observations_count: int = field(
+        default=0, doc='Number of observations of this taxon in the list'
+    )
     occurrence_status_level: int = field(default=None, doc='')
     primary_listing: bool = field(
         default=None, doc='Indicates if this is the primary listing for this taxon'
@@ -209,7 +212,9 @@ class TaxonSummary(BaseModel):
         doc='Conservation status of the taxon in the observation location',
     )
     listed_taxon: property = LazyProperty(
-        ListedTaxon.from_json, type=ListedTaxon, doc='Details about the taxon on an "original" life list'
+        ListedTaxon.from_json,
+        type=ListedTaxon,
+        doc='Details about the taxon on an "original" life list',
     )
     wikipedia_summary: str = field(default=None, doc='Taxon summary from Wikipedia article')
 

@@ -8,7 +8,9 @@ from pyinaturalist.pagination import paginate_all
 from pyinaturalist.v1 import *
 from pyinaturalist.v1 import get_observations
 
-msg = 'The module `pyinaturalist.node_api` is deprecated; please use `from pyinaturalist import ...`'
+msg = (
+    'The module `pyinaturalist.node_api` is deprecated; please use `from pyinaturalist import ...`'
+)
 warn(DeprecationWarning(msg))
 
 

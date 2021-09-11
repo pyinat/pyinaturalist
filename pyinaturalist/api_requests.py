@@ -10,6 +10,7 @@ import forge
 from pyrate_limiter import Duration, RequestRate
 from requests import PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
+from requests.utils import default_user_agent
 from requests_cache import CacheMixin, ExpirationTime
 from requests_ratelimiter import LimiterMixin
 from urllib3.util import Retry
@@ -47,7 +48,7 @@ logger = getLogger('pyinaturalist')
 thread_local = threading.local()
 
 
-class ClientSession(CacheMixin, LimiterMixin, Session):  # type: ignore  # false positive
+class ClientSession(CacheMixin, LimiterMixin, Session):
     """Custom session class used for sending API requests. Combines the following features and
     settings:
 
@@ -71,6 +72,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):  # type: ignore  # false
         retries: int = REQUEST_RETRIES,
         backoff_factor: float = RETRY_BACKOFF,
         timeout: int = REQUEST_TIMEOUT,
+        user_agent: str = None,
         **kwargs,
     ):
         """Get a Session object, optionally with custom settings for caching and rate-limiting.
@@ -80,21 +82,23 @@ class ClientSession(CacheMixin, LimiterMixin, Session):  # type: ignore  # false
                 `requests-cache: Expiration <https://requests-cache.readthedocs.io/en/latest/user_guide/expiration.html>`_
             per_second: Max requests per second
             per_minute: Max requests per minute
-            per_minute: Max requests per day
+            per_day: Max requests per day
             burst: Max number of consecutive requests allowed before applying per-second rate-limiting
             retries: Maximum number of times to retry a failed request
             backoff_factor: Factor for increasing delays between retries
             timeout: Maximum number of seconds to wait for a response from the server
+            user_agent: Additional User-Agent info to pass to API requests
             kwargs: Additional keyword arguments for :py:class:`~requests_cache.session.CachedSession`
                 and/or :py:class:`~requests_ratelimiter.requests_ratelimiter.LimiterSession`
         """
-        # If not overridden, use default expiration times per API endpoint
+        # If not overridden, use Cache-Control when possible, and some default expiration times
         if not expire_after:
+            kwargs.setdefault('cache_control', True)
             kwargs.setdefault('urls_expire_after', CACHE_EXPIRATION)
         self.timeout = timeout
 
         # Initialize with caching and rate-limiting settings
-        super().__init__(
+        super().__init__(  # type: ignore  # false positive
             cache_name=CACHE_FILE,
             backend='sqlite',
             expire_after=expire_after,
@@ -107,6 +111,15 @@ class ClientSession(CacheMixin, LimiterMixin, Session):  # type: ignore  # false
             max_delay=MAX_DELAY,
             **kwargs,
         )
+
+        # Set default headers
+        self.headers['Accept'] = 'application/json'
+        user_agent_details = [
+            default_user_agent(),
+            f'pyinaturalist/{pyinaturalist.__version__}',
+            user_agent or '',
+        ]
+        self.headers['User-Agent'] = '\n'.join(user_agent_details).strip()
 
         # Mount an adapter to apply retry settings
         retry = Retry(total=retries, backoff_factor=backoff_factor)
@@ -130,7 +143,6 @@ def request(
     json: Dict = None,
     raise_for_status: bool = True,
     session: Session = None,
-    user_agent: str = None,
     **params: RequestParams,
 ) -> Response:
     """Wrapper around :py:func:`requests.request` with additional options specific to iNat API requests
@@ -147,7 +159,6 @@ def request(
         session: An existing Session object to use instead of creating a new one
         timeout: Time (in seconds) to wait for a response from the server; if exceeded, a
             :py:exc:`requests.exceptions.Timeout` will be raised.
-        user_agent: A custom user-agent string to provide to the iNaturalist API
         params: All other keyword arguments are interpreted as request parameters
 
     Returns:
@@ -163,7 +174,6 @@ def request(
         ids=ids,
         json=json,
         params=params,
-        user_agent=user_agent,
     )
     logger.info(format_request(request, dry_run))
 
@@ -187,7 +197,6 @@ def prepare_request(
     ids: MultiInt = None,
     json: Dict = None,
     params: RequestParams = None,
-    user_agent: str = None,
     **kwargs,
 ) -> PreparedRequest:
     """Translate ``pyinaturalist``-specific options into standard request arguments"""
@@ -195,26 +204,20 @@ def prepare_request(
     params = preprocess_request_params(params)
     url = convert_url_ids(url, ids)
 
-    # Prepare user-agent and authentication headers
+    # Set auth header
     headers = headers or {}
-    headers['User-Agent'] = user_agent or pyinaturalist.user_agent
-    headers['Accept'] = 'application/json'
     if access_token:
         headers['Authorization'] = f'Bearer {access_token}'
 
-    # Convert any datetimes to strings in request body
-    if json:
-        headers['Content-type'] = 'application/json'
-        json = preprocess_request_body(json)
-
-    # Read any files for uploading
+    # Convert any datetimes in request body, and read any files for uploading
+    json = preprocess_request_body(json)
     if files:
         files = {'file': ensure_file_obj(files)}  # type: ignore
 
-    request = Request(
+    # Convert into a PreparedRequest
+    return Request(
         method=method, url=url, files=files, headers=headers, json=json, params=params, **kwargs
-    )
-    return request.prepare()
+    ).prepare()
 
 
 @forge.copy(request, exclude='method')
@@ -264,7 +267,9 @@ def is_dry_run_enabled(method: str) -> bool:
 
     dry_run_enabled = pyinaturalist.DRY_RUN_ENABLED or env_to_bool('DRY_RUN_ENABLED')
     if method in WRITE_HTTP_METHODS:
-        return dry_run_enabled or pyinaturalist.DRY_RUN_WRITE_ONLY or env_to_bool('DRY_RUN_WRITE_ONLY')
+        return (
+            dry_run_enabled or pyinaturalist.DRY_RUN_WRITE_ONLY or env_to_bool('DRY_RUN_WRITE_ONLY')
+        )
     return dry_run_enabled
 
 

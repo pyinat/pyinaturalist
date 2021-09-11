@@ -15,7 +15,13 @@ nox.options.sessions = ['lint', 'cov']
 LIVE_DOCS_PORT = 8181
 LIVE_DOCS_IGNORE = ['*.csv', '*.ipynb', '*.pyc', '*.tmp', '**/modules/*']
 LIVE_DOCS_WATCH = ['pyinaturalist', 'examples']
-CLEAN_DIRS = ['dist', 'build', join('docs', '_build'), join('docs', 'models'), join('docs', 'modules')]
+CLEAN_DIRS = [
+    'dist',
+    'build',
+    join('docs', '_build'),
+    join('docs', 'models'),
+    join('docs', 'modules'),
+]
 
 
 @session(python=['3.6', '3.7', '3.8', '3.9', '3.10'])
@@ -69,7 +75,5 @@ def livedocs(session):
 @session(python=False)
 def lint(session):
     """Run linters and code formatters via pre-commit"""
-    cmd_1 = 'pre-commit run --all-files'
-    cmd_2 = 'mypy --install-types --non-interactive'
-    session.run(*cmd_1.split(' '))
-    session.run(*cmd_2.split(' '))
+    cmd = 'pre-commit run --all-files'
+    session.run(*cmd.split(' '))

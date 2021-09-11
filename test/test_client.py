@@ -13,14 +13,12 @@ mock_session_2 = MagicMock()
 SETTINGS_1 = {
     'dry_run': True,
     'session': mock_session_1,
-    'user_agent': 'pytest',
 }
 SETTINGS_2 = {
     'dry_run': False,
     'session': mock_session_2,
-    'user_agent': 'python/requests',
 }
-PARTIAL_SETTINGS = {'dry_run': True, 'user_agent': 'pytest'}
+PARTIAL_SETTINGS = {'dry_run': True}
 PARAMS_1 = {'id': 1, 'name': 'test_1'}
 PARAMS_2 = {'id': 2, 'name': 'test_2'}
 

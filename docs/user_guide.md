@@ -442,15 +442,6 @@ $Env:DRY_RUN_ENABLED="true"
 ```
 :::
 
-You can also set this as a global variable:
-
-:::{warning}
-This usage is deprecated and will be removed in a future release.
-```python
->>> import pyinaturalist
->>> pyinaturalist.DRY_RUN_ENABLED = True
-```
-:::
 
 ### Dry-run only write requests
 If you would like to send real `GET` requests but mock out any requests that modify data
@@ -479,24 +470,14 @@ $Env:DRY_RUN_WRITE_ONLY="true"
 :::
 
 ## User Agent
-While not mandatory, it's good practice to include a [user-agent](https://en.wikipedia.org/wiki/User_agent) in
-your API calls. This field can be either something that identifies the project or its contact person.
+If you're using the API as part of a project or application, it's good practice to add that info to
+the [user-agent](https://en.wikipedia.org/wiki/User_agent). You can optionally set this on the
+session object used to make requests:
 
-You can set this globally:
 ```python
->>> import pyinaturalist
->>>
->>> pyinaturalist.user_agent = "MyCoolAndroidApp/2.0 (using Pyinaturalist)"
->>> # From now on, all API calls will use this user-agent.
+>>> from pyinaturalist import ClientSession
+>>> session = ClientSession(user_agent='my_app/1.0.0')
 ```
-
-Or to set this for individual requests, all API functions accept an optional `user_agent` parameter:
-```python
->>> from pyinaturalist import get_observation
->>> get_observation(observation_id=16227955, user_agent='Jane Doe \<jane.doe@gmail.com>')
-```
-
-If not configured, `Pyinaturalist/<VERSION>` will be used.
 
 ## API Recommended Practices
 See [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)

@@ -76,7 +76,9 @@ def test_get_observations(requests_mock):
     assert len(observations['results']) == 1
     assert first_result['taxon_geoprivacy'] == 'open'
     assert first_result['created_at'] == datetime(2020, 8, 27, 18, 0, 51, tzinfo=tzutc())
-    assert first_result['observed_on'] == datetime(2020, 8, 27, 8, 57, 22, tzinfo=tzoffset('Etc/UTC', 0))
+    assert first_result['observed_on'] == datetime(
+        2020, 8, 27, 8, 57, 22, tzinfo=tzoffset('Etc/UTC', 0)
+    )
     assert first_result['taxon']['id'] == 48662
     assert len(first_result['place_ids']) == 13
 

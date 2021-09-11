@@ -1,7 +1,5 @@
 # flake8: noqa: F401, F403
-__version__ = '0.15.0'
-DEFAULT_USER_AGENT: str = f'pyinaturalist/{__version__}'
-user_agent = DEFAULT_USER_AGENT
+__version__ = '0.15.1'
 
 # Ignore ImportErrors if this is imported outside a virtualenv
 try:

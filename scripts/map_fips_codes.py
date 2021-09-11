@@ -40,7 +40,9 @@ def get_counties() -> FIPSDict:
     """
     with open(FIPS_CODES_FILE) as f:
         counties = list(DictReader(f))
-    return {int(k): list(group)[0] for k, group in groupby(counties, key=lambda x: int(x['fips_code']))}
+    return {
+        int(k): list(group)[0] for k, group in groupby(counties, key=lambda x: int(x['fips_code']))
+    }
 
 
 def load_search_results() -> Optional[ResponseDict]:
@@ -77,7 +79,9 @@ def search_counties(counties: FIPSDict, fips_codes: List[int] = None) -> Respons
     return responses
 
 
-def match_responses(responses: ResponseDict, counties: FIPSDict) -> Tuple[Dict[int, int], ResponseDict]:
+def match_responses(
+    responses: ResponseDict, counties: FIPSDict
+) -> Tuple[Dict[int, int], ResponseDict]:
     """Split responses into matching results (FIPS code -> iNat place ID) and nonmatching
     results
     """

@@ -215,7 +215,9 @@ def _format_body(body):
 
 
 # TODO: This maybe belongs in a different module
-def simplify_observations(observations: ResponseOrResults, align: bool = False) -> List[ResponseResult]:
+def simplify_observations(
+    observations: ResponseOrResults, align: bool = False
+) -> List[ResponseResult]:
     """Flatten out some nested data structures within observation records:
 
     * annotations
