@@ -45,7 +45,9 @@ def get_model_doc(cls: Type) -> List[Tuple[str, str, str]]:
     options in the description.
     """
 
-    doc_rows = [_get_field_doc(field) for field in cls.__attrs_attrs__ if not field.name.startswith('_')]
+    doc_rows = [
+        _get_field_doc(field) for field in cls.__attrs_attrs__ if not field.name.startswith('_')
+    ]
     doc_rows += [('', '', '')]
     doc_rows += [_get_property_doc(prop) for prop in get_properties(cls)]
     doc_rows += [('', '', '')]

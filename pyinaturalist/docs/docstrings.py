@@ -87,7 +87,9 @@ class ApiDocstring:
 
 
 def copy_annotations(
-    target_function: Callable, template_functions: List[TemplateFunction], include_return: bool = True
+    target_function: Callable,
+    template_functions: List[TemplateFunction],
+    include_return: bool = True,
 ) -> Callable:
     """Copy type annotations from one or more template functions to a target function"""
     for template_function in template_functions:

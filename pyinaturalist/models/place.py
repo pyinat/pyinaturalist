@@ -66,7 +66,9 @@ class Place(BaseModel):
 
         if 'standard' in json_value and 'community' in json_value:
             places = [cls.from_json(item, category='standard') for item in json_value['standard']]
-            places += [cls.from_json(item, category='community') for item in json_value['community']]
+            places += [
+                cls.from_json(item, category='community') for item in json_value['community']
+            ]
             return places
         else:
             return super(Place, cls).from_json_list(json_value)

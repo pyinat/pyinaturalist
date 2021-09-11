@@ -73,7 +73,9 @@ class Taxon(BaseModel):
         default=None, doc='Total number of observations of this taxon and its descendants'
     )
     parent_id: int = field(default=None, doc='Taxon ID of immediate ancestor')
-    preferred_common_name: str = field(default='', doc='Common name for the preferred place, if any')
+    preferred_common_name: str = field(
+        default='', doc='Common name for the preferred place, if any'
+    )
     preferred_establishment_means: str = field(
         default=None, doc='Establishment means for this taxon in the given preferred place (if any)'
     )

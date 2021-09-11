@@ -267,7 +267,9 @@ def is_dry_run_enabled(method: str) -> bool:
 
     dry_run_enabled = pyinaturalist.DRY_RUN_ENABLED or env_to_bool('DRY_RUN_ENABLED')
     if method in WRITE_HTTP_METHODS:
-        return dry_run_enabled or pyinaturalist.DRY_RUN_WRITE_ONLY or env_to_bool('DRY_RUN_WRITE_ONLY')
+        return (
+            dry_run_enabled or pyinaturalist.DRY_RUN_WRITE_ONLY or env_to_bool('DRY_RUN_WRITE_ONLY')
+        )
     return dry_run_enabled
 
 

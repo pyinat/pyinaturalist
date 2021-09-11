@@ -103,7 +103,9 @@ from dateutil.tz import tzutc
                 'place_ids': None,
                 'place_id': 31,
                 'user_id': 395663,
-                'admins': [{'id': 175160, 'user_id': 370069, 'project_id': 9978, 'role': 'manager'}],
+                'admins': [
+                    {'id': 175160, 'user_id': 370069, 'project_id': 9978, 'role': 'manager'}
+                ],
                 'rule_place_ids': [31],
                 'associated_place_ids': [97394, 1, 31],
                 'user_ids': ['TRUNCATED'],

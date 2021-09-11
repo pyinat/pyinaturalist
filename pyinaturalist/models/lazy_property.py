@@ -49,7 +49,9 @@ class LazyProperty(property):
 
     """
 
-    def __init__(self, converter: Callable, name: str = None, doc: str = None, type: Type = BaseModel):
+    def __init__(
+        self, converter: Callable, name: str = None, doc: str = None, type: Type = BaseModel
+    ):
         update_wrapper(self, converter)
         self.converter = converter
         self.default = None

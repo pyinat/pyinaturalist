@@ -77,7 +77,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 skip-string-normalization = true
-line-length = 105
+line-length = 100
 
 [tool.coverage.html]
 directory = 'test-reports'
@@ -89,7 +89,7 @@ omit = ['pyinaturalist/docs/model_docs.py']
 
 [tool.isort]
 profile = 'black'
-line_length = 105
+line_length = 100
 skip_gitignore = true
 skip = [
     'pyinaturalist/__init__.py',

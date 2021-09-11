@@ -116,7 +116,9 @@ class iNatClient:
         initialized = self._access_token and self._token_expires
         return not (initialized and datetime.utcnow() < self._token_expires)
 
-    def request(self, request_function: Callable, *args, auth: bool = False, **params) -> JsonResponse:
+    def request(
+        self, request_function: Callable, *args, auth: bool = False, **params
+    ) -> JsonResponse:
         """Apply any applicable client settings to request parameters before sending a request.
         Explicit keyword arguments will override any client settings.
 

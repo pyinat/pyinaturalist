@@ -54,7 +54,11 @@ class LifeList(BaseModelCollection):
         if 'results' in value:
             value = value['results']
 
-        life_list_json = {'data': value, 'user_id': user_id, 'count_without_taxon': count_without_taxon}
+        life_list_json = {
+            'data': value,
+            'user_id': user_id,
+            'count_without_taxon': count_without_taxon,
+        }
         return super(LifeList, cls).from_json(life_list_json)
 
     def get_count(self, taxon_id: int, count_field='descendant_obs_count') -> int:

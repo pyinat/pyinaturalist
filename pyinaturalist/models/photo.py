@@ -3,7 +3,13 @@ from typing import BinaryIO, Optional, Tuple
 
 import requests
 
-from pyinaturalist.constants import ALL_LICENSES, CC_LICENSES, PHOTO_INFO_BASE_URL, PHOTO_SIZES, TableRow
+from pyinaturalist.constants import (
+    ALL_LICENSES,
+    CC_LICENSES,
+    PHOTO_INFO_BASE_URL,
+    PHOTO_SIZES,
+    TableRow,
+)
 from pyinaturalist.converters import format_dimensions, format_license
 from pyinaturalist.models import BaseModel, define_model, field
 
@@ -18,7 +24,10 @@ class Photo(BaseModel):
 
     attribution: str = field(default=None, doc='License attribution')
     license_code: str = field(
-        default=None, converter=format_license, options=ALL_LICENSES, doc='Creative Commons license code'
+        default=None,
+        converter=format_license,
+        options=ALL_LICENSES,
+        doc='Creative Commons license code',
     )
     original_dimensions: Tuple[int, int] = field(
         converter=format_dimensions, default=(0, 0), doc='Dimensions of original image'

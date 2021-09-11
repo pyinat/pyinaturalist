@@ -79,7 +79,9 @@ class UserCount(User):
 
     count: int = field(default=0, doc='Filtered count for the user')
     observation_count: int = field(default=0, doc="Filtered count for the user's observations")
-    species_count: int = field(default=0, doc="Filtered count for the user's unique species observed")
+    species_count: int = field(
+        default=0, doc="Filtered count for the user's unique species observed"
+    )
 
     @classmethod
     def from_json(cls, value: JsonResponse, **kwargs) -> 'UserCount':

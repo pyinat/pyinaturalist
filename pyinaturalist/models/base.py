@@ -8,7 +8,13 @@ from typing import Dict, Generic, List, Type, TypeVar
 
 from attr import asdict, define, field, fields_dict
 
-from pyinaturalist.constants import AnyFile, JsonResponse, ResponseOrFile, ResponseOrResults, TableRow
+from pyinaturalist.constants import (
+    AnyFile,
+    JsonResponse,
+    ResponseOrFile,
+    ResponseOrResults,
+    TableRow,
+)
 from pyinaturalist.converters import ensure_list
 
 T = TypeVar('T', bound='BaseModel')

@@ -121,7 +121,9 @@ def add_project_observation(
 
 # TODO: This may not yet be working as intended
 @document_request_params(docs._project_observation_params)
-def delete_project_observation(project_id: int, observation_id: int, access_token: str = None, **params):
+def delete_project_observation(
+    project_id: int, observation_id: int, access_token: str = None, **params
+):
     """Remove an observation from a project
 
     .. rubric:: Notes

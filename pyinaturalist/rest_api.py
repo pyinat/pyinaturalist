@@ -7,7 +7,9 @@ from pyinaturalist.constants import ListResponse
 from pyinaturalist.pagination import paginate_all
 from pyinaturalist.v0 import *
 
-msg = 'The module `pyinaturalist.rest_api` is deprecated; please use `from pyinaturalist import ...`'
+msg = (
+    'The module `pyinaturalist.rest_api` is deprecated; please use `from pyinaturalist import ...`'
+)
 warn(DeprecationWarning(msg))
 
 

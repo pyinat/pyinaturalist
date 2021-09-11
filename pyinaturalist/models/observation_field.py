@@ -37,7 +37,9 @@ class ObservationField(BaseModel):
     datatype: str = field(default=None)  # Enum
     description: str = field(default=None)
     name: str = field(default=None)
-    updated_at: datetime = datetime_now_field(doc='Date and time the observation field was last updated')
+    updated_at: datetime = datetime_now_field(
+        doc='Date and time the observation field was last updated'
+    )
     user_id: int = field(default=None)
     users_count: int = field(default=None)
     uuid: str = field(default=None)
