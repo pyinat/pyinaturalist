@@ -2,7 +2,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-import pyinaturalist
 from pyinaturalist.api_requests import (
     CACHE_FILE,
     MOCK_RESPONSE,
@@ -27,35 +26,15 @@ def test_http_methods(mock_send, http_func, http_method):
 
     assert request_obj.method == http_method
     assert request_obj.url == 'https://url/?key=value'
-    assert request_obj.headers['User-Agent'] == pyinaturalist.user_agent
-    assert request_obj.headers['Accept'] == 'application/json'
     assert request_obj.body is None
 
 
-# Test that the request() wrapper passes along expected headers; just tests kwargs, not mock response
-@pytest.mark.parametrize(
-    'input_kwargs, expected_headers',
-    [
-        ({}, {'Accept': 'application/json', 'User-Agent': pyinaturalist.user_agent}),
-        (
-            {'user_agent': 'CustomUA'},
-            {'Accept': 'application/json', 'User-Agent': 'CustomUA'},
-        ),
-        (
-            {'access_token': 'token'},
-            {
-                'Accept': 'application/json',
-                'User-Agent': pyinaturalist.user_agent,
-                'Authorization': 'Bearer token',
-            },
-        ),
-    ],
-)
 @patch('pyinaturalist.api_requests.Session.send')
-def test_request_headers(mock_send, input_kwargs, expected_headers):
-    request('GET', 'https://url', **input_kwargs)
+def test_request_headers(mock_send):
+    """Test that the request() wrapper passes along expected headers"""
+    request('GET', 'https://url', access_token='token')
     request_obj = mock_send.call_args[0][0]
-    assert request_obj.headers == expected_headers
+    assert request_obj.headers['Authorization'] == 'Bearer token'
 
 
 @patch('pyinaturalist.api_requests.ClientSession')
@@ -122,7 +101,7 @@ def test_request_dry_run(
     with patch('pyinaturalist.api_requests.pyinaturalist') as settings:
         settings.DRY_RUN_ENABLED = enabled_const
         settings.DRY_RUN_WRITE_ONLY = write_only_const
-        response = request(method, 'http://url', user_agent='pytest')
+        response = request(method, 'http://url')
 
     # Verify that the request was or wasn't mocked based on settings
     if expected_real_request:
