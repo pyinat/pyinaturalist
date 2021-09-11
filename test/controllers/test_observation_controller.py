@@ -15,7 +15,6 @@ from pyinaturalist.models import (
     TaxonSummary,
     User,
 )
-from test.conftest import load_sample_data
 from test.sample_data import *
 
 
@@ -23,24 +22,28 @@ def test_from_id(requests_mock):
     observation_id = 57754375
     requests_mock.get(
         f'{API_V1_BASE_URL}/observations',
-        json=load_sample_data('get_observations_node_page1.json'),
-        status_code=200,
+        [
+            {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
+        ],
     )
     client = iNatClient()
-    results = client.observations.from_id(observation_id)
+    results = client.observations.from_id(observation_id).all()
 
-    assert len(results) == 1 and isinstance(results[0], Observation)
+    assert len(results) == 2 and isinstance(results[0], Observation)
     assert results[0].id == observation_id
 
 
 def test_search(requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/observations',
-        json=load_sample_data('get_observations_node_page1.json'),
+        json=SAMPLE_DATA['get_observations_node_page1'],
         status_code=200,
     )
     client = iNatClient()
-    results = client.observations.search(taxon_name='Danaus plexippus', created_on='2020-08-27')
+    results = client.observations.search(
+        taxon_name='Danaus plexippus', created_on='2020-08-27'
+    ).all()
 
     assert isinstance(results[0], Observation)
     assert results[0].id == 57754375
@@ -51,7 +54,7 @@ def test_search(requests_mock):
 def test_histogram(requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/observations/histogram',
-        json=load_sample_data('get_observation_histogram_day.json'),
+        json=SAMPLE_DATA['get_observation_histogram_day'],
         status_code=200,
     )
     client = iNatClient()
@@ -111,7 +114,7 @@ def test_life_list(requests_mock):
 def test_species_counts(requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/observations/species_counts',
-        json=load_sample_data('get_observation_species_counts.json'),
+        json=SAMPLE_DATA['get_observation_species_counts'],
         status_code=200,
     )
     client = iNatClient()

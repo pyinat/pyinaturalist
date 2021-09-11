@@ -14,11 +14,11 @@ def test_from_id(requests_mock):
     project_id = 8291
     requests_mock.get(
         f'{API_V1_BASE_URL}/projects/{project_id}',
-        json={'results': [j_project_1, j_project_2]},
+        json={'results': [j_project_1, j_project_2], 'total_results': 2},
         status_code=200,
     )
     client = iNatClient()
-    results = client.projects.from_id(project_id)
+    results = client.projects.from_id(project_id).all()
     project = results[0]
     assert len(results) == 2 and isinstance(project, Project)
 
@@ -47,7 +47,7 @@ def test_search(requests_mock):
         lng=-123.08,
         radius=400,
         order_by='distance',
-    )
+    ).all()
 
     project = results[0]
     assert len(results) == 5 and isinstance(project, Project)
@@ -62,11 +62,11 @@ def test_search(requests_mock):
 def test_search__with_obs_fields(requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/projects',
-        json={'results': [j_project_3_obs_fields]},
+        json={'results': [j_project_3_obs_fields], 'total_results': 1},
         status_code=200,
     )
     client = iNatClient()
-    results = client.projects.search(id=1234)
+    results = client.projects.search(id=1234).all()
     obs_field = results[0].project_observation_fields[0]
 
     assert isinstance(obs_field, ProjectObservationField)

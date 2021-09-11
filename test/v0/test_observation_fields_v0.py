@@ -9,11 +9,9 @@ from test.sample_data import SAMPLE_DATA
 
 def test_get_observation_fields(requests_mock):
     """get_observation_fields() work as expected (basic use)"""
-    page_2_json_response = SAMPLE_DATA['get_observation_fields_page2']
-
     requests_mock.get(
         f'{API_V0_BASE_URL}/observation_fields.json?q=sex&page=2',
-        json=page_2_json_response,
+        json=SAMPLE_DATA['get_observation_fields_page2'],
         status_code=200,
     )
 
@@ -31,19 +29,12 @@ def test_get_observation_fields__all_pages(requests_mock):
     page_2_json_response = SAMPLE_DATA['get_observation_fields_page2']
 
     requests_mock.get(
-        f'{API_V0_BASE_URL}/observation_fields.json?q=sex&page=1',
-        json=page_1_json_response,
-        status_code=200,
-    )
-    requests_mock.get(
-        f'{API_V0_BASE_URL}/observation_fields.json?q=sex&page=2',
-        json=page_2_json_response,
-        status_code=200,
-    )
-    requests_mock.get(
-        f'{API_V0_BASE_URL}/observation_fields.json?q=sex&page=3',
-        json=[],
-        status_code=200,
+        f'{API_V0_BASE_URL}/observation_fields.json',
+        [
+            {'json': page_1_json_response, 'status_code': 200},
+            {'json': page_2_json_response, 'status_code': 200},
+            {'json': [], 'status_code': 200},
+        ],
     )
     expected_results = page_1_json_response + page_2_json_response
 

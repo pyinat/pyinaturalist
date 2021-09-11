@@ -107,8 +107,8 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
 
         # Fetch results
         response = self.request_function(**self.kwargs, per_page=self.per_page)
-        self._total_results = response.get('total_results') or len(response)
         results = response.get('results', response)
+        self._total_results = response.get('total_results', 0)
         self.results_fetched += len(results)
 
         # Set params for next request, if there are more results
@@ -116,7 +116,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         # Also check page size, in case total_results is off (race condition, outdated index, etc.)
         if (
             (self.limit and self.results_fetched >= self.limit)
-            or self.results_fetched >= self.total_results
+            or (self.total_results and self.results_fetched >= self.total_results)
             or len(results) == 0
         ):
             self.exhausted = True
@@ -165,7 +165,7 @@ class JsonPaginator(Paginator):
                 yield result
 
     def all(self) -> JsonResponse:  # type: ignore
-        results = super().all()
+        results = list(self)
         return {
             'results': results,
             'total_results': len(results),
