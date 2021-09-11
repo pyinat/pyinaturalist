@@ -44,6 +44,7 @@ from pyinaturalist.models import (
     User,
     get_lazy_attrs,
 )
+from pyinaturalist.pagination import Paginator
 
 
 def enable_logging(level: str = 'INFO'):
@@ -151,6 +152,9 @@ def ensure_model_list(values: ResponseOrObjects) -> List[BaseModel]:
     """If the given values are raw JSON responses, attempt to detect their type and convert to
     model objects
     """
+    if isinstance(values, Paginator):
+        return values.all()
+
     values = ensure_list(values)
     if isinstance(values, BaseModelCollection) or isinstance(values[0], BaseModel):
         return values  # type: ignore
