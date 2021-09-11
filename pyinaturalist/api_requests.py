@@ -10,6 +10,7 @@ import forge
 from pyrate_limiter import Duration, RequestRate
 from requests import PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
+from requests.utils import default_user_agent
 from requests_cache import CacheMixin, ExpirationTime
 from requests_ratelimiter import LimiterMixin
 from urllib3.util import Retry
@@ -71,6 +72,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         retries: int = REQUEST_RETRIES,
         backoff_factor: float = RETRY_BACKOFF,
         timeout: int = REQUEST_TIMEOUT,
+        user_agent: str = None,
         **kwargs,
     ):
         """Get a Session object, optionally with custom settings for caching and rate-limiting.
@@ -85,6 +87,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             retries: Maximum number of times to retry a failed request
             backoff_factor: Factor for increasing delays between retries
             timeout: Maximum number of seconds to wait for a response from the server
+            user_agent: Additional User-Agent info to pass to API requests
             kwargs: Additional keyword arguments for :py:class:`~requests_cache.session.CachedSession`
                 and/or :py:class:`~requests_ratelimiter.requests_ratelimiter.LimiterSession`
         """
@@ -109,6 +112,15 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             **kwargs,
         )
 
+        # Set default headers
+        self.headers['Accept'] = 'application/json'
+        user_agent_details = [
+            default_user_agent(),
+            f'pyinaturalist/{pyinaturalist.__version__}',
+            user_agent or '',
+        ]
+        self.headers['User-Agent'] = '\n'.join(user_agent_details).strip()
+
         # Mount an adapter to apply retry settings
         retry = Retry(total=retries, backoff_factor=backoff_factor)
         adapter = HTTPAdapter(max_retries=retry)
@@ -131,7 +143,6 @@ def request(
     json: Dict = None,
     raise_for_status: bool = True,
     session: Session = None,
-    user_agent: str = None,
     **params: RequestParams,
 ) -> Response:
     """Wrapper around :py:func:`requests.request` with additional options specific to iNat API requests
@@ -148,7 +159,6 @@ def request(
         session: An existing Session object to use instead of creating a new one
         timeout: Time (in seconds) to wait for a response from the server; if exceeded, a
             :py:exc:`requests.exceptions.Timeout` will be raised.
-        user_agent: A custom user-agent string to provide to the iNaturalist API
         params: All other keyword arguments are interpreted as request parameters
 
     Returns:
@@ -164,7 +174,6 @@ def request(
         ids=ids,
         json=json,
         params=params,
-        user_agent=user_agent,
     )
     logger.info(format_request(request, dry_run))
 
@@ -188,7 +197,6 @@ def prepare_request(
     ids: MultiInt = None,
     json: Dict = None,
     params: RequestParams = None,
-    user_agent: str = None,
     **kwargs,
 ) -> PreparedRequest:
     """Translate ``pyinaturalist``-specific options into standard request arguments"""
@@ -196,26 +204,20 @@ def prepare_request(
     params = preprocess_request_params(params)
     url = convert_url_ids(url, ids)
 
-    # Prepare user-agent and authentication headers
+    # Set auth header
     headers = headers or {}
-    headers['User-Agent'] = user_agent or pyinaturalist.user_agent
-    headers['Accept'] = 'application/json'
     if access_token:
         headers['Authorization'] = f'Bearer {access_token}'
 
-    # Convert any datetimes to strings in request body
-    if json:
-        headers['Content-type'] = 'application/json'
-        json = preprocess_request_body(json)
-
-    # Read any files for uploading
+    # Convert any datetimes in request body, and read any files for uploading
+    json = preprocess_request_body(json)
     if files:
         files = {'file': ensure_file_obj(files)}  # type: ignore
 
-    request = Request(
+    # Convert into a PreparedRequest
+    return Request(
         method=method, url=url, files=files, headers=headers, json=json, params=params, **kwargs
-    )
-    return request.prepare()
+    ).prepare()
 
 
 @forge.copy(request, exclude='method')

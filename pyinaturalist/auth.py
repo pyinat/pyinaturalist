@@ -17,7 +17,6 @@ def get_access_token(
     password: str = None,
     app_id: str = None,
     app_secret: str = None,
-    user_agent: str = None,
 ) -> str:
     """Get an access token using the user's iNaturalist username and password, using the
     Resource Owner Password Credentials Flow. Requires registering an iNaturalist app.
@@ -56,7 +55,6 @@ def get_access_token(
         password: iNaturalist password (same as the one you use to login on inaturalist.org)
         app_id: OAuth2 application ID
         app_secret: OAuth2 application secret
-        user_agent: A custom user-agent string to provide to the iNaturalist API
 
     Raises:
         :py:exc:`requests.HTTPError`: (401) if credentials are invalid
@@ -77,7 +75,7 @@ def get_access_token(
     else:
         raise AuthenticationError('Not all authentication parameters were provided')
 
-    response = post(f'{API_V0_BASE_URL}/oauth/token', json=payload, user_agent=user_agent)
+    response = post(f'{API_V0_BASE_URL}/oauth/token', json=payload)
     response.raise_for_status()
     return response.json()['access_token']
 
