@@ -8,6 +8,8 @@ from pyinaturalist.api_requests import ClientSession
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import TOKEN_EXPIRATION, JsonResponse
 from pyinaturalist.controllers import ObservationController, ProjectController, TaxonController
+from pyinaturalist.models import T
+from pyinaturalist.pagination import Paginator
 from pyinaturalist.request_params import get_valid_kwargs, strip_empty_values
 
 logger = getLogger(__name__)
@@ -116,19 +118,11 @@ class iNatClient:
         initialized = self._access_token and self._token_expires
         return not (initialized and datetime.utcnow() < self._token_expires)
 
-    def request(
-        self, request_function: Callable, *args, auth: bool = False, **params
-    ) -> JsonResponse:
+    def _update_kwargs(self, request_function, auth: bool = False, **kwargs):
         """Apply any applicable client settings to request parameters before sending a request.
         Explicit keyword arguments will override any client settings.
-
-        Args:
-            request_function: The API request function to call, which should return a JSON response
-            args: Any positional arguments to pass to the request function
-            auth: Indicates that the request requires authentication
-            params: Original request parameters
         """
-        params = strip_empty_values(params)
+        kwargs = strip_empty_values(kwargs)
         client_settings = {
             'dry_run': self.dry_run,
             'session': self.session,
@@ -140,5 +134,31 @@ class iNatClient:
         client_settings.update(get_valid_kwargs(request_function, self.default_params))
 
         for k, v in client_settings.items():
-            params.setdefault(k, v)
-        return request_function(*args, **params)
+            kwargs.setdefault(k, v)
+
+        return kwargs
+
+    def request(self, request_function: Callable, auth: bool = False, **kwargs) -> JsonResponse:
+        """Send a request, with client settings applied
+
+        Args:
+            request_function: The API request function to call, which should return a JSON response
+            auth: Indicates that the request requires authentication
+            params: Original request parameters
+        """
+        kwargs = self._update_kwargs(request_function, auth, **kwargs)
+        return request_function(**kwargs)
+
+    def paginate(
+        self, request_function: Callable, model: T, auth: bool = False, **kwargs
+    ) -> Paginator[T]:
+        """Create a paginator for a request, with client settings applied
+
+        Args:
+            request_function: The API request function to call, which should return a JSON response
+            model: Model class used for the response
+            auth: Indicates that the request requires authentication
+            params: Original request parameters
+        """
+        kwargs = self._update_kwargs(request_function, auth, **kwargs)
+        return Paginator(request_function, model, **kwargs)
