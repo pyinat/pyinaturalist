@@ -298,7 +298,7 @@ python-versions = "*"
 
 [[package]]
 name = "furo"
-version = "2021.8.17b43"
+version = "2021.9.8"
 description = "A clean customisable Sphinx documentation theme."
 category = "main"
 optional = true
@@ -1629,7 +1629,7 @@ docs = ["furo", "ipython", "linkify-it-py", "myst-parser", "nbsphinx", "sphinx",
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "debca0e8dec5b58db935dda77acb581bacb386708dde80c8561b90df38940892"
+content-hash = "51b670851e18b69e18fb4550266190cebdd84a8a0293805025b7476fec3ce7e7"
 
 [metadata.files]
 alabaster = [
@@ -1857,8 +1857,8 @@ filelock = [
     {file = "filelock-3.0.12.tar.gz", hash = "sha256:18d82244ee114f543149c66a6e0c14e9c4f8a1044b5cdaadd0f82159d6a6ff59"},
 ]
 furo = [
-    {file = "furo-2021.8.17b43-py3-none-any.whl", hash = "sha256:78fad23a7365ffaa8811c4d9d217ad12cd4640d8109cdc1652ef265bcf83ff0f"},
-    {file = "furo-2021.8.17b43.tar.gz", hash = "sha256:2eb879a31093255a598941c0f583980952db9bc532f0e98d513349ff0f2a0742"},
+    {file = "furo-2021.9.8-py3-none-any.whl", hash = "sha256:182d2ac70118191cb750caa763b997974a2c19f6f5fb7dfce458ce518dce80ae"},
+    {file = "furo-2021.9.8.tar.gz", hash = "sha256:eeaca6997c3a91240c5841d4f743d43196c4ef464b1236ff9b192d25f3e0d2ab"},
 ]
 identify = [
     {file = "identify-2.2.14-py2.py3-none-any.whl", hash = "sha256:113a76a6ba614d2a3dd408b3504446bcfac0370da5995aa6a17fd7c6dffde02d"},
