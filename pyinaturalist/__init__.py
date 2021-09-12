@@ -3,12 +3,13 @@ __version__ = '0.15.1'
 
 # Ignore ImportErrors if this is imported outside a virtualenv
 try:
-    from pyinaturalist.api_requests import ClientSession
+    from pyinaturalist.session import ClientSession
     from pyinaturalist.auth import get_access_token
     from pyinaturalist.client import iNatClient
     from pyinaturalist.constants import *
     from pyinaturalist.formatters import enable_logging, format_table, pprint
     from pyinaturalist.models import *
+    from pyinaturalist.paginator import Paginator
     from pyinaturalist.request_params import get_interval_ranges
     from pyinaturalist.v0 import *
     from pyinaturalist.v1 import *

@@ -1,15 +1,15 @@
 from typing import Any
 
-from pyinaturalist.api_requests import get, put
 from pyinaturalist.constants import API_V0_BASE_URL, JsonResponse
 from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.pagination import add_paginate_all
+from pyinaturalist.paginator import add_paginate_all
+from pyinaturalist.session import get, put
 
 
 @document_request_params(docs._search_query, docs._pagination)
-@add_paginate_all(method='page')
+@add_paginate_all()
 def get_observation_fields(**params) -> JsonResponse:
     """Search observation fields. Observation fields are basically typed data fields that
     users can attach to observation.

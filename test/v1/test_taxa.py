@@ -23,8 +23,7 @@ def test_get_taxa(requests_mock):
     response = get_taxa(q='vespi', rank=['genus', 'subgenus', 'species'])
     first_result = response['results'][0]
 
-    assert len(response['results']) == 30
-    assert response['total_results'] == 35
+    assert len(response['results']) == response['total_results'] == 30
     assert first_result['id'] == 70118
     assert first_result['name'] == 'Nicrophorus vespilloides'
     assert first_result['rank'] == 'species'
@@ -89,8 +88,7 @@ def test_get_taxa_autocomplete(requests_mock):
     response = get_taxa_autocomplete(q='vespi')
     first_result = response['results'][0]
 
-    assert len(response['results']) == 10
-    assert response['total_results'] == 47
+    assert len(response['results']) == response['total_results'] == 10
     assert first_result['matched_term'] == 'Vespidae'
     assert first_result['id'] == 52747
     assert first_result['name'] == 'Vespidae'

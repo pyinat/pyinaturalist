@@ -3,6 +3,8 @@
 ## 0.15.1 (2021-TBD)
 * Remove `pyinaturalist.user_agent` global variable and API function keyword args, and recommend
   setting on session object instead
+* Fix `count_only=True`/`per_page=0` to not run full query
+
 
 ## 0.15.0 (2021-09-07)
 

@@ -4,7 +4,7 @@ from typing import Iterable, List
 from warnings import warn
 
 from pyinaturalist.constants import JsonResponse, ResponseResult
-from pyinaturalist.pagination import paginate_all
+from pyinaturalist.paginator import paginate_all
 from pyinaturalist.v1 import *
 from pyinaturalist.v1 import get_observations
 

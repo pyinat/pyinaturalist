@@ -5,9 +5,9 @@ from typing import Dict, Optional
 from keyring import get_password, set_password
 from keyring.errors import KeyringError
 
-from pyinaturalist.api_requests import post
 from pyinaturalist.constants import API_V0_BASE_URL, KEYRING_KEY
 from pyinaturalist.exceptions import AuthenticationError
+from pyinaturalist.session import post
 
 logger = getLogger(__name__)
 

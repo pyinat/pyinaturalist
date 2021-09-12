@@ -7,8 +7,8 @@ Most recent API version tested: 1.3.0
 # flake8: noqa: F401, F403
 from requests import Response
 
-from pyinaturalist.api_requests import delete, get, post, put
 from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.session import delete, get, post, put
 
 
 def get_v1(endpoint: str, **kwargs) -> Response:

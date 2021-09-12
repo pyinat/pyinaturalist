@@ -4,7 +4,7 @@ from warnings import warn
 
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import ListResponse
-from pyinaturalist.pagination import paginate_all
+from pyinaturalist.paginator import paginate_all
 from pyinaturalist.v0 import *
 
 msg = (

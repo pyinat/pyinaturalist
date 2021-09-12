@@ -1,28 +1,25 @@
-from typing import List
-
 from pyinaturalist.constants import ListResponse
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import Project
+from pyinaturalist.paginator import Paginator
 from pyinaturalist.v1 import add_project_observation, get_projects, get_projects_by_id
 
 
 class ProjectController(BaseController):
     """:fa:`users` Controller for project requests"""
 
-    def from_id(self, *project_ids, **params) -> List[Project]:
+    def from_id(self, *project_ids, **params) -> Paginator[Project]:
         """Get projects by ID
 
         Args:
             project_ids: One or more project IDs
         """
-        response = self.client.request(get_projects_by_id, project_id=project_ids, **params)
-        return Project.from_json_list(response)
+        return self.client.paginate(get_projects_by_id, Project, project_id=project_ids, **params)
 
     @document_controller_params(get_projects)
-    def search(self, **params) -> List[Project]:
-        response = self.client.request(get_projects, **params)
-        return Project.from_json_list(response)
+    def search(self, **params) -> Paginator[Project]:
+        return self.client.paginate(get_projects, Project, **params)
 
     def add_observations(self, project_id: int, *observation_ids: int, **params) -> ListResponse:
         """Add an observation to a project

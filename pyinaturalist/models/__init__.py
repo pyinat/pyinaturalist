@@ -10,7 +10,7 @@ from attr import define, validators
 
 from pyinaturalist.constants import JsonResponse, ResponseOrResults
 from pyinaturalist.converters import convert_lat_long, try_datetime
-from pyinaturalist.models.base import BaseModel, BaseModelCollection, load_json
+from pyinaturalist.models.base import BaseModel, BaseModelCollection, T, load_json
 from pyinaturalist.models.lazy_property import (
     LazyProperty,
     add_lazy_attrs,

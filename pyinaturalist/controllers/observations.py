@@ -1,9 +1,8 @@
-from typing import List
-
-from pyinaturalist.constants import HistogramResponse, ListResponse
+from pyinaturalist.constants import HistogramResponse, IntOrStr, ListResponse
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import LifeList, Observation, TaxonCounts, TaxonSummary, UserCounts
+from pyinaturalist.paginator import Paginator
 from pyinaturalist.v1 import (
     create_observation,
     delete_observation,
@@ -24,19 +23,17 @@ from pyinaturalist.v1 import (
 class ObservationController(BaseController):
     """:fa:`binoculars` Controller for observation requests"""
 
-    def from_id(self, *observation_ids, **params) -> List[Observation]:
+    def from_id(self, *observation_ids, **params) -> Paginator[Observation]:
         """Get observations by ID
 
         Args:
             observation_ids: One or more observation IDs
         """
-        response = self.client.request(get_observations, id=observation_ids, **params)
-        return Observation.from_json_list(response)
+        return self.client.paginate(get_observations, Observation, id=observation_ids, **params)
 
     @document_controller_params(get_observations)
-    def search(self, **params) -> List[Observation]:
-        response = self.client.request(get_observations, **params)
-        return Observation.from_json_list(response)
+    def search(self, **params) -> Paginator[Observation]:
+        return self.client.paginate(get_observations, Observation, **params)
 
     # TODO: Does this need a model with utility functions, or is {datetime: count} sufficient?
     @document_controller_params(get_observation_histogram)
@@ -54,8 +51,8 @@ class ObservationController(BaseController):
         return UserCounts.from_json(response)
 
     @document_controller_params(get_observation_taxonomy, add_common_args=False)
-    def life_list(self, *args, **params) -> LifeList:
-        response = self.client.request(get_observation_taxonomy, *args, **params)
+    def life_list(self, user_id: IntOrStr, **params) -> LifeList:
+        response = self.client.request(get_observation_taxonomy, user_id=user_id, **params)
         return LifeList.from_json(response)
 
     @document_controller_params(get_observation_species_counts)

@@ -2,13 +2,13 @@ from pyinaturalist.constants import PROJECT_ORDER_BY_PROPERTIES, JsonResponse, M
 from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.pagination import add_paginate_all
+from pyinaturalist.paginator import add_paginate_all
 from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import delete_v1, get_v1, post_v1
 
 
 @document_request_params(docs._projects_params, docs._pagination)
-@add_paginate_all(method='page')
+@add_paginate_all()
 def get_projects(**params) -> JsonResponse:
     """Search projects
 
