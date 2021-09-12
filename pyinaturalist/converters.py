@@ -84,12 +84,10 @@ def convert_histogram(response: JsonResponse) -> HistogramResponse:
 
 def convert_csv_list(obj: Any) -> str:
     """Convert list parameters into an API-compatible (comma-delimited) string"""
-    if not obj:
-        return ''
-    elif isinstance(obj, list):
+    if isinstance(obj, list):
         return ','.join(map(str, obj))
     else:
-        return str(obj)
+        return obj
 
 
 def convert_isoformat(value: Union[date, datetime, str]) -> str:
