@@ -17,7 +17,7 @@ from pyinaturalist.converters import (
 from pyinaturalist.docs import document_common_args, document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.pagination import add_paginate_all
+from pyinaturalist.paginator import add_paginate_all
 from pyinaturalist.request_params import convert_observation_params, validate_multiple_choice_param
 from pyinaturalist.v1 import delete_v1, get_v1, post_v1, put_v1
 

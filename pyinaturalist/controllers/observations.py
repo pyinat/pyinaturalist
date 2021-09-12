@@ -2,7 +2,7 @@ from pyinaturalist.constants import HistogramResponse, IntOrStr, ListResponse
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import LifeList, Observation, TaxonCounts, TaxonSummary, UserCounts
-from pyinaturalist.pagination import Paginator
+from pyinaturalist.paginator import Paginator
 from pyinaturalist.v1 import (
     create_observation,
     delete_observation,

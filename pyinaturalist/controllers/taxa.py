@@ -1,7 +1,7 @@
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import Taxon
-from pyinaturalist.pagination import Paginator
+from pyinaturalist.paginator import Paginator
 from pyinaturalist.v1 import get_taxa, get_taxa_autocomplete, get_taxa_by_id
 
 

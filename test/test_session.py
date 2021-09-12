@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from pyinaturalist.api_requests import (
+from pyinaturalist.session import (
     CACHE_FILE,
     MOCK_RESPONSE,
     ClientSession,
@@ -19,7 +19,7 @@ from pyinaturalist.api_requests import (
     'http_func, http_method',
     [(delete, 'DELETE'), (get, 'GET'), (post, 'POST'), (put, 'PUT')],
 )
-@patch('pyinaturalist.api_requests.Session.send')
+@patch('pyinaturalist.session.Session.send')
 def test_http_methods(mock_send, http_func, http_method):
     http_func('https://url', key='value', session=None)
     request_obj = mock_send.call_args[0][0]
@@ -29,7 +29,7 @@ def test_http_methods(mock_send, http_func, http_method):
     assert request_obj.body is None
 
 
-@patch('pyinaturalist.api_requests.Session.send')
+@patch('pyinaturalist.session.Session.send')
 def test_request_headers(mock_send):
     """Test that the request() wrapper passes along expected headers"""
     request('GET', 'https://url', access_token='token')
@@ -37,7 +37,7 @@ def test_request_headers(mock_send):
     assert request_obj.headers['Authorization'] == 'Bearer token'
 
 
-@patch('pyinaturalist.api_requests.ClientSession')
+@patch('pyinaturalist.session.ClientSession')
 def test_request_session(mock_ClientSession):
     mock_session = MagicMock()
     request('GET', 'https://url', session=mock_session)
@@ -77,8 +77,8 @@ def test_request_session(mock_ClientSession):
         (False, False, False, 'None', 'DELETE', True),
     ],
 )
-@patch('pyinaturalist.api_requests.getenv')
-@patch('pyinaturalist.api_requests.Session.send')
+@patch('pyinaturalist.session.getenv')
+@patch('pyinaturalist.session.Session.send')
 def test_request_dry_run(
     mock_send,
     mock_getenv,
@@ -98,7 +98,7 @@ def test_request_dry_run(
     mock_getenv.side_effect = env_vars.__getitem__
 
     # Mock constants and run request
-    with patch('pyinaturalist.api_requests.pyinaturalist') as settings:
+    with patch('pyinaturalist.session.pyinaturalist') as settings:
         settings.DRY_RUN_ENABLED = enabled_const
         settings.DRY_RUN_WRITE_ONLY = write_only_const
         response = request(method, 'http://url')
@@ -112,7 +112,7 @@ def test_request_dry_run(
         assert mock_send.call_count == 0
 
 
-@patch('pyinaturalist.api_requests.Session.send')
+@patch('pyinaturalist.session.Session.send')
 def test_request_dry_run_kwarg(mock_request):
     response = request('GET', 'http://url', dry_run=True)
     assert response == MOCK_RESPONSE

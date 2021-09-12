@@ -4,13 +4,13 @@ from typing import Any, Callable, Dict
 
 from requests import Session
 
-from pyinaturalist.api_requests import ClientSession
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import TOKEN_EXPIRATION, JsonResponse
 from pyinaturalist.controllers import ObservationController, ProjectController, TaxonController
 from pyinaturalist.models import T
-from pyinaturalist.pagination import Paginator
+from pyinaturalist.paginator import Paginator
 from pyinaturalist.request_params import get_valid_kwargs, strip_empty_values
+from pyinaturalist.session import ClientSession
 
 logger = getLogger(__name__)
 

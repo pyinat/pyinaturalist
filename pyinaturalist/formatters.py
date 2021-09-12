@@ -44,7 +44,7 @@ from pyinaturalist.models import (
     User,
     get_lazy_attrs,
 )
-from pyinaturalist.pagination import Paginator
+from pyinaturalist.paginator import Paginator
 
 
 def enable_logging(level: str = 'INFO'):

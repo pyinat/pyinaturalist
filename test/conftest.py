@@ -46,7 +46,7 @@ enable_logging('DEBUG')
 @pytest.fixture(scope='function', autouse=True)
 def patch_cached_session():
     """Disable request caching and rate-limiting during test session"""
-    with patch('pyinaturalist.api_requests.get_local_session', return_value=Session()), patch(
+    with patch('pyinaturalist.session.get_local_session', return_value=Session()), patch(
         'pyinaturalist.client.ClientSession', Session
     ):
         yield

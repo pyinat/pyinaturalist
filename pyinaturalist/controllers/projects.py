@@ -2,7 +2,7 @@ from pyinaturalist.constants import ListResponse
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import Project
-from pyinaturalist.pagination import Paginator
+from pyinaturalist.paginator import Paginator
 from pyinaturalist.v1 import add_project_observation, get_projects, get_projects_by_id
 
 
