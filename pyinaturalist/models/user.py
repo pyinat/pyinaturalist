@@ -89,6 +89,7 @@ class UserCount(User):
         if 'results' in value:
             value = value['results']
         if 'user' in value:
+            value = value.copy()
             value.update(value.pop('user'))
         if 'observation_count' in value and 'count' not in value:
             value['count'] = value['observation_count']

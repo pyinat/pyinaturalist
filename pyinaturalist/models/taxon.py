@@ -223,6 +223,7 @@ class TaxonCount(Taxon):
         if 'results' in value:
             value = value['results']
         if 'taxon' in value:
+            value = value.copy()
             value.update(value.pop('taxon'))
         return super(TaxonCount, cls).from_json(value)
 

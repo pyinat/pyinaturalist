@@ -18,7 +18,6 @@ logger = getLogger(__name__)
 
 
 # TODO: support autocomplete pseudo-pagination?
-# TODO: code reuse
 class Paginator(Iterable, AsyncIterable, Generic[T]):
     """Class to handle pagination of API requests, with async support
 

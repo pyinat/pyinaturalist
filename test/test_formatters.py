@@ -39,11 +39,14 @@ def test_format_table(response):
     assert isinstance(table, Table)
 
     def _get_id(value):
-        return str(value.get('id') or value.get('record', {}).get('id'))
+        return str(
+            value.get('id') or value.get('record', {}).get('id') or value.get('taxon', {}).get('id')
+        )
 
     # Just make sure at least object IDs show up in the table
     console = Console()
     rendered = '\n'.join([str(line) for line in console.render_lines(table)])
+
     if isinstance(response, list):
         assert all([_get_id(value) in rendered for value in response])
 
