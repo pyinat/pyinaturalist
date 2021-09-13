@@ -12,7 +12,8 @@ from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import copy_annotations, copy_docstrings
 
 AUTOMETHOD_INIT = '.. automethod:: __init__'
-COMMON_PARAMS = ['dry_run', 'session']
+CONTROLLER_EXCLUDE_PARAMS = ['dry_run', 'session', 'page', 'per_page', 'order', 'count_only']
+
 logger = getLogger(__name__)
 
 
@@ -82,7 +83,7 @@ document_controller_params = partial(
     copy_doc_signature,
     include_sections=['Description', 'Args'],
     include_return_annotation=False,
-    exclude_args=COMMON_PARAMS,
+    exclude_args=CONTROLLER_EXCLUDE_PARAMS,
 )
 
 
