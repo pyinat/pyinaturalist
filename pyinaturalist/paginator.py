@@ -4,6 +4,8 @@ from logging import getLogger
 from math import ceil
 from typing import AsyncIterable, AsyncIterator, Callable, Generic, Iterable, Iterator, List
 
+from requests import Response
+
 from pyinaturalist.constants import (
     EXPORT_URL,
     LARGE_REQUEST_WARNING,
@@ -41,6 +43,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         self,
         request_function: Callable,
         model: T,
+        *request_args,
         method: str = 'page',
         limit: int = None,
         per_page: int = None,
@@ -49,6 +52,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         self.limit = limit
         self.kwargs = kwargs
         self.request_function = request_function
+        self.request_args = request_args
         self.method = method
         self.model = model
         self.per_page = per_page or PER_PAGE_RESULTS
@@ -87,7 +91,9 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         yet.
         """
         if self._total_results == -1:
-            count_response = self.request_function(**{**self.kwargs, 'per_page': 0})
+            count_response = self.request_function(
+                *self.request_args, **{**self.kwargs, 'per_page': 0}
+            )
             self._total_results = int(count_response['total_results'])
         return self._total_results
 
@@ -105,7 +111,9 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             self.per_page = self.limit - self.results_fetched
 
         # Fetch results
-        response = self.request_function(**self.kwargs, per_page=self.per_page)
+        response = self.request_function(*self.request_args, **self.kwargs, per_page=self.per_page)
+        if isinstance(response, Response):
+            response = response.json()
         results = response.get('results', response)
         self._total_results = response.get('total_results', 0)
         self.results_fetched += len(results)
@@ -188,7 +196,6 @@ def add_paginate_all(method: str = 'page'):
     return decorator
 
 
-# TODO: handle *args
 def paginate_all(request_function: Callable, *args, method: str = 'page', **kwargs) -> JsonResponse:
     """Get all pages of a multi-page request. Explicit pagination parameters will be overridden.
 
@@ -197,7 +204,7 @@ def paginate_all(request_function: Callable, *args, method: str = 'page', **kwar
     """
     if method == 'autocomplete':
         return paginate_autocomplete(request_function, *args, **kwargs)
-    return JsonPaginator(request_function, model=None, method=method, **kwargs).all()
+    return JsonPaginator(request_function, None, *args, method=method, **kwargs).all()
 
 
 def paginate_autocomplete(api_func: Callable, *args, **kwargs) -> JsonResponse:
