@@ -1,4 +1,4 @@
-{{- basename | e | heading }}
+ {{- basename.split('.')[-1] | replace("_", " ") | title | e | heading }}
 
 Summary
 ^^^^^^^

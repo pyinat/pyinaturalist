@@ -16,7 +16,7 @@
 {%- if is_namespace %}
 {{- [pkgname, "namespace"] | join(" ") | e | heading }}
 {% else %}
-{{- pkgname | e | heading }}
+{{- pkgname.split('.')[-1] | replace("_", " ") | title | e | heading }}
 {% endif %}
 
 {# ===== Function summary ===== #}
