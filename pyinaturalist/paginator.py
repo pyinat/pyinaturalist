@@ -205,33 +205,4 @@ def paginate_all(request_function: Callable, *args, method: str = 'page', **kwar
     Returns:
         Response dict containing combined results, in the same format as ``api_func``
     """
-    if method == 'autocomplete':
-        return paginate_autocomplete(request_function, *args, **kwargs)
     return JsonPaginator(request_function, None, *args, method=method, **kwargs).all()
-
-
-def paginate_autocomplete(api_func: Callable, *args, **kwargs) -> JsonResponse:
-    """Attempt to get as many results as possible from the places autocomplete endpoint.
-    This is necessary for some problematic places for which there are many matches but not ranked
-    with the desired match(es) first.
-
-    This works based on different rankings being returned for order_by=area. No other fields can be
-    sorted on, and direction can't be specified, but this can at least provide a few additional
-    results beyond the limit of 20.
-    """
-    kwargs['per_page'] = 20
-    kwargs.pop('order_by', None)
-
-    # Search with default ordering and ordering by area (if there are more than 20 results)
-    page_1 = api_func(*args, **kwargs)
-    if page_1['total_results'] > 20:
-        page_2 = api_func(*args, **kwargs, order_by='area')
-    else:
-        page_2 = {'results': []}
-
-    # De-duplicate results
-    unique_results = {r['id']: r for page in [page_1, page_2] for r in page['results']}
-    return {
-        'results': list(unique_results.values()),
-        'total_results': page_1['total_results'],
-    }
