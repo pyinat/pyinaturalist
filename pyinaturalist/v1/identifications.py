@@ -2,7 +2,7 @@ from pyinaturalist.constants import JsonResponse, MultiInt
 from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.paginator import add_paginate_all
+from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import convert_rank_range
 from pyinaturalist.v1 import get_v1
 
@@ -35,7 +35,6 @@ def get_identifications_by_id(identification_id: MultiInt, **params) -> JsonResp
 
 
 @document_request_params(docs._identification_params, docs._pagination, docs._only_id)
-@add_paginate_all()
 def get_identifications(**params) -> JsonResponse:
     """Search identifications
 
@@ -62,7 +61,10 @@ def get_identifications(**params) -> JsonResponse:
         Response dict containing identification records
     """
     params = convert_rank_range(params)
-    response = get_v1('identifications', **params)
-    identifications = response.json()
+    if params.get('page') == 'all':
+        identifications = paginate_all(get_v1, 'identifications', **params)
+    else:
+        identifications = get_v1('identifications', **params).json()
+
     identifications['results'] = convert_all_timestamps(identifications['results'])
     return identifications

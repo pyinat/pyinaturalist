@@ -1,5 +1,4 @@
 from concurrent.futures import ThreadPoolExecutor
-from functools import wraps
 from logging import getLogger
 from math import ceil
 from typing import AsyncIterable, AsyncIterator, Callable, Generic, Iterable, Iterator, List
@@ -110,7 +109,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         if self.limit and self.results_fetched + self.per_page > self.limit:
             self.per_page = self.limit - self.results_fetched
 
-        # Fetch results
+        # Fetch results; handle response object or dict
         response = self.request_function(*self.request_args, **self.kwargs, per_page=self.per_page)
         if isinstance(response, Response):
             response = response.json()
@@ -180,23 +179,6 @@ class JsonPaginator(Paginator):
             'results': results,
             'total_results': len(results),
         }
-
-
-def add_paginate_all(method: str = 'page'):
-    """Decorator that adds an option ``page='all'`` to get all pages of results for the wrapped API
-    request function.
-    """
-
-    def decorator(request_function: Callable):
-        @wraps(request_function)
-        def wrapper(*args, **kwargs):
-            if kwargs.get('page') == 'all':
-                return paginate_all(request_function, *args, method=method, **kwargs)
-            return request_function(*args, **kwargs)
-
-        return wrapper
-
-    return decorator
 
 
 def paginate_all(request_function: Callable, *args, method: str = 'page', **kwargs) -> JsonResponse:
