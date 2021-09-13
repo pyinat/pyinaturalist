@@ -50,12 +50,13 @@ async def test_async_iter(requests_mock):
     assert len(observations) == 2
 
 
-def test_total_results_count(requests_mock):
+def test_count(requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/observations?per_page=0', json={'results': [], 'total_results': 50}
     )
 
     paginator = Paginator(get_observations, Observation, q='asdf')
+    assert paginator.count() == 50
     assert paginator.total_results == 50
 
 
@@ -71,4 +72,7 @@ def test_str():
 
     paginator = Paginator(get_observations, Observation)
     assert 'get_observations' in str(paginator)
-    assert '0/0' in str(paginator)
+    assert '0/unknown' in str(paginator)
+
+    paginator.total_results = 50
+    assert '0/50' in str(paginator)

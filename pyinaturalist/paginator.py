@@ -1,7 +1,16 @@
 from concurrent.futures import ThreadPoolExecutor
 from logging import getLogger
 from math import ceil
-from typing import AsyncIterable, AsyncIterator, Callable, Generic, Iterable, Iterator, List
+from typing import (
+    AsyncIterable,
+    AsyncIterator,
+    Callable,
+    Generic,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+)
 
 from requests import Response
 
@@ -58,7 +67,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
 
         self.exhausted = False
         self.results_fetched = 0
-        self._total_results = -1
+        self.total_results: Optional[int] = None
 
         # Set initial pagination params based on pagination method
         self.kwargs.pop('page', None)
@@ -84,21 +93,22 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             for result in self.next_page():
                 yield self.model.from_json(result)
 
-    @property
-    def total_results(self) -> int:
-        """Total number of results for this query. Will be fetched if no pages have been fetched
-        yet.
-        """
-        if self._total_results == -1:
-            count_response = self.request_function(
-                *self.request_args, **{**self.kwargs, 'per_page': 0}
-            )
-            self._total_results = int(count_response['total_results'])
-        return self._total_results
-
     def all(self) -> List[T]:
         """Get all results in a single list"""
         return list(self)
+
+    def count(self) -> int:
+        """Get the total number of results for this query, without fetching response data.
+
+        Returns:
+            Either the total number of results, if the endpoint provides pagination info, or ``-1``
+        """
+        if self.total_results is None:
+            count_response = self.request_function(
+                *self.request_args, **{**self.kwargs, 'per_page': 0}
+            )
+            self.total_results = int(count_response['total_results'])
+        return self.total_results
 
     def next_page(self) -> List[ResponseResult]:
         """Get the next page of results"""
@@ -116,8 +126,8 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         results = response.get('results', response)
 
         # Note: For id-based pagination, only the first page's 'total_results' is accurate
-        if self._total_results == -1:
-            self._total_results = response.get('total_results', 0)
+        if self.total_results is None:
+            self.total_results = response.get('total_results', -1)
         self.results_fetched += len(results)
 
         # Set params for next request, if there are more results
@@ -160,7 +170,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
     def __str__(self) -> str:
         return (
             f'{self.__class__.__name__}({self.request_function.__name__}, '
-            f'fetched={self.results_fetched}/{self.total_results})'
+            f'fetched={self.results_fetched}/{self.total_results or "unknown"})'
         )
 
 
