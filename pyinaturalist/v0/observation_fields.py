@@ -4,12 +4,10 @@ from pyinaturalist.constants import API_V0_BASE_URL, JsonResponse
 from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.paginator import add_paginate_all
 from pyinaturalist.session import get, put
 
 
 @document_request_params(docs._search_query, docs._pagination)
-@add_paginate_all()
 def get_observation_fields(**params) -> JsonResponse:
     """Search observation fields. Observation fields are basically typed data fields that
     users can attach to observation.
@@ -17,6 +15,7 @@ def get_observation_fields(**params) -> JsonResponse:
     .. rubric:: Notes
 
     * API reference: :v0:`GET /observation_fields <get-observation_fields>`
+    * This endpoint does not support the ``per_page`` parameter
 
     Example:
 
@@ -31,12 +30,23 @@ def get_observation_fields(**params) -> JsonResponse:
             .. literalinclude:: ../sample_data/get_observation_fields.py
 
     Returns:
-        Observation fields as a list of dicts
+        Observation fields
     """
-    response = get(f'{API_V0_BASE_URL}/observation_fields.json', **params)
-    obs_fields = response.json()
+    all_pages = params.pop('page', None)
+    params['page'] = 1
+    params['per_page'] = 30  # This seems to return 30 results regardless of the per_page param
+    obs_fields = get(f'{API_V0_BASE_URL}/observation_fields.json', **params).json()
+
+    # This endpoint returns a list with no pagination metadata, so iterate until there are no more pages
+    if all_pages:
+        page_results = obs_fields
+        while len(page_results) == 30:
+            params['page'] += 1
+            page_results = get(f'{API_V0_BASE_URL}/observation_fields.json', **params).json()
+            obs_fields.extend(page_results)
+
     obs_fields = convert_all_timestamps(obs_fields)
-    return {'results': obs_fields}
+    return {'results': obs_fields, 'total_results': len(obs_fields)}
 
 
 @document_request_params(docs._ofvs, docs._access_token)
