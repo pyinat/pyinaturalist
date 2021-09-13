@@ -115,7 +115,10 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         if isinstance(response, Response):
             response = response.json()
         results = response.get('results', response)
-        self._total_results = response.get('total_results', 0)
+
+        # Note: For id-based pagination, only the first page's 'total_results' is accurate
+        if self._total_results == -1:
+            self._total_results = response.get('total_results', 0)
         self.results_fetched += len(results)
 
         # Set params for next request, if there are more results
@@ -157,7 +160,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
 
     def __str__(self) -> str:
         return (
-            f'Paginator({self.request_function.__name__}, '
+            f'{self.__class__.__name__}({self.request_function.__name__}, '
             f'fetched={self.results_fetched}/{self.total_results})'
         )
 
