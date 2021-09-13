@@ -12,7 +12,6 @@ from pyinaturalist.converters import convert_all_coordinates, convert_all_timest
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.paginator import add_paginate_all
 from pyinaturalist.request_params import convert_observation_params, validate_multiple_choice_param
 from pyinaturalist.session import delete, get, post, put
 
@@ -25,7 +24,6 @@ logger = getLogger(__name__)
     docs._bounding_box,
     docs._pagination,
 )
-@add_paginate_all()
 def get_observations(**params) -> Union[List, str]:
     """Get observation data, optionally in an alternative format
 

@@ -17,7 +17,7 @@ from pyinaturalist.converters import (
 from pyinaturalist.docs import document_common_args, document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.paginator import add_paginate_all
+from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import convert_observation_params, validate_multiple_choice_param
 from pyinaturalist.v1 import delete_v1, get_v1, post_v1, put_v1
 
@@ -109,7 +109,6 @@ def get_observation_histogram(**params) -> HistogramResponse:
 
 
 @document_request_params(*docs._get_observations, docs._pagination, docs._only_id)
-@add_paginate_all(method='id')
 def get_observations(**params) -> JsonResponse:
     """Search observations
 
@@ -146,17 +145,18 @@ def get_observations(**params) -> JsonResponse:
         Response dict containing observation records
     """
     validate_multiple_choice_param(params, 'order_by', V1_OBS_ORDER_BY_PROPERTIES)
-    response = get_v1('observations', **params)
 
-    observations = response.json()
+    if params.get('page') == 'all':
+        observations = paginate_all(get_v1, 'observations', method='id', **params)
+    else:
+        observations = get_v1('observations', **params).json()
+
     observations['results'] = convert_all_coordinates(observations['results'])
     observations['results'] = convert_all_timestamps(observations['results'])
-
     return observations
 
 
 @document_request_params(*docs._get_observations, docs._pagination)
-@add_paginate_all()
 def get_observation_species_counts(**params) -> JsonResponse:
     """Get all species (or other 'leaf taxa') associated with observations matching the search
     criteria, and the count of observations they are associated with.
@@ -182,8 +182,10 @@ def get_observation_species_counts(**params) -> JsonResponse:
     Returns:
         Response dict containing taxon records with counts
     """
-    response = get_v1('observations/species_counts', **params)
-    return response.json()
+    if params.get('page') == 'all':
+        return paginate_all(get_v1, 'observations/species_counts', **params)
+    else:
+        return get_v1('observations/species_counts', **params).json()
 
 
 @document_request_params(*docs._get_observations, docs._pagination)
@@ -251,7 +253,6 @@ def get_observation_identifiers(**params) -> JsonResponse:
     return response.json()
 
 
-@add_paginate_all()
 def get_observation_taxonomy(user_id: IntOrStr = None, **params) -> JsonResponse:
     """Get observation counts for all taxa in a full taxonomic tree. In the web UI, these are used
     for life lists.
@@ -271,8 +272,10 @@ def get_observation_taxonomy(user_id: IntOrStr = None, **params) -> JsonResponse
     Returns:
         Response dict containing taxon records with counts
     """
-    response = get_v1('observations/taxonomy', user_id=user_id, **params)
-    return response.json()
+    if params.get('page') == 'all':
+        return paginate_all(get_v1, 'observations/taxonomy', user_id=user_id, **params)
+    else:
+        return get_v1('observations/taxonomy', user_id=user_id, **params).json()
 
 
 @document_common_args

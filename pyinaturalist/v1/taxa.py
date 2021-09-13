@@ -2,13 +2,12 @@ from pyinaturalist.constants import JsonResponse, MultiInt
 from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.paginator import add_paginate_all
+from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import convert_rank_range
 from pyinaturalist.v1 import get_v1
 
 
 @document_request_params(docs._taxon_params, docs._taxon_id_params, docs._pagination)
-@add_paginate_all()
 def get_taxa(**params) -> JsonResponse:
     """Search taxa
 
@@ -34,8 +33,11 @@ def get_taxa(**params) -> JsonResponse:
         Response dict containing taxon records
     """
     params = convert_rank_range(params)
-    response = get_v1('taxa', **params)
-    taxa = response.json()
+    if params.get('page') == 'all':
+        taxa = paginate_all(get_v1, 'taxa', **params)
+    else:
+        taxa = get_v1('taxa', **params).json()
+
     taxa['results'] = convert_all_timestamps(taxa['results'])
     return taxa
 

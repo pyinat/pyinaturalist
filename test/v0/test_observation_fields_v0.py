@@ -10,7 +10,7 @@ from test.sample_data import SAMPLE_DATA
 def test_get_observation_fields(requests_mock):
     """get_observation_fields() work as expected (basic use)"""
     requests_mock.get(
-        f'{API_V0_BASE_URL}/observation_fields.json?q=sex&page=2',
+        f'{API_V0_BASE_URL}/observation_fields.json?q=sex',
         json=SAMPLE_DATA['get_observation_fields_page2'],
         status_code=200,
     )
