@@ -27,23 +27,24 @@ from pyinaturalist.models import T
 logger = getLogger(__name__)
 
 
-# TODO: support autocomplete pseudo-pagination?
 class Paginator(Iterable, AsyncIterable, Generic[T]):
     """Class to handle pagination of API requests, with async support
 
     Args:
         request_function: API request function to paginate
         model: Model class to use for results
-        method: Pagination method; either 'page', 'id', or 'autocomplete' (see below)
+        method: Pagination method; either 'page' or 'id' (see note below)
         limit: Maximum number of results to fetch
         per_page: Maximum number of results to fetch per page
         kwargs: Original request parameters
 
 
-    Note on pagination by ID, from the iNaturalist documentation:
-    _'The large size of the observations index prevents us from supporting the page parameter when
-    retrieving records from large result sets. If you need to retrieve large numbers of records,
-    use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead.'_
+    .. note::
+        Note on pagination by ID, from the iNaturalist documentation:
+
+        *The large size of the observations index prevents us from supporting the page parameter
+        when retrieving records from large result sets. If you need to retrieve large numbers of
+        records, use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead.*
 
     """
 
@@ -72,8 +73,6 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         # Set initial pagination params based on pagination method
         self.kwargs.pop('page', None)
         self.kwargs.pop('per_page', None)
-        # if self.method == 'autocomplete':
-        #     return paginate_autocomplete(self.request_function, **self.kwargs)
         if self.method == 'id':
             self.kwargs['order_by'] = 'id'
             self.kwargs['order'] = 'asc'
@@ -104,9 +103,8 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             Either the total number of results, if the endpoint provides pagination info, or ``-1``
         """
         if self.total_results is None:
-            count_response = self.request_function(
-                *self.request_args, **{**self.kwargs, 'per_page': 0}
-            )
+            kwargs = {**self.kwargs, 'per_page': 0}
+            count_response = self.request_function(*self.request_args, **kwargs)
             self.total_results = int(count_response['total_results'])
         return self.total_results
 
@@ -127,28 +125,29 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
 
         # Note: For id-based pagination, only the first page's 'total_results' is accurate
         if self.total_results is None:
-            self.total_results = response.get('total_results', -1)
+            self.total_results = response.get('total_results', len(results))
         self.results_fetched += len(results)
-
-        # Set params for next request, if there are more results
-        # Some endpoints (like get_observation_fields) don't return total_results
-        # Also check page size, in case total_results is off (race condition, outdated index, etc.)
-        if (
-            (self.limit and self.results_fetched >= self.limit)
-            or (self.total_results and self.results_fetched >= self.total_results)
-            or len(results) == 0
-        ):
-            self.exhausted = True
-        else:
-            if self.method == 'id':
-                self.kwargs['id_above'] = results[-1]['id']
-            else:
-                self.kwargs['page'] += 1
+        self._update_next_page_params(results)
 
         # If this is the first of multiple requests, log the estimated time and number of requests
         if self.results_fetched == len(results) and not self.exhausted:
             self._estimate()
         return results
+
+    def _update_next_page_params(self, page_results):
+        """Set params for next request, if there are more results. Also check page size, in case
+        total_results is off due to race condition, outdated index, etc.
+        """
+        if (
+            (self.limit and self.results_fetched >= self.limit)
+            or (self.total_results and self.results_fetched >= self.total_results)
+            or len(page_results) == 0
+        ):
+            self.exhausted = True
+        elif self.method == 'id':
+            self.kwargs['id_above'] = page_results[-1]['id']
+        else:
+            self.kwargs['page'] += 1
 
     def _estimate(self):
         """Log the estimated total number of requests and rate-limiting delay, and show a warning if

@@ -57,7 +57,9 @@ def test_count(requests_mock):
 
     paginator = Paginator(get_observations, Observation, q='asdf')
     assert paginator.count() == 50
-    assert paginator.total_results == 50
+
+    # Subsequent calls should use the previously saved value
+    assert paginator.count() == paginator.total_results == 50
 
 
 def test_next_page__exhausted():
