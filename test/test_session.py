@@ -142,3 +142,11 @@ def test_session__custom_retry():
     session = ClientSession(per_second=5)
     per_second_rate = session.limiter._rates[0]
     assert per_second_rate.limit / per_second_rate.interval == 5
+
+
+@patch('requests.sessions.Session.send')
+def test_session__send(mock_session):
+    session = ClientSession()
+    request = MagicMock()
+    session.send(request)
+    mock_session.assert_called_with(request, timeout=10)

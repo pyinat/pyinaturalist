@@ -12,8 +12,7 @@ def test_from_id__one(requests_mock):
     )
 
     client = iNatClient()
-    # result = client.users.from_id(1).one()
-    result = list(client.users.from_id(1))[0]
+    result = client.users.from_id(1).one()
     assert isinstance(result, User)
     assert result.id == 1
 
@@ -31,7 +30,7 @@ def test_from_id__multiple(requests_mock):
     )
 
     client = iNatClient()
-    results = list(client.users.from_id(1, 2))
+    results = client.users.from_id(1, 2).all()
     assert len(results) == 2 and isinstance(results[0], User)
     assert results[0].id == 1
 

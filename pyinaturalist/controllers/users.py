@@ -1,25 +1,32 @@
-from typing import Iterator, List
+from typing import List
 
+from pyinaturalist.constants import IntOrStr
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import User
+from pyinaturalist.paginator import IDPaginator, Paginator
 from pyinaturalist.v1 import get_user_by_id, get_users_autocomplete
 
 
 class UserController(BaseController):
     """:fa:`user` Controller for User requests"""
 
-    # TODO: Paginator subclass for this?
-    # TODO: Easier usage if you just want one result
-    def from_id(self, *user_ids, **params) -> Iterator[User]:
+    def from_id(self, *user_ids: IntOrStr, **params) -> Paginator[User]:
         """Get users by ID
+
+        Example:
+            Get a user by ID:
+
+            >>> user = client.users.from_id(1).one()
+
+            Get multiple users by ID:
+
+            >>> users = client.users.from_id(1).all()
 
         Args:
             user_ids: One or more project IDs
         """
-        for user_id in user_ids:
-            response = get_user_by_id(user_id, **params)
-            yield User.from_json(response)
+        return IDPaginator(get_user_by_id, User, ids=user_ids, **params)
 
     @document_controller_params(get_users_autocomplete)
     def autocomplete(self, **params) -> List[User]:
