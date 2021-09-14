@@ -27,6 +27,8 @@ from pyinaturalist.models import T
 logger = getLogger(__name__)
 
 
+# TODO: ID-based paginator for endpoints that only accept a single ID per request (like /users/{id})
+# TODO: Add per-endpoint 'max_per_page' parameter to use with Paginator.all()
 class Paginator(Iterable, AsyncIterable, Generic[T]):
     """Class to handle pagination of API requests, with async support
 

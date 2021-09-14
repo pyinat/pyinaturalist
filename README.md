@@ -33,8 +33,10 @@ aims to make these data easily accessible in the python programming language.
 - [Related Projects](#related-projects)
 
 ## Features
-* **Easier requests:** Complete type annotations for request parameters, and simplified create/update request formats
-* **Convenient responses:** Type conversions to the things you would expect in python
+* **Easier requests:** Complete type annotations for request parameters, simplified create/update
+  request formats, and easy pagination
+* **Convenient responses:** Type conversions to the things you would expect in python, and optional
+  models for an object-oriented inteface to response data
 * **Docs:** Example requests, responses, scripts, and Jupyter notebooks to help get you started
 * **Security:** Keyring integration for secure credential storage
 * **Server-friendly:** Client-side rate-limiting that follows the

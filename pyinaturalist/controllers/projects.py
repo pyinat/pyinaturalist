@@ -7,7 +7,7 @@ from pyinaturalist.v1 import add_project_observation, get_projects, get_projects
 
 
 class ProjectController(BaseController):
-    """:fa:`users` Controller for project requests"""
+    """:fa:`users` Controller for Project requests"""
 
     def from_id(self, *project_ids, **params) -> Paginator[Project]:
         """Get projects by ID

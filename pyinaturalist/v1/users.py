@@ -32,7 +32,7 @@ def get_user_by_id(user_id: int, **params) -> JsonResponse:
     Returns:
         Response dict containing user record
     """
-    response = get_v1('users', ids=[user_id], **params)
+    response = get_v1('users', ids=user_id, **params)
     results = response.json()['results']
     if not results:
         return {}

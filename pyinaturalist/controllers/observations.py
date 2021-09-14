@@ -21,7 +21,7 @@ from pyinaturalist.v1 import (
 # TODO: Batch from_id requests if max GET URL length is exceeded
 # TODO: Consistent naming for /{id} requests. from_id(), id(), by_id(), other?
 class ObservationController(BaseController):
-    """:fa:`binoculars` Controller for observation requests"""
+    """:fa:`binoculars` Controller for Observation requests"""
 
     def from_id(self, *observation_ids, **params) -> Paginator[Observation]:
         """Get observations by ID
