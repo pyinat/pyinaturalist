@@ -2,12 +2,11 @@
 import threading
 from logging import getLogger
 from os import getenv
-from typing import Dict, List
+from typing import Dict
 from unittest.mock import Mock
 from warnings import warn
 
 import forge
-from pyrate_limiter import Duration, RequestRate
 from requests import PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
 from requests.utils import default_user_agent
@@ -288,12 +287,3 @@ def get_local_session(**kwargs) -> Session:
     if not hasattr(thread_local, 'session'):
         thread_local.session = ClientSession(**kwargs)
     return thread_local.session
-
-
-def get_request_rates(per_second: int, per_minute: int, burst: int) -> List[RequestRate]:
-    """Translate request rate values into RequestRate objects"""
-    return [
-        RequestRate(per_second * burst, Duration.SECOND * burst),
-        RequestRate(per_minute, Duration.MINUTE),
-        RequestRate(REQUESTS_PER_DAY, Duration.DAY),
-    ]

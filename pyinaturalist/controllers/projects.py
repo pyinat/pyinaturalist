@@ -1,4 +1,4 @@
-from pyinaturalist.constants import ListResponse
+from pyinaturalist.constants import IntOrStr, ListResponse
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import Project
@@ -7,9 +7,9 @@ from pyinaturalist.v1 import add_project_observation, get_projects, get_projects
 
 
 class ProjectController(BaseController):
-    """:fa:`users` Controller for project requests"""
+    """:fa:`users` Controller for Project requests"""
 
-    def from_id(self, *project_ids, **params) -> Paginator[Project]:
+    def from_id(self, *project_ids: IntOrStr, **params) -> Paginator[Project]:
         """Get projects by ID
 
         Args:

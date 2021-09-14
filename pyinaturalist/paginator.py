@@ -1,3 +1,4 @@
+from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from logging import getLogger
 from math import ceil
@@ -19,6 +20,7 @@ from pyinaturalist.constants import (
     LARGE_REQUEST_WARNING,
     PER_PAGE_RESULTS,
     REQUESTS_PER_MINUTE,
+    IntOrStr,
     JsonResponse,
     ResponseResult,
 )
@@ -27,6 +29,7 @@ from pyinaturalist.models import T
 logger = getLogger(__name__)
 
 
+# TODO: Add per-endpoint 'max_per_page' parameter to use with Paginator.all()
 class Paginator(Iterable, AsyncIterable, Generic[T]):
     """Class to handle pagination of API requests, with async support
 
@@ -95,6 +98,14 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
     def all(self) -> List[T]:
         """Get all results in a single list"""
         return list(self)
+
+    def one(self) -> Optional[T]:
+        """Get the first result from the query"""
+        self.per_page = 1
+        results = self.next_page()
+        if not results:
+            return None
+        return self.model.from_json(results[0])
 
     def count(self) -> int:
         """Get the total number of results for this query, without fetching response data.
@@ -171,6 +182,27 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             f'{self.__class__.__name__}({self.request_function.__name__}, '
             f'fetched={self.results_fetched}/{self.total_results or "unknown"})'
         )
+
+
+class IDPaginator(Paginator):
+    """Paginator for endpoints that only accept a single ID per request"""
+
+    def __init__(self, *args, ids: Iterable[IntOrStr] = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ids = deque(ids or [])
+        self.total_results = len(self.ids)
+
+    def next_page(self) -> List[ResponseResult]:
+        """Get the next record by ID"""
+        try:
+            next_id = self.ids.popleft()
+        except IndexError:
+            self.exhausted = True
+            return []
+
+        response = self.request_function(next_id, *self.request_args, **self.kwargs)
+        self.results_fetched += 1
+        return response['results'] if 'results' in response else [response]
 
 
 class JsonPaginator(Paginator):

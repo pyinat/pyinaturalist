@@ -6,7 +6,12 @@ from requests import Session
 
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import TOKEN_EXPIRATION, JsonResponse
-from pyinaturalist.controllers import ObservationController, ProjectController, TaxonController
+from pyinaturalist.controllers import (
+    ObservationController,
+    ProjectController,
+    TaxonController,
+    UserController,
+)
 from pyinaturalist.models import T
 from pyinaturalist.paginator import Paginator
 from pyinaturalist.request_params import get_valid_kwargs, strip_empty_values
@@ -102,6 +107,7 @@ class iNatClient:
         self.observations = ObservationController(self)  #: Interface for observation requests
         self.projects = ProjectController(self)  #: Interface for project requests
         self.taxa = TaxonController(self)  #: Interface for taxon requests
+        self.users = UserController(self)  #: Interface for user requests
 
     @property
     def access_token(self):
