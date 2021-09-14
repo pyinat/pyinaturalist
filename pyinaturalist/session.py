@@ -166,6 +166,7 @@ def request(
     """
     session = session or get_local_session()
     request = prepare_request(
+        session=session,
         method=method,
         url=url,
         access_token=access_token,
@@ -189,6 +190,7 @@ def request(
 
 
 def prepare_request(
+    session: Session,
     method: str,
     url: str,
     access_token: str = None,
@@ -215,9 +217,10 @@ def prepare_request(
         files = {'file': ensure_file_obj(files)}  # type: ignore
 
     # Convert into a PreparedRequest
-    return Request(
+    request = Request(
         method=method, url=url, files=files, headers=headers, json=json, params=params, **kwargs
-    ).prepare()
+    )
+    return session.prepare_request(request)
 
 
 @forge.copy(request, exclude='method')
