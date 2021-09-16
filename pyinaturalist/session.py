@@ -118,7 +118,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             f'pyinaturalist/{pyinaturalist.__version__}',
             user_agent or '',
         ]
-        self.headers['User-Agent'] = '\n'.join(user_agent_details).strip()
+        self.headers['User-Agent'] = ' '.join(user_agent_details).strip()
 
         # Mount an adapter to apply retry settings
         retry = Retry(total=retries, backoff_factor=backoff_factor)
