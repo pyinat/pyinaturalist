@@ -147,6 +147,6 @@ def test_session__custom_retry():
 @patch('requests.sessions.Session.send')
 def test_session__send(mock_session):
     session = ClientSession()
-    request = MagicMock()
+    request = MagicMock(method='GET', url='http://test.com')
     session.send(request)
     mock_session.assert_called_with(request, timeout=10)
