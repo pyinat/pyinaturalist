@@ -373,8 +373,8 @@ def _create_observation(
         their Picasa and iNat accounts connected, and the user must own the photo(s) on Picasa.
     facebook_photos: Facebook photo IDs to add as photos for this observation. User must have
         their Facebook and iNat accounts connected, and the user must own the photo on Facebook.
-    photos: Image files, file-like objects, and/or paths
-    sounds: Sound files, file-like objects, and/or paths
+    photos: One or more image files, file-like objects, file paths, or URLs
+    sounds: One or more sound files, file-like objects, file paths, or URLs
     """
 
 

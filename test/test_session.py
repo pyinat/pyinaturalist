@@ -1,3 +1,5 @@
+from io import BytesIO
+from tempfile import NamedTemporaryFile
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -7,6 +9,7 @@ from pyinaturalist.session import (
     MOCK_RESPONSE,
     ClientSession,
     delete,
+    ensure_file_obj,
     get,
     post,
     put,
@@ -150,3 +153,25 @@ def test_session__send(mock_session):
     request = MagicMock(method='GET', url='http://test.com')
     session.send(request)
     mock_session.assert_called_with(request, timeout=10)
+
+
+def test_ensure_file_obj__obj():
+    file_obj = ensure_file_obj(BytesIO(b'test content'))
+    assert file_obj.read() == b'test content'
+
+
+def test_ensure_file_obj__path():
+    with NamedTemporaryFile() as temp:
+        temp.write(b'test content')
+        temp.seek(0)
+
+        file_obj = ensure_file_obj(temp.name)
+        assert file_obj.read() == b'test content'
+
+
+def test_ensure_file_obj__url():
+    session = MagicMock()
+    session.get().raw = BytesIO(b'test content')
+
+    file_obj = ensure_file_obj('https://example.com/file.mp3', session)
+    assert file_obj.read() == b'test content'

@@ -422,8 +422,8 @@ def upload(
 
     Args:
         observation_id: the ID of the observation
-        photos: One or more image files, file-like objects, or paths
-        sounds: One or more audio files, file-like objects, or paths
+        photos: One or more image files, file-like objects, file paths, or URLs
+        sounds: One or more audio files, file-like objects, file paths, or URLs
         access_token: Access token for user authentication, as returned by :func:`get_access_token()`
 
     Returns:
