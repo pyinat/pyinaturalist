@@ -1,5 +1,3 @@
-# TODO: More thorough tests?
-# Or are most relevant edge cases already covered by tests for v1.taxa?
 from pyinaturalist.client import iNatClient
 from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.models import Taxon

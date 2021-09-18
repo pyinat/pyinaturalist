@@ -53,10 +53,6 @@ def get_observation_fields(**params) -> JsonResponse:
 def put_observation_field_values(
     observation_id: int, observation_field_id: int, value: Any, **params
 ) -> JsonResponse:
-    # TODO: Also implement a put_or_update_observation_field_values() that deletes then recreates the field_value?
-    # TODO: Return some meaningful exception if it fails because the field is already set.
-    # TODO: It appears pushing the same value/pair twice in a row (but deleting it meanwhile via the UI)...
-    # TODO: ...triggers an error 404 the second time (report to iNaturalist?)
     """Set an observation field value on an observation
 
     .. rubric:: Notes

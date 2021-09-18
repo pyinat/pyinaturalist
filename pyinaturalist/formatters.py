@@ -1,4 +1,3 @@
-# TODO: Make rich a required dependency for 0.16
 """Utilities for formatting API responses and model objects, for convenience/readability when exploring data.
 Not used directly by API functions.
 

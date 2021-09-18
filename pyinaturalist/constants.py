@@ -82,7 +82,6 @@ ICONIC_TAXA = {
     48222: 'Chromista',
     47686: 'Protozoa',
 }
-# TODO: More emoji for non-iconic taxa?
 ICONIC_EMOJI = {
     0: '❓',
     1: '🐾',
