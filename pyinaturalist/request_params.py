@@ -41,6 +41,7 @@ INTERVALS: Dict[str, Union[timedelta, relativedelta]] = {
     'year': relativedelta(years=1),
 }
 
+
 logger = getLogger(__name__)
 
 

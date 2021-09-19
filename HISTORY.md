@@ -1,9 +1,11 @@
 # History
 
 ## 0.15.1 (2021-TBD)
+* Add support for uploading photo & sound files from URLs in `upload()`, `create_observation()`, and `update_observation()`
 * Remove `pyinaturalist.user_agent` global variable and API function keyword args, and recommend
   setting on session object instead
 * Fix `count_only=True`/`per_page=0` to not run full query
+* Do not error on unrecognized `**kwargs`, for cases where the API may accept some additional undocumented parameters
 
 
 ## 0.15.0 (2021-09-07)

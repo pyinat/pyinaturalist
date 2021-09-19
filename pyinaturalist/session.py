@@ -1,8 +1,12 @@
 """Session class and related functions for preparing and sending API requests"""
+import re
 import threading
+from io import BytesIO
 from logging import getLogger
 from os import getenv
-from typing import Dict
+from os.path import abspath, expanduser
+from pathlib import Path
+from typing import IO, Dict
 from unittest.mock import Mock
 from warnings import warn
 
@@ -27,11 +31,11 @@ from pyinaturalist.constants import (
     REQUESTS_PER_SECOND,
     RETRY_BACKOFF,
     WRITE_HTTP_METHODS,
+    AnyFile,
     FileOrPath,
     MultiInt,
     RequestParams,
 )
-from pyinaturalist.converters import ensure_file_obj
 from pyinaturalist.formatters import format_request
 from pyinaturalist.request_params import (
     convert_url_ids,
@@ -42,6 +46,9 @@ from pyinaturalist.request_params import (
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=Response)
 MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0, 'access_token': ''}
+
+# Extremely simplified URL regex, just enough to differentiate from local paths
+URL_PATTERN = re.compile(r'^https?://.+')
 
 logger = getLogger('pyinaturalist')
 thread_local = threading.local()
@@ -151,7 +158,7 @@ def request(
         url: Request URL
         access_token: access_token: the access token, as returned by :func:`get_access_token()`
         dry_run: Just log the request instead of sending a real request
-        files: File path or object to upload
+        files: File object, path, or URL to upload
         headers: Request headers
         ids: One or more integer IDs used as REST resource(s) to request
         json: JSON request body
@@ -210,14 +217,20 @@ def prepare_request(
     if access_token:
         headers['Authorization'] = f'Bearer {access_token}'
 
-    # Convert any datetimes in request body, and read any files for uploading
+    # Convert any datetimes in request body, and read any files or URLs for uploading
     json = preprocess_request_body(json)
     if files:
-        files = {'file': ensure_file_obj(files)}  # type: ignore
+        files = {'file': ensure_file_obj(files, session)}  # type: ignore
 
     # Convert into a PreparedRequest
     request = Request(
-        method=method, url=url, files=files, headers=headers, json=json, params=params, **kwargs
+        method=method,
+        url=url,
+        files=files,
+        headers=headers,
+        json=json,
+        params=params,
+        **kwargs,
     )
     return session.prepare_request(request)
 
@@ -246,12 +259,44 @@ def put(url: str, **kwargs) -> Response:
     return request('PUT', url, **kwargs)
 
 
+def ensure_file_obj(value: AnyFile, session: Session = None) -> IO:
+    """Given a file path or URL, load data into a file-like object"""
+    # Load from URL
+    if isinstance(value, str) and URL_PATTERN.match(value):
+        session = session or get_local_session()
+        return session.get(value).raw
+
+    # Load from local file path
+    if isinstance(value, (str, Path)):
+        file_path = abspath(expanduser(value))
+        logger.info(f'Reading from file: {file_path}')
+        with open(file_path, 'rb') as f:
+            return BytesIO(f.read())
+
+    # Otherwise, assume it's already a file or file-like object
+    return value
+
+
 def env_to_bool(environment_variable: str) -> bool:
     """Translate an environment variable to a boolean value, accounting for minor
     variations (case, None vs. False, etc.)
     """
     env_value = getenv(environment_variable)
     return bool(env_value) and str(env_value).lower() not in ['false', 'none']
+
+
+def get_local_session(**kwargs) -> Session:
+    """Get a thread-local Session object with default settings. This will be reused across requests
+    to take advantage of connection pooling and (optionally) caching. If used in a multi-threaded
+    context (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), this will create
+    and store a separate session object for each thread.
+
+    Args:
+        kwargs: Keyword arguments for :py:func:`.ClientSession`
+    """
+    if not hasattr(thread_local, 'session'):
+        thread_local.session = ClientSession(**kwargs)
+    return thread_local.session
 
 
 # TODO: Drop support for global variables in version 0.16
@@ -273,17 +318,3 @@ def is_dry_run_enabled(method: str) -> bool:
             dry_run_enabled or pyinaturalist.DRY_RUN_WRITE_ONLY or env_to_bool('DRY_RUN_WRITE_ONLY')
         )
     return dry_run_enabled
-
-
-def get_local_session(**kwargs) -> Session:
-    """Get a thread-local Session object with default settings. This will be reused across requests
-    to take advantage of connection pooling and (optionally) caching. If used in a multi-threaded
-    context (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), this will create
-    and store a separate session object for each thread.
-
-    Args:
-        kwargs: Keyword arguments for :py:func:`.ClientSession`
-    """
-    if not hasattr(thread_local, 'session'):
-        thread_local.session = ClientSession(**kwargs)
-    return thread_local.session

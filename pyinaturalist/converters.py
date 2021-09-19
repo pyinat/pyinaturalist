@@ -1,10 +1,7 @@
 """Type conversion utilities"""
 from datetime import date, datetime, timedelta
-from io import BytesIO
 from logging import getLogger
-from os.path import abspath, expanduser
-from pathlib import Path
-from typing import IO, Any, Dict, List, MutableSequence, Optional, Union
+from typing import Any, Dict, List, MutableSequence, Optional, Union
 from warnings import catch_warnings, simplefilter
 
 from dateutil.parser import UnknownTimezoneWarning  # type: ignore  # (missing from type stubs)
@@ -12,7 +9,6 @@ from dateutil.parser import parse as parse_date
 from dateutil.tz import tzlocal, tzoffset
 
 from pyinaturalist.constants import (
-    AnyFile,
     Coordinates,
     Dimensions,
     HistogramResponse,
@@ -30,6 +26,7 @@ OBSERVATION_TIME_FIELDS = (
     'observed_time_zone',
     'time_zone_offset',
 )
+
 logger = getLogger(__name__)
 
 
@@ -278,16 +275,6 @@ def ensure_list(
         return list(value)
     else:
         return [value]
-
-
-def ensure_file_obj(value: AnyFile) -> IO:
-    """Given a file object or path, read it into a file-like object if it's a path"""
-    if isinstance(value, (str, Path)):
-        file_path = abspath(expanduser(value))
-        logger.info(f'Reading from file: {file_path}')
-        with open(file_path, 'rb') as f:
-            return BytesIO(f.read())
-    return value
 
 
 # Formatting functions
