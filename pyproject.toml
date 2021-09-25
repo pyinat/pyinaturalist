@@ -40,7 +40,7 @@ rich                        = ">=10.0"
 
 # Documentation dependencies needed for Readthedocs builds (rtd doesn't support poetry.dev-dependencies)
 # [tool.poetry.dev-dependencies]
-furo                        = {optional=true, version="2021.9.8"}
+furo                        = {optional=true, version="2021.10.9"}
 ipython                     = {optional=true, version="^7.25.0", python=">=3.7"}
 linkify-it-py               = {optional=true, version="^1.0.1"}
 myst-parser                 = {optional=true, version="^0.15.1"}
@@ -54,8 +54,9 @@ sphinx-panels               = {optional=true, version="^0.6.0"}
 sphinxcontrib-apidoc        = {optional=true, version="^0.3" }
 
 [tool.poetry.dev-dependencies]
+coverage                    = "^6.0"
 mypy                        = "^0.910"
-nox                         = "^2021.6.12"
+nox                         = "^2021.10.1"
 nox-poetry                  = "^0.8.6"
 pre-commit                  = "^2.12"
 pretty-errors               = "^1.2.23"
