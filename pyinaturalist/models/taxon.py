@@ -50,6 +50,7 @@ class Taxon(BaseModel):
         factory=list, doc='Taxon IDs of taxa that are accepted synonyms'
     )
     extinct: bool = field(default=None, doc='Indicates if the taxon is extinct')
+    gbif_id: int = field(default=None, doc='GBIF taxon ID')
     iconic_taxon_id: int = field(
         default=0, doc='ID of the iconic taxon (e.g., general taxon "category")'
     )
@@ -58,6 +59,9 @@ class Taxon(BaseModel):
     )
     is_active: bool = field(
         default=None, doc='Indicates if the taxon is active (and not renamed, moved, etc.)'
+    )
+    listed_places: bool = field(
+        default=None, doc='Indicates if there are listed places for this taxon'
     )
     listed_taxa_count: int = field(
         default=None, doc='Number of listed taxa from this taxon + descendants'
@@ -83,6 +87,7 @@ class Taxon(BaseModel):
         default=None,
         doc='Number indicating rank level, for easier comparison between ranks (kingdom=higest)',
     )
+    ranges: bool = field(default=None, doc='Indicates if there is range data for this taxon')
     rank: str = field(default=None, options=RANKS, doc='Taxon rank')
     taxon_changes_count: int = field(default=None, doc='Number of curator changes to this taxon')
     taxon_schemes_count: int = field(default=None, doc='Taxon schemes that include this taxon')
@@ -168,8 +173,13 @@ class Taxon(BaseModel):
 
     @property
     def icon_url(self) -> str:
-        """URL to the iconic taxon's icon"""
+        """URL for the iconic taxon's icon"""
         return f'{ICONIC_TAXA_BASE_URL}/{self.iconic_taxon_name.lower()}-75px.png'
+
+    @property
+    def gbif_url(self) -> str:
+        """URL for the GBIF info page for this taxon"""
+        return f'https://www.gbif.org/species/{self.gbif_id}'
 
     @property
     def parent(self) -> 'Taxon':

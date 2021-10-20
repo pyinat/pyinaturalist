@@ -126,3 +126,25 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
     params = convert_rank_range(params)
     response = get_v1('taxa/autocomplete', **params)
     return response.json()
+
+
+def get_taxa_map_layers(taxon_id: int, **params) -> JsonResponse:
+    """Get some additional taxon metadata, including:
+    * GBIF taxon ID and URL
+    * Whether the taxon has range data and/or listed places
+
+    Example:
+        >>> response = get_taxa_map_layers(343248)
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_taxa_map_layers.json
+                :language: JSON
+
+    Args:
+        taxon_id: iNaturalist taxon ID. Only one value is allowed.
+    """
+    response = get_v1(f'taxa/{taxon_id}/map_layers', **params).json()
+    response['gbif_url'] = f'https://www.gbif.org/species/{response["gbif_id"]}'
+    return response

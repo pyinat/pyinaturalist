@@ -1,5 +1,5 @@
 # flake8: noqa: F401, F403
-__version__ = '0.15.1'
+__version__ = '0.16.0'
 
 # Ignore ImportErrors if this is imported outside a virtualenv
 try:

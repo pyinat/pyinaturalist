@@ -56,8 +56,9 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | DELETE | /projects/{id}/remove              | {py:func}`.delete_project_observation`
 | GET    | /projects/autocomplete             |
 | GET    | /search                            | {py:func}`.search`
-| GET    | /taxa/{id}                         | {py:func}`.get_taxa_by_id`
 | GET    | /taxa                              | {py:func}`.get_taxa`
+| GET    | /taxa/{id}                         | {py:func}`.get_taxa_by_id`
+| GET    | /taxa/{id}/map_layers              | {py:func}`.get_taxa_map_layers`
 | GET    | /taxa/autocomplete                 | {py:func}`.get_taxa_autocomplete`
 | GET    | /users/{id}                        | {py:func}`.get_user_by_id`
 | GET    | /users/{id}/projects               |
