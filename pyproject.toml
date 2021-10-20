@@ -54,14 +54,14 @@ sphinx-panels               = {optional=true, version="^0.6.0"}
 sphinxcontrib-apidoc        = {optional=true, version="^0.3" }
 
 [tool.poetry.dev-dependencies]
-coverage                    = "^6.0"
+coverage                    = "^6.1"
 mypy                        = "^0.910"
 nox                         = "^2021.10.1"
 nox-poetry                  = "^0.8.6"
 pre-commit                  = "^2.12"
 pretty-errors               = "^1.2.23"
 pytest                      = "^6.2"
-pytest-asyncio              = "^0.15.1"
+pytest-asyncio              = "^0.16.0"
 pytest-cov                  = ">=2.11"
 pytest-xdist                = ">=2.2"
 requests-mock               = "^1.8"
