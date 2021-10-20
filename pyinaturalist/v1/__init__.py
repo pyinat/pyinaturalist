@@ -57,5 +57,10 @@ from pyinaturalist.v1.projects import (
     get_projects_by_id,
 )
 from pyinaturalist.v1.search import search
-from pyinaturalist.v1.taxa import get_taxa, get_taxa_autocomplete, get_taxa_by_id
+from pyinaturalist.v1.taxa import (
+    get_taxa,
+    get_taxa_autocomplete,
+    get_taxa_by_id,
+    get_taxa_map_layers,
+)
 from pyinaturalist.v1.users import get_user_by_id, get_users_autocomplete

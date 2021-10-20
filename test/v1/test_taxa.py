@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 import pytest
 
 from pyinaturalist.constants import API_V1_BASE_URL
-from pyinaturalist.v1 import get_taxa, get_taxa_autocomplete, get_taxa_by_id
+from pyinaturalist.v1 import get_taxa, get_taxa_autocomplete, get_taxa_by_id, get_taxa_map_layers
 from test.conftest import load_sample_data
 
 CLASS_AND_HIGHER = ['class', 'superclass', 'subphylum', 'phylum', 'kingdom']
@@ -95,3 +95,17 @@ def test_get_taxa_autocomplete(requests_mock):
     assert first_result['rank'] == 'family'
     assert first_result['is_active'] is True
     assert len(first_result['ancestor_ids']) == 11
+
+
+def test_get_taxa_map_layers(requests_mock):
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/taxa/47588/map_layers',
+        json=load_sample_data('get_taxa_map_layers.json'),
+        status_code=200,
+    )
+
+    response = get_taxa_map_layers(47588)
+    assert response['gbif_id'] == 2820380
+    assert response['gbif_url'] == 'https://www.gbif.org/species/2820380'
+    assert response['ranges'] is False
+    assert response['listed_places'] is True
