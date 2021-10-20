@@ -1,6 +1,11 @@
 # History
 
-## 0.15.1 (2021-TBD)
+## 0.16.0 (Unreleased)
+[See all Issues & PRs for 0.16](https://github.com/niconoe/pyinaturalist/milestone/7?closed=1)
+### New Endpoints
+* Add new **Taxon** endpoint: `get_taxa_map_layers()`
+
+### Other Changes
 * Add support for uploading photo & sound files from URLs in `upload()`, `create_observation()`, and `update_observation()`
 * Remove `pyinaturalist.user_agent` global variable and API function keyword args, and recommend
   setting on session object instead
@@ -9,6 +14,7 @@
 
 
 ## 0.15.0 (2021-09-07)
+[See all Issues & PRs for 0.15](https://github.com/niconoe/pyinaturalist/milestone/6?closed=1)
 
 ### New Endpoints
 * Added new functions for v1 **Observation** endpoints:
