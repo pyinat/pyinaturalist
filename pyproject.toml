@@ -54,7 +54,7 @@ sphinx-panels               = {optional=true, version="^0.6.0"}
 sphinxcontrib-apidoc        = {optional=true, version="^0.3" }
 
 [tool.poetry.dev-dependencies]
-coverage                    = "^6.0"
+coverage                    = "^6.1"
 mypy                        = "^0.910"
 nox                         = "^2021.10.1"
 nox-poetry                  = "^0.8.6"
