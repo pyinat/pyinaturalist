@@ -71,6 +71,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
     def __init__(
         self,
         expire_after: ExpirationTime = None,
+        cache_file: FileOrPath = CACHE_FILE,
         per_second: int = REQUESTS_PER_SECOND,
         per_minute: int = REQUESTS_PER_MINUTE,
         per_day: float = REQUESTS_PER_DAY,
@@ -86,6 +87,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         Args:
             expire_after: How long to keep cached API requests; for advanced options, see
                 `requests-cache: Expiration <https://requests-cache.readthedocs.io/en/latest/user_guide/expiration.html>`_
+            cache_file: Cache file path to use; defaults to the system default cache directory
             per_second: Max requests per second
             per_minute: Max requests per minute
             per_day: Max requests per day
@@ -105,7 +107,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
 
         # Initialize with caching and rate-limiting settings
         super().__init__(  # type: ignore  # false positive
-            cache_name=CACHE_FILE,
+            cache_name=cache_file,
             backend='sqlite',
             expire_after=expire_after,
             ignored_parameters=['access_token'],

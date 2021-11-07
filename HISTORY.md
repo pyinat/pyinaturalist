@@ -11,6 +11,7 @@
   setting on session object instead
 * Fix `count_only=True`/`per_page=0` to not run full query
 * Do not error on unrecognized `**kwargs`, for cases where the API may accept some additional undocumented parameters
+* Allow overriding default location for API request cache
 
 
 ## 0.15.0 (2021-09-07)
