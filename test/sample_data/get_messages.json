@@ -1,0 +1,61 @@
+{
+    "page": 1,
+    "per_page": 30,
+    "total_results": 1,
+    "results": [
+        {
+            "id": 12345,
+            "user_id": 12345,
+            "thread_id": 12345,
+            "subject": "Re: Test Message",
+            "body": "This is a message body",
+            "read_at": "2019-09-02T19:03:07.109-05:00",
+            "created_at": "2019-09-02T18:50:24.651-05:00",
+            "updated_at": "2019-09-02T18:50:24.651-05:00",
+            "from_user": {
+                "id": 12345,
+                "login": "test_user",
+                "spam": false,
+                "suspended": false,
+                "created_at": "2017-09-29T18:29:20+00:00",
+                "login_autocomplete": "test_user",
+                "login_exact": "test_user",
+                "name": "Test User",
+                "name_autocomplete": "Test User",
+                "orcid": null,
+                "icon": "https://static.inaturalist.org/attachments/users/icons/2115051/thumb.jpeg?1591",
+                "observations_count": 1,
+                "identifications_count": 0,
+                "journal_posts_count": 0,
+                "activity_count": 1,
+                "species_count": 1,
+                "universal_search_rank": 3169,
+                "roles": [],
+                "site_id": 1,
+                "icon_url": "https://static.inaturalist.org/attachments/users/icons/2115051/medium.jpeg"
+            },
+            "to_user": {
+                "id": 2115051,
+                "login": "jkcook",
+                "spam": false,
+                "suspended": false,
+                "created_at": "2019-08-10T17:52:01+00:00",
+                "login_autocomplete": "jkcook",
+                "login_exact": "jkcook",
+                "name": "Jordan Cook",
+                "name_autocomplete": "Jordan Cook",
+                "orcid": null,
+                "icon": "https://static.inaturalist.org/attachments/users/icons/2115051/thumb.jpeg?1591994381",
+                "observations_count": 754,
+                "identifications_count": 555,
+                "journal_posts_count": 0,
+                "activity_count": 1309,
+                "species_count": 387,
+                "universal_search_rank": 754,
+                "roles": [],
+                "site_id": 1,
+                "icon_url": "https://static.inaturalist.org/attachments/users/icons/2115051/medium.jpeg?1591994381"
+            }
+        }
+    ]
+}

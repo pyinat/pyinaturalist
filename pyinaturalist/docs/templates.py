@@ -96,6 +96,33 @@ def _identification_params(
     """
 
 
+# Messages
+# --------------------
+
+
+def _message_params(
+    page: int = None,
+    box: str = None,
+    q: str = None,
+    user_id: int = None,
+    threads: bool = False,
+):
+    """Args:
+    page: Page number of the results to return
+    box: One of 'inbox', 'sent', or 'any'
+    q: Search string for message subject and body
+    user_id: Get messages to/from this user
+    threads: Group results by ``thread_id``, and only get the latest message per thread.
+        Incompatible with ``q`` param.
+    """
+
+
+def _message_id(message_id: int):
+    """Args:
+    message_id: Get the message with this ID. Multiple IDs are allowed.
+    """
+
+
 # Observations
 # --------------------
 
