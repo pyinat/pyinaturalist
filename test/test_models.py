@@ -169,6 +169,28 @@ def test_life_list__get_count():
     assert life_list.get_count(9999999) == 0  # Unobserved taxon
 
 
+# Messages
+# --------------------
+
+
+def test_message__converters():
+    message = Message.from_json(j_message)
+    assert isinstance(message.to_user, User) and message.to_user.id == 2115051
+    assert isinstance(message.from_user, User) and message.from_user.id == 12345
+
+
+def test_message__empty():
+    message = Message()
+    assert message.thread_flags == []
+    assert message.to_user is None
+    assert message.from_user is None
+
+
+def test_message__str():
+    message = Message.from_json(j_message)
+    assert str(message) == '[12345] Sent Sep 02, 2019 from test_user to jkcook: Re: Test Message'
+
+
 # Observations
 # --------------------
 

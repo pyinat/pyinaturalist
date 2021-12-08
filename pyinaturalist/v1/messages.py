@@ -16,7 +16,7 @@ def get_message_by_id(message_id: MultiInt, **params) -> JsonResponse:
     .. rubric:: Notes
 
     * :fa:`lock` :ref:`Requires authentication <auth>`
-    * API reference: :v1:`GET /messages/{id} <https://api.inaturalist.org/v1/docs/#!/Messages/get_messages_id>`
+    * API reference: :v1:`GET /messages/{id} <Messages/get_messages_id>`
 
     Example:
         >>> response = get_messages(123456)
@@ -43,7 +43,7 @@ def get_messages(**params) -> JsonResponse:
     .. rubric:: Notes
 
     * :fa:`lock` :ref:`Requires authentication <auth>`
-    * API reference: :v1:`GET /messages <https://api.inaturalist.org/v1/docs/#!/Messages/get_messages>`
+    * API reference: :v1:`GET /messages <Messages/get_messages>`
 
     Example:
         >>> response = get_messages()
@@ -74,7 +74,7 @@ def get_unread_meassage_count(**params) -> int:
     .. rubric:: Notes
 
     * :fa:`lock` :ref:`Requires authentication <auth>`
-    * API reference: :v1:`GET /messages/unread <https://api.inaturalist.org/v1/docs/#!/Messages/get_messages_unread>`
+    * API reference: :v1:`GET /messages/unread <Messages/get_messages_unread>`
 
     Example:
         >>> get_unread_meassage_count()
