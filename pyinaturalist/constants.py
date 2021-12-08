@@ -140,6 +140,7 @@ HAS_PROPERTIES = ['photo', 'geo']
 HISTOGRAM_DATE_FIELDS = ['created', 'observed']
 HISTOGRAM_INTERVALS = ['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
 ID_CATEGORIES = ['improving', 'supporting', 'leading', 'maverick']
+INBOXES = ['inbox', 'sent', 'any']
 ORDER_DIRECTIONS = ['asc', 'desc']
 PHOTO_SIZES = ['square', 'small', 'medium', 'large', 'original']
 PLACE_CATEGORIES = ['standard', 'community']
@@ -155,6 +156,7 @@ PROJECT_ORDER_BY_PROPERTIES = ['created', 'distance', 'featured', 'recent_posts'
 
 # Multiple-choice request parameters, with keys mapped to their possible choices (non-endpoint-specific)
 MULTIPLE_CHOICE_PARAMS = {
+    'box': INBOXES,
     'category': ID_CATEGORIES,
     'csi': CONSERVATION_STATUSES,
     'date_field': HISTOGRAM_DATE_FIELDS,

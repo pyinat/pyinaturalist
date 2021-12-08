@@ -4,6 +4,10 @@
 [See all Issues & PRs for 0.16](https://github.com/niconoe/pyinaturalist/milestone/7?closed=1)
 ### New Endpoints
 * Add new **Taxon** endpoint: `get_taxa_map_layers()`
+* Add new **Message** endpoints:
+  * `get_messages()`
+  * `get_message_by_id()`
+  * `get_unread_meassage_count()`
 
 ### Other Changes
 * Add support for uploading photo & sound files from URLs in `upload()`, `create_observation()`, and `update_observation()`
