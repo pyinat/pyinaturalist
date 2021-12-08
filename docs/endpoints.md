@@ -22,11 +22,9 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | GET    | /identifications/identifiers       |
 | GET    | /identifications/observers         |
 | GET    | /identifications/similar_species   |
-| GET    | /messages                          |
-| POST   | /messages                          |
-| DELETE | /messages/{id}                     |
-| GET    | /messages/{id}                     |
-| GET    | /messages/unread                   |
+| GET    | /messages                          | {py:func}`.get_messages`
+| GET    | /messages/{id}                     | {py:func}`.get_message_by_id`
+| GET    | /messages/unread                   | {py:func}`.get_unread_meassage_count`
 | DELETE | /observation_field_values/{id}     | {py:func}`.delete_observation_field`
 | PUT    | /observation_field_values/{id}     | {py:func}`.set_observation_field`
 | POST   | /observation_field_values          | {py:func}`.set_observation_field`
