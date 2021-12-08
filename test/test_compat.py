@@ -20,7 +20,6 @@ def test_v0_imports():
 def test_v1_imports():
     from pyinaturalist.node_api import (
         get_controlled_terms,
-        get_geojson_observations,
         get_identifications,
         get_identifications_by_id,
         get_observation,
