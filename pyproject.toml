@@ -43,7 +43,7 @@ rich                        = ">=10.0,<10.12"  # Issues with installing rich 10.
 furo                        = {optional=true, version="2021.11.12.1"}
 ipython                     = {optional=true, version="^7.25.0", python=">=3.7"}
 linkify-it-py               = {optional=true, version="^1.0.1"}
-myst-parser                 = {optional=true, version="^0.15.1"}
+myst-parser                 = {optional=true, version=">=0.15.1,<0.17.0"}
 nbsphinx                    = {optional=true, version="^0.8.5" }
 sphinx                      = {optional=true, version="^4.2.0" }
 sphinx-automodapi           = {optional=true, version="^0.13" }
