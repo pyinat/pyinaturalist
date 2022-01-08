@@ -36,7 +36,7 @@ python-forge                = ">=18.6"
 requests                    = ">=2.20"
 requests-cache              = ">=0.7.4"
 requests-ratelimiter        = ">=0.2.1"
-rich                        = ">=10.0,<10.12"  # Issues with installing rich 10.12 with poetry on python 3.10
+rich                        = ">=10.0,<10.17"  # Issues with installing rich 10.12 with poetry on python 3.10
 
 # Documentation dependencies needed for Readthedocs builds (rtd doesn't support poetry.dev-dependencies)
 # [tool.poetry.dev-dependencies]
