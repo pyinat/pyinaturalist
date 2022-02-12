@@ -3,8 +3,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "saturday"
+      interval: "monthly"
       time: "16:00"
     # Only create PRs for major and minor releases
     ignore:
