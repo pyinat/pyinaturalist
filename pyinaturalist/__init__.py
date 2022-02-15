@@ -1,4 +1,7 @@
 # flake8: noqa: F401, F403
+from logging import getLogger
+
+logger = getLogger('pyinaturalist')
 __version__ = '0.16.0'
 
 # Ignore ImportErrors if this is imported outside a virtualenv
@@ -21,4 +24,4 @@ try:
     from pyinaturalist.v0 import update_observation as update_observation_v0
     from pyinaturalist.v0 import delete_observation as delete_observation_v0
 except ImportError as e:
-    print(e)
+    logger.warning(e, exc_info=True)

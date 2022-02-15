@@ -2,6 +2,7 @@
 
 ## 0.16.0 (Unreleased)
 [See all Issues & PRs for 0.16](https://github.com/niconoe/pyinaturalist/milestone/7?closed=1)
+
 ### New Endpoints
 * Add new **Taxon** endpoint: `get_taxa_map_layers()`
 * Add new **Message** endpoints:
