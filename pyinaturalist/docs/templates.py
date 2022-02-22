@@ -2,8 +2,10 @@
 Each template function contains all or part of an endpoint's request parameters, type annotations,
 and docstrings. These are then applied with :py:func:`.copy_doc_signature`.
 
-This is intended to reduce large amounts of duplicated code + docs. For request functions with a
-smaller number of params, using a template isn't necessary.
+This is intended to reduce large amounts of duplicated function signatures and corresponding
+docstrings. If you're a contributor looking to add a new endpoint, using these templates isn't
+necessary. If the new function(s) have a large number of parameters and/or have many parameters in
+common with other functions, consider using a template function.
 
 Note: Since the templates are applied dynamically at import time, this adds a tiny amount of overhead
 (about 20 milliseconds as of v0.14) to the import time of the library. If this ever becomes a problem,

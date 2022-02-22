@@ -1,12 +1,8 @@
 """Session class and related functions for preparing and sending API requests"""
-import re
 import threading
-from io import BytesIO
 from logging import getLogger
 from os import getenv
-from os.path import abspath, expanduser
-from pathlib import Path
-from typing import IO, Dict
+from typing import Dict
 from unittest.mock import Mock
 from warnings import warn
 
@@ -31,11 +27,11 @@ from pyinaturalist.constants import (
     REQUESTS_PER_SECOND,
     RETRY_BACKOFF,
     WRITE_HTTP_METHODS,
-    AnyFile,
     FileOrPath,
     MultiInt,
     RequestParams,
 )
+from pyinaturalist.converters import ensure_file_obj
 from pyinaturalist.formatters import format_request
 from pyinaturalist.request_params import (
     convert_url_ids,
@@ -46,9 +42,6 @@ from pyinaturalist.request_params import (
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=Response)
 MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0, 'access_token': ''}
-
-# Extremely simplified URL regex, just enough to differentiate from local paths
-URL_PATTERN = re.compile(r'^https?://.+')
 
 logger = getLogger('pyinaturalist')
 thread_local = threading.local()
@@ -259,24 +252,6 @@ def post(url: str, **kwargs) -> Response:
 def put(url: str, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.put` with additional options specific to iNat API requests"""
     return request('PUT', url, **kwargs)
-
-
-def ensure_file_obj(value: AnyFile, session: Session = None) -> IO:
-    """Given a file path or URL, load data into a file-like object"""
-    # Load from URL
-    if isinstance(value, str) and URL_PATTERN.match(value):
-        session = session or get_local_session()
-        return session.get(value).raw
-
-    # Load from local file path
-    if isinstance(value, (str, Path)):
-        file_path = abspath(expanduser(value))
-        logger.info(f'Reading from file: {file_path}')
-        with open(file_path, 'rb') as f:
-            return BytesIO(f.read())
-
-    # Otherwise, assume it's already a file or file-like object
-    return value
 
 
 def env_to_bool(environment_variable: str) -> bool:
