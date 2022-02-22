@@ -376,6 +376,7 @@ def _create_observation(
     local_photos: MultiFile = None,
     photos: MultiFile = None,
     sounds: MultiFile = None,
+    photo_ids: MultiIntOrStr = None,
 ):
     """Args:
     species_guess: Equivalent to the 'What did you see?' field on the observation form.
@@ -404,6 +405,7 @@ def _create_observation(
         their Facebook and iNat accounts connected, and the user must own the photo on Facebook.
     photos: One or more image files, file-like objects, file paths, or URLs
     sounds: One or more sound files, file-like objects, file paths, or URLs
+    photo_ids: One or more IDs of previously uploaded photos to attach to the observation
     """
 
 

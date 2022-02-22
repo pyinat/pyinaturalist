@@ -109,7 +109,7 @@ def convert_list_params(params: RequestParams) -> RequestParams:
 
 
 def convert_observation_params(params):
-    """Some common conversions needed by observation CRUD endpoints"""
+    """Some common parameter conversions needed by observation CRUD endpoints"""
     params = convert_observation_field_params(params)
     if params.get('observed_on'):
         params['observed_on_string'] = params.pop('observed_on')
@@ -118,9 +118,16 @@ def convert_observation_params(params):
     photos = ensure_list(params.pop('local_photos', None))
     photos.extend(ensure_list(params.pop('photos', None)))  # Alias for 'local_photos'
     sounds = ensure_list(params.pop('sounds', None))
+    photo_ids = ensure_list(params.pop('photo_ids', None))
 
+    # Split API request params from common function args
     params, kwargs = split_common_params(params)
-    return params, photos, sounds, kwargs
+
+    # ignore_photos must be 1 rather than true; 0 does not work, so just remove if false
+    if params.pop('ignore_photos', True):
+        kwargs['ignore_photos'] = 1
+
+    return photos, sounds, photo_ids, params, kwargs
 
 
 def convert_observation_field_params(params: RequestParams) -> RequestParams:
@@ -202,7 +209,7 @@ def is_int_list(values: Any) -> bool:
 
 
 def split_common_params(params: RequestParams) -> Tuple[RequestParams, RequestParams]:
-    """Separate common keyword args from request params"""
+    """Split out common keyword args (for pyinaturalist functions) from request params (for API)"""
     kwargs = {k: params.pop(k, None) for k in COMMON_PARAMS}
     return params, kwargs
 
