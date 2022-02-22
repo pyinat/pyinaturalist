@@ -250,11 +250,13 @@ def test_create_observation__with_files(mock_post, mock_upload):
         access_token='token',
         photos=['photo_1.jpg', 'photo_2.jpg'],
         sounds=['sound_1.mp3', 'sound_2.wav'],
+        photo_ids=[12345],
     )
 
     request_params = mock_post.call_args[1]['json']['observation']
     assert 'local_photos' not in request_params
     assert 'sounds' not in request_params
+    assert 'photo_ids' not in request_params
     mock_upload.assert_called_once()
 
 
@@ -279,10 +281,31 @@ def test_update_observation(requests_mock):
 def test_update_observation__with_photos(mock_put, mock_upload):
     update_observation(1234, access_token='token', photos='photo.jpg')
 
-    request_params = mock_put.call_args[1]['json']['observation']
-    assert 'local_photos' not in request_params
-    assert 'sounds' not in request_params
+    request_args = mock_put.call_args[1]
+    obs_params = request_args['json']['observation']
+    assert request_args['ignore_photos'] == 1
+    assert 'local_photos' not in obs_params
+    assert 'sounds' not in obs_params
     mock_upload.assert_called_once()
+
+
+@patch('pyinaturalist.v1.observations.get_observation')
+@patch('pyinaturalist.v1.observations.put_v1')
+def test_update_observation__with_photo_ids(mock_put, mock_get_observation):
+    mock_get_observation.return_value = {'photos': [{'id': 1234}]}
+    update_observation(1234, access_token='token', photo_ids=5678)
+
+    payload = mock_put.call_args[1]['json']
+    assert 'photo_ids' not in payload
+    assert payload['local_photos'] == {'1234': [1234, 5678]}
+
+
+@patch('pyinaturalist.v1.observations.put_v1')
+def test_update_observation__remove_existing_photos(mock_put):
+    update_observation(1234, access_token='token', ignore_photos=False)
+
+    request_args = mock_put.call_args[1]
+    assert 'ignore_photos' not in request_args
 
 
 def test_upload(requests_mock):
@@ -305,6 +328,12 @@ def test_upload(requests_mock):
     assert response[1]['id'] == 233946
     assert response[1]['created_at'] == '2021-05-30T17:36:40.286-05:00'
     assert response[1]['sound']['file_content_type'] == 'audio/mpeg'
+
+
+@patch('pyinaturalist.v1.observations.update_observation')
+def test_upload__with_photo_ids(mock_update_observation):
+    upload(1234, access_token='token', photo_ids=[5678])
+    mock_update_observation.assert_called_with(1234, access_token='token', photo_ids=[5678])
 
 
 def test_delete_observation(requests_mock):

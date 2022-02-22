@@ -10,8 +10,12 @@
   * `get_message_by_id()`
   * `get_unread_meassage_count()`
 
+### Media
+The following changes apply to `upload()`, `create_observation()`, and `update_observation()`:
+* Add support for uploading observation photo & sound files from URLs
+* Add support for attaching previously uploaded photos to an observation by photo ID
+
 ### Other Changes
-* Add support for uploading photo & sound files from URLs in `upload()`, `create_observation()`, and `update_observation()`
 * Remove `pyinaturalist.user_agent` global variable and API function keyword args, and recommend
   setting on session object instead
 * Fix `count_only=True`/`per_page=0` to not run full query

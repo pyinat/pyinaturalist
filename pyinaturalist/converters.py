@@ -1,14 +1,20 @@
 """Type conversion utilities"""
+import re
 from datetime import date, datetime, timedelta
+from io import BytesIO
 from logging import getLogger
-from typing import Any, Dict, List, MutableSequence, Optional, Union
+from os.path import abspath, expanduser
+from pathlib import Path
+from typing import IO, Any, Dict, List, MutableSequence, Optional, Union
 from warnings import catch_warnings, simplefilter
 
 from dateutil.parser import UnknownTimezoneWarning  # type: ignore  # (missing from type stubs)
 from dateutil.parser import parse as parse_date
 from dateutil.tz import tzlocal, tzoffset
+from requests import Session
 
 from pyinaturalist.constants import (
+    AnyFile,
     Coordinates,
     Dimensions,
     HistogramResponse,
@@ -26,6 +32,9 @@ OBSERVATION_TIME_FIELDS = (
     'observed_time_zone',
     'time_zone_offset',
 )
+
+# Extremely simplified URL regex, just enough to differentiate from local paths
+URL_PATTERN = re.compile(r'^https?://.+')
 
 logger = getLogger(__name__)
 
@@ -254,8 +263,26 @@ def strip_empty_values(values: Dict) -> Dict:
     return {k: v for k, v in values.items() if v or v in [False, 0, 0.0]}
 
 
-# Type conversion functions for collections
+# Type conversion functions for files and collections
 # -------------------
+
+
+def ensure_file_obj(value: AnyFile, session: Session = None) -> IO:
+    """Given a file path or URL, load data into a file-like object"""
+    # Load from URL
+    if isinstance(value, str) and URL_PATTERN.match(value):
+        session = session or Session()
+        return session.get(value).raw
+
+    # Load from local file path
+    if isinstance(value, (str, Path)):
+        file_path = abspath(expanduser(value))
+        logger.info(f'Reading from file: {file_path}')
+        with open(file_path, 'rb') as f:
+            return BytesIO(f.read())
+
+    # Otherwise, assume it's already a file or file-like object
+    return value
 
 
 def ensure_list(

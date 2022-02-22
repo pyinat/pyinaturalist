@@ -1,4 +1,7 @@
 from datetime import datetime
+from io import BytesIO
+from tempfile import NamedTemporaryFile
+from unittest.mock import MagicMock
 
 import pytest
 from dateutil.tz import tzoffset
@@ -8,6 +11,7 @@ from pyinaturalist.converters import (
     convert_lat_long,
     convert_observation_timestamps,
     convert_offset,
+    ensure_file_obj,
     ensure_list,
     format_dimensions,
     format_file_size,
@@ -32,6 +36,28 @@ from test.conftest import load_sample_data
 )
 def test_convert_lat_long(input, expected_output):
     assert convert_lat_long(input) == expected_output
+
+
+def test_ensure_file_obj__obj():
+    file_obj = ensure_file_obj(BytesIO(b'test content'))
+    assert file_obj.read() == b'test content'
+
+
+def test_ensure_file_obj__path():
+    with NamedTemporaryFile() as temp:
+        temp.write(b'test content')
+        temp.seek(0)
+
+        file_obj = ensure_file_obj(temp.name)
+        assert file_obj.read() == b'test content'
+
+
+def test_ensure_file_obj__url():
+    session = MagicMock()
+    session.get().raw = BytesIO(b'test content')
+
+    file_obj = ensure_file_obj('https://example.com/file.mp3', session)
+    assert file_obj.read() == b'test content'
 
 
 @pytest.mark.parametrize(
