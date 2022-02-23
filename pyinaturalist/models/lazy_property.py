@@ -121,15 +121,4 @@ def _is_model_object_or_list(value):
 def _returns_list(func: Callable) -> bool:
     """Determine if a function is annotated with a List return type"""
     return_type = signature(func).return_annotation
-    return _get_origin(return_type) in (list, List)
-
-
-def _get_origin(tp):
-    """Get generic origin (for python 3.6 compatibility)"""
-    if getattr(tp, '__origin__', None):
-        return tp.__origin__
-    if hasattr(tp, '_gorg') and hasattr(tp._gorg, '__mro__'):
-        for t in tp._gorg.__mro__:
-            if t.__module__ in ('builtins', '__builtin__') and t is not object:
-                return t
-    return tp
+    return getattr(return_type, '__origin__', None) in (list, List)
