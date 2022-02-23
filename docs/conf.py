@@ -43,7 +43,7 @@ DATA_DIR_SYMLINK = join(DOCS_DIR, 'sample_data')
 NOTEBOOK_DIR_COPY = join(DOCS_DIR, 'examples')
 
 # General information about the project.
-copyright = '2021, Nicolas Noé, Jordan Cook'
+copyright = '2022, Nicolas Noé, Jordan Cook'
 exclude_patterns = ['_build', f'{MODULE_DOCS_DIR}/pyinaturalist.rst']
 master_doc = 'index'
 needs_sphinx = '4.0'
