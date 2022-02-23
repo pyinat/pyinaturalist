@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyinaturalist"
-version = "0.16.0"
+version = "0.17.0"
 description = "iNaturalist API client for python"
 authors = ["Nicolas Noé <nicolas@niconoe.eu>", "Jordan Cook <Jordan.Cook@pioneer.com>"]
 license = "MIT"
@@ -27,29 +27,29 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python                      = "^3.6.2"
+python                      = "^3.7"
 appdirs                     = ">=1.4"
 attrs                       = ">=21.2"
 keyring                     = ">=22.3"
 python-dateutil             = ">=2.0"
 python-forge                = ">=18.6"
-requests                    = ">=2.20"
-requests-cache              = ">=0.7.4"
+requests                    = ">=2.22"
+requests-cache              = ">=0.9.3"
 requests-ratelimiter        = ">=0.2.1"
-rich                        = ">=10.0,<10.12"  # Issues with installing rich 10.12 with poetry on python 3.10
+rich                        = ">=11.0"
 
 # Documentation dependencies needed for Readthedocs builds (rtd doesn't support poetry.dev-dependencies)
 # [tool.poetry.dev-dependencies]
-furo                        = {optional=true, version="2021.11.12.1"}
-ipython                     = {optional=true, version="^7.25.0", python=">=3.7"}
+furo                        = {optional=true, version="^2022.2.14.1"}
+ipython                     = {optional=true, version="^7.25.0"}
 linkify-it-py               = {optional=true, version="^1.0.1"}
-myst-parser                 = {optional=true, version="^0.15.1"}
+myst-parser                 = {optional=true, version="^0.17.0"}
 nbsphinx                    = {optional=true, version="^0.8.5"}
 sphinx                      = {optional=true, version="^4.2.0"}
-sphinx-automodapi           = {optional=true, version="^0.13"}
-sphinx-autodoc-typehints    = {optional=true, version="^1.17", python=">=3.7"}
-sphinx-copybutton           = {optional=true, version=">=0.3,<0.5"}
-sphinx-inline-tabs          = {optional=true, version="^2021.8.17b10", python=">=3.8"}
+sphinx-automodapi           = {optional=true, version="^0.14"}
+sphinx-autodoc-typehints    = {optional=true, version="^1.17"}
+sphinx-copybutton           = {optional=true, version=">=0.5"}
+sphinx-inline-tabs          = {optional=true, version="^2022.1.2b11", python=">=3.8"}
 sphinx-panels               = {optional=true, version="^0.6.0"}
 sphinxcontrib-apidoc        = {optional=true, version="^0.3"}
 

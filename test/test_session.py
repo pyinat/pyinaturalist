@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+from requests import Request
 
 from pyinaturalist.session import (
     CACHE_FILE,
@@ -120,7 +121,7 @@ def test_request_dry_run_disabled(requests_mock):
 
 def test_session__cache_file():
     session = ClientSession()
-    assert session.cache.responses.db_path == CACHE_FILE
+    assert str(session.cache.responses.db_path) == CACHE_FILE
 
 
 def test_session__custom_expiration():
@@ -138,7 +139,7 @@ def test_session__custom_retry():
 @patch('requests.sessions.Session.send')
 def test_session__send(mock_session):
     session = ClientSession()
-    request = MagicMock(method='GET', url='http://test.com')
+    request = Request(method='GET', url='http://test.com')
     session.send(request)
     mock_session.assert_called_with(request, timeout=10)
 

@@ -2,7 +2,7 @@
 from logging import getLogger
 
 logger = getLogger('pyinaturalist')
-__version__ = '0.16.0'
+__version__ = '0.17.0'
 
 # Ignore ImportErrors if this is imported outside a virtualenv
 try:

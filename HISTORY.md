@@ -1,24 +1,30 @@
 # History
 
+## 0.17.0 (Unreleased)
+[See all Issues & PRs for 0.17](https://github.com/niconoe/pyinaturalist/milestone/8?closed=1)
+
+* Dropped support for python 3.6
+
 ## 0.16.0 (2022-02-22)
 [See all Issues & PRs for 0.16](https://github.com/niconoe/pyinaturalist/milestone/7?closed=1)
 
 ### New Endpoints
-* Add new **Taxon** endpoint: `get_taxa_map_layers()`
-* Add new **Message** endpoints:
+* Added new **Taxon** endpoint: `get_taxa_map_layers()`
+* Added new **Message** endpoints:
   * `get_messages()`
   * `get_message_by_id()`
   * `get_unread_meassage_count()`
 
 ### Observation Media
 The following changes apply to `upload()`, `create_observation()`, and `update_observation()`:
-* Add support for uploading observation photo & sound files from URLs
-* Add support for attaching previously uploaded photos to an observation by photo ID
+* Added support for uploading observation photo & sound files from URLs
+* Added support for attaching previously uploaded photos to an observation by photo ID
 
 ### Other Changes
-* Remove `pyinaturalist.user_agent` global variable and API function keyword args, and recommend setting on session object instead
-* Remove `pyinaturalist.DRY_RUN*` global variables, and recommend setting in environment variables instead
-* Fix `count_only=True`/`per_page=0` to not run full query
+* Added support for python 3.10
+* Removed `pyinaturalist.user_agent` global variable and API function keyword args, and recommend setting on session object instead
+* Removed `pyinaturalist.DRY_RUN*` global variables, and recommend setting in environment variables instead
+* Fixed `count_only=True`/`per_page=0` to not run full query
 * Do not error on unrecognized `**kwargs`, for cases where the API may accept some additional undocumented parameters
 * Allow overriding default location for API request cache
 
@@ -275,8 +281,8 @@ Model features:
 * Made all API function signatures consistent by taking request params as keyword arguments
 
 ### Other Changes
-* Dropped testing & support for python 3.4
-* Added testing & support for python 3.9
+* Dropped support for python 3.4
+* Added support for python 3.9
 * Added parameter validation for multiple-choice request parameters
 
 ## 0.10.0 (2020-06-16)
