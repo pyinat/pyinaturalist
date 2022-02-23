@@ -8,6 +8,7 @@ from os.path import join
 from typing import TYPE_CHECKING, Any, List, Tuple, Type, get_type_hints
 
 from attr import Attribute
+from sphinx.config import Config
 from sphinx_autodoc_typehints import format_annotation
 
 from pyinaturalist.constants import DOCS_DIR
@@ -15,15 +16,13 @@ from pyinaturalist.models import LazyProperty, get_lazy_properties
 
 IGNORE_PROPERTIES = ['row']
 MODEL_DOC_DIR = join(DOCS_DIR, 'models')
-PROPERTY_TYPE = format_annotation(property)
-LAZY_PROPERTY_TYPE = format_annotation(LazyProperty)
 
 
 def document_models(app):
     """Export attribute documentation for all models to CSV files"""
     makedirs(MODEL_DOC_DIR, exist_ok=True)
     for model in get_model_classes():
-        doc_table = get_model_doc(model)
+        doc_table = get_model_doc(model, app.config)
         export_model_doc(model.__name__, doc_table)
 
 
@@ -39,19 +38,27 @@ def get_model_classes() -> List[Type]:
     return model_classes
 
 
-def get_model_doc(cls: Type) -> List[Tuple[str, str, str]]:
+def get_model_doc(cls: Type, config: Config) -> List[Tuple[str, str, str]]:
     """Get the name, type and description for all model attributes, properties, and LazyProperties.
     If an attribute has metadata for options (possible values for the attribute), include those
     options in the description.
     """
+    # Used internally by sphinx-autodoc-typehints
+    config._annotation_globals = getattr(cls, "__globals__", {})
 
     doc_rows = [
-        _get_field_doc(field) for field in cls.__attrs_attrs__ if not field.name.startswith('_')
+        _get_field_doc(field, config)
+        for field in cls.__attrs_attrs__
+        if not field.name.startswith('_')
     ]
     doc_rows += [('', '', '')]
-    doc_rows += [_get_property_doc(prop) for prop in get_properties(cls)]
+    doc_rows += [_get_property_doc(prop, config) for prop in get_properties(cls)]
     doc_rows += [('', '', '')]
-    doc_rows += [_get_lazy_property_doc(prop) for _, prop in get_lazy_properties(cls).items()]
+    doc_rows += [
+        _get_lazy_property_doc(prop, config) for _, prop in get_lazy_properties(cls).items()
+    ]
+
+    delattr(config, "_annotation_globals")
     return doc_rows
 
 
@@ -66,9 +73,9 @@ def get_properties(cls: Type) -> List[property]:
     ]
 
 
-def _get_field_doc(field: Attribute) -> Tuple[str, str, str]:
+def _get_field_doc(field: Attribute, config: Config) -> Tuple[str, str, str]:
     """Get a row documenting an attrs Attribute"""
-    rtype = format_annotation(field.type)
+    rtype = format_annotation(field.type, config)
     doc = field.metadata.get('doc', '')
     options = field.metadata.get('options', [])
     if options:
@@ -77,21 +84,24 @@ def _get_field_doc(field: Attribute) -> Tuple[str, str, str]:
     return (f'**{field.name}**', rtype, doc)
 
 
-def _get_property_doc(prop: property) -> Tuple[str, str, str]:
+def _get_property_doc(prop: property, config: Config) -> Tuple[str, str, str]:
     """Get a row documenting a regular @property"""
     fget_rtype = get_type_hints(prop.fget).get('return', Any)
-    rtype = format_annotation(fget_rtype)
+    rtype = format_annotation(fget_rtype, config)
     if TYPE_CHECKING:
         assert prop.fget is not None
 
     doc = (prop.fget.__doc__ or '').split('\n')[0]
-    return (f'**{prop.fget.__name__}** ({PROPERTY_TYPE})', rtype, doc)
+    property_type = format_annotation(property, config)
+    return (f'**{prop.fget.__name__}** ({property_type})', rtype, doc)
 
 
-def _get_lazy_property_doc(prop: LazyProperty) -> Tuple[str, str, str]:
+def _get_lazy_property_doc(prop: LazyProperty, config: Config) -> Tuple[str, str, str]:
     """Get a row documenting a LazyProperty"""
-    rtype = format_annotation(prop.type)
-    return (f'**{prop.__name__}** ({LAZY_PROPERTY_TYPE})', rtype, prop.__doc__ or '')
+    rtype = format_annotation(prop.type, config)
+
+    lazy_property_type = format_annotation(LazyProperty, config)
+    return (f'**{prop.__name__}** ({lazy_property_type})', rtype, prop.__doc__ or '')
 
 
 def export_model_doc(model_name, doc_table):

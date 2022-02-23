@@ -44,14 +44,14 @@ furo                        = {optional=true, version="2021.11.12.1"}
 ipython                     = {optional=true, version="^7.25.0", python=">=3.7"}
 linkify-it-py               = {optional=true, version="^1.0.1"}
 myst-parser                 = {optional=true, version="^0.15.1"}
-nbsphinx                    = {optional=true, version="^0.8.5" }
-sphinx                      = {optional=true, version="^4.2.0" }
-sphinx-automodapi           = {optional=true, version="^0.13" }
-sphinx-autodoc-typehints    = {optional=true, version="^1.11" }
-sphinx-copybutton           = {optional=true, version=">=0.3,<0.5" }
+nbsphinx                    = {optional=true, version="^0.8.5"}
+sphinx                      = {optional=true, version="^4.2.0"}
+sphinx-automodapi           = {optional=true, version="^0.13"}
+sphinx-autodoc-typehints    = {optional=true, version="^1.17", python=">=3.7"}
+sphinx-copybutton           = {optional=true, version=">=0.3,<0.5"}
 sphinx-inline-tabs          = {optional=true, version="^2021.8.17b10", python=">=3.8"}
 sphinx-panels               = {optional=true, version="^0.6.0"}
-sphinxcontrib-apidoc        = {optional=true, version="^0.3" }
+sphinxcontrib-apidoc        = {optional=true, version="^0.3"}
 
 [tool.poetry.dev-dependencies]
 coverage                    = "^6.2"
