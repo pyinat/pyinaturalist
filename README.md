@@ -21,8 +21,8 @@ get involved in the natural world by observing and identifying the living things
 Collectively, the community produces a rich source of global biodiversity data that can be valuable
 to anyone from hobbyists to scientists.
 
-**pyinaturalist** is an unofficial client for the [iNaturalist API](https://api.inaturalist.org/v1) that
-aims to make these data easily accessible in the python programming language.
+**pyinaturalist** is a client for the [iNaturalist API](https://api.inaturalist.org/v1) that makes
+these data easily accessible in the python programming language.
 
 - [Features](#features)
 - [Quickstart](#quickstart)
@@ -31,28 +31,29 @@ aims to make these data easily accessible in the python programming language.
 - [Related Projects](#related-projects)
 
 ## Features
-* **Easier requests:** Complete type annotations for request parameters, simplified create/update
-  request formats, and easy pagination
-* **Convenient responses:** Type conversions to the things you would expect in python, and optional
-  models for an object-oriented inteface to response data
-* **Docs:** Example requests, responses, scripts, and Jupyter notebooks to help get you started
-* **Security:** Keyring integration for secure credential storage
-* **Server-friendly:** Client-side rate-limiting that follows the
+* ➡️ **Easier requests:** Simplified request formats, easy pagination, and complete request
+  parameter type annotations for better IDE integration
+* ⬅️ **Convenient responses:** Type conversions to the things you would expect in python, and an
+  optional object-oriented inteface for response data
+* 🔒 **Security:** Keyring integration for secure credential storage
+* 📗 **Docs:** Example requests, responses, scripts, and Jupyter notebooks to help get you started
+* 💚 **Responsible use:** Follows the
   [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices),
-  so you can be nice to the iNaturalist servers and not worry about rate-limiting errors
-* **Test-friendly:** A dry-run mode to preview your requests before potentially modifying data
+  by default, so you can be nice to the iNaturalist servers and not worry about rate-limiting errors
+* 🧪 **Testing:** A dry-run testing mode to preview your requests before potentially modifying data
 
+### Supported Endpoints
 Many of the most relevant API endpoints are supported, including:
-* annotations and observation fields
-* identifications
-* messages
-* observations (multiple formats)
-* observation photos + sounds
-* observation observers, identifiers, histograms, life lists, and species counts
-* places
-* projects
-* species
-* users
+* 📝 Annotations and observation fields
+* 🆔 Identifications
+* 💬 Messages
+* 👀 Observations (multiple formats)
+* 📷 Observation photos + sounds
+* 📊 Observation observers, identifiers, histograms, life lists, and species counts
+* 📍 Places
+* 👥 Projects
+* 🐦Species
+* 👤 Users
 
 ## Quickstart
 Here are usage examples for some of the most commonly used features.
@@ -206,8 +207,7 @@ place to start.
 ## Related Projects
 Other python projects related to iNaturalist:
 
-* [Dronefly](https://github.com/synrg/dronefly): A Discord bot with iNaturalist data access features,
-  used by the iNaturalist Discord server.
+* [Dronefly](https://github.com/synrg/dronefly): A Discord bot with iNaturalist integration, used by the iNaturalist Discord server.
 * [pyinaturalist-convert](https://github.com/JWCook/pyinaturalist-convert): Tools to convert observation data to and from multiple formats
 * [pyinaturalist-open-data](https://github.com/JWCook/pyinaturalist-open-data):  Tools for working with [iNaturalist open data](https://registry.opendata.aws/inaturalist-open-data/)
 * [pyinaturalist-notebook](https://github.com/JWCook/pyinaturalist-notebook): Jupyter notebook Docker image for pyinaturalist
