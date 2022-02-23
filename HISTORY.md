@@ -1,6 +1,6 @@
 # History
 
-## 0.16.0 (Unreleased)
+## 0.16.0 (2022-02-22)
 [See all Issues & PRs for 0.16](https://github.com/niconoe/pyinaturalist/milestone/7?closed=1)
 
 ### New Endpoints
@@ -10,14 +10,14 @@
   * `get_message_by_id()`
   * `get_unread_meassage_count()`
 
-### Media
+### Observation Media
 The following changes apply to `upload()`, `create_observation()`, and `update_observation()`:
 * Add support for uploading observation photo & sound files from URLs
 * Add support for attaching previously uploaded photos to an observation by photo ID
 
 ### Other Changes
-* Remove `pyinaturalist.user_agent` global variable and API function keyword args, and recommend
-  setting on session object instead
+* Remove `pyinaturalist.user_agent` global variable and API function keyword args, and recommend setting on session object instead
+* Remove `pyinaturalist.DRY_RUN*` global variables, and recommend setting in environment variables instead
 * Fix `count_only=True`/`per_page=0` to not run full query
 * Do not error on unrecognized `**kwargs`, for cases where the API may accept some additional undocumented parameters
 * Allow overriding default location for API request cache

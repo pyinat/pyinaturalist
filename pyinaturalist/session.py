@@ -4,7 +4,6 @@ from logging import getLogger
 from os import getenv
 from typing import Dict
 from unittest.mock import Mock
-from warnings import warn
 
 import forge
 from requests import PreparedRequest, Request, Response, Session
@@ -276,22 +275,11 @@ def get_local_session(**kwargs) -> Session:
     return thread_local.session
 
 
-# TODO: Drop support for global variables in version 0.16
 def is_dry_run_enabled(method: str) -> bool:
     """A wrapper to determine if dry-run (aka test mode) has been enabled via either
     a constant or an environment variable. Dry-run mode may be enabled for either write
     requests, or all requests.
     """
-    if pyinaturalist.DRY_RUN_ENABLED or pyinaturalist.DRY_RUN_WRITE_ONLY:
-        msg = (
-            'Global varibale usage is deprecated; please use environment variables or dry_run '
-            'keyword argument instead'
-        )
-        warn(DeprecationWarning(msg))
-
-    dry_run_enabled = pyinaturalist.DRY_RUN_ENABLED or env_to_bool('DRY_RUN_ENABLED')
-    if method in WRITE_HTTP_METHODS:
-        return (
-            dry_run_enabled or pyinaturalist.DRY_RUN_WRITE_ONLY or env_to_bool('DRY_RUN_WRITE_ONLY')
-        )
-    return dry_run_enabled
+    dry_run_enabled = env_to_bool('DRY_RUN_ENABLED')
+    dry_run_write_only = env_to_bool('DRY_RUN_WRITE_ONLY') and method in WRITE_HTTP_METHODS
+    return dry_run_enabled or dry_run_write_only

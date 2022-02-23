@@ -48,34 +48,29 @@ def test_request_session(mock_ClientSession):
 
 # Test relevant combinations of dry-run settings and HTTP methods
 @pytest.mark.parametrize(
-    'enabled_const, enabled_env, write_only_const, write_only_env, method, expected_real_request',
+    'enabled_env, write_only_env, method, expected_real_request',
     [
-        # DRY_RUN_ENABLED constant or envar should mock GETs, but not DRY_RUN_WRITE_ONLY
-        (False, False, False, False, 'GET', True),
-        (False, False, True, True, 'GET', True),
-        (False, False, False, False, 'HEAD', True),
-        (True, False, False, False, 'GET', False),
-        (False, True, False, False, 'GET', False),
+        # DRY_RUN_ENABLED should mock GETs, but not DRY_RUN_WRITE_ONLY
+        (False, False, 'GET', True),
+        (False, True, 'GET', True),
+        (False, False, 'HEAD', True),
+        (True, False, 'GET', False),
         # Either DRY_RUN_ENABLED or DRY_RUN_WRITE_ONLY should mock POST requests
-        (False, False, False, False, 'POST', True),
-        (True, False, False, False, 'POST', False),
-        (False, True, False, False, 'POST', False),
-        (False, False, True, False, 'POST', False),
-        (False, False, False, True, 'POST', False),
-        (False, False, True, False, 'POST', False),
+        (False, False, 'POST', True),
+        (True, False, 'POST', False),
+        (False, True, 'POST', False),
         # Same for the other write methods
-        (False, False, False, False, 'PUT', True),
-        (False, False, False, False, 'DELETE', True),
-        (False, False, False, True, 'PUT', False),
-        (False, False, False, True, 'DELETE', False),
-        # Truthy environment variable strings should be respected
-        (False, 'true', False, False, 'GET', False),
-        (False, 'True', False, 'False', 'PUT', False),
-        (False, False, False, 'True', 'DELETE', False),
-        # As well as 'falsy' environment variable strings
-        (False, 'false', False, False, 'GET', True),
-        (False, 'none', False, 'False', 'POST', True),
-        (False, False, False, 'None', 'DELETE', True),
+        (False, False, 'PUT', True),
+        (False, False, 'DELETE', True),
+        (False, True, 'PUT', False),
+        (False, True, 'DELETE', False),
+        # True/False environment variable strings should be respected
+        ('true', False, 'GET', False),
+        ('True', 'False', 'PUT', False),
+        (False, 'True', 'DELETE', False),
+        ('false', False, 'GET', True),
+        ('none', 'False', 'POST', True),
+        (False, 'None', 'DELETE', True),
     ],
 )
 @patch('pyinaturalist.session.getenv')
@@ -83,9 +78,7 @@ def test_request_session(mock_ClientSession):
 def test_request_dry_run(
     mock_send,
     mock_getenv,
-    enabled_const,
     enabled_env,
-    write_only_const,
     write_only_env,
     method,
     expected_real_request,
@@ -99,10 +92,7 @@ def test_request_dry_run(
     mock_getenv.side_effect = env_vars.__getitem__
 
     # Mock constants and run request
-    with patch('pyinaturalist.session.pyinaturalist') as settings:
-        settings.DRY_RUN_ENABLED = enabled_const
-        settings.DRY_RUN_WRITE_ONLY = write_only_const
-        response = request(method, 'http://url')
+    response = request(method, 'http://url')
 
     # Verify that the request was or wasn't mocked based on settings
     if expected_real_request:

@@ -35,10 +35,7 @@ REQUEST_TIMEOUT = 10
 REQUEST_RETRIES = 5  # Maximum number of retries for a failed request
 RETRY_BACKOFF = 0.5  # Exponential backoff factor for retries
 
-# Toggle dry-run mode: this will run and log mock HTTP requests instead of real ones
-# Deprecated; use dry_run parameter or DRY_RUN_ENABLED environment variable instead
-DRY_RUN_ENABLED = False  # Mock all requests, including GET
-DRY_RUN_WRITE_ONLY = False  # Only mock 'write' requests
+# HTTP methods that apply to write-only dry-run mode
 WRITE_HTTP_METHODS = ['PATCH', 'POST', 'PUT', 'DELETE']
 
 # Project directories
