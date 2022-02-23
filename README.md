@@ -45,6 +45,7 @@ aims to make these data easily accessible in the python programming language.
 Many of the most relevant API endpoints are supported, including:
 * annotations and observation fields
 * identifications
+* messages
 * observations (multiple formats)
 * observation photos + sounds
 * observation observers, identifiers, histograms, life lists, and species counts
