@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 from keyring.errors import KeyringError
-from requests import HTTPError
+from requests import HTTPError, Session
 
 from pyinaturalist.auth import get_access_token, get_keyring_credentials, set_keyring_credentials
 from pyinaturalist.constants import API_V0_BASE_URL
@@ -103,7 +103,7 @@ def test_get_access_token__mixed_args_and_envars(requests_mock):
 
 @patch.dict(os.environ, {}, clear=True)
 @patch('pyinaturalist.auth.get_keyring_credentials', return_value=MOCK_CREDS_OAUTH)
-@patch('pyinaturalist.auth.post')
+@patch.object(Session, 'post')
 def test_get_access_token__keyring(mock_post, mock_keyring_credentials, requests_mock):
     requests_mock.post(
         f'{API_V0_BASE_URL}/oauth/token',

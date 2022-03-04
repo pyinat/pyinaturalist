@@ -7,7 +7,7 @@ from keyring.errors import KeyringError
 
 from pyinaturalist.constants import API_V0_BASE_URL, KEYRING_KEY
 from pyinaturalist.exceptions import AuthenticationError
-from pyinaturalist.session import get, post
+from pyinaturalist.session import get_local_session
 
 logger = getLogger(__name__)
 
@@ -62,6 +62,7 @@ def get_access_token(
     Raises:
         :py:exc:`requests.HTTPError`: (401) if credentials are invalid
     """
+    session = get_local_session()
     payload = {
         'username': username or getenv('INAT_USERNAME'),
         'password': password or getenv('INAT_PASSWORD'),
@@ -79,13 +80,18 @@ def get_access_token(
         raise AuthenticationError('Not all authentication parameters were provided')
 
     # Get OAuth access token
-    response = post(f'{API_V0_BASE_URL}/oauth/token', json=payload)
+    response = session.post(f'{API_V0_BASE_URL}/oauth/token', json=payload)
+    response.raise_for_status()
     access_token = response.json()['access_token']
 
     # If specified, use OAuth token to get a JWT. Note: Both token types get sent in Authorization
     # header, and for many endpoints are interchangeable. JWT is preferred for newer endpoints.
     if jwt:
-        response = get(f'{API_V0_BASE_URL}/users/api_token', access_token=access_token)
+        response = session.get(
+            f'{API_V0_BASE_URL}/users/api_token',
+            headers={'Authorization': f'Bearer {access_token}'},
+        )
+        response.raise_for_status()
         access_token = response.json()['api_token']
     return access_token
 
