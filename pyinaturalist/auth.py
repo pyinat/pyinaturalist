@@ -7,7 +7,7 @@ from keyring.errors import KeyringError
 
 from pyinaturalist.constants import API_V0_BASE_URL, KEYRING_KEY
 from pyinaturalist.exceptions import AuthenticationError
-from pyinaturalist.session import post
+from pyinaturalist.session import get_local_session
 
 logger = getLogger(__name__)
 
@@ -17,6 +17,7 @@ def get_access_token(
     password: str = None,
     app_id: str = None,
     app_secret: str = None,
+    jwt: bool = True,
 ) -> str:
     """Get an access token using the user's iNaturalist username and password, using the
     Resource Owner Password Credentials Flow. Requires registering an iNaturalist app.
@@ -55,10 +56,13 @@ def get_access_token(
         password: iNaturalist password (same as the one you use to login on inaturalist.org)
         app_id: OAuth2 application ID
         app_secret: OAuth2 application secret
+        jwt: Return a JSON Web Token, which is now the preferred authentication method.
+            Otherwise, return an OAuth2 access token.
 
     Raises:
         :py:exc:`requests.HTTPError`: (401) if credentials are invalid
     """
+    session = get_local_session()
     payload = {
         'username': username or getenv('INAT_USERNAME'),
         'password': password or getenv('INAT_PASSWORD'),
@@ -75,9 +79,21 @@ def get_access_token(
     else:
         raise AuthenticationError('Not all authentication parameters were provided')
 
-    response = post(f'{API_V0_BASE_URL}/oauth/token', json=payload)
+    # Get OAuth access token
+    response = session.post(f'{API_V0_BASE_URL}/oauth/token', json=payload)
     response.raise_for_status()
-    return response.json()['access_token']
+    access_token = response.json()['access_token']
+
+    # If specified, use OAuth token to get a JWT. Note: Both token types get sent in Authorization
+    # header, and for many endpoints are interchangeable. JWT is preferred for newer endpoints.
+    if jwt:
+        response = session.get(
+            f'{API_V0_BASE_URL}/users/api_token',
+            headers={'Authorization': f'Bearer {access_token}'},
+        )
+        response.raise_for_status()
+        access_token = response.json()['api_token']
+    return access_token
 
 
 def get_keyring_credentials() -> Dict[str, Optional[str]]:
