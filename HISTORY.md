@@ -4,6 +4,8 @@
 [See all Issues & PRs for 0.17](https://github.com/niconoe/pyinaturalist/milestone/8?closed=1)
 
 * Dropped support for python 3.6
+* Added support for JWT authentication, which will now be used by default
+  * To get an OAuth access token instead of a JWT, call `get_access_token(jwt=False)`
 
 ## 0.16.0 (2022-02-22)
 [See all Issues & PRs for 0.16](https://github.com/niconoe/pyinaturalist/milestone/7?closed=1)
