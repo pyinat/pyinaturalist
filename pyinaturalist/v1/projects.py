@@ -192,6 +192,16 @@ def update_project(project_id, **params):
     params, kwargs = split_common_params(params)
     kwargs['timeout'] = kwargs.get('timeout') or 60  # This endpoint can be a bit slow
 
+    # Remove any specified users from project observation rules by setting _destroy flag
+    remove_users = [str(user_id) for user_id in ensure_list(params.get('remove_users'))]
+    if remove_users:
+        project = get_projects_by_id(project_id)['results'][0]
+        rules = project.get('project_observation_rules', [])
+        for rule in rules:
+            if rule['operand_type'] == 'User' and str(rule['id']) in remove_users:
+                rule['_destroy'] = True
+        params['project_observation_rules_attributes'] = rules
+
     response = put_v1(
         f'projects/{project_id}',
         json={'project': params},
