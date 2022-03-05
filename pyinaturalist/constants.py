@@ -55,6 +55,7 @@ CACHE_EXPIRATION = {
 }
 CACHE_FILE = join(CACHE_DIR, 'api_requests.db')
 TOKEN_EXPIRATION = timedelta(hours=1)
+JWT_EXPIRATION = timedelta(days=1)
 
 # Response formats supported by GET /observations endpoint
 OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
