@@ -26,6 +26,7 @@ PER_PAGE_RESULTS = 200  # Default number of records per page for paginated queri
 LARGE_REQUEST_WARNING = 5000  # Show a warning for queries that will return over this many results
 
 # Rate-limiting and retry settings
+CONNECT_TIMEOUT = 5
 MAX_DELAY = 60  # Maximum time to wait for rate-limiting before aborting
 REQUEST_BURST_RATE = 5
 REQUESTS_PER_SECOND = 1

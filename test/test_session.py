@@ -141,7 +141,7 @@ def test_session__send(mock_session):
     session = ClientSession()
     request = Request(method='GET', url='http://test.com').prepare()
     session.send(request)
-    mock_session.assert_called_with(request, timeout=10)
+    mock_session.assert_called_with(request, timeout=(5, 10))
 
 
 def test_get_local_session():

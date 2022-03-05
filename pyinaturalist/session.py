@@ -17,6 +17,7 @@ import pyinaturalist
 from pyinaturalist.constants import (
     CACHE_EXPIRATION,
     CACHE_FILE,
+    CONNECT_TIMEOUT,
     MAX_DELAY,
     REQUEST_BURST_RATE,
     REQUEST_RETRIES,
@@ -126,10 +127,29 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         adapter = HTTPAdapter(max_retries=retry)
         self.mount('https://', adapter)
 
-    def send(self, request: PreparedRequest, **kwargs) -> Response:  # type: ignore  # false positive
-        """Send a request with caching, rate-limiting, and retries"""
-        kwargs.setdefault('timeout', self.timeout)
-        return super().send(request, **kwargs)
+    def send(
+        self,
+        request: PreparedRequest,
+        timeout: int = None,
+        **kwargs,
+    ) -> Response:  # type: ignore  # Adds kwargs not present in Session.send()
+        """Send a request with caching, rate-limiting, and retries
+
+        Args:
+            request: Prepared request to send
+            timeout: Maximum number of seconds to wait for a response from the server
+
+        **Note:** :py:meth:`requests.Session.send` accepts separate timeout values for connect and
+        read timeouts. The ``timeout`` argument will be used as the read timeout.
+        """
+        # r
+        read_timeout = timeout or self.timeout
+
+        return super().send(
+            request,
+            timeout=(CONNECT_TIMEOUT, read_timeout),
+            **kwargs,
+        )
 
 
 def request(
@@ -143,6 +163,7 @@ def request(
     json: Dict = None,
     raise_for_status: bool = True,
     session: Session = None,
+    timeout: int = None,
     **params: RequestParams,
 ) -> Response:
     """Wrapper around :py:func:`requests.request` with additional options specific to iNat API requests
@@ -183,7 +204,7 @@ def request(
         return MOCK_RESPONSE
 
     # Otherwise, send the request
-    response = session.send(request)
+    response = session.send(request, timeout=timeout)
     if raise_for_status:
         response.raise_for_status()
     return response

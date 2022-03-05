@@ -1,6 +1,9 @@
 """Helper functions for processing and validating request parameters.
 The main purpose of these functions is to support some python-specific conveniences and translate
 them into standard API request parameters, along with client-side request validation.
+
+Also see :py:mod:`pyinaturalist.converters` for type conversion utilities not specific to request
+params.
 """
 from datetime import date, datetime, timedelta
 from inspect import signature
@@ -28,10 +31,17 @@ from pyinaturalist.converters import (
     strip_empty_values,
 )
 
-COMMON_PARAMS = ['access_token', 'dry_run', 'expire_after', 'limit', 'session', 'user_agent']
-MULTIPLE_CHOICE_ERROR_MSG = (
-    'Parameter "{}" must have one of the following values: {}\n\tValue provided: {}'
-)
+# Common parameters that can be passed to all API functions, and notes on where they are used
+COMMON_PARAMS = [
+    'access_token',  # Used in session.prepare_request()
+    'dry_run',  # Used in session.request()
+    'limit',  # Used in paginator.Paginator
+    'session',  # Used in session.request()
+    'timeout',  # Used in session.ClientSession.send()
+    'user_agent',  # Used in session.prepare_request()
+]
+
+# Time interval options used by observation histogram
 INTERVALS: Dict[str, Union[timedelta, relativedelta]] = {
     'hour': timedelta(hours=1),
     'day': timedelta(days=1),
@@ -40,6 +50,9 @@ INTERVALS: Dict[str, Union[timedelta, relativedelta]] = {
     'year': relativedelta(years=1),
 }
 
+MULTIPLE_CHOICE_ERROR_MSG = (
+    'Parameter "{}" must have one of the following values: {}\n\tValue provided: {}'
+)
 
 logger = getLogger(__name__)
 
