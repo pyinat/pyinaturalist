@@ -1,10 +1,10 @@
 from pyinaturalist.constants import PROJECT_ORDER_BY_PROPERTIES, JsonResponse, MultiInt
-from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps
+from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps, ensure_list
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.paginator import paginate_all
-from pyinaturalist.request_params import validate_multiple_choice_param
-from pyinaturalist.v1 import delete_v1, get_v1, post_v1
+from pyinaturalist.request_params import split_common_params, validate_multiple_choice_param
+from pyinaturalist.v1 import delete_v1, get_v1, post_v1, put_v1
 
 
 @document_request_params(docs._projects_params, docs._pagination)
@@ -135,7 +135,7 @@ def delete_project_observation(
 
     Example:
 
-        >>> delete_project_observation(24237, 1234, access_token)
+        >>> delete_project_observation(24237, 1234, access_token=access_token)
     """
     return delete_v1(
         f'projects/{project_id}/remove',
@@ -143,6 +143,7 @@ def delete_project_observation(
         json={'observation_id': observation_id},
         **params,
     )
+
     # This version takes a separate 'project observation' ID (from association table?)
     # delete_v1(
     #     'project_observations',
@@ -150,3 +151,48 @@ def delete_project_observation(
     #     json={'observation_id': observation_id, 'project_id': project_id},
     #     **params,
     # )
+
+
+# TODO: Support image uploads for `cover` and `icon`
+@document_request_params(docs._project_update_params)
+def update_project(project_id, **params):
+    """Update a project
+
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * Undocumented endpoint; may be subject to braking changes in the future
+    * ``admin_attributes`` and ``project_observation_rules_attributes`` each accept a list of dicts
+      in the formats shown below. These can be obtained from :py:func:`get_projects`, modified, and
+      then passed to this function::
+
+        {
+            "admin_attributes": [
+                {"id": int, "role": str, "user_id": int, "_destroy": bool},
+            ],
+            "project_observation_rules_attributes": [
+                {"operator": str, "operand_type": str, "operand_id": int, "id": int, "_destroy": bool},
+            ],
+        }
+
+    Example:
+
+        >>> update_project(
+        ...     'api-test-project',
+        ...     title='Test Project',
+        ...     description='This is a test project',
+        ...     prefers_rule_native=True,
+        ...     access_token=access_token,
+        ... )
+
+    """
+    # Split API request params from common function args
+    params, kwargs = split_common_params(params)
+    kwargs['timeout'] = kwargs.get('timeout') or 60  # This endpoint can be a bit slow
+
+    response = put_v1(
+        f'projects/{project_id}',
+        json={'project': params},
+        **kwargs,
+    )
+    return response.json()

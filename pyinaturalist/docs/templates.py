@@ -8,14 +8,14 @@ necessary. If the new function(s) have a large number of parameters and/or have 
 common with other functions, consider using a template function.
 
 Note: Since the templates are applied dynamically at import time, this adds a tiny amount of overhead
-(about 20 milliseconds as of v0.14) to the import time of the library. If this ever becomes a problem,
-an option could be added to disable ``copy_doc_signature``, e.g. via environment variable.
+(about 20 milliseconds as of v0.14) to the import time of the library.
 """
-from typing import Any, List
+from typing import Any, Dict, List
 
 from pyinaturalist.constants import (
     AnyDate,
     AnyDateTime,
+    DateOrStr,
     IntOrStr,
     MultiFile,
     MultiInt,
@@ -482,6 +482,66 @@ def _project_observation_params(access_token: str, project_id: int, observation_
     access_token: An access token required for user authentication, as returned by :py:func:`.get_access_token()`
     project_id: ID of project to add onto
     observation_id: ID of observation to add
+    """
+
+
+def _project_update_params(
+    project_id: IntOrStr,
+    cover: str = None,
+    description: str = None,
+    icon: str = None,
+    preferred_banner_color: str = None,
+    prefers_banner_contain: bool = None,
+    prefers_hide_title: bool = None,
+    prefers_hide_umbrella_map_flags: bool = None,
+    prefers_rule_d1: DateOrStr = None,
+    prefers_rule_d2: DateOrStr = None,
+    prefers_rule_introduced: str = None,
+    prefers_rule_members_only: str = None,
+    prefers_rule_month: MultiStr = None,
+    prefers_rule_native: bool = None,
+    prefers_rule_observed_on: DateOrStr = None,
+    prefers_rule_photos: bool = None,
+    prefers_rule_quality_grade: MultiStr = None,
+    prefers_rule_sounds: bool = None,
+    prefers_rule_term_id: str = None,
+    prefers_rule_term_value_id: str = None,
+    prefers_user_trust: bool = None,
+    project_type: str = None,
+    title: str = None,
+    user_id: int = None,
+    admin_attributes: List[Dict] = None,
+    project_observation_rules_attributes: List[Dict] = None,
+    remove_users: MultiInt = None,
+):
+    """Args:
+    project_id: Numeric project ID or slug (the short name shown in project URL)
+    cover: Banner image for project page; ideally 760x320 px
+    description: Description shown on project page
+    icon: Image used as project icon. Should be at least 72x72 px and will be cropped to a square.
+    preferred_banner_color: Background color for project banner, as a RGB hex value (e.g., ``'#74ac00'``)
+    prefers_banner_contain: Fit banner image without cropping
+    prefers_hide_title:
+    prefers_hide_umbrella_map_flags:
+    prefers_rule_d1: Observation date range to include (start)
+    prefers_rule_d2: Observation date range to include (end)
+    prefers_rule_observed_on: Exact observation date to include
+    prefers_rule_introduced: Only include observations of introduced species
+    prefers_rule_native: Only include observations of native species
+    prefers_rule_members_only: Only include observations of project memebers
+    prefers_rule_month: Only include observations from these months
+    prefers_rule_photos: Only include observations with photos
+    prefers_rule_sounds: Only include observations with sounds
+    prefers_rule_quality_grade: Only include observations with these quality grades
+    prefers_rule_term_id: Only include observations with this annotation (controlled term ID)
+    prefers_rule_term_value_id: Only include observations with this annotation value (controlled term value ID)
+    prefers_user_trust: Only include observations from trusted users
+    project_type: Project type ('umbrella' or 'collection')
+    title: Project title
+    user_id: User ID of project owner
+    admin_attributes: Admin users and their roles
+    project_observation_rules_attributes: Rules for observations to include in the project
+    remove_users: One or more user IDs to remove from project observation rules.
     """
 
 

@@ -199,6 +199,8 @@ DATETIME_PARAMS = [
     'observed_on_string',
     'older_than',
     'on',
+    'prefers_rule_d1',
+    'prefers_rule_d2',
     'since',
     'updated_since',
 ]
