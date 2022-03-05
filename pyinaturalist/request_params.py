@@ -35,6 +35,7 @@ from pyinaturalist.converters import (
 COMMON_PARAMS = [
     'access_token',  # Used in session.prepare_request()
     'dry_run',  # Used in session.request()
+    'expire_after',  # Passed to requests_cache.CachedSession.send()
     'limit',  # Used in paginator.Paginator
     'session',  # Used in session.request()
     'timeout',  # Used in session.ClientSession.send()
