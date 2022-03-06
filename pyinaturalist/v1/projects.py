@@ -79,7 +79,9 @@ def get_projects_by_id(project_id: MultiInt, rule_details: bool = None, **params
     Returns:
         Response dict containing project records
     """
-    response = get_v1('projects', ids=project_id, rule_details=rule_details, **params)
+    response = get_v1(
+        'projects', ids=project_id, rule_details=rule_details, only_int_ids=False, **params
+    )
 
     projects = response.json()
     projects['results'] = convert_all_coordinates(projects['results'])

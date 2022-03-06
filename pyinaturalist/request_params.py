@@ -26,7 +26,6 @@ from pyinaturalist.converters import (
     convert_isoformat,
     ensure_list,
     strip_empty_values,
-    try_int,
 )
 
 COMMON_PARAMS = ['access_token', 'dry_run', 'expire_after', 'limit', 'session', 'user_agent']
@@ -49,8 +48,9 @@ def preprocess_request_body(body: Optional[RequestParams]) -> Optional[RequestPa
     """Perform type conversions, sanity checks, etc. on JSON-formatted request body"""
     if not body:
         return None
-    if 'observation' in body:
-        body['observation'] = preprocess_request_params(body['observation'])
+    for resource_type in ['project', 'observation']:
+        if resource_type in body:
+            body[resource_type] = preprocess_request_params(body[resource_type])
     else:
         body = preprocess_request_params(body)
     return body
@@ -79,10 +79,10 @@ def convert_bool_params(params: RequestParams) -> RequestParams:
     return params
 
 
-def convert_url_ids(url: str, ids: MultiInt = None) -> str:
+def convert_url_ids(url: str, ids: MultiInt = None, only_int_ids: bool = True) -> str:
     """If one or more resources are requested by ID, validate and update the request URL accordingly"""
     if ids:
-        url = url.rstrip('/') + '/' + validate_ids(ids)
+        url = url.rstrip('/') + '/' + validate_ids(ids, only_int_ids=only_int_ids)
     return url
 
 
@@ -203,26 +203,25 @@ def get_valid_kwargs(func: Callable, kwargs: Dict) -> Dict:
     return {k: v for k, v in kwargs.items() if k in sig_params and v is not None}
 
 
-def is_int_list(values: Any) -> bool:
-    """Determine if a value contains one or more valid integers"""
-    return all([try_int(v) is not None for v in ensure_list(values, convert_csv=True)])
-
-
 def split_common_params(params: RequestParams) -> Tuple[RequestParams, RequestParams]:
     """Split out common keyword args (for pyinaturalist functions) from request params (for API)"""
     kwargs = {k: params.pop(k, None) for k in COMMON_PARAMS}
     return params, kwargs
 
 
-def validate_ids(ids: Any) -> str:
-    """Ensure ID(s) are all valid integers, and convert to a comma-delimited string if multiple
+def validate_ids(ids: Any, only_int_ids: bool = True) -> str:
+    """Ensure ID(s) are all valid, and convert to a comma-delimited string if there are multiple
 
     Raises:
         :py:exc:`ValueError` if any values are not valid integers
     """
-    if not is_int_list(ids):
-        raise ValueError(f'Invalid ID(s): {ids}; must specify integers only')
-    return convert_csv_list([int(id) for id in ensure_list(ids, convert_csv=True)])
+    ids = ensure_list(ids, convert_csv=True)
+    if only_int_ids:
+        try:
+            ids = [int(value) for value in ids]
+        except (TypeError, ValueError):
+            raise ValueError(f'Invalid ID(s): {ids}; must specify integers only')
+    return convert_csv_list(ids)
 
 
 def validate_multiple_choice_params(params: RequestParams) -> RequestParams:

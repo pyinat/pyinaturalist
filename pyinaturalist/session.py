@@ -199,12 +199,13 @@ def prepare_request(
     ids: MultiInt = None,
     json: Dict = None,
     params: RequestParams = None,
+    only_int_ids: bool = True,
     **kwargs,
 ) -> PreparedRequest:
     """Translate ``pyinaturalist``-specific options into standard request arguments"""
     # Prepare request params and URL
     params = preprocess_request_params(params)
-    url = convert_url_ids(url, ids)
+    url = convert_url_ids(url, ids, only_int_ids)
 
     # Set auth header
     headers = headers or {}
