@@ -90,7 +90,7 @@ def convert_histogram(response: JsonResponse) -> HistogramResponse:
 
 def convert_csv_list(obj: Any) -> str:
     """Convert list parameters into an API-compatible (comma-delimited) string"""
-    if isinstance(obj, list):
+    if isinstance(obj, list) or isinstance(obj, tuple):
         return ','.join(map(str, obj))
     else:
         return obj

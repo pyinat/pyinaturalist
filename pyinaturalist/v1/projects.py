@@ -80,7 +80,7 @@ def get_projects_by_id(project_id: MultiInt, rule_details: bool = None, **params
         Response dict containing project records
     """
     response = get_v1(
-        'projects', ids=project_id, rule_details=rule_details, only_int_ids=False, **params
+        'projects', rule_details=rule_details, ids=project_id, allow_str_ids=True, **params
     )
 
     projects = response.json()
@@ -198,7 +198,7 @@ def update_project(project_id, **params):
         project = get_projects_by_id(project_id)['results'][0]
         rules = project.get('project_observation_rules', [])
         for rule in rules:
-            if rule['operand_type'] == 'User' and str(rule['id']) in remove_users:
+            if rule['operand_type'] == 'User' and str(rule['operand_id']) in remove_users:
                 rule['_destroy'] = True
         params['project_observation_rules_attributes'] = rules
 

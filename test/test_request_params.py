@@ -182,9 +182,9 @@ def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_str
 @patch('pyinaturalist.request_params.convert_datetime_params')
 @patch('pyinaturalist.request_params.convert_list_params')
 @patch('pyinaturalist.request_params.strip_empty_values')
-def test_preprocess_request_body(mock_bool, mock_datetime, mock_list, mock_strip):
+def test_preprocess_request_body(mock_bool, mock_list, mock_datetime, mock_strip):
     preprocess_request_body({'id': 1})
-    assert all([mock_bool.called, mock_datetime.called, mock_list.called, mock_strip.called])
+    assert all([mock_bool.called, mock_datetime.called, not mock_list.called, mock_strip.called])
 
 
 def test_validate_multiple_choice_param():

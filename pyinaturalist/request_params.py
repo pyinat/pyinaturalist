@@ -34,6 +34,7 @@ from pyinaturalist.converters import (
 # Common parameters that can be passed to all API functions, and notes on where they are used
 COMMON_PARAMS = [
     'access_token',  # Used in session.prepare_request()
+    'allow_str_ids',  # Used in session.prepare_request()
     'dry_run',  # Used in session.request()
     'expire_after',  # Passed to requests_cache.CachedSession.send()
     'limit',  # Used in paginator.Paginator
@@ -62,15 +63,17 @@ def preprocess_request_body(body: Optional[RequestParams]) -> Optional[RequestPa
     """Perform type conversions, sanity checks, etc. on JSON-formatted request body"""
     if not body:
         return None
-    for resource_type in ['project', 'observation']:
-        if resource_type in body:
-            body[resource_type] = preprocess_request_params(body[resource_type])
+    for resource in ['project', 'observation']:
+        if resource in body:
+            body[resource] = preprocess_request_params(body[resource], convert_lists=False)
     else:
-        body = preprocess_request_params(body)
+        body = preprocess_request_params(body, convert_lists=False)
     return body
 
 
-def preprocess_request_params(params: Optional[RequestParams]) -> RequestParams:
+def preprocess_request_params(
+    params: Optional[RequestParams], convert_lists: bool = True
+) -> RequestParams:
     """Perform type conversions, sanity checks, etc. on request parameters"""
     if not params:
         return {}
@@ -79,7 +82,8 @@ def preprocess_request_params(params: Optional[RequestParams]) -> RequestParams:
     params = convert_pagination_params(params)
     params = convert_bool_params(params)
     params = convert_datetime_params(params)
-    params = convert_list_params(params)
+    if convert_lists:
+        params = convert_list_params(params)
     params = strip_empty_values(params)
     params, _ = split_common_params(params)
     return params
@@ -93,10 +97,11 @@ def convert_bool_params(params: RequestParams) -> RequestParams:
     return params
 
 
-def convert_url_ids(url: str, ids: MultiInt = None, only_int_ids: bool = True) -> str:
+def convert_url_ids(url: str, ids: MultiInt = None, allow_str_ids: bool = False) -> str:
     """If one or more resources are requested by ID, validate and update the request URL accordingly"""
     if ids:
-        url = url.rstrip('/') + '/' + validate_ids(ids, only_int_ids=only_int_ids)
+        str_ids = str(convert_csv_list(ids)) if allow_str_ids else validate_ids(ids)
+        url = url.rstrip('/') + '/' + str_ids
     return url
 
 
@@ -223,18 +228,16 @@ def split_common_params(params: RequestParams) -> Tuple[RequestParams, RequestPa
     return params, kwargs
 
 
-def validate_ids(ids: Any, only_int_ids: bool = True) -> str:
+def validate_ids(ids: Any) -> str:
     """Ensure ID(s) are all valid, and convert to a comma-delimited string if there are multiple
 
     Raises:
         :py:exc:`ValueError` if any values are not valid integers
     """
-    ids = ensure_list(ids, convert_csv=True)
-    if only_int_ids:
-        try:
-            ids = [int(value) for value in ids]
-        except (TypeError, ValueError):
-            raise ValueError(f'Invalid ID(s): {ids}; must specify integers only')
+    try:
+        ids = [int(value) for value in ensure_list(ids, convert_csv=True)]
+    except (TypeError, ValueError):
+        raise ValueError(f'Invalid ID(s): {ids}; must specify integers only')
     return convert_csv_list(ids)
 
 
