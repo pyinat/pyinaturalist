@@ -159,6 +159,7 @@ def request(
     method: str,
     url: str,
     access_token: str = None,
+    allow_str_ids: bool = False,
     dry_run: bool = False,
     expire_after: ExpirationTime = None,
     files: FileOrPath = None,
@@ -196,6 +197,7 @@ def request(
         method=method,
         url=url,
         access_token=access_token,
+        allow_str_ids=allow_str_ids,
         files=files,
         headers=headers,
         ids=ids,
@@ -229,13 +231,13 @@ def prepare_request(
     ids: MultiInt = None,
     json: Dict = None,
     params: RequestParams = None,
-    only_int_ids: bool = True,
+    allow_str_ids: bool = False,
     **kwargs,
 ) -> PreparedRequest:
     """Translate ``pyinaturalist``-specific options into standard request arguments"""
     # Prepare request params and URL
     params = preprocess_request_params(params)
-    url = convert_url_ids(url, ids, only_int_ids)
+    url = convert_url_ids(url, ids, allow_str_ids)
 
     # Set auth header
     headers = headers or {}

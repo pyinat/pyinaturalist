@@ -12,6 +12,7 @@ from pyinaturalist.session import get_local_session
 logger = getLogger(__name__)
 
 
+# TODO: Don't fetch OAuth token if JWT is cached
 def get_access_token(
     username: str = None,
     password: str = None,

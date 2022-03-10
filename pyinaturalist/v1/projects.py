@@ -1,4 +1,4 @@
-from pyinaturalist.constants import PROJECT_ORDER_BY_PROPERTIES, JsonResponse, MultiInt
+from pyinaturalist.constants import PROJECT_ORDER_BY_PROPERTIES, IntOrStr, JsonResponse, MultiInt
 from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps, ensure_list
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
@@ -80,7 +80,7 @@ def get_projects_by_id(project_id: MultiInt, rule_details: bool = None, **params
         Response dict containing project records
     """
     response = get_v1(
-        'projects', ids=project_id, rule_details=rule_details, only_int_ids=False, **params
+        'projects', rule_details=rule_details, ids=project_id, allow_str_ids=True, **params
     )
 
     projects = response.json()
@@ -122,6 +122,27 @@ def add_project_observation(
     return response.json()
 
 
+def add_project_users(project_id: IntOrStr, user_ids: MultiInt, **params):
+    """Add users to project observation rules
+
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * This only affects observation rules, **not** project membership
+
+    Args:
+        project_id: Either numeric project ID or URL slug
+        user_ids: One or more user IDs to add. Only accepts numeric IDs.
+    """
+    rules = _get_project_rules(project_id)
+    for user_id in ensure_list(user_ids):
+        rules.append(
+            {'operand_id': user_id, 'operand_type': 'User', 'operator': 'observed_by_user?'}
+        )
+
+    return update_project(project_id, project_observation_rules_attributes=rules, **params)
+
+
 # TODO: This may not yet be working as intended
 @document_request_params(docs._project_observation_params)
 def delete_project_observation(
@@ -155,9 +176,30 @@ def delete_project_observation(
     # )
 
 
+def delete_project_users(project_id: IntOrStr, user_ids: MultiInt, **params):
+    """Remove users from project observation rules
+
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * This only affects observation rules, **not** project membership
+
+    Args:
+        project_id: Either numeric project ID or URL slug
+        user_ids: One or more user IDs to remove. Only accepts numeric IDs.
+    """
+    rules = _get_project_rules(project_id)
+    str_user_ids = [str(user_id) for user_id in ensure_list(user_ids)]
+    for rule in rules:
+        if rule['operand_type'] == 'User' and str(rule['operand_id']) in str_user_ids:
+            rule['_destroy'] = True
+
+    return update_project(project_id, project_observation_rules_attributes=rules, **params)
+
+
 # TODO: Support image uploads for `cover` and `icon`
 @document_request_params(docs._project_update_params)
-def update_project(project_id, **params):
+def update_project(project_id: IntOrStr, **params):
     """Update a project
 
     .. rubric:: Notes
@@ -192,19 +234,15 @@ def update_project(project_id, **params):
     params, kwargs = split_common_params(params)
     kwargs['timeout'] = kwargs.get('timeout') or 60  # This endpoint can be a bit slow
 
-    # Remove any specified users from project observation rules by setting _destroy flag
-    remove_users = [str(user_id) for user_id in ensure_list(params.get('remove_users'))]
-    if remove_users:
-        project = get_projects_by_id(project_id)['results'][0]
-        rules = project.get('project_observation_rules', [])
-        for rule in rules:
-            if rule['operand_type'] == 'User' and str(rule['id']) in remove_users:
-                rule['_destroy'] = True
-        params['project_observation_rules_attributes'] = rules
-
     response = put_v1(
         f'projects/{project_id}',
         json={'project': params},
         **kwargs,
     )
     return response.json()
+
+
+# TODO: bypass cache for this call?
+def _get_project_rules(project_id):
+    project = get_projects_by_id(project_id)['results'][0]
+    return project.get('project_observation_rules', [])

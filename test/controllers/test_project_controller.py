@@ -25,7 +25,7 @@ def test_from_id(requests_mock):
     assert project.id == project_id
     assert project.location == (48.777404, -122.306929)
     assert project.project_observation_rules == project.obs_rules
-    assert project.obs_rules[0]['id'] == 1234
+    assert project.obs_rules[0]['id'] == 19344
     assert project.search_parameters[0]['field'] == 'quality_grade'
     assert project.user_ids[-1] == 3387092 and len(project.user_ids) == 33
 

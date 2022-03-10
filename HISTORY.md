@@ -4,10 +4,14 @@
 [See all Issues & PRs for 0.17](https://github.com/niconoe/pyinaturalist/milestone/8?closed=1)
 
 ### New Endpoints
-* Added new **Project** endpoint: `update_project()`
+* Added new **Project** endpoint and helper functions:
+  * `update_project()`
+  * `add_project_users()`
+  * `delete_project_users()`
 
 ### Modified Endpoints
-* Allowed string values for `project_id` in `get_projects_by_id()` (e.g., a URL slug instead of a numeric ID)
+* Updated `get_projects_by_id()` to allow string values (URL slugs) for `project_id`
+* Updated `get_user_by_id()` to allow string values (usernames) for `user_id`
 
 ### Other Changes
 * Dropped support for python 3.6

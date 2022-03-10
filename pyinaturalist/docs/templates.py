@@ -512,7 +512,6 @@ def _project_update_params(
     user_id: int = None,
     admin_attributes: List[Dict] = None,
     project_observation_rules_attributes: List[Dict] = None,
-    remove_users: MultiInt = None,
 ):
     """Args:
     project_id: Numeric project ID or slug (the short name shown in project URL)
@@ -541,7 +540,6 @@ def _project_update_params(
     user_id: User ID of project owner
     admin_attributes: Admin users and their roles
     project_observation_rules_attributes: Rules for observations to include in the project
-    remove_users: One or more user IDs to remove from project observation rules.
     """
 
 
