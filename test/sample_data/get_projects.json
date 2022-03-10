@@ -11,7 +11,8 @@
             "title": "PNW Invasive Plant EDDR",
             "banner_color": "#4551b7",
             "project_observation_rules": [
-                {"operand_id": 90550, "id": 616862, "operand_type": "Project", "operator": "in_project?"}
+                {"operand_id": 555472, "operand_type": "User", "operator":"observed_by_user?", "id": 1234},
+                {"operand_id": 555472, "operand_type": "User", "operator":"observed_by_user?", "id": 5678}
             ],
             "site_features": [
                 {"noteworthy": true, "site_id": 1, "featured_at": "2021-03-16T16:41:32.477Z"}
