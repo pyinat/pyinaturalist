@@ -48,6 +48,7 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | GET    | /posts                             | {py:func}`.get_posts`
 | GET    | /projects                          | {py:func}`.get_projects`
 | GET    | /projects/{id}                     | {py:func}`.get_projects_by_id`
+| PUT    | /projects/{id}                     | {py:func}`.update_project`
 | GET    | /projects/{id}/members             |
 | GET    | /projects/{id}/subscriptions       |
 | POST   | /projects/{id}/add                 | {py:func}`.add_project_observation`

@@ -53,7 +53,9 @@ from pyinaturalist.v1.places import get_places_autocomplete, get_places_by_id, g
 from pyinaturalist.v1.posts import get_posts
 from pyinaturalist.v1.projects import (
     add_project_observation,
+    add_project_users,
     delete_project_observation,
+    delete_project_users,
     get_projects,
     get_projects_by_id,
     update_project,

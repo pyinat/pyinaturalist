@@ -6,7 +6,9 @@ from dateutil.tz import tzutc
 from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.v1 import (
     add_project_observation,
+    add_project_users,
     delete_project_observation,
+    delete_project_users,
     get_projects,
     get_projects_by_id,
     update_project,
@@ -61,6 +63,20 @@ def test_add_project_observation(requests_mock):
     assert response['id'] == 54986584
 
 
+@patch('pyinaturalist.v1.projects.put_v1')
+def test_add_project_users(mock_put, requests_mock):
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/projects/1234',
+        json=SAMPLE_DATA['get_projects'],
+        status_code=200,
+    )
+    add_project_users(1234, [9999])
+
+    project_params = mock_put.call_args[1]['json']['project']
+    rules = project_params['project_observation_rules_attributes']
+    assert rules[-1]['operand_id'] == 9999
+
+
 def test_delete_project_observation(requests_mock):
     requests_mock.delete(
         f'{API_V1_BASE_URL}/projects/1234/remove',
@@ -73,6 +89,21 @@ def test_delete_project_observation(requests_mock):
 
 
 @patch('pyinaturalist.v1.projects.put_v1')
+def test_delete_project_users(mock_put, requests_mock):
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/projects/1234',
+        json=SAMPLE_DATA['get_projects'],
+        status_code=200,
+    )
+    delete_project_users(1234, [5678])
+
+    project_params = mock_put.call_args[1]['json']['project']
+    rules = project_params['project_observation_rules_attributes']
+    assert rules[0]['operand_id'] == 1234 and not rules[0].get('_destroy')
+    assert rules[1]['operand_id'] == 5678 and rules[1]['_destroy'] is True
+
+
+@patch('pyinaturalist.v1.projects.put_v1')
 def test_update_project(mock_put):
     update_project(1234, title='New Title', description='New Description')
 
@@ -81,18 +112,3 @@ def test_update_project(mock_put):
     assert request_args['timeout'] == 60
     assert project_params['title'] == 'New Title'
     assert project_params['description'] == 'New Description'
-
-
-@patch('pyinaturalist.v1.projects.put_v1')
-def test_update_project__remove_users(mock_put, requests_mock):
-    requests_mock.get(
-        f'{API_V1_BASE_URL}/projects/1234',
-        json=SAMPLE_DATA['get_projects'],
-        status_code=200,
-    )
-    update_project(1234, remove_users=[5678])
-
-    project_params = mock_put.call_args[1]['json']['project']
-    rules = project_params['project_observation_rules_attributes']
-    assert rules[0]['operand_id'] == 1234 and not rules[0].get('_destroy')
-    assert rules[1]['operand_id'] == 5678 and rules[1]['_destroy'] is True
