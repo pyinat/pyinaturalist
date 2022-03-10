@@ -17,6 +17,7 @@ import pyinaturalist
 from pyinaturalist.constants import (
     CACHE_EXPIRATION,
     CACHE_FILE,
+    CONNECT_TIMEOUT,
     MAX_DELAY,
     REQUEST_BURST_RATE,
     REQUEST_RETRIES,
@@ -126,10 +127,32 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         adapter = HTTPAdapter(max_retries=retry)
         self.mount('https://', adapter)
 
-    def send(self, request: PreparedRequest, **kwargs) -> Response:  # type: ignore  # false positive
-        """Send a request with caching, rate-limiting, and retries"""
-        kwargs.setdefault('timeout', self.timeout)
-        return super().send(request, **kwargs)
+    def send(
+        self,
+        request: PreparedRequest,
+        expire_after: ExpirationTime = None,
+        timeout: int = None,
+        **kwargs,
+    ) -> Response:  # type: ignore  # Adds kwargs not present in Session.send()
+        """Send a request with caching, rate-limiting, and retries
+
+        Args:
+            request: Prepared request to send
+            expire_after: How long to keep cached API requests
+            timeout: Maximum number of seconds to wait for a response from the server
+
+        **Note:** :py:meth:`requests.Session.send` accepts separate timeout values for connect and
+        read timeouts. The ``timeout`` argument will be used as the read timeout.
+        """
+        # r
+        read_timeout = timeout or self.timeout
+
+        return super().send(
+            request,
+            expire_after=expire_after,
+            timeout=(CONNECT_TIMEOUT, read_timeout),
+            **kwargs,
+        )
 
 
 def request(
@@ -137,12 +160,14 @@ def request(
     url: str,
     access_token: str = None,
     dry_run: bool = False,
+    expire_after: ExpirationTime = None,
     files: FileOrPath = None,
     headers: Dict = None,
     ids: MultiInt = None,
     json: Dict = None,
     raise_for_status: bool = True,
     session: Session = None,
+    timeout: int = None,
     **params: RequestParams,
 ) -> Response:
     """Wrapper around :py:func:`requests.request` with additional options specific to iNat API requests
@@ -152,6 +177,7 @@ def request(
         url: Request URL
         access_token: access_token: the access token, as returned by :func:`get_access_token()`
         dry_run: Just log the request instead of sending a real request
+        expire_after: How long to keep cached API requests
         files: File object, path, or URL to upload
         headers: Request headers
         ids: One or more integer IDs used as REST resource(s) to request
@@ -183,7 +209,11 @@ def request(
         return MOCK_RESPONSE
 
     # Otherwise, send the request
-    response = session.send(request)
+    session_kwargs = {'timeout': timeout}
+    if isinstance(session, CacheMixin):
+        session_kwargs['expire_after'] = expire_after
+    response = session.send(request, **session_kwargs)
+
     if raise_for_status:
         response.raise_for_status()
     return response
@@ -199,12 +229,13 @@ def prepare_request(
     ids: MultiInt = None,
     json: Dict = None,
     params: RequestParams = None,
+    only_int_ids: bool = True,
     **kwargs,
 ) -> PreparedRequest:
     """Translate ``pyinaturalist``-specific options into standard request arguments"""
     # Prepare request params and URL
     params = preprocess_request_params(params)
-    url = convert_url_ids(url, ids)
+    url = convert_url_ids(url, ids, only_int_ids)
 
     # Set auth header
     headers = headers or {}
@@ -261,7 +292,7 @@ def env_to_bool(environment_variable: str) -> bool:
     return bool(env_value) and str(env_value).lower() not in ['false', 'none']
 
 
-def get_local_session(**kwargs) -> Session:
+def get_local_session(**kwargs) -> ClientSession:
     """Get a thread-local Session object with default settings. This will be reused across requests
     to take advantage of connection pooling and (optionally) caching. If used in a multi-threaded
     context (for example, a :py:class:`~concurrent.futures.ThreadPoolExecutor`), this will create

@@ -56,6 +56,7 @@ from pyinaturalist.v1.projects import (
     delete_project_observation,
     get_projects,
     get_projects_by_id,
+    update_project,
 )
 from pyinaturalist.v1.search import search
 from pyinaturalist.v1.taxa import (

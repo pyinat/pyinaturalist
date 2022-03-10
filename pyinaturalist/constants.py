@@ -26,6 +26,7 @@ PER_PAGE_RESULTS = 200  # Default number of records per page for paginated queri
 LARGE_REQUEST_WARNING = 5000  # Show a warning for queries that will return over this many results
 
 # Rate-limiting and retry settings
+CONNECT_TIMEOUT = 5
 MAX_DELAY = 60  # Maximum time to wait for rate-limiting before aborting
 REQUEST_BURST_RATE = 5
 REQUESTS_PER_SECOND = 1
@@ -55,6 +56,7 @@ CACHE_EXPIRATION = {
 }
 CACHE_FILE = join(CACHE_DIR, 'api_requests.db')
 TOKEN_EXPIRATION = timedelta(hours=1)
+JWT_EXPIRATION = timedelta(days=1)
 
 # Response formats supported by GET /observations endpoint
 OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
@@ -199,6 +201,8 @@ DATETIME_PARAMS = [
     'observed_on_string',
     'older_than',
     'on',
+    'prefers_rule_d1',
+    'prefers_rule_d2',
     'since',
     'updated_since',
 ]

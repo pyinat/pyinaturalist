@@ -1,4 +1,4 @@
-"""Type conversion utilities"""
+"""Type conversion utilities used for both requests and responses"""
 import re
 from datetime import date, datetime, timedelta
 from io import BytesIO
@@ -268,7 +268,7 @@ def strip_empty_values(values: Dict) -> Dict:
 
 
 def ensure_file_obj(value: AnyFile, session: Session = None) -> IO:
-    """Given a file path or URL, load data into a file-like object"""
+    """Load data into a file-like object, if it isn't already. Accepts local file paths and URLs."""
     # Load from URL
     if isinstance(value, str) and URL_PATTERN.match(value):
         session = session or Session()

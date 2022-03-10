@@ -1,0 +1,109 @@
+{
+  "banner_color": "#74ac00",
+  "cover_content_type": "image/jpeg",
+  "cover_file_name": "canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+  "cover_file_size": 39944,
+  "cover_updated_at": "2022-03-05T15:40:06-06:00",
+  "created_at": "2022-03-03T14:33:24-06:00",
+  "created_at_utc": "2022-03-03T20:33:24.490Z",
+  "delta": false,
+  "description": "This is a temporary project created for the purposes of testing the iNaturalist projects API",
+  "end_time": null,
+  "event_url": null,
+  "flags": [],
+  "group": null,
+  "header_image_contain": false,
+  "header_image_file_name": "canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+  "header_image_url": "https://static.inaturalist.org/projects/128506-cover.jpg?1646516406",
+  "hide_title": false,
+  "icon": "https://static.inaturalist.org/projects/128506-icon-span2.jpg?1646516406",
+  "icon_content_type": "image/jpeg",
+  "icon_file_name": "canstockphoto22402523-arcos-creator.com_-1024x1024.jpg",
+  "icon_file_size": 45693,
+  "icon_updated_at": "2022-03-05T15:40:06-06:00",
+  "id": 128506,
+  "is_umbrella": false,
+  "last_aggregated_at": null,
+  "latitude": null,
+  "location": null,
+  "longitude": null,
+  "map_type": "terrain",
+  "observation_requirements_updated_at": "2022-02-24T14:33:24-06:00",
+  "observed_taxa_count": 0,
+  "place_id": 24,
+  "prefers_user_trust": false,
+  "project_observation_fields": [],
+  "project_type": "collection",
+  "site_features": [],
+  "slug": "api-test-project",
+  "source_url": null,
+  "start_time": null,
+  "terms": null,
+  "title": "API Test Project",
+  "tracking_codes": null,
+  "trusted": false,
+  "updated_at": "2022-03-05T15:40:07-06:00",
+  "updated_at_utc": "2022-03-05T21:40:07.069Z",
+  "user_id": 2115051,
+  "user_ids": [2115051],
+  "zoom_level": null,
+  "project_observation_rules": [
+    {
+      "id": 831815,
+      "operator": "in_taxon?",
+      "operand_type": "Taxon",
+      "operand_id": 47367
+    },
+    {
+      "id": 831816,
+      "operator": "observed_in_place?",
+      "operand_type": "Place",
+      "operand_id": 24
+    }
+  ],
+  "search_parameters": [
+    {
+      "field": "quality_grade",
+      "value": [
+        "research",
+        "needs_id"
+      ],
+      "value_keyword": [
+        "research",
+        "needs_id"
+      ]
+    },
+    {
+      "field": "taxon_id",
+      "value": [
+        47367
+      ],
+      "value_number": [
+        47367
+      ]
+    },
+    {
+      "field": "place_id",
+      "value": [
+        24
+      ],
+      "value_number": [
+        24
+      ]
+    }
+  ],
+  "rule_preferences": [
+    {
+      "field": "quality_grade",
+      "value": "research,needs_id"
+    }
+  ],
+  "admins": [
+    {
+      "id": 1474620,
+      "user_id": 2115051,
+      "project_id": 128506,
+      "role": "manager"
+    }
+  ]
+}

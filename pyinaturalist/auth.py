@@ -5,7 +5,7 @@ from typing import Dict, Optional
 from keyring import get_password, set_password
 from keyring.errors import KeyringError
 
-from pyinaturalist.constants import API_V0_BASE_URL, KEYRING_KEY
+from pyinaturalist.constants import API_V0_BASE_URL, JWT_EXPIRATION, KEYRING_KEY
 from pyinaturalist.exceptions import AuthenticationError
 from pyinaturalist.session import get_local_session
 
@@ -90,6 +90,7 @@ def get_access_token(
         response = session.get(
             f'{API_V0_BASE_URL}/users/api_token',
             headers={'Authorization': f'Bearer {access_token}'},
+            expire_after=JWT_EXPIRATION,  # type: ignore
         )
         response.raise_for_status()
         access_token = response.json()['api_token']

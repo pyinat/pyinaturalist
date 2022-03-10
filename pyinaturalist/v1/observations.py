@@ -121,7 +121,7 @@ def get_observations(**params) -> JsonResponse:
 
     * API reference: :v1:`GET /observations <Observations/get_observations>`
 
-    Example:
+    Examples:
 
         Get observations of Monarch butterflies with photos + public location info,
         on a specific date in the provice of Saskatchewan, CA (place ID 7953):

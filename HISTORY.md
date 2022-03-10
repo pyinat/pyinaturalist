@@ -3,9 +3,18 @@
 ## 0.17.0 (Unreleased)
 [See all Issues & PRs for 0.17](https://github.com/niconoe/pyinaturalist/milestone/8?closed=1)
 
+### New Endpoints
+* Added new **Project** endpoint: `update_project()`
+
+### Modified Endpoints
+* Allowed string values for `project_id` in `get_projects_by_id()` (e.g., a URL slug instead of a numeric ID)
+
+### Other Changes
 * Dropped support for python 3.6
 * Added support for JWT authentication, which will now be used by default
   * To get an OAuth access token instead of a JWT, call `get_access_token(jwt=False)`
+* Added support for setting timeout for individual API requests (with `timeout` parameter)
+* Added support for setting cache timeout for individual API requests (with `expire_after` parameter)
 
 ## 0.16.0 (2022-02-22)
 [See all Issues & PRs for 0.16](https://github.com/niconoe/pyinaturalist/milestone/7?closed=1)
