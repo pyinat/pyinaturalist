@@ -3,8 +3,8 @@ from os.path import abspath, dirname, join
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Optional, Tuple, Union
 
-from appdirs import user_cache_dir
 from dateutil.relativedelta import relativedelta
+from platformdirs import user_cache_dir
 
 # iNaturalist URLs
 API_V0_BASE_URL = 'https://www.inaturalist.org'
