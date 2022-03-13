@@ -45,11 +45,11 @@ jobs:
           poetry publish -u  __token__ -p ${{ secrets.PYPI_TOKEN }}
 
       # Notify Docker image repo that there's a new release available
-      - name: Repository Dispatch
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.DOCKERHUB_TRIGGER_TOKEN }}
-          repository: JWCook/pyinaturalist-notebook
-          event-type: post-release
-          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+      #- name: Repository Dispatch
+      #  if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+      #  uses: peter-evans/repository-dispatch@v1
+      #  with:
+      #    token: ${{ secrets.DOCKERHUB_TRIGGER_TOKEN }}
+      #    repository: JWCook/pyinaturalist-notebook
+      #    event-type: post-release
+      #    client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
