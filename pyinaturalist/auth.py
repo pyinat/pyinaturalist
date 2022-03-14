@@ -4,15 +4,15 @@ from typing import Dict, Optional
 
 from keyring import get_password, set_password
 from keyring.errors import KeyringError
+from requests import Response
 
 from pyinaturalist.constants import API_V0_BASE_URL, JWT_EXPIRATION, KEYRING_KEY
 from pyinaturalist.exceptions import AuthenticationError
-from pyinaturalist.session import get_local_session
+from pyinaturalist.session import ClientSession, get_local_session
 
 logger = getLogger(__name__)
 
 
-# TODO: Don't fetch OAuth token if JWT is cached
 def get_access_token(
     username: str = None,
     password: str = None,
@@ -23,9 +23,12 @@ def get_access_token(
     """Get an access token using the user's iNaturalist username and password, using the
     Resource Owner Password Credentials Flow. Requires registering an iNaturalist app.
 
-    **API reference:** https://www.inaturalist.org/pages/api+reference#auth
+    .. rubric:: Notes
 
-    See :ref:`auth` for additional options for storing credentials.
+    * API reference: https://www.inaturalist.org/pages/api+reference#auth
+    * See :ref:`auth` for additional options for storing credentials.
+    * This can be used to get either a JWT or OAuth token. These can be used interchangeably for
+      many endpoints. JWT is preferred for newer endpoints.
 
     Examples:
 
@@ -57,13 +60,19 @@ def get_access_token(
         password: iNaturalist password (same as the one you use to login on inaturalist.org)
         app_id: OAuth2 application ID
         app_secret: OAuth2 application secret
-        jwt: Return a JSON Web Token, which is now the preferred authentication method.
-            Otherwise, return an OAuth2 access token.
+        jwt: Return a JSON Web Token; otherwise return an OAuth2 access token.
 
     Raises:
         :py:exc:`requests.HTTPError`: (401) if credentials are invalid
     """
+    # First check if we have a previously cached JWT
     session = get_local_session()
+    response = _get_jwt(session, only_if_cached=True)
+    if response.ok:
+        logger.info('Using cached access token')
+        return response.json()['api_token']
+
+    # Otherwise check for credentials in either args or environment variables
     payload = {
         'username': username or getenv('INAT_USERNAME'),
         'password': password or getenv('INAT_PASSWORD'),
@@ -72,7 +81,7 @@ def get_access_token(
         'grant_type': 'password',
     }
 
-    # If neither args nor envars were given, then check the keyring
+    # If any fields were missing, then check the keyring
     if not all(payload.values()):
         payload.update(get_keyring_credentials())
     if all(payload.values()):
@@ -85,14 +94,9 @@ def get_access_token(
     response.raise_for_status()
     access_token = response.json()['access_token']
 
-    # If specified, use OAuth token to get a JWT. Note: Both token types get sent in Authorization
-    # header, and for many endpoints are interchangeable. JWT is preferred for newer endpoints.
+    # If specified, use OAuth token to get (and cache) a JWT
     if jwt:
-        response = session.get(
-            f'{API_V0_BASE_URL}/users/api_token',
-            headers={'Authorization': f'Bearer {access_token}'},
-            expire_after=JWT_EXPIRATION,  # type: ignore
-        )
+        response = _get_jwt(session, access_token)
         response.raise_for_status()
         access_token = response.json()['api_token']
     return access_token
@@ -135,3 +139,14 @@ def set_keyring_credentials(
     set_password(KEYRING_KEY, 'password', password)
     set_password(KEYRING_KEY, 'app_id', app_id)
     set_password(KEYRING_KEY, 'app_secret', app_secret)
+
+
+def _get_jwt(
+    session: ClientSession, access_token: str = '', only_if_cached: bool = False
+) -> Response:
+    return session.get(
+        f'{API_V0_BASE_URL}/users/api_token',
+        headers={'Authorization': f'Bearer {access_token}'},
+        expire_after=JWT_EXPIRATION,  # type: ignore
+        only_if_cached=only_if_cached,  # If True, will return a 504 if not cached
+    )

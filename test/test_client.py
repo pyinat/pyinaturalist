@@ -1,10 +1,8 @@
-from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from pyinaturalist.client import iNatClient
-from pyinaturalist.constants import TOKEN_EXPIRATION
 from pyinaturalist.docs import document_common_args
 
 mock_session_1 = MagicMock()
@@ -61,22 +59,3 @@ def test_client_auth(get_access_token):
     assert final_params_1['access_token'] == 'token'
     assert 'access_token' not in final_params_2
     get_access_token.assert_called_once()
-
-
-@patch('pyinaturalist.client.get_access_token', side_effect=['token_1', 'token_2'])
-def test_client_auth_refresh(get_access_token):
-    """An access token should be added to authenticated requests"""
-    client = iNatClient()
-
-    # Get an initial access token
-    assert client.access_token == 'token_1'
-    assert isinstance(client._token_expires, datetime)
-    assert client._is_token_expired() is False
-
-    # Wait for it to expire
-    client._token_expires = datetime.utcnow() - TOKEN_EXPIRATION
-    assert client._is_token_expired() is True
-
-    # Expect a new access token
-    assert client.access_token == 'token_2'
-    assert client._is_token_expired() is False

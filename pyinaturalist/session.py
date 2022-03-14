@@ -103,7 +103,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             cache_name=cache_file,
             backend='sqlite',
             expire_after=expire_after,
-            ignored_parameters=['access_token'],
+            ignored_parameters=['Authorization', 'access_token'],
             old_data_on_error=True,
             per_second=per_second,
             per_minute=per_minute,
