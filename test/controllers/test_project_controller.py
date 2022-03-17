@@ -85,4 +85,4 @@ def test_add_observation(get_access_token, requests_mock):
     client = iNatClient()
     observation_ids = 5678, 9012
     client.projects.add_observations(1234, *observation_ids)
-    get_access_token.assert_called_once()
+    get_access_token.assert_called()

@@ -1,11 +1,10 @@
-from datetime import datetime
 from logging import getLogger
 from typing import Any, Callable, Dict
 
 from requests import Session
 
 from pyinaturalist.auth import get_access_token
-from pyinaturalist.constants import TOKEN_EXPIRATION, JsonResponse
+from pyinaturalist.constants import JsonResponse
 from pyinaturalist.controllers import (
     ObservationController,
     ProjectController,
@@ -79,7 +78,7 @@ class iNatClient:
 
     Args:
         creds: Optional arguments for :py:func:`.get_access_token`, used to get and refresh access
-            tokens as needed.
+            tokens as needed. Using a keyring instead is recommended, though.
         default_params: Default request parameters to pass to any applicable API requests
         dry_run: Just log all requests instead of sending real requests
         session: Session object to use instead of creating a new one
@@ -109,21 +108,6 @@ class iNatClient:
         self.taxa = TaxonController(self)  #: Interface for taxon requests
         self.users = UserController(self)  #: Interface for user requests
 
-    @property
-    def access_token(self):
-        """Reuse an existing access token, if it's not expired; otherwise, get a new one"""
-        if self._is_token_expired():
-            logger.info('Access token expired, requesting a new one')
-            self._access_token = get_access_token(**self.creds)
-            self._token_expires = datetime.utcnow() + TOKEN_EXPIRATION
-        else:
-            logger.debug('Using active access token')
-        return self._access_token
-
-    def _is_token_expired(self):
-        initialized = self._access_token and self._token_expires
-        return not (initialized and datetime.utcnow() < self._token_expires)
-
     def _update_kwargs(self, request_function, auth: bool = False, **kwargs):
         """Apply any applicable client settings to request parameters before sending a request.
         Explicit keyword arguments will override any client settings.
@@ -136,7 +120,7 @@ class iNatClient:
 
         # Add access token and default params, if applicable
         if auth:
-            client_settings['access_token'] = self.access_token
+            client_settings['access_token'] = get_access_token(**self.creds)  # type: ignore
         client_settings.update(get_valid_kwargs(request_function, self.default_params))
 
         for k, v in client_settings.items():

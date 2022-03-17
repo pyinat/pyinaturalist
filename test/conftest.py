@@ -43,12 +43,21 @@ MOCK_CREDS_OAUTH = {
 enable_logging('DEBUG')
 
 
+class TestSession(Session):
+    """Session subclass that adds additional keyword args to main methods, so it can be used in
+    place of `ClientSession` during tests
+    """
+
+    def request(self, *args, expire_after=None, only_if_cached=None, **kwargs):
+        return super().request(*args, **kwargs)
+
+
 @pytest.fixture(scope='function', autouse=True)
 def patch_cached_session():
     """Use a regular requests.Session to disable request caching and rate-limiting during tests"""
-    with patch('pyinaturalist.session.get_local_session', return_value=Session()), patch(
-        'pyinaturalist.client.ClientSession', Session
-    ):
+    with patch('pyinaturalist.session.get_local_session', return_value=TestSession()), patch(
+        'pyinaturalist.auth.get_local_session', return_value=TestSession()
+    ), patch('pyinaturalist.client.ClientSession', TestSession):
         yield
 
 

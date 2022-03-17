@@ -18,20 +18,26 @@ FIELD_DEFAULTS = {
 
 
 class LazyProperty(property):
-    """A lazy-initialized/cached descriptor, similar to ``@functools.cached_property``, but works
-    for slotted classes by not relying on ``__dict__``.
+    """A lazy-initialized/cached descriptor for ``attrs`` classes. Its purpose is similar to
+    ``@functools.cached_property``, but it works for slotted classes by not relying on ``__dict__``.
 
     Currently this is used to lazy-load nested model objects for better performance.
+
+    How it's used:
+
+    1. Define an ``attrs`` class
+    2. Use ``add_lazy_attrs`` as a field_transformer for the class, which adds a temporary attributes
+    3. Define a ``LazyProperty`` class attribute with a converter
+
     How it works:
 
-    1. Define a `LazyProperty` on a model, say ``MyModel.foo``
-    2. Use `add_lazy_attrs` as a field_transformer for the model, which adds an attr.field ``_foo``
-    3. During attrs init, ``_foo`` is set from response JSON
-    4. When ``foo`` is first called, it converts ``_foo`` from JSON into a model object
-    5. When ``foo`` is called again the previously converted ``_foo`` object will be returned
+    1. During attrs init, the temporary attribute is set containing a raw dict
+    2. When ``foo`` is first accessed, it runs the converter on the temp attribute
+    3. When ``foo`` is accessed again, the previously converted temp attribute will be returned
 
     Example::
 
+        # Just pretend these are expensive conversion functions
         def converter_func(value) -> str:
             return str(value)
 
@@ -43,9 +49,9 @@ class LazyProperty(property):
             str_field = LazyProperty(converter_func)
             list_field = LazyProperty(list_converter_func)
 
-            # Auto-generated fields will look like:
-            # _str_field = field(factory=list)
-            # _list_field = field(default=None)
+            # Auto-generated temp attributes will look like:
+            # _str_field = field(default=None)
+            # _list_field = field(factory=list)
 
     """
 
@@ -77,21 +83,23 @@ class LazyProperty(property):
         return value
 
     def __set__(self, obj, raw_value):
+        """When initially setting the value, store raw data in the temp attribute"""
         setattr(obj, self.temp_attr, raw_value)
 
     def __set_name__(self, owner, name):
+        """Set the name of both the LazyProperty attribute and its temp attribute"""
         self.__name__ = name
         self.temp_attr = f'_{name}'
 
     def get_lazy_attr(self) -> Attribute:
-        """Get an attribute corresponding to this LazyProperty instance"""
+        """Get a temp attribute to be used by this LazyProperty instance"""
         return make_attribute(self.temp_attr, init=True, repr=False, default=self.default)
 
 
 def add_lazy_attrs(cls, fields):
     """A field transformer to do some post-processing on a model class while it's being created.
     For each :py:class:`.LazyProperty` on a model class, this adds a corresponding ``attr.field``
-    in which to temporarily store a raw JSON value that will later be converted into a model object.
+    in which to temporarily store a raw dict value that will later be converted into a model object.
     """
     lazy_properties = [p for p in cls.__dict__.values() if isinstance(p, LazyProperty)]
     return list(fields) + [p.get_lazy_attr() for p in lazy_properties]
@@ -111,6 +119,7 @@ def make_attribute(name, **kwargs):
     return Attribute(name=name, **kwargs)
 
 
+# TODO: Make this more generic by looking for converter function return type instead of BaseModel?
 def _is_model_object_or_list(value):
     try:
         return isinstance(value, BaseModel) or isinstance(value[0], BaseModel)
