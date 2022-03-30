@@ -1,10 +1,20 @@
-from pyinaturalist.constants import PROJECT_ORDER_BY_PROPERTIES, IntOrStr, JsonResponse, MultiInt
+from logging import getLogger
+
+from pyinaturalist.constants import (
+    PROJECT_ORDER_BY_PROPERTIES,
+    IntOrStr,
+    JsonResponse,
+    MultiInt,
+    MultiIntOrStr,
+)
 from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps, ensure_list
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import split_common_params, validate_multiple_choice_param
 from pyinaturalist.v1 import delete_v1, get_v1, post_v1, put_v1
+
+logger = getLogger(__name__)
 
 
 @document_request_params(docs._projects_params, docs._pagination)
@@ -53,7 +63,9 @@ def get_projects(**params) -> JsonResponse:
     return projects
 
 
-def get_projects_by_id(project_id: MultiInt, rule_details: bool = None, **params) -> JsonResponse:
+def get_projects_by_id(
+    project_id: MultiIntOrStr, rule_details: bool = None, **params
+) -> JsonResponse:
     """Get one or more projects by ID
 
     .. rubric:: Notes
@@ -122,7 +134,7 @@ def add_project_observation(
     return response.json()
 
 
-def add_project_users(project_id: IntOrStr, user_ids: MultiInt, **params):
+def add_project_users(project_id: IntOrStr, user_ids: MultiInt, **params) -> JsonResponse:
     """Add users to project observation rules
 
     .. rubric:: Notes
@@ -133,13 +145,15 @@ def add_project_users(project_id: IntOrStr, user_ids: MultiInt, **params):
     Args:
         project_id: Either numeric project ID or URL slug
         user_ids: One or more user IDs to add. Only accepts numeric IDs.
+
+    Returns:
+        The updated project record
     """
     rules = _get_project_rules(project_id)
     for user_id in ensure_list(user_ids):
         rules.append(
             {'operand_id': user_id, 'operand_type': 'User', 'operator': 'observed_by_user?'}
         )
-
     return update_project(project_id, project_observation_rules_attributes=rules, **params)
 
 
@@ -176,7 +190,7 @@ def delete_project_observation(
     # )
 
 
-def delete_project_users(project_id: IntOrStr, user_ids: MultiInt, **params):
+def delete_project_users(project_id: IntOrStr, user_ids: MultiInt, **params) -> JsonResponse:
     """Remove users from project observation rules
 
     .. rubric:: Notes
@@ -187,19 +201,26 @@ def delete_project_users(project_id: IntOrStr, user_ids: MultiInt, **params):
     Args:
         project_id: Either numeric project ID or URL slug
         user_ids: One or more user IDs to remove. Only accepts numeric IDs.
+
+    Returns:
+        The updated project record
     """
+    # Get and modify existing rules
     rules = _get_project_rules(project_id)
     str_user_ids = [str(user_id) for user_id in ensure_list(user_ids)]
     for rule in rules:
         if rule['operand_type'] == 'User' and str(rule['operand_id']) in str_user_ids:
             rule['_destroy'] = True
 
-    return update_project(project_id, project_observation_rules_attributes=rules, **params)
+    # Update project and validate results
+    project = update_project(project_id, project_observation_rules_attributes=rules, **params)
+    _validate_removed_users(project, user_ids)
+    return project
 
 
 # TODO: Support image uploads for `cover` and `icon`
 @document_request_params(docs._project_update_params)
-def update_project(project_id: IntOrStr, **params):
+def update_project(project_id: IntOrStr, **params) -> JsonResponse:
     """Update a project
 
     .. rubric:: Notes
@@ -229,6 +250,8 @@ def update_project(project_id: IntOrStr, **params):
         ...     access_token=access_token,
         ... )
 
+    Returns:
+        The updated project record
     """
     # Split API request params from common function args
     params, kwargs = split_common_params(params)
@@ -242,7 +265,20 @@ def update_project(project_id: IntOrStr, **params):
     return response.json()
 
 
-# TODO: bypass cache for this call?
 def _get_project_rules(project_id):
-    project = get_projects_by_id(project_id)['results'][0]
+    response = get_projects_by_id(project_id, refresh=True)
+    project = response['results'][0]
     return project.get('project_observation_rules', [])
+
+
+def _validate_removed_users(project: JsonResponse, user_ids: MultiInt):
+    """Validate that users have been removed from project observation rules"""
+    updated_user_ids = [
+        rule['operand_id']
+        for rule in project.get('project_observation_rules', [])
+        if rule['operand_type'] == 'User'
+    ]
+
+    failed_ids = set(updated_user_ids) & set(ensure_list(user_ids))
+    if failed_ids:
+        logger.warning(f'Failed to remove users {list(failed_ids)} from project {project["id"]}')

@@ -23,6 +23,7 @@
 * Dropped support for python 3.6
 * Added support for setting timeout for individual API requests (with `timeout` parameter)
 * Added support for setting cache timeout for individual API requests (with `expire_after` parameter)
+* Added support for bypassing the cache for individual API requests (with `refresh` parameter)
 
 ## 0.16.0 (2022-02-22)
 [See all Issues & PRs for 0.16](https://github.com/niconoe/pyinaturalist/milestone/7?closed=1)
