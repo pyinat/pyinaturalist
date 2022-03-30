@@ -99,7 +99,8 @@ def test_delete_project_users(mock_put, requests_mock):
 
     project_params = mock_put.call_args[1]['json']['project']
     rules = project_params['project_observation_rules_attributes']
-    assert rules[0]['operand_id'] == '5678' and rules[0]['_destroy'] is True
+    assert rules[0]['operand_id'] == 1234 and not rules[0].get('_destroy')
+    assert rules[1]['operand_id'] == 5678 and rules[1]['_destroy'] is True
 
 
 @patch('pyinaturalist.v1.projects.put_v1')

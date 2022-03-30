@@ -149,9 +149,7 @@ def add_project_users(project_id: IntOrStr, user_ids: MultiInt, **params) -> Jso
     Returns:
         The updated project record
     """
-    response = get_projects_by_id(project_id, refresh=True)
-    project = response['results'][0]
-    rules = project.get('project_observation_rules', [])
+    rules = _get_project_rules(project_id)
     for user_id in ensure_list(user_ids):
         rules.append(
             {'operand_id': user_id, 'operand_type': 'User', 'operator': 'observed_by_user?'}
@@ -207,11 +205,15 @@ def delete_project_users(project_id: IntOrStr, user_ids: MultiInt, **params) -> 
     Returns:
         The updated project record
     """
-    params['project_observation_rules_attributes'] = [
-        {'operand_id': str(user_id), 'operand_type': 'User', '_destroy': True}
-        for user_id in ensure_list(user_ids)
-    ]
-    project = update_project(project_id, **params)
+    # Get and modify existing rules
+    rules = _get_project_rules(project_id)
+    str_user_ids = [str(user_id) for user_id in ensure_list(user_ids)]
+    for rule in rules:
+        if rule['operand_type'] == 'User' and str(rule['operand_id']) in str_user_ids:
+            rule['_destroy'] = True
+
+    # Update project and validate results
+    project = update_project(project_id, project_observation_rules_attributes=rules, **params)
     _validate_removed_users(project, user_ids)
     return project
 
@@ -263,6 +265,12 @@ def update_project(project_id: IntOrStr, **params) -> JsonResponse:
     return response.json()
 
 
+def _get_project_rules(project_id):
+    response = get_projects_by_id(project_id, refresh=True)
+    project = response['results'][0]
+    return project.get('project_observation_rules', [])
+
+
 def _validate_removed_users(project: JsonResponse, user_ids: MultiInt):
     """Validate that users have been removed from project observation rules"""
     updated_user_ids = [
@@ -273,4 +281,4 @@ def _validate_removed_users(project: JsonResponse, user_ids: MultiInt):
 
     failed_ids = set(updated_user_ids) & set(ensure_list(user_ids))
     if failed_ids:
-        logger.warning(f'Failed to remove users {failed_ids} from project {project["id"]}')
+        logger.warning(f'Failed to remove users {list(failed_ids)} from project {project["id"]}')
