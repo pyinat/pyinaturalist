@@ -131,6 +131,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         self,
         request: PreparedRequest,
         expire_after: ExpirationTime = None,
+        refresh: bool = False,
         timeout: int = None,
         **kwargs,
     ) -> Response:  # type: ignore  # Adds kwargs not present in Session.send()
@@ -139,17 +140,17 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         Args:
             request: Prepared request to send
             expire_after: How long to keep cached API requests
+            refresh: Skip reading from the cache and always fetch a fresh response
             timeout: Maximum number of seconds to wait for a response from the server
 
         **Note:** :py:meth:`requests.Session.send` accepts separate timeout values for connect and
         read timeouts. The ``timeout`` argument will be used as the read timeout.
         """
-        # r
         read_timeout = timeout or self.timeout
-
         return super().send(
             request,
             expire_after=expire_after,
+            refresh=refresh,
             timeout=(CONNECT_TIMEOUT, read_timeout),
             **kwargs,
         )
@@ -167,6 +168,7 @@ def request(
     ids: MultiInt = None,
     json: Dict = None,
     raise_for_status: bool = True,
+    refresh: bool = False,
     session: Session = None,
     timeout: int = None,
     **params: RequestParams,
@@ -183,6 +185,7 @@ def request(
         headers: Request headers
         ids: One or more integer IDs used as REST resource(s) to request
         json: JSON request body
+        refresh: Skip reading from the cache and always fetch a fresh response
         session: An existing Session object to use instead of creating a new one
         timeout: Time (in seconds) to wait for a response from the server; if exceeded, a
             :py:exc:`requests.exceptions.Timeout` will be raised.
@@ -210,11 +213,16 @@ def request(
     if dry_run or is_dry_run_enabled(method):
         return MOCK_RESPONSE
 
-    # Otherwise, send the request
+    # Otherwise, send the requestW
     session_kwargs = {'timeout': timeout}
     if isinstance(session, CacheMixin):
         session_kwargs['expire_after'] = expire_after
+        session_kwargs['refresh'] = refresh
     response = session.send(request, **session_kwargs)
+
+    # Log the response, and whether it was from the cache
+    cached = 'cached' if getattr(response, 'from_cache', False) else 'not cached'
+    logger.info(f'Response ({cached}): {response}')
 
     if raise_for_status:
         response.raise_for_status()

@@ -48,17 +48,20 @@ class TestSession(Session):
     place of `ClientSession` during tests
     """
 
-    def request(self, *args, expire_after=None, only_if_cached=None, **kwargs):
+    def request(self, *args, expire_after=None, only_if_cached=None, refresh=False, **kwargs):
         return super().request(*args, **kwargs)
 
 
 @pytest.fixture(scope='function', autouse=True)
-def patch_cached_session():
+def patch_cached_session(request):
     """Use a regular requests.Session to disable request caching and rate-limiting during tests"""
-    with patch('pyinaturalist.session.get_local_session', return_value=TestSession()), patch(
-        'pyinaturalist.auth.get_local_session', return_value=TestSession()
-    ), patch('pyinaturalist.client.ClientSession', TestSession):
+    if 'enable_client_session' in request.keywords:
         yield
+    else:
+        with patch('pyinaturalist.session.get_local_session', return_value=TestSession()), patch(
+            'pyinaturalist.auth.get_local_session', return_value=TestSession()
+        ), patch('pyinaturalist.client.ClientSession', TestSession):
+            yield
 
 
 def get_module_functions(module):

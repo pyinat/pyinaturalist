@@ -137,11 +137,24 @@ def test_session__custom_retry():
 
 
 @patch('requests.sessions.Session.send')
-def test_session__send(mock_session):
+def test_session__send(mock_requests_send):
     session = ClientSession()
     request = Request(method='GET', url='http://test.com').prepare()
     session.send(request)
-    mock_session.assert_called_with(request, timeout=(5, 10))
+    mock_requests_send.assert_called_with(request, timeout=(5, 10))
+
+
+@pytest.mark.enable_client_session  # For all other tests, caching is disabled. Re-enable that here.
+@patch('requests_cache.session.CacheMixin.send')
+def test_session__send__cache_settings(mock_cache_send):
+    session = ClientSession()
+    request = Request(method='GET', url='http://test.com').prepare()
+
+    session.send(request)
+    mock_cache_send.assert_called_with(request, expire_after=None, refresh=False, timeout=(5, 10))
+
+    session.send(request, expire_after=60, refresh=True)
+    mock_cache_send.assert_called_with(request, expire_after=60, refresh=True, timeout=(5, 10))
 
 
 def test_get_local_session():
