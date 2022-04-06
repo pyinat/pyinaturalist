@@ -6,6 +6,7 @@ from typing import Dict
 from unittest.mock import Mock
 
 import forge
+from pyrate_limiter import SQLiteBucket
 from requests import PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
 from requests.utils import default_user_agent
@@ -19,6 +20,7 @@ from pyinaturalist.constants import (
     CACHE_FILE,
     CONNECT_TIMEOUT,
     MAX_DELAY,
+    RATELIMIT_FILE,
     REQUEST_BURST_RATE,
     REQUEST_RETRIES,
     REQUEST_TIMEOUT,
@@ -98,13 +100,16 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             kwargs.setdefault('urls_expire_after', CACHE_EXPIRATION)
         self.timeout = timeout
 
-        # Initialize with caching and rate-limiting settings
         super().__init__(  # type: ignore  # false positive
+            # Cache settings
             cache_name=cache_file,
             backend='sqlite',
             expire_after=expire_after,
             ignored_parameters=['Authorization', 'access_token'],
             old_data_on_error=True,
+            # Rate limit settings
+            bucket_class=SQLiteBucket,
+            bucket_kwargs={'path': RATELIMIT_FILE},
             per_second=per_second,
             per_minute=per_minute,
             per_day=per_day,

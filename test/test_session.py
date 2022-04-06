@@ -126,8 +126,8 @@ def test_session__cache_file():
 
 def test_session__custom_expiration():
     session = ClientSession(expire_after=3600)
-    assert session.expire_after == 3600
-    assert session.urls_expire_after is None
+    assert session.settings.expire_after == 3600
+    assert not session.settings.urls_expire_after
 
 
 def test_session__custom_retry():
@@ -141,7 +141,9 @@ def test_session__send(mock_requests_send):
     session = ClientSession()
     request = Request(method='GET', url='http://test.com').prepare()
     session.send(request)
-    mock_requests_send.assert_called_with(request, timeout=(5, 10))
+    mock_requests_send.assert_called_with(
+        request, expire_after=None, refresh=False, timeout=(5, 10)
+    )
 
 
 @pytest.mark.enable_client_session  # For all other tests, caching is disabled. Re-enable that here.

@@ -55,6 +55,7 @@ CACHE_EXPIRATION = {
     '*': timedelta(minutes=30),
 }
 CACHE_FILE = join(CACHE_DIR, 'api_requests.db')
+RATELIMIT_FILE = join(CACHE_DIR, 'api_ratelimit.db')
 TOKEN_EXPIRATION = timedelta(hours=1)
 JWT_EXPIRATION = timedelta(days=1)
 
