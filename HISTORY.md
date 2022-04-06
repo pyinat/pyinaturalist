@@ -12,6 +12,9 @@
 ### Modified Endpoints
 * Updated `get_projects_by_id()` to allow string values (URL slugs) for `project_id`
 * Updated `get_user_by_id()` to allow string values (usernames) for `user_id`
+* Added support for setting timeout for individual API requests (with `timeout` parameter)
+* Added support for setting cache timeout for individual API requests (with `expire_after` parameter)
+* Added support for bypassing the cache for individual API requests (with `refresh` parameter)
 
 ### Authentication
 * Added support for JWT authentication, which will now be used by default
@@ -21,9 +24,9 @@
 
 ### Other Changes
 * Dropped support for python 3.6
-* Added support for setting timeout for individual API requests (with `timeout` parameter)
-* Added support for setting cache timeout for individual API requests (with `expire_after` parameter)
-* Added support for bypassing the cache for individual API requests (with `refresh` parameter)
+* Updated rate limiting with a SQLite-based backend. This adds persistence for rate limit tracking
+  across multiple threads, processes, and/or application restarts. See
+  [pyrate-limiter docs](https://github.com/vutran1710/PyrateLimiter#sqlite) for more details.
 
 ## 0.16.0 (2022-02-22)
 [See all Issues & PRs for 0.16](https://github.com/niconoe/pyinaturalist/milestone/7?closed=1)
