@@ -27,6 +27,7 @@
 * Updated rate limiting with a SQLite-based backend. This adds persistence for rate limit tracking
   across multiple threads, processes, and/or application restarts. See
   [pyrate-limiter docs](https://github.com/vutran1710/PyrateLimiter#sqlite) for more details.
+* Misc improvements for response pretty-printing
 
 ## 0.16.0 (2022-02-22)
 [See all Issues & PRs for 0.16](https://github.com/niconoe/pyinaturalist/milestone/7?closed=1)

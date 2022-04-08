@@ -1,12 +1,13 @@
 """Base class and utilities for data models"""
 import json
 from collections import UserList
+from datetime import datetime
 from logging import getLogger
 from os.path import expanduser
 from pathlib import Path
 from typing import Dict, Generic, List, Type, TypeVar
 
-from attr import asdict, define, field, fields_dict
+from attr import Factory, asdict, define, field, fields_dict
 
 from pyinaturalist.constants import (
     AnyFile,
@@ -68,8 +69,39 @@ class BaseModel:
         """Convert this object back to JSON (dict) format"""
         return asdict(self)
 
+    def __rich_repr__(self):
+        """Custom output to use when pretty-printed with rich. Compared to default rich behavior for
+        attrs classes, this does the following:
 
-# TODO: Better workaround for mypy not accepting subclasses in overridden attributes and methods
+        * Inform rich about all default values, including factories, so they will be excluded from
+          output
+        * Stringify datetime objects
+        * Add lazy-loaded attributes to the output
+        * Use condensed (str) representations of lazy-loaded attributes
+        * Does not currently handle positional-only args (since we don't currently have any)
+
+        This makes output much more readable, particularly within Jupyter or a REPL. Otherwise, some
+        objects (especially observations) can turn into a huge wall of text several pages long.
+        """
+        from pyinaturalist.models import get_lazy_properties
+
+        # Handle regular public attributes
+        public_attrs = [a for a in self.__attrs_attrs__ if not a.name.startswith('_')]
+        for a in public_attrs:
+            default = a.default.factory() if isinstance(a.default, Factory) else a.default
+            value = getattr(self, a.name)
+            value = str(value) if isinstance(value, datetime) else value
+            yield a.name, value, default
+
+        # Handle LazyProperties
+        for name, prop in get_lazy_properties(type(self)).items():
+            value = prop.__get__(self, type(self))
+            if isinstance(value, list):
+                yield name, [str(v) for v in value], []
+            else:
+                yield name, str(value) if value is not None else None, None
+
+
 @define(auto_attribs=False, order=False, slots=False)
 class BaseModelCollection(BaseModel, UserList, Generic[T]):
     """Base class for data model collections. These will behave the same as lists but enable some
