@@ -12,9 +12,8 @@ from copy import deepcopy
 from datetime import date, datetime
 from functools import partial
 from logging import basicConfig, getLogger
-from typing import Any, Iterable, List, Type
+from typing import List, Type
 
-from attr import Attribute
 from requests import PreparedRequest
 
 from pyinaturalist.constants import DATETIME_SHORT_FORMAT, ResponseOrResults, ResponseResult
@@ -42,15 +41,16 @@ from pyinaturalist.models import (
     TaxonCount,
     TaxonSummary,
     User,
-    get_lazy_attrs,
 )
 from pyinaturalist.paginator import Paginator
 
 
 def enable_logging(level: str = 'INFO'):
-    """Configure logging to standard output with prettier tracebacks and terminal colors (if supported).
-    Logging can of course be configured however you want using the stdlib ``logging`` module; this is
-    just here for convenience.
+    """Configure logging to standard output with prettier tracebacks, formatting, and terminal
+    colors (if supported).
+
+    If you prefer, logging can be configured with the stdlib ``logging`` module instead; this just
+    provides some convenient defaults.
 
     Args:
         level: Logging level to use
@@ -271,36 +271,10 @@ format_species_counts = partial(_format_model_objects, cls=TaxonCount)
 format_taxa = partial(_format_model_objects, cls=Taxon)
 format_users = partial(_format_model_objects, cls=User)
 
-
-def get_model_fields(obj: Any) -> Iterable[Attribute]:
-    """Modification for rich's pretty-printer (specifically, ``rich.pretty._get_attr_fields``).
-
-    Adds placeholder attributes for lazy-loaded model properties so they get included in the output.
-    This is particularly useful for previewing in Jupyter or another REPL. These nested objects are
-    shown in condensed format so the preview is more readable. Otherwise, some objects]
-    (especially observations) can turn into a huge wall of text several pages long.
-
-    Does not change behavior for anything except :py:class:`.BaseModel` subclasses.
-    """
-
-    def condense_nested_models(obj):
-        tab = '    '
-        if obj and isinstance(obj, list):
-            condensed_objs = f',\n{tab}{tab}'.join([str(o) for o in obj])
-            return f'[\n{tab}{tab}{condensed_objs}\n{tab}]'
-        return str(obj)
-
-    attrs = list(obj.__attrs_attrs__)
-    if isinstance(obj, BaseModel):
-        attrs += get_lazy_attrs(obj, repr=condense_nested_models)
-    return attrs
-
-
-# If rich is installed, update its pretty-printer to include model properties
+# If rich is installed, install pretty-printer
 try:
     from rich import pretty, print
 
-    pretty._get_attr_fields = get_model_fields
     pretty.install()
 except ImportError:
     pass

@@ -105,11 +105,6 @@ def add_lazy_attrs(cls, fields):
     return list(fields) + [p.get_lazy_attr() for p in lazy_properties]
 
 
-def get_lazy_attrs(obj, **kwargs) -> List[Attribute]:
-    """Get placeholder attributes for lazy-loaded model properties"""
-    return [make_attribute(p, **kwargs) for p in get_lazy_properties(type(obj))]
-
-
 def get_lazy_properties(cls: Type[BaseModel]) -> Dict[str, LazyProperty]:
     return {k: v for k, v in cls.__dict__.items() if isinstance(v, LazyProperty)}
 

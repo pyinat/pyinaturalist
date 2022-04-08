@@ -1,5 +1,6 @@
 # flake8: noqa: F405
 import re
+from io import StringIO
 
 import pytest
 from rich.console import Console
@@ -153,12 +154,10 @@ def test_simplify_observation():
 PRINTED_OBSERVATION = """
 Observation(
     id=16227955,
-    created_at=datetime.datetime(2018, 9, 5, 0, 0, tzinfo=tzoffset('Europe/Paris', 3600)),
+    created_at='2018-09-05 00:00:00+01:00',
     captive=False,
     community_taxon_id=493595,
     description='',
-    faves=[],
-    geoprivacy=None,
     identifications_count=2,
     identifications_most_agree=True,
     identifications_most_disagree=False,
@@ -168,73 +167,53 @@ Observation(
     mappable=True,
     num_identification_agreements=2,
     num_identification_disagreements=0,
-    oauth_application_id=None,
     obscured=False,
-    observed_on=datetime.datetime(2018, 9, 5, 14, 6, tzinfo=tzoffset('Europe/Paris', 3600)),
+    observed_on='2018-09-05 14:06:00+01:00',
     outlinks=[{'source': 'GBIF', 'url': 'http://www.gbif.org/occurrence/1914197587'}],
-    out_of_range=None,
     owners_identification_from_vision=True,
     place_guess='54 rue des Badauds',
     place_ids=[7008, 8657, 14999, 59614, 67952, 80627, 81490, 96372, 96794, 97391, 97582, 108692],
     positional_accuracy=23,
     preferences={'prefers_community_taxon': None},
-    project_ids=[],
-    project_ids_with_curator_id=[],
-    project_ids_without_curator_id=[],
     public_positional_accuracy=23,
     quality_grade='research',
-    quality_metrics=[],
     reviewed_by=[180811, 886482, 1226913],
     site_id=1,
-    sounds=[],
     species_guess='Lixus bardanae',
-    tags=[],
-    updated_at=datetime.datetime(2018, 9, 22, 19, 19, 27, tzinfo=tzoffset(None, 7200)),
+    updated_at='2018-09-22 19:19:27+02:00',
     uri='https://www.inaturalist.org/observations/16227955',
     uuid='6448d03a-7f9a-4099-86aa-ca09a7740b00',
-    votes=[],
-    annotations=[],
     comments=[
-        borisb on Sep 05, 2018: I now see: Bonus species on observation! You ma...,
-        borisb on Sep 05, 2018: suspect L. bardanae - but sits on Solanum (non-...
+        'borisb on Sep 05, 2018: I now see: Bonus species on observation! You ma...',
+        'borisb on Sep 05, 2018: suspect L. bardanae - but sits on Solanum (non-...'
     ],
     identifications=[
-        [34896306] 🪲 Genus: Lixus (improving) added on Sep 05, 2018 by niconoe,
-        [34926789] 🪲 Species: Lixus bardanae (improving) added on Sep 05, 2018 by borisb,
-        [36039221] 🪲 Species: Lixus bardanae (supporting) added on Sep 22, 2018 by jpreudhomme
+        '[34896306] 🪲 Genus: Lixus (improving) added on Sep 05, 2018 by niconoe',
+        '[34926789] 🪲 Species: Lixus bardanae (improving) added on Sep 05, 2018 by borisb',
+        '[36039221] 🪲 Species: Lixus bardanae (supporting) added on Sep 22, 2018 by jpreudhomme'
     ],
-    ofvs=[],
     photos=[
-        [24355315] https://static.inaturalist.org/photos/24355315/original.jpeg?1536150664 (CC-BY, 1445x1057),
-        [24355313] https://static.inaturalist.org/photos/24355313/original.jpeg?1536150659 (CC-BY, 2048x1364)
+        '[24355315] https://static.inaturalist.org/photos/24355315/original.jpeg?1536150664 (CC-BY, 1445x1057)',
+        '[24355313] https://static.inaturalist.org/photos/24355313/original.jpeg?1536150659 (CC-BY, 2048x1364)'
     ],
-    project_observations=[],
-    taxon=[493595] 🪲 Species: Lixus bardanae,
-    user=[886482] niconoe (Nicolas Noé)
+    taxon='[493595] 🪲 Species: Lixus bardanae',
+    user='[886482] niconoe (Nicolas Noé)'
 )
 """
 
 
-def test_get_model_fields():
-    """Ensure that nested model objects are included in get_model_fields() output"""
-    observation = Observation.from_json(j_observation_1)
-    model_fields = get_model_fields(observation)
-
-    n_nested_model_objects = 8
-    n_regular_attrs = len(Observation.__attrs_attrs__)
-    assert len(model_fields) == n_regular_attrs + n_nested_model_objects
-
-
 def test_pretty_print():
     """Test rich.pretty with modifications, via get_model_fields()"""
-    console = Console(force_terminal=False, width=120)
+    console = Console(force_terminal=False, width=120, file=StringIO())
     observation = Observation.from_json(j_observation_1)
 
-    with console.capture() as output:
-        console.print(observation)
-    rendered = output.get()
+    console.print(observation)
+    rendered = console.file.getvalue()
 
     # Don't check for differences in indendtation
     rendered = re.sub(' +', ' ', rendered.strip())
     expected = re.sub(' +', ' ', PRINTED_OBSERVATION.strip())
+
+    # Emoji may not correctly render in CI
+    rendered = rendered.replace(r'\U0001fab2', '🪲')
     assert rendered == expected

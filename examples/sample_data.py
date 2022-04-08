@@ -3,6 +3,8 @@
 """Sample response data of every type to experiment with"""
 import sys
 
+from rich import print
+
 from pyinaturalist import PROJECT_DIR, format_table, pprint
 from pyinaturalist.models import *
 
@@ -56,3 +58,4 @@ tables = [
 if __name__ == '__main__':
     for table in tables:
         pprint(table)
+    print(observation)
