@@ -207,7 +207,7 @@ def get_observation_observers(**params) -> JsonResponse:
 
     Example:
         >>> response = get_observation_observers(place_id=72645, order_by='species_count')
-        >>> pprint(response, align=True)
+        >>> pprint(response)
         [1566366 ] fossa1211
         [674557  ] schurchin
         [5813    ] fluffberger (Fluff Berger)

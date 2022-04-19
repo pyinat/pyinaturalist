@@ -90,7 +90,7 @@ On iNaturalist.org, this information can be found on the 'Species' tab of search
 For example, to get the counts of all your own research-grade observations:
 ```python
 >>> counts = get_observation_species_counts(user_id='my_username', quality_grade='research')
->>> pprint(counts, align=True)
+>>> pprint(counts)
 [48473   ]: Species:          Ganoderma applanatum (Artist's bracket): 4
 [50310   ]: Species:         Arisaema triphyllum (Jack-in-the-pulpit): 4
 [50817   ]:   Genus:                     Auricularia (Wood ear fungi): 3
