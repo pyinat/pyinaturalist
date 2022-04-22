@@ -147,9 +147,7 @@ def test_session__send(mock_limiter, mock_requests_send):
     session = ClientSession()
     request = Request(method='GET', url='http://test.com').prepare()
     session.send(request)
-    mock_requests_send.assert_called_with(
-        request, expire_after=None, refresh=False, timeout=(5, 10)
-    )
+    mock_requests_send.assert_called_with(request, timeout=(5, 10))
 
 
 @pytest.mark.enable_client_session  # For all other tests, caching is disabled. Re-enable that here.

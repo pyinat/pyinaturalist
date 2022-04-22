@@ -1,7 +1,11 @@
 from logging import getLogger
+from typing import Dict
+
+from requests_ratelimiter import BucketFullException, Limiter, RequestRate, SQLiteBucket
 
 from pyinaturalist.constants import (
     PROJECT_ORDER_BY_PROPERTIES,
+    RATELIMIT_FILE,
     IntOrStr,
     JsonResponse,
     MultiInt,
@@ -13,6 +17,13 @@ from pyinaturalist.docs import templates as docs
 from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import split_common_params, validate_multiple_choice_param
 from pyinaturalist.v1 import delete_v1, get_v1, post_v1, put_v1
+
+# Rate limiter specific to project updates
+ProjectUpdateLimiter = Limiter(
+    RequestRate(1, 122),
+    bucket_class=SQLiteBucket,
+    bucket_kwargs={'path': RATELIMIT_FILE},
+)
 
 logger = getLogger(__name__)
 
@@ -150,10 +161,14 @@ def add_project_users(project_id: IntOrStr, user_ids: MultiInt, **params) -> Jso
         The updated project record
     """
     rules = _get_project_rules(project_id)
+    existing_user_ids = [rule['operand_id'] for rule in rules if rule['operand_type'] == 'User']
     for user_id in ensure_list(user_ids):
-        rules.append(
-            {'operand_id': user_id, 'operand_type': 'User', 'operator': 'observed_by_user?'}
-        )
+        if user_id not in existing_user_ids:
+            rules.append(
+                {'operand_id': user_id, 'operand_type': 'User', 'operator': 'observed_by_user?'}
+            )
+        else:
+            logger.warning(f'User {user_id} is already in project rules for {project_id}')
     return update_project(project_id, project_observation_rules_attributes=rules, **params)
 
 
@@ -266,9 +281,34 @@ def update_project(project_id: IntOrStr, **params) -> JsonResponse:
 
 
 def _get_project_rules(project_id):
-    response = get_projects_by_id(project_id, refresh=True)
+    """Get the current rules for a project"""
+    params = _get_project_version(f'/projects/{project_id}')
+    response = get_projects_by_id(project_id, refresh=True, **params)
     project = response['results'][0]
     return project.get('project_observation_rules', [])
+
+
+def _get_project_version(endpoint) -> Dict:
+    """Before updating a project's rules, we need to get the current rules for the project.
+    However, if we've done another update recently, those changes may not be reflected yet in the
+    project response. The CDN cache does not respect cache headers requesting a refresh or
+    revalidation if the cached response is less than ~2 minutes old.
+
+    The iNat webapp handles this by adding an extra `v` request parameter, which results in a
+    different cache key. This function does the same by tracking a separate rate limit per value,
+    and finding a value that is certain to result in a fresh response.
+    """
+    v = 0
+    while True:
+        try:
+            bucket = f'{endpoint}/{v}'
+            ProjectUpdateLimiter.try_acquire(bucket)
+            break
+        except BucketFullException as e:
+            seconds = int(e.meta_info["remaining_time"])
+            logger.debug(f'{bucket} cannot be refreshed again for {seconds} seconds')
+            v += 1
+    return {'v': v} if v > 0 else {}
 
 
 def _validate_removed_users(project: JsonResponse, user_ids: MultiInt):
