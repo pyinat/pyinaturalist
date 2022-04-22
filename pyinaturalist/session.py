@@ -6,12 +6,11 @@ from typing import Dict
 from unittest.mock import Mock
 
 import forge
-from pyrate_limiter import SQLiteBucket
 from requests import PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
 from requests.utils import default_user_agent
 from requests_cache import CacheMixin, ExpirationTime
-from requests_ratelimiter import LimiterMixin
+from requests_ratelimiter import LimiterMixin, SQLiteBucket
 from urllib3.util import Retry
 
 import pyinaturalist
@@ -34,7 +33,7 @@ from pyinaturalist.constants import (
     RequestParams,
 )
 from pyinaturalist.converters import ensure_file_obj
-from pyinaturalist.formatters import format_request
+from pyinaturalist.formatters import format_request, format_response
 from pyinaturalist.request_params import (
     convert_url_ids,
     preprocess_request_body,
@@ -218,16 +217,13 @@ def request(
     if dry_run or is_dry_run_enabled(method):
         return MOCK_RESPONSE
 
-    # Otherwise, send the requestW
+    # Otherwise, send the request
     session_kwargs = {'timeout': timeout}
     if isinstance(session, CacheMixin):
         session_kwargs['expire_after'] = expire_after
         session_kwargs['refresh'] = refresh
     response = session.send(request, **session_kwargs)
-
-    # Log the response, and whether it was from the cache
-    cached = 'cached' if getattr(response, 'from_cache', False) else 'not cached'
-    logger.info(f'Response ({cached}): {response}')
+    logger.info(format_response(response))
 
     if raise_for_status:
         response.raise_for_status()

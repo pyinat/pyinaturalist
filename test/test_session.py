@@ -21,8 +21,9 @@ from pyinaturalist.session import (
     'http_func, http_method',
     [(delete, 'DELETE'), (get, 'GET'), (post, 'POST'), (put, 'PUT')],
 )
+@patch('pyinaturalist.session.format_response')
 @patch('pyinaturalist.session.Session.send')
-def test_http_methods(mock_send, http_func, http_method):
+def test_http_methods(mock_send, mock_format, http_func, http_method):
     http_func('https://url', key='value', session=None)
     request_obj = mock_send.call_args[0][0]
 
@@ -31,16 +32,18 @@ def test_http_methods(mock_send, http_func, http_method):
     assert request_obj.body is None
 
 
+@patch('pyinaturalist.session.format_response')
 @patch('pyinaturalist.session.Session.send')
-def test_request_headers(mock_send):
+def test_request_headers(mock_send, mock_format):
     """Test that the request() wrapper passes along expected headers"""
     request('GET', 'https://url', access_token='token')
     request_obj = mock_send.call_args[0][0]
     assert request_obj.headers['Authorization'] == 'Bearer token'
 
 
+@patch('pyinaturalist.session.format_response')
 @patch('pyinaturalist.session.ClientSession')
-def test_request_session(mock_ClientSession):
+def test_request_session(mock_ClientSession, mock_format):
     mock_session = MagicMock()
     request('GET', 'https://url', session=mock_session)
     mock_session.send.assert_called()
@@ -74,11 +77,13 @@ def test_request_session(mock_ClientSession):
         (False, 'None', 'DELETE', True),
     ],
 )
+@patch('pyinaturalist.session.format_response')
 @patch('pyinaturalist.session.getenv')
 @patch('pyinaturalist.session.Session.send')
 def test_request_dry_run(
     mock_send,
     mock_getenv,
+    mock_format,
     enabled_env,
     write_only_env,
     method,
@@ -137,7 +142,8 @@ def test_session__custom_retry():
 
 
 @patch('requests.sessions.Session.send')
-def test_session__send(mock_requests_send):
+@patch('requests_ratelimiter.requests_ratelimiter.Limiter')
+def test_session__send(mock_limiter, mock_requests_send):
     session = ClientSession()
     request = Request(method='GET', url='http://test.com').prepare()
     session.send(request)
