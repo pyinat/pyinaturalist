@@ -1,11 +1,7 @@
 from logging import getLogger
-from typing import Dict
-
-from requests_ratelimiter import BucketFullException, Limiter, RequestRate, SQLiteBucket
 
 from pyinaturalist.constants import (
     PROJECT_ORDER_BY_PROPERTIES,
-    RATELIMIT_FILE,
     IntOrStr,
     JsonResponse,
     MultiInt,
@@ -16,14 +12,8 @@ from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import split_common_params, validate_multiple_choice_param
+from pyinaturalist.session import get_refresh_params
 from pyinaturalist.v1 import delete_v1, get_v1, post_v1, put_v1
-
-# Rate limiter specific to project updates
-ProjectUpdateLimiter = Limiter(
-    RequestRate(1, 122),
-    bucket_class=SQLiteBucket,
-    bucket_kwargs={'path': RATELIMIT_FILE},
-)
 
 logger = getLogger(__name__)
 
@@ -75,7 +65,10 @@ def get_projects(**params) -> JsonResponse:
 
 
 def get_projects_by_id(
-    project_id: MultiIntOrStr, rule_details: bool = None, **params
+    project_id: MultiIntOrStr,
+    rule_details: bool = None,
+    force_refresh: bool = False,
+    **params,
 ) -> JsonResponse:
     """Get one or more projects by ID
 
@@ -98,10 +91,14 @@ def get_projects_by_id(
         project_id: Get projects with this ID. Multiple values are allowed.
         rule_details: Return more information about project rules, for example return a full taxon
             object instead of simply an ID
+        force_refresh: Force a refresh of the project record from the API, bypassing both the local
+            and CDN caches
 
     Returns:
         Response dict containing project records
     """
+    if force_refresh:
+        params.update(get_refresh_params(f'/projects/{project_id}'))
     response = get_v1(
         'projects', rule_details=rule_details, ids=project_id, allow_str_ids=True, **params
     )
@@ -281,33 +278,9 @@ def update_project(project_id: IntOrStr, **params) -> JsonResponse:
 
 def _get_project_rules(project_id):
     """Get the current rules for a project"""
-    params = _get_project_version(f'/projects/{project_id}')
-    response = get_projects_by_id(project_id, refresh=True, **params)
+    response = get_projects_by_id(project_id, force_refresh=True)
     project = response['results'][0]
     return project.get('project_observation_rules', [])
-
-
-def _get_project_version(endpoint) -> Dict:
-    """Before updating a project's rules, we need to get the current rules for the project.
-    However, if we've done another update recently, those changes may not be reflected yet in the
-    project response. The CDN cache does not respect cache headers requesting a refresh or
-    revalidation if the cached response is less than ~2 minutes old.
-
-    The iNat webapp handles this by adding an extra `v` request parameter, which results in a
-    different cache key. This function does the same by tracking a separate rate limit per value,
-    and finding the lowest value that is certain to result in a fresh response.
-    """
-    v = 0
-    while True:
-        try:
-            bucket = f'{endpoint}?v={v}'
-            ProjectUpdateLimiter.try_acquire(bucket)
-            break
-        except BucketFullException as e:
-            seconds = int(e.meta_info["remaining_time"])
-            logger.debug(f'{bucket} cannot be refreshed again for {seconds} seconds')
-            v += 1
-    return {'v': v} if v > 0 else {}
 
 
 def _validate_removed_users(project: JsonResponse, user_ids: MultiInt):

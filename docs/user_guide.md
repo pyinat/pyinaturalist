@@ -360,9 +360,16 @@ To store the cache somewhere other than the default cache directory:
 >>> session = ClientSession(cache_name='~/data/api_requests.db')
 ```
 
-To Manually clear the cache:
+To manually clear the cache:
 ```python
 >>> session.cache.clear()
+```
+
+Or as a shortcut, without a session object:
+```python
+from pyinaturalist import clear_cache
+
+clear_cache()
 ```
 
 ## Rate Limiting

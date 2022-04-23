@@ -2,6 +2,7 @@
 See :ref:`user_guide:models` section for usage details.
 """
 # flake8: noqa: F401
+# isort: skip_file
 from datetime import datetime, timezone
 from typing import Callable, Dict, Iterable, Optional, Union
 

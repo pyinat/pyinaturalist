@@ -27,6 +27,7 @@
 * Updated rate limiting with a SQLite-based backend. This adds persistence for rate limit tracking
   across multiple threads, processes, and/or application restarts. See
   [pyrate-limiter docs](https://github.com/vutran1710/PyrateLimiter#sqlite) for more details.
+* Add a `clear_cache()` function for clearing cached API responses
 * Misc improvements for response pretty-printing
 
 ## 0.16.0 (2022-02-22)

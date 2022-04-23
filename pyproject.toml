@@ -93,13 +93,13 @@ omit = ['pyinaturalist/docs/model_docs.py']
 profile = 'black'
 line_length = 100
 skip_gitignore = true
-skip = [
-    'pyinaturalist/__init__.py',
-    'pyinaturalist/models/__init__.py',
-    'pyinaturalist/node_api.py',
-]
 known_first_party = ['test']
 
 [tool.mypy]
 ignore_missing_imports = true
 files = ['pyinaturalist']
+
+[tool.pytest.ini_options]
+markers = [
+    "enable_client_session: Enable all ClientSession features: caching, rate-limiting, etc.",
+]
