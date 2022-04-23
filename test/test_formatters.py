@@ -3,9 +3,12 @@ import re
 from io import StringIO
 
 import pytest
+from requests import Request
+from requests_cache import CachedResponse
 from rich.console import Console
 from rich.table import Table
 
+from pyinaturalist.constants import API_V0_BASE_URL
 from pyinaturalist.formatters import *
 from test.sample_data import *
 
@@ -54,6 +57,11 @@ def test_format_table(response):
 
     # for obj in response:
     #     assert all([value in rendered_table for value in obj.row.values()])
+
+
+def test_format_table__unknown_type():
+    with pytest.raises(ValueError):
+        format_table({'foo': 'bar'})
 
 
 # TODO: Test content written to stdout. For now, just make sure it doesn't explode.
@@ -217,3 +225,26 @@ def test_pretty_print():
     # Emoji may not correctly render in CI
     rendered = rendered.replace(r'\U0001fab2', '🪲')
     assert rendered == expected
+
+
+def test_format_request():
+    request = Request(
+        method='GET',
+        url=API_V0_BASE_URL,
+        headers={'Accept': 'application/json', 'Authorization': 'password123'},
+        json={'client_secret': 'password123'},
+    ).prepare()
+    request_str = format_request(request)
+    assert API_V0_BASE_URL in request_str
+    assert 'Accept: application/json' in request_str
+    assert 'password123' not in request_str
+
+
+def test_format_response():
+    response = CachedResponse(status_code=200, expires=datetime(2021, 1, 1), headers={'Age': '0'})
+    response_str = format_response(response)
+
+    assert 'cached; expires in ' in response_str
+    assert 'Age: 0' in response_str
+    response.expires = None
+    assert 'never expires' in format_response(response)

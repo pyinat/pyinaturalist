@@ -2,13 +2,13 @@ import pytest
 
 from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.v1 import get_places_autocomplete, get_places_by_id, get_places_nearby
-from test.conftest import load_sample_data
+from test.sample_data import SAMPLE_DATA
 
 
 def test_get_places_by_id(requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/places/93735,89191',
-        json=load_sample_data('get_places_by_id.json'),
+        json=SAMPLE_DATA['get_places_by_id'],
         status_code=200,
     )
 
@@ -32,15 +32,14 @@ def test_get_places_by_id__invalid_inputs(place_id):
 def test_get_places_nearby(requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/places/nearby',
-        json=load_sample_data('get_places_nearby.json'),
+        json=SAMPLE_DATA['get_places_nearby'],
         status_code=200,
     )
 
     response = get_places_nearby(nelat=150.0, nelng=-50.0, swlat=-149.999, swlng=-49.999)
     result = response['results']['standard'][0]
 
-    assert response['total_results'] == 20
-    assert len(response['results']['standard']) + len(response['results']['community']) == 20
+    assert len(response['results']['standard']) + len(response['results']['community']) == 6
 
     assert result['id'] == 97394
     assert result['admin_level'] == -1
@@ -53,7 +52,7 @@ def test_get_places_nearby(requests_mock):
 def test_get_places_autocomplete(requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/places/autocomplete',
-        json=load_sample_data('get_places_autocomplete.json'),
+        json=SAMPLE_DATA['get_places_autocomplete'],
         status_code=200,
     )
 
