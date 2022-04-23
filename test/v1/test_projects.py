@@ -1,9 +1,7 @@
 from datetime import datetime
-from time import sleep
 from unittest.mock import patch
 
 from dateutil.tz import tzutc
-from requests_ratelimiter import Limiter, RequestRate
 
 from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.v1 import (
@@ -15,7 +13,6 @@ from pyinaturalist.v1 import (
     get_projects_by_id,
     update_project,
 )
-from pyinaturalist.v1.projects import _get_refresh_params
 from test.sample_data import SAMPLE_DATA
 
 
@@ -115,13 +112,3 @@ def test_update_project(mock_put):
     assert request_args['timeout'] == 60
     assert project_params['title'] == 'New Title'
     assert project_params['description'] == 'New Description'
-
-
-@patch('pyinaturalist.v1.projects.ProjectUpdateLimiter', Limiter(RequestRate(1, 2)))
-def test_get_refresh_params():
-    assert _get_refresh_params('test') == {'refresh': True}
-    assert _get_refresh_params('test2') == {'refresh': True}
-    assert _get_refresh_params('test') == {'refresh': True, 'v': 1}
-    assert _get_refresh_params('test') == {'refresh': True, 'v': 2}
-    sleep(2)
-    assert _get_refresh_params('test') == {'refresh': True}

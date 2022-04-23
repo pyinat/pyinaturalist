@@ -1,7 +1,9 @@
+from time import sleep
 from unittest.mock import MagicMock, patch
 
 import pytest
 from requests import Request
+from requests_ratelimiter import Limiter, RequestRate
 
 from pyinaturalist.session import (
     CACHE_FILE,
@@ -11,6 +13,7 @@ from pyinaturalist.session import (
     delete,
     get,
     get_local_session,
+    get_refresh_params,
     post,
     put,
     request,
@@ -177,3 +180,13 @@ def test_clear_cache():
     with patch.object(session, 'cache', autospec=True) as mock_cache:
         clear_cache()
         mock_cache.clear.assert_called()
+
+
+@patch('pyinaturalist.session.REFRESH_LIMITER', Limiter(RequestRate(1, 2)))
+def test_get_refresh_params():
+    assert get_refresh_params('test') == {'refresh': True}
+    assert get_refresh_params('test2') == {'refresh': True}
+    assert get_refresh_params('test') == {'refresh': True, 'v': 1}
+    assert get_refresh_params('test') == {'refresh': True, 'v': 2}
+    sleep(2)
+    assert get_refresh_params('test') == {'refresh': True}

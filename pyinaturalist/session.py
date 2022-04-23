@@ -10,7 +10,13 @@ from requests import PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
 from requests.utils import default_user_agent
 from requests_cache import CacheMixin, ExpirationTime
-from requests_ratelimiter import LimiterMixin, SQLiteBucket
+from requests_ratelimiter import (
+    BucketFullException,
+    Limiter,
+    LimiterMixin,
+    RequestRate,
+    SQLiteBucket,
+)
 from urllib3.util import Retry
 
 import pyinaturalist
@@ -43,6 +49,13 @@ from pyinaturalist.request_params import (
 # Mock response content to return in dry-run mode
 MOCK_RESPONSE = Mock(spec=Response)
 MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0, 'access_token': ''}
+
+# Rate limiter specific to forced refresh request
+REFRESH_LIMITER = Limiter(
+    RequestRate(1, 122),
+    bucket_class=SQLiteBucket,
+    bucket_kwargs={'path': RATELIMIT_FILE},
+)
 
 logger = getLogger('pyinaturalist')
 thread_local = threading.local()
@@ -320,6 +333,29 @@ def get_local_session(**kwargs) -> ClientSession:
     if not hasattr(thread_local, 'session'):
         thread_local.session = ClientSession(**kwargs)
     return thread_local.session
+
+
+def get_refresh_params(endpoint) -> Dict:
+    """In some cases, we need to be sure we have the most recent version of a resource, for example
+    when updating projects. Normally we would handle this with cache headers, but the CDN cache does
+    not respect these if the cached response is less than ~2 minutes old.
+
+    The iNat webapp handles this by adding an extra `v` request parameter, which results in a
+    different cache key. This function does the same by tracking a separate rate limit per value,
+    and finding the lowest value that is certain to result in a fresh response.
+    """
+    v = 0
+    while True:
+        try:
+            bucket = f'{endpoint}?v={v}'
+            REFRESH_LIMITER.try_acquire(bucket)
+            break
+        except BucketFullException as e:
+            seconds = int(e.meta_info["remaining_time"])
+            logger.debug(f'{bucket} cannot be refreshed again for {seconds} seconds')
+            v += 1
+
+    return {'refresh': True, 'v': v} if v > 0 else {'refresh': True}
 
 
 def is_dry_run_enabled(method: str) -> bool:
