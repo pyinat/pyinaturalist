@@ -9,12 +9,12 @@ These functions will accept any of the following:
 """
 import json
 from copy import deepcopy
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from functools import partial
 from logging import basicConfig, getLogger
-from typing import List, Type
+from typing import List, Mapping, Type
 
-from requests import PreparedRequest
+from requests import PreparedRequest, Response
 
 from pyinaturalist.constants import DATETIME_SHORT_FORMAT, ResponseOrResults, ResponseResult
 from pyinaturalist.converters import ensure_list
@@ -200,14 +200,41 @@ def format_table(values: ResponseOrObjects):
 
 def format_request(request: PreparedRequest, dry_run: bool = False) -> str:
     """Format HTTP request info"""
-    headers_dict = request.headers.copy()
+    headers = _format_headers(request.headers)
+    body = _format_body(request.body)
+    dry_run_str = ' (DRY RUN) ' if dry_run else ''
+    return f'Request:{dry_run_str}\n{request.method} {request.url}\n{headers}\n{body}'
+
+
+def format_response(response: Response) -> str:
+    """Format HTTP response info, including whether it came from the cache"""
+    headers = _format_headers(response.headers)
+    error_msg = f' {response.text}' if not response.ok else ''
+
+    def _expires_str():
+        if response.expires:
+            expires_delta = response.expires - datetime.utcnow()
+            expires_delta -= timedelta(microseconds=expires_delta.microseconds)
+            return f'expires in {expires_delta}'
+        else:
+            return 'never expires'
+
+    cached = f'cached; {_expires_str()}' if getattr(response, 'from_cache', False) else 'not cached'
+    return f'Response ({cached}):\n{response.status_code} {response.reason}{error_msg}\n{headers}'
+
+
+def _format_headers(headers: Mapping[str, str]) -> str:
+    ignore_headers = [
+        'Access-Control-Allow-Headers',
+        'Access-Control-Allow-Methods',
+        'Access-Control-Allow-Origin',
+        'X-Content-Type-Options',
+    ]
+    headers_dict = {k: v for k, v in headers.items() if k not in ignore_headers}
     if 'Authorization' in headers_dict:
         headers_dict['Authorization'] = '[REDACTED]'
 
-    headers = '\n'.join([f'{k}: {v}' for k, v in headers_dict.items()])
-    body = _format_body(request.body)
-    dry_run_str = '(DRY RUN) ' if dry_run else ''
-    return f'{dry_run_str}{request.method} {request.url}\n{headers}\n{body}'
+    return '\n'.join([f'{k}: {v}' for k, v in headers_dict.items()])
 
 
 def _format_body(body):

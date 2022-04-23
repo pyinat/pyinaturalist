@@ -34,7 +34,7 @@ platformdirs                = ">=2.5"
 python-dateutil             = ">=2.0"
 python-forge                = ">=18.6"
 requests                    = ">=2.22"
-requests-cache              = "0.10.0.dev1"  # Using some unreleased features
+requests-cache              = "0.10.0.dev4"  # Using some unreleased features
 requests-ratelimiter        = ">=0.3.1"
 rich                        = ">=10.9"
 

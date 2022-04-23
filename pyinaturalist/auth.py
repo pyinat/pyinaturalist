@@ -19,6 +19,7 @@ def get_access_token(
     app_id: str = None,
     app_secret: str = None,
     jwt: bool = True,
+    refresh: bool = False,
 ) -> str:
     """Get an access token using the user's iNaturalist username and password, using the
     Resource Owner Password Credentials Flow. Requires registering an iNaturalist app.
@@ -61,6 +62,7 @@ def get_access_token(
         app_id: OAuth2 application ID
         app_secret: OAuth2 application secret
         jwt: Return a JSON Web Token; otherwise return an OAuth2 access token.
+        refresh: Do not use any cached tokens, even if they are not expired
 
     Raises:
         :py:exc:`requests.HTTPError`: (401) if credentials are invalid
@@ -68,7 +70,7 @@ def get_access_token(
     # First check if we have a previously cached JWT
     session = get_local_session()
     response = _get_jwt(session, only_if_cached=True)
-    if response.ok:
+    if response.ok and not refresh:
         logger.info('Using cached access token')
         return response.json()['api_token']
 
@@ -84,10 +86,10 @@ def get_access_token(
     # If any fields were missing, then check the keyring
     if not all(payload.values()):
         payload.update(get_keyring_credentials())
-    if all(payload.values()):
-        logger.info('Retrieved credentials from keyring')
-    else:
-        raise AuthenticationError('Not all authentication parameters were provided')
+        if all(payload.values()):
+            logger.info('Retrieved credentials from keyring')
+        else:
+            raise AuthenticationError('Not all authentication parameters were provided')
 
     # Get OAuth access token
     response = session.post(f'{API_V0_BASE_URL}/oauth/token', json=payload)
