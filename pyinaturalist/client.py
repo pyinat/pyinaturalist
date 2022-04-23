@@ -7,6 +7,7 @@ from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import JsonResponse
 from pyinaturalist.controllers import (
     ObservationController,
+    PlaceController,
     ProjectController,
     TaxonController,
     UserController,
@@ -104,6 +105,7 @@ class iNatClient:
         # Controllers
         # TODO: Improve Sphinx docs generated for these attributes
         self.observations = ObservationController(self)  #: Interface for observation requests
+        self.places = PlaceController(self)  #: Interface for project requests
         self.projects = ProjectController(self)  #: Interface for project requests
         self.taxa = TaxonController(self)  #: Interface for taxon requests
         self.users = UserController(self)  #: Interface for user requests

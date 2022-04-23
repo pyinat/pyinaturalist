@@ -38,7 +38,9 @@ def get_places_by_id(place_id: MultiInt, **params) -> JsonResponse:
 
 
 @document_request_params(docs._bounding_box, docs._name)
-def get_places_nearby(**params) -> JsonResponse:
+def get_places_nearby(
+    nelat: float, nelng: float, swlat: float, swlng: float, **params
+) -> JsonResponse:
     """Search for places near a given location
 
     .. rubric:: Notes
@@ -72,7 +74,7 @@ def get_places_nearby(**params) -> JsonResponse:
     Returns:
         Response dict containing place records, divided into 'standard' and 'community' places.
     """
-    response = get_v1('places/nearby', **params)
+    response = get_v1('places/nearby', nelat=nelat, nelng=nelng, swlat=swlat, swlng=swlng, **params)
     return convert_all_place_coordinates(response.json())
 
 
