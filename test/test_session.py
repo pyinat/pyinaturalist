@@ -7,6 +7,7 @@ from pyinaturalist.session import (
     CACHE_FILE,
     MOCK_RESPONSE,
     ClientSession,
+    clear_cache,
     delete,
     get,
     get_local_session,
@@ -168,3 +169,11 @@ def test_get_local_session():
     session_2 = get_local_session()
     assert session_1 is session_2
     assert isinstance(session_1, ClientSession)
+
+
+@pytest.mark.enable_client_session
+def test_clear_cache():
+    session = get_local_session()
+    with patch.object(session, 'cache', autospec=True) as mock_cache:
+        clear_cache()
+        mock_cache.clear.assert_called()

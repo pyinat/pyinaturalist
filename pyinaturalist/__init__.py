@@ -1,4 +1,5 @@
 # flake8: noqa: F401, F403
+# isort: skip_file
 from logging import getLogger
 
 logger = getLogger('pyinaturalist')
@@ -13,7 +14,7 @@ try:
     from pyinaturalist.models import *
     from pyinaturalist.paginator import Paginator, IDPaginator
     from pyinaturalist.request_params import get_interval_ranges
-    from pyinaturalist.session import ClientSession
+    from pyinaturalist.session import ClientSession, clear_cache
     from pyinaturalist.v0 import *
     from pyinaturalist.v1 import *
     from pyinaturalist.v2 import *

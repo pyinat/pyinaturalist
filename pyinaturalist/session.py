@@ -295,6 +295,11 @@ def put(url: str, **kwargs) -> Response:
     return request('PUT', url, **kwargs)
 
 
+def clear_cache():
+    """Clear all cached API responses"""
+    get_local_session().cache.clear()
+
+
 def env_to_bool(environment_variable: str) -> bool:
     """Translate an environment variable to a boolean value, accounting for minor
     variations (case, None vs. False, etc.)
