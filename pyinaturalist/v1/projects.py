@@ -233,7 +233,6 @@ def delete_project_users(project_id: IntOrStr, user_ids: MultiInt, **params) -> 
     return project
 
 
-# TODO: Support image uploads for `cover` and `icon`
 @document_request_params(docs._project_update_params)
 def update_project(project_id: IntOrStr, **params) -> JsonResponse:
     """Update a project
@@ -296,12 +295,12 @@ def _get_project_version(endpoint) -> Dict:
 
     The iNat webapp handles this by adding an extra `v` request parameter, which results in a
     different cache key. This function does the same by tracking a separate rate limit per value,
-    and finding a value that is certain to result in a fresh response.
+    and finding the lowest value that is certain to result in a fresh response.
     """
     v = 0
     while True:
         try:
-            bucket = f'{endpoint}/{v}'
+            bucket = f'{endpoint}?v={v}'
             ProjectUpdateLimiter.try_acquire(bucket)
             break
         except BucketFullException as e:

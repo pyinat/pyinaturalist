@@ -3,7 +3,14 @@ from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import Project
 from pyinaturalist.paginator import Paginator
-from pyinaturalist.v1 import add_project_observation, get_projects, get_projects_by_id
+from pyinaturalist.v1 import (
+    add_project_observation,
+    add_project_users,
+    delete_project_users,
+    get_projects,
+    get_projects_by_id,
+    update_project,
+)
 
 
 class ProjectController(BaseController):
@@ -40,4 +47,17 @@ class ProjectController(BaseController):
             responses.append(response)
         return responses
 
-    # TODO: Add update_project()
+    @document_controller_params(update_project)
+    def update(self, project_id: IntOrStr, **params) -> Project:
+        response = self.client.request(update_project, project_id, **params)
+        return Project.from_json(response)
+
+    @document_controller_params(add_project_users)
+    def add_users(self, project_id: IntOrStr, *user_ids: int, **params) -> Project:
+        response = self.client.request(add_project_users, project_id, user_ids, **params)
+        return Project.from_json(response)
+
+    @document_controller_params(delete_project_users)
+    def delete_users(self, project_id: IntOrStr, *user_ids: int, **params) -> Project:
+        response = self.client.request(delete_project_users, project_id, user_ids, **params)
+        return Project.from_json(response)

@@ -86,3 +86,19 @@ def test_add_observation(get_access_token, requests_mock):
     observation_ids = 5678, 9012
     client.projects.add_observations(1234, *observation_ids)
     get_access_token.assert_called()
+
+
+# TODO:
+# def test_update():
+#     client = iNatClient()
+#     results = client.projects.update()
+
+
+# def test_add_users():
+#     client = iNatClient()
+#     results = client.project.add_users()
+
+
+# def test_delete_users():
+#     client = iNatClient()
+#     results = client.project.delete_users()
