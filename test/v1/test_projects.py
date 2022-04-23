@@ -15,7 +15,7 @@ from pyinaturalist.v1 import (
     get_projects_by_id,
     update_project,
 )
-from pyinaturalist.v1.projects import _get_project_version
+from pyinaturalist.v1.projects import _get_refresh_params
 from test.sample_data import SAMPLE_DATA
 
 
@@ -118,10 +118,10 @@ def test_update_project(mock_put):
 
 
 @patch('pyinaturalist.v1.projects.ProjectUpdateLimiter', Limiter(RequestRate(1, 2)))
-def test_get_project_version():
-    assert _get_project_version('test') == {}
-    assert _get_project_version('test2') == {}
-    assert _get_project_version('test') == {'v': 1}
-    assert _get_project_version('test') == {'v': 2}
+def test_get_refresh_params():
+    assert _get_refresh_params('test') == {'refresh': True}
+    assert _get_refresh_params('test2') == {'refresh': True}
+    assert _get_refresh_params('test') == {'refresh': True, 'v': 1}
+    assert _get_refresh_params('test') == {'refresh': True, 'v': 2}
     sleep(2)
-    assert _get_project_version('test') == {}
+    assert _get_refresh_params('test') == {'refresh': True}
