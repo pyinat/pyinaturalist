@@ -71,7 +71,7 @@ class Place(BaseModel):
             ]
             return places
         else:
-            return super(Place, cls).from_json_list(json_value)
+            return super(Place, cls).from_json_list(value)
 
     @property
     def ancestry(self) -> str:

@@ -2,7 +2,7 @@ from pyinaturalist.constants import IntOrStr
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import Place
-from pyinaturalist.paginator import Paginator
+from pyinaturalist.paginator import AutocompletePaginator, Paginator
 from pyinaturalist.v1 import get_places_autocomplete, get_places_by_id, get_places_nearby
 
 
@@ -17,10 +17,16 @@ class PlaceController(BaseController):
         """
         return self.client.paginate(get_places_by_id, Place, place_id=place_ids, **params)
 
-    # TODO: custom Paginator class for paginate_autocomplete
     @document_controller_params(get_places_autocomplete)
     def autocomplete(self, q: str = None, **params) -> Paginator[Place]:
-        return self.client.paginate(get_places_autocomplete, Place, q, **params)
+        return self.client.paginate(
+            get_places_autocomplete,
+            Place,
+            cls=AutocompletePaginator,
+            q=q,
+            per_page=20,
+            **params,
+        )
 
     @document_controller_params(get_places_nearby)
     def nearby(

@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, Type
 
 from requests import Session
 
@@ -142,7 +142,12 @@ class iNatClient:
         return request_function(**kwargs)
 
     def paginate(
-        self, request_function: Callable, model: T, auth: bool = False, **kwargs
+        self,
+        request_function: Callable,
+        model: T,
+        auth: bool = False,
+        cls: Type[Paginator] = Paginator,
+        **kwargs,
     ) -> Paginator[T]:
         """Create a paginator for a request, with client settings applied
 
@@ -150,7 +155,8 @@ class iNatClient:
             request_function: The API request function to call, which should return a JSON response
             model: Model class used for the response
             auth: Indicates that the request requires authentication
+            cls: Alternative Paginator class to use
             params: Original request parameters
         """
         kwargs = self._update_kwargs(request_function, auth, **kwargs)
-        return Paginator(request_function, model, **kwargs)
+        return cls(request_function, model, **kwargs)

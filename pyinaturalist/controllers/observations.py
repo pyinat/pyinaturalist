@@ -31,7 +31,7 @@ class ObservationController(BaseController):
 
     @document_controller_params(get_observations)
     def search(self, **params) -> Paginator[Observation]:
-        return self.client.paginate(get_observations, Observation, **params)
+        return self.client.paginate(get_observations, Observation, method='id', **params)
 
     # TODO: Does this need a model with utility functions, or is {datetime: count} sufficient?
     @document_controller_params(get_observation_histogram)

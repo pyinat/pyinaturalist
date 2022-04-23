@@ -79,8 +79,13 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         if self.method == 'id':
             self.kwargs['order_by'] = 'id'
             self.kwargs['order'] = 'asc'
-        else:
+        elif self.method == 'page':
             self.kwargs['page'] = 1
+
+        logger.debug(
+            f'Prepared paginated request: {self.request_function.__name__}('
+            f'args={self.request_args}, kwargs={self.kwargs})'
+        )
 
     async def __aiter__(self) -> AsyncIterator[T]:
         """Iterate over paginated results, with non-blocking requests sent from a separate thread"""
@@ -92,8 +97,8 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
     def __iter__(self) -> Iterator[T]:
         """Iterate over paginated results"""
         while not self.exhausted:
-            for result in self.next_page():
-                yield self.model.from_json(result)
+            for result in self.model.from_json_list(self.next_page()):
+                yield result
 
     def all(self) -> List[T]:
         """Get all results in a single list"""
@@ -119,6 +124,12 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             self.total_results = int(count_response['total_results'])
         return self.total_results
 
+    def deduplicate(self, results):
+        """Deduplicate results by ID"""
+        unique_results = {result.id: result for result in results}
+        self.total_results = len(unique_results)
+        return list(unique_results.values())
+
     def next_page(self) -> List[ResponseResult]:
         """Get the next page of results"""
         if self.exhausted:
@@ -137,27 +148,31 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         # Note: For id-based pagination, only the first page's 'total_results' is accurate
         if self.total_results is None:
             self.total_results = response.get('total_results', len(results))
-        self.results_fetched += len(results)
-        self._update_next_page_params(results)
 
         # If this is the first of multiple requests, log the estimated time and number of requests
+        self.results_fetched += len(results)
+        self._update_next_page_params(results)
         if self.results_fetched == len(results) and not self.exhausted:
             self._estimate()
+
         return results
+
+    def _check_exhausted(self):
+        return (
+            (self.limit and self.results_fetched >= self.limit)
+            or (self.total_results and self.results_fetched >= self.total_results)
+            or (self.per_page and self.results_fetched > self.per_page)
+        )
 
     def _update_next_page_params(self, page_results):
         """Set params for next request, if there are more results. Also check page size, in case
         total_results is off due to race condition, outdated index, etc.
         """
-        if (
-            (self.limit and self.results_fetched >= self.limit)
-            or (self.total_results and self.results_fetched >= self.total_results)
-            or len(page_results) == 0
-        ):
+        if self._check_exhausted() or len(page_results) == 0:
             self.exhausted = True
         elif self.method == 'id':
             self.kwargs['id_above'] = page_results[-1]['id']
-        else:
+        elif self.method == 'page':
             self.kwargs['page'] += 1
 
     def _estimate(self):
@@ -165,10 +180,10 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         the request is too large
         """
         total_requests = ceil(self.total_results / self.per_page)
-        est_delay = ceil((total_requests / REQUESTS_PER_MINUTE) * 60)
+        est_delay = ceil((total_requests / REQUESTS_PER_MINUTE) * 60) - 1
         logger.info(
             f'This query will fetch {self.total_results} results in {total_requests} requests. '
-            f'Estimated total rate-limiting delay: {est_delay} seconds'
+            f'Estimated total request time: {est_delay} seconds'
         )
 
         if self.total_results > LARGE_REQUEST_WARNING:
@@ -179,7 +194,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
 
     def __str__(self) -> str:
         return (
-            f'{self.__class__.__name__}({self.request_function.__name__}, '
+            f'{self.__class__.__name__}(request_function={self.request_function.__name__}, '
             f'fetched={self.results_fetched}/{self.total_results or "unknown"})'
         )
 
@@ -205,6 +220,41 @@ class IDPaginator(Paginator):
         return response['results'] if 'results' in response else [response]
 
 
+class AutocompletePaginator(Paginator):
+    """Paginator that attempts to get as many results as possible from an autocomplete endpoint.
+    This is necessary for some problematic queries for which there are many matches but not ranked
+    with the desired match(es) first.
+
+    This works based on different rankings being returned for order_by=area. No other fields can be
+    sorted on, and direction can't be specified, but this can at least provide a few additional
+    results beyond the limit of 20.
+
+    All results will be de-duplicated and returned as a single page. This may potentially be applied
+    to other autocomplete endpoints, but so far is only needed for places.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.kwargs.pop('page', None)
+        self.kwargs.pop('order_by', None)
+
+    def all(self) -> List[T]:
+        """Get all results in a single de-duplicated list"""
+        return self.deduplicate(list(self))
+
+    def _update_next_page_params(self, page_results):
+        """After the first request, update the order_by param. After the second request, we're done."""
+        if (
+            self._check_exhausted()
+            or (self.per_page and self.results_fetched > self.per_page)
+            or (self.per_page and len(page_results) < self.per_page)
+            or len(page_results) == 0
+        ):
+            self.exhausted = True
+        else:
+            self.kwargs['order_by'] = 'area'
+
+
 class JsonPaginator(Paginator):
     """Paginator that returns raw response dicts instead of model objects"""
 
@@ -215,11 +265,17 @@ class JsonPaginator(Paginator):
                 yield result
 
     def all(self) -> JsonResponse:  # type: ignore
-        results = list(self)
+        results = super().all()
         return {
             'results': results,
             'total_results': len(results),
         }
+
+    def deduplicate(self, results):
+        """Deduplicate results by ID"""
+        unique_results = {result['id']: result for result in results}
+        self.total_results = len(unique_results)
+        return list(unique_results.values())
 
 
 def paginate_all(request_function: Callable, *args, method: str = 'page', **kwargs) -> JsonResponse:
