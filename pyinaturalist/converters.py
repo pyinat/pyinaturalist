@@ -71,17 +71,19 @@ def convert_all_timestamps(results: List[ResponseResult]) -> List[ResponseResult
     return results
 
 
-def convert_histogram(response: JsonResponse) -> HistogramResponse:
+def convert_observation_histogram(response: JsonResponse) -> HistogramResponse:
     """Convert a response containing time series data into a single ``{date: value}`` dict"""
     # The inner result object's key will be the name of the interval requested
     interval = next(iter(response['results'].keys()))
-    histogram = response['results'][interval]
+    return convert_histogram(response['results'][interval], interval)
 
-    # Convert keys to appropriate type depending on interval
+
+def convert_histogram(result: JsonResponse, interval: str):
+    """Convert keys to appropriate type depending on interval"""
     if interval in ['month_of_year', 'week_of_year']:
-        return {int(k): v for k, v in histogram.items()}
+        return {int(k): v for k, v in result.items()}
     else:
-        return {parse_date(k): v for k, v in histogram.items()}
+        return {parse_date(k): v for k, v in result.items()}
 
 
 # Type conversion functions for individual results or values

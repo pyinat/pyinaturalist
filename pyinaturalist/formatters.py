@@ -24,6 +24,7 @@ from pyinaturalist.models import (
     BaseModelCollection,
     Comment,
     ControlledTerm,
+    ControlledTermCount,
     ControlledTermValue,
     Identification,
     LifeList,
@@ -115,6 +116,7 @@ UNIQUE_RESPONSE_ATTRS = {
     'thread_id': Message,
     'body': Comment,  # Subset of ID attrs; if it's not an ID, assume it's a comment
     'multivalued': ControlledTerm,
+    'controlled_value': ControlledTermCount,
     'blocking': ControlledTermValue,
     'count_without_taxon': LifeList,
     'captive': Observation,

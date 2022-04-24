@@ -15,6 +15,7 @@ from pyinaturalist.v1 import (
     get_observation_histogram,
     get_observation_identifiers,
     get_observation_observers,
+    get_observation_popular_field_values,
     get_observation_species_counts,
     get_observation_taxon_summary,
     get_observation_taxonomy,
@@ -95,20 +96,14 @@ def test_get_observations__all_pages(requests_mock):
     assert len(observations['results']) == 2
 
 
-def test_get_observation_observers(requests_mock):
+def test_get_observation__non_existent(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/observers',
-        json=SAMPLE_DATA['get_observation_observers_node_page1'],
+        f'{API_V1_BASE_URL}/observations',
+        json=SAMPLE_DATA['get_nonexistent_observation'],
         status_code=200,
     )
-
-    observers = get_observation_observers(place_id=125323)
-    first_result = observers['results'][0]
-
-    assert observers['total_results'] == 4
-    assert len(observers['results']) == 2
-    assert first_result['user']['spam'] is False
-    assert first_result['user']['suspended'] is False
+    with pytest.raises(ObservationNotFound):
+        get_observation(99999999)
 
 
 def test_get_observation_identifiers(requests_mock):
@@ -127,14 +122,35 @@ def test_get_observation_identifiers(requests_mock):
     assert first_result['user']['suspended'] is False
 
 
-def test_get_non_existent_observation(requests_mock):
+def test_get_observation_observers(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations',
-        json=SAMPLE_DATA['get_nonexistent_observation'],
+        f'{API_V1_BASE_URL}/observations/observers',
+        json=SAMPLE_DATA['get_observation_observers_node_page1'],
         status_code=200,
     )
-    with pytest.raises(ObservationNotFound):
-        get_observation(99999999)
+
+    observers = get_observation_observers(place_id=125323)
+    first_result = observers['results'][0]
+
+    assert observers['total_results'] == 4
+    assert len(observers['results']) == 2
+    assert first_result['user']['spam'] is False
+    assert first_result['user']['suspended'] is False
+
+
+def test_get_observation_popular_field_values(requests_mock):
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/observations/popular_field_values',
+        json=SAMPLE_DATA['get_observation_popular_field_values'],
+        status_code=200,
+    )
+
+    response = get_observation_popular_field_values(species_name='Danaus plexippus', place_id=24)
+    first_result = response['results'][0]
+    assert first_result['count'] == 231
+    assert first_result['month_of_year'][10] == 29
+    assert first_result['controlled_attribute']['id'] == 1
+    assert first_result['controlled_value']['label'] == 'Adult'
 
 
 def test_get_observation_species_counts(requests_mock):

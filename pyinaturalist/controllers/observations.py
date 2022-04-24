@@ -1,7 +1,14 @@
 from pyinaturalist.constants import HistogramResponse, IntOrStr, ListResponse
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
-from pyinaturalist.models import LifeList, Observation, TaxonCounts, TaxonSummary, UserCounts
+from pyinaturalist.models import (
+    ControlledTermCounts,
+    LifeList,
+    Observation,
+    TaxonCounts,
+    TaxonSummary,
+    UserCounts,
+)
 from pyinaturalist.paginator import Paginator
 from pyinaturalist.v1 import (
     create_observation,
@@ -9,6 +16,7 @@ from pyinaturalist.v1 import (
     get_observation_histogram,
     get_observation_identifiers,
     get_observation_observers,
+    get_observation_popular_field_values,
     get_observation_species_counts,
     get_observation_taxon_summary,
     get_observation_taxonomy,
@@ -43,15 +51,20 @@ class ObservationController(BaseController):
         response = self.client.request(get_observation_identifiers, **params)
         return UserCounts.from_json(response)
 
+    @document_controller_params(get_observation_taxonomy, add_common_args=False)
+    def life_list(self, user_id: IntOrStr, **params) -> LifeList:
+        response = self.client.request(get_observation_taxonomy, user_id=user_id, **params)
+        return LifeList.from_json(response)
+
     @document_controller_params(get_observation_observers)
     def observers(self, **params) -> UserCounts:
         response = self.client.request(get_observation_observers, **params)
         return UserCounts.from_json(response)
 
-    @document_controller_params(get_observation_taxonomy, add_common_args=False)
-    def life_list(self, user_id: IntOrStr, **params) -> LifeList:
-        response = self.client.request(get_observation_taxonomy, user_id=user_id, **params)
-        return LifeList.from_json(response)
+    @document_controller_params(get_observation_popular_field_values)
+    def popular_fields(self, **params) -> ControlledTermCounts:
+        response = self.client.request(get_observation_popular_field_values, **params)
+        return ControlledTermCounts.from_json(response)
 
     @document_controller_params(get_observation_species_counts)
     def species_counts(self, **params) -> TaxonCounts:

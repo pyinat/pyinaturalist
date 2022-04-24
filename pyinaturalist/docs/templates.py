@@ -202,6 +202,7 @@ def _observation_v1(
     without_term_value_id: MultiInt = None,
     acc_above: str = None,
     acc_below: str = None,
+    acc_below_or_unknown: str = None,
     created_d1: AnyDateTime = None,
     created_d2: AnyDateTime = None,
     created_on: AnyDate = None,
@@ -271,6 +272,7 @@ def _observation_v1(
         Must be combined with the ``term_id`` parameter
     acc_above: Must have an positional accuracy above this value (meters)
     acc_below: Must have an positional accuracy below this value (meters)
+    acc_below_or_unknown: Must have an positional accuracy below this value (meters) or unknown
     created_d1: Must be created at or after this time
     created_d2: Must be created at or before this time
     created_on: Must be created on this date

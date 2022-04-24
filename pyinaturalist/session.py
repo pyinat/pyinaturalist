@@ -144,14 +144,14 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         adapter = HTTPAdapter(max_retries=retry)
         self.mount('https://', adapter)
 
-    def send(
+    def send(  # type: ignore  # Adds kwargs not present in Session.send()
         self,
         request: PreparedRequest,
         expire_after: ExpirationTime = None,
         refresh: bool = False,
         timeout: int = None,
         **kwargs,
-    ) -> Response:  # type: ignore  # Adds kwargs not present in Session.send()
+    ) -> Response:
         """Send a request with caching, rate-limiting, and retries
 
         Args:
