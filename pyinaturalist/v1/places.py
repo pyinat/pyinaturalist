@@ -1,7 +1,11 @@
+from functools import wraps
+
 from pyinaturalist.constants import JsonResponse, MultiInt
 from pyinaturalist.converters import convert_all_coordinates, convert_all_place_coordinates
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
+from pyinaturalist.models import Place
+from pyinaturalist.paginator import AutocompletePaginator, JsonPaginator
 from pyinaturalist.v1 import get_v1
 
 
@@ -38,7 +42,9 @@ def get_places_by_id(place_id: MultiInt, **params) -> JsonResponse:
 
 
 @document_request_params(docs._bounding_box, docs._name)
-def get_places_nearby(**params) -> JsonResponse:
+def get_places_nearby(
+    nelat: float, nelng: float, swlat: float, swlng: float, **params
+) -> JsonResponse:
     """Search for places near a given location
 
     .. rubric:: Notes
@@ -72,7 +78,7 @@ def get_places_nearby(**params) -> JsonResponse:
     Returns:
         Response dict containing place records, divided into 'standard' and 'community' places.
     """
-    response = get_v1('places/nearby', **params)
+    response = get_v1('places/nearby', nelat=nelat, nelng=nelng, swlat=swlat, swlng=swlng, **params)
     return convert_all_place_coordinates(response.json())
 
 
@@ -104,7 +110,8 @@ def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
         Response dict containing place records
     """
     if params.get('page') == 'all':
-        places = paginate_autocomplete(q=q, **params)
+        pagninator = PlaceAutocompletePaginator(q=q, **params)
+        places = pagninator.all()
     else:
         places = get_v1('places/autocomplete', q=q, **params).json()
 
@@ -112,28 +119,12 @@ def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
     return places
 
 
-def paginate_autocomplete(**params) -> JsonResponse:
-    """Attempt to get as many results as possible from the places autocomplete endpoint.
-    This is necessary for some problematic places for which there are many matches but not ranked
-    with the desired match(es) first.
+class PlaceAutocompletePaginator(JsonPaginator, AutocompletePaginator):  # type: ignore
+    def __init__(self, **kwargs):
+        kwargs['per_page'] = 20
 
-    This works based on different rankings being returned for order_by=area. No other fields can be
-    sorted on, and direction can't be specified, but this can at least provide a few additional
-    results beyond the limit of 20.
-    """
-    params['per_page'] = 20
-    params.pop('order_by', None)
+        @wraps(get_v1)
+        def reqeuest_function(**request_kwargs):
+            return get_v1('places/autocomplete', **request_kwargs)
 
-    # Search with default ordering and ordering by area (if there are more than 20 results)
-    page_1 = get_v1('places/autocomplete', **params).json()
-    if page_1['total_results'] > 20:
-        page_2 = get_v1('places/autocomplete', order_by='area', **params).json()
-    else:
-        page_2 = {'results': []}
-
-    # De-duplicate results
-    unique_results = {r['id']: r for page in [page_1, page_2] for r in page['results']}
-    return {
-        'results': list(unique_results.values()),
-        'total_results': page_1['total_results'],
-    }
+        super().__init__(reqeuest_function, model=Place, **kwargs)
