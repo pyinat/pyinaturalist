@@ -463,6 +463,20 @@ def test_taxon__empty():
     assert taxon.taxon_photos == []
 
 
+def test_taxon__str():
+    taxon_1 = Taxon(id=3, name='Aves', preferred_common_name='birb', rank='class')
+    assert str(taxon_1) == '[3] 🐦 Class: Aves (birb)'
+
+    taxon_2 = Taxon(id=3, name='Aves', rank='class')
+    assert str(taxon_2) == '[3] 🐦 Class: Aves'
+
+    taxon_3 = Taxon(id=3, name='Aves')
+    assert str(taxon_3) == '[3] Aves'
+
+    taxon_4 = Taxon(id=3)
+    assert str(taxon_4) == '[3] unknown taxon'
+
+
 def test_taxon__all_names():
     taxon = Taxon.from_json(j_taxon_8_all_names)
     assert taxon.names[1] == {
