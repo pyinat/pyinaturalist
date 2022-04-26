@@ -16,6 +16,7 @@ INAT_BASE_URL = API_V0_BASE_URL
 INAT_REPO = 'https://raw.githubusercontent.com/inaturalist/inaturalist/main'
 ICONIC_TAXA_BASE_URL = f'{INAT_REPO}/app/assets/images/iconic_taxa'
 PHOTO_BASE_URL = 'https://static.inaturalist.org/photos'
+PHOTO_CC_BASE_URL = 'https://inaturalist-open-data.s3.amazonaws.com/photos'
 PHOTO_INFO_BASE_URL = 'https://www.inaturalist.org/photos'
 
 # Prefix used for keyring entries
@@ -49,9 +50,10 @@ SAMPLE_DATA_DIR = join(PROJECT_DIR, 'test', 'sample_data')
 
 # Cache settings
 CACHE_EXPIRATION = {
-    'api.inaturalist.org/v*/controlled_terms*': timedelta(days=1),
-    'api.inaturalist.org/v*/places*': timedelta(days=1),
-    'api.inaturalist.org/v*/taxa*': timedelta(days=1),
+    'api.inaturalist.org/*autocomplete': timedelta(days=30),
+    'api.inaturalist.org/v*/controlled_terms*': timedelta(days=7),
+    'api.inaturalist.org/v*/places*': timedelta(days=7),
+    'api.inaturalist.org/v*/taxa*': timedelta(days=7),
     '*': timedelta(minutes=30),
 }
 CACHE_FILE = join(CACHE_DIR, 'api_requests.db')

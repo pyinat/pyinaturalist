@@ -165,8 +165,10 @@ class Taxon(BaseModel):
         """Taxon rank, scientific name, common name (if available), and emoji"""
         if not self.name and not self.rank:
             return 'unknown taxon'
-        if not self.name:
+        elif not self.name:
             return f'{self.rank.title()}: {self.id}'
+        elif not self.rank:
+            return self.name
 
         common_name = f' ({self.preferred_common_name})' if self.preferred_common_name else ''
         return f'{self.emoji} {self.rank.title()}: {self.name}{common_name}'
@@ -216,7 +218,7 @@ class Taxon(BaseModel):
         }
 
     def __str__(self) -> str:
-        return f'[{self.id}] {self.full_name}' if self.name else self.full_name
+        return f'[{self.id}] {self.full_name}'
 
 
 @define_model

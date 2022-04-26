@@ -14,7 +14,14 @@ from datetime import datetime
 import pytest
 from dateutil.tz import tzoffset, tzutc
 
-from pyinaturalist.constants import ICONIC_TAXA, INAT_BASE_URL, PHOTO_INFO_BASE_URL, PHOTO_SIZES
+from pyinaturalist.constants import (
+    ICONIC_TAXA,
+    INAT_BASE_URL,
+    PHOTO_BASE_URL,
+    PHOTO_CC_BASE_URL,
+    PHOTO_INFO_BASE_URL,
+    PHOTO_SIZES,
+)
 from pyinaturalist.models import *
 from test.conftest import sample_data_path
 from test.sample_data import *
@@ -320,6 +327,20 @@ def test_photo__empty():
     assert photo.original_dimensions == (0, 0)
 
 
+def test_photo__guess_url():
+    photo = Photo(id=123)
+    assert photo.url == f'{PHOTO_BASE_URL}/123?size=original'
+    photo = Photo(id=123, license_code='CC-BY-NC')
+    assert photo.url == f'{PHOTO_CC_BASE_URL}/123/original.jpg'
+
+
+def test_photo__properties():
+    photo = Photo.from_json(j_photo_1)
+    assert photo.mimetype == 'image/jpeg'
+    assert photo.dimensions_str == '2048x1365'
+    assert photo.info_url == f'{PHOTO_INFO_BASE_URL}/38359335'
+
+
 def test_photo__license():
     photo = Photo.from_json(j_photo_1)
     assert photo.has_cc_license is True
@@ -440,6 +461,20 @@ def test_taxon__empty():
     assert taxon.children == []
     assert taxon.default_photo is None
     assert taxon.taxon_photos == []
+
+
+def test_taxon__str():
+    taxon_1 = Taxon(id=3, name='Aves', preferred_common_name='birb', rank='class')
+    assert str(taxon_1) == '[3] 🐦 Class: Aves (birb)'
+
+    taxon_2 = Taxon(id=3, name='Aves', rank='class')
+    assert str(taxon_2) == '[3] 🐦 Class: Aves'
+
+    taxon_3 = Taxon(id=3, name='Aves')
+    assert str(taxon_3) == '[3] Aves'
+
+    taxon_4 = Taxon(id=3)
+    assert str(taxon_4) == '[3] unknown taxon'
 
 
 def test_taxon__all_names():
