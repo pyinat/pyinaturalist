@@ -6,6 +6,7 @@ import requests
 from pyinaturalist.constants import (
     ALL_LICENSES,
     CC_LICENSES,
+    PHOTO_BASE_URL,
     PHOTO_INFO_BASE_URL,
     PHOTO_SIZES,
     TableRow,
@@ -71,6 +72,13 @@ class Photo(BaseModel):
     def medium_url(self) -> Optional[str]:
         """Image URL (medium size)"""
         return self.url_size('medium')
+
+    @property
+    def mimetype(self) -> str:
+        """MIME type of the image"""
+        ext = self.url.lower().split('.')[-1].split('?')[0]
+        ext = ext.replace('jpg', 'jpeg')
+        return f'image/{ext}'
 
     @property
     def original_url(self) -> Optional[str]:
