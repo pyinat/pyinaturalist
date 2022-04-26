@@ -7,6 +7,7 @@ from pyinaturalist.constants import (
     ALL_LICENSES,
     CC_LICENSES,
     PHOTO_BASE_URL,
+    PHOTO_CC_BASE_URL,
     PHOTO_INFO_BASE_URL,
     PHOTO_SIZES,
     TableRow,
@@ -40,8 +41,12 @@ class Photo(BaseModel):
     # flags: List = field(factory=list)
 
     def __attrs_post_init__(self):
-        if not self.url:
-            return
+        # If there's no URL, make a guess based on ID and license:
+        self.url = self.url or (
+            f'{PHOTO_CC_BASE_URL}/{self.id}/original.jpg'
+            if self.has_cc_license
+            else f'{PHOTO_BASE_URL}/{self.id}?size=original'
+        )
 
         # Get a URL format string to get different photo sizes. Note: default URL may be any size.
         for size in PHOTO_SIZES:

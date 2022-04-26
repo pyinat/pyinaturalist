@@ -16,6 +16,7 @@ INAT_BASE_URL = API_V0_BASE_URL
 INAT_REPO = 'https://raw.githubusercontent.com/inaturalist/inaturalist/main'
 ICONIC_TAXA_BASE_URL = f'{INAT_REPO}/app/assets/images/iconic_taxa'
 PHOTO_BASE_URL = 'https://static.inaturalist.org/photos'
+PHOTO_CC_BASE_URL = 'https://inaturalist-open-data.s3.amazonaws.com/photos'
 PHOTO_INFO_BASE_URL = 'https://www.inaturalist.org/photos'
 
 # Prefix used for keyring entries
