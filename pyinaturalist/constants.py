@@ -49,9 +49,10 @@ SAMPLE_DATA_DIR = join(PROJECT_DIR, 'test', 'sample_data')
 
 # Cache settings
 CACHE_EXPIRATION = {
-    'api.inaturalist.org/v*/controlled_terms*': timedelta(days=1),
-    'api.inaturalist.org/v*/places*': timedelta(days=1),
-    'api.inaturalist.org/v*/taxa*': timedelta(days=1),
+    'api.inaturalist.org/*autocomplete': timedelta(days=30),
+    'api.inaturalist.org/v*/controlled_terms*': timedelta(days=7),
+    'api.inaturalist.org/v*/places*': timedelta(days=7),
+    'api.inaturalist.org/v*/taxa*': timedelta(days=7),
     '*': timedelta(minutes=30),
 }
 CACHE_FILE = join(CACHE_DIR, 'api_requests.db')

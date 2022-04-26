@@ -11,7 +11,8 @@ Also note that photo metadata is only visible to logged in users, so an access t
 For more details on authentication, see:
 
 * https://www.inaturalist.org/pages/api+reference#auth
-* https://pyinaturalist.readthedocs.io/en/latest/general_usage.html#authentication
+* https://pyinaturalist.readthedocs.io/en/stable/user_guide.html#authentication
+
 
 Extra dependencies:
     ``pip install beautifulsoup4``
