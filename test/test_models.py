@@ -215,6 +215,7 @@ def test_observation__converters():
     assert isinstance(obs.user, User) and obs.user.id == 2852555
 
     assert obs.location == (50.0949055, -104.71929167)
+    assert obs.private_location == (50.0949055, -104.71929167)
 
 
 def test_observation__empty():

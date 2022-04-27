@@ -37,12 +37,12 @@ def is_in(options: Iterable):
     return validators.in_(list(options) + [None])
 
 
-def coordinate_pair(**kwargs):
+def coordinate_pair(doc: str = None, **kwargs):
     """Field containing a pair of coordiantes"""
     return field(
         default=None,
         converter=convert_lat_long,
-        doc='Location in ``(latitude, logitude)`` decimal degrees',
+        doc=doc or 'Location in ``(latitude, logitude)`` decimal degrees',
         **kwargs,
     )
 
