@@ -91,15 +91,25 @@ class Observation(BaseModel):
     owners_identification_from_vision: bool = field(
         default=None, doc="Indicates if the owner's ID was selected from computer vision results"
     )
-
     place_guess: str = field(default=None, doc='Place name determined from observation coordinates')
-    place_ids: List[int] = field(factory=list)
+    place_ids: List[int] = field(
+        factory=list, doc='Place IDs associated with the observation coordinates'
+    )
     positional_accuracy: int = field(
         default=None, doc='GPS accuracy in meters (real accuracy, if obscured)'
     )
     preferences: Dict[str, Any] = field(
         factory=dict,
         doc='Any user observation preferences (related to community IDs, coordinate access, etc.)',
+    )
+    private_location: Coordinates = coordinate_pair(
+        doc=':fa:`lock` Private location in ``(latitude, logitude)`` decimal degrees'
+    )
+    private_place_ids: List[int] = field(
+        factory=list, doc=':fa:`lock` Place IDs associated with the private observation coordinates'
+    )
+    private_place_guess: str = field(
+        default=None, doc=':fa:`lock` Place name determined from private observation coordinates'
     )
     project_ids: List[int] = field(factory=list, doc='All associated project IDs')
     project_ids_with_curator_id: List[int] = field(

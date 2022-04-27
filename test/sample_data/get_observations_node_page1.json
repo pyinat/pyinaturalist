@@ -261,6 +261,7 @@
       "num_identification_disagreements": 0,
       "geoprivacy": null,
       "location": "50.0949055,-104.71929167",
+      "private_location": "50.0949055,-104.71929167",
       "votes": [],
       "spam": false,
       "user": {
