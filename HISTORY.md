@@ -4,6 +4,8 @@
 [See all Issues & PRs for 0.17](https://github.com/niconoe/pyinaturalist/milestone/8?closed=1)
 
 ### New Endpoints
+* Added new **Observation** endpoint:
+  * `get_observation_popular_field_values()`
 * Added new **Project** endpoint and helper functions:
   * `update_project()`
   * `add_project_users()`

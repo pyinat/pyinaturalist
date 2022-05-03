@@ -1,7 +1,15 @@
-from typing import List
+from typing import Dict, List
 
-from pyinaturalist.constants import TableRow
-from pyinaturalist.models import BaseModel, LazyProperty, User, define_model, field
+from pyinaturalist.constants import JsonResponse, TableRow
+from pyinaturalist.models import (
+    BaseModel,
+    LazyProperty,
+    User,
+    define_model,
+    define_model_collection,
+    field,
+)
+from pyinaturalist.models.base import BaseModelCollection
 
 
 @define_model
@@ -94,3 +102,43 @@ class ControlledTerm(BaseModel):
 
     def __str__(self):
         return f'[{self.id}] {self.label}: {self.value_labels}'
+
+
+@define_model
+class ControlledTermCount(BaseModel):
+    """:fa:`tag` A count + histogram of a controlled term and value"""
+
+    count: int = field(default=0, doc='')
+    histogram: Dict[int, int] = field(factory=dict)
+    term = LazyProperty(ControlledTerm.from_json, type=ControlledTerm)
+    value = LazyProperty(ControlledTermValue.from_json, type=ControlledTermValue)
+
+    @classmethod
+    def from_json(cls, value: JsonResponse, user_id: int = None, **kwargs) -> 'ControlledTermCount':
+        """Rename some response fields before initializing"""
+        value['histogram'] = value.pop('month_of_year', None)
+        value['term'] = value.pop('controlled_attribute', None)
+        value['value'] = value.pop('controlled_value', None)
+        return super(ControlledTermCount, cls).from_json(value)
+
+    @property
+    def row(self) -> TableRow:
+        return {
+            'Term': self.term.label,
+            'Value': self.value.label,
+            'Count': self.count,
+        }
+
+    def __str__(self) -> str:
+        return f'{self.term.label}={self.value.label}: {self.count}'
+
+
+@define_model_collection
+class ControlledTermCounts(BaseModelCollection):
+    """:fa:`tag` :fa:`list` Used with
+    :v1:`GET /observations/popular_field_values <Observations/get_observations_popular_field_values>`.
+    """
+
+    data: List[ControlledTermCount] = field(
+        factory=list, converter=ControlledTermCount.from_json_list
+    )

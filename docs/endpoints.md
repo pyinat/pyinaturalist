@@ -39,7 +39,7 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | GET    | /observations/histogram            | {py:func}`.get_observation_histogram`
 | GET    | /observations/identifiers          | {py:func}`.get_observation_identifiers`
 | GET    | /observations/observers            | {py:func}`.get_observation_observers`
-| GET    | /observations/popular_field_values |
+| GET    | /observations/popular_field_values | {py:func}`.get_observation_popular_field_values`
 | GET    | /observations/species_counts       | {py:func}`.get_observation_species_counts`
 | GET    | /observations/taxonomy             | {py:func}`.get_observation_taxonomy`
 | GET    | /places/{id}                       | {py:func}`.get_places_by_id`

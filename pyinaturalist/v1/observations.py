@@ -14,6 +14,7 @@ from pyinaturalist.converters import (
     convert_all_timestamps,
     convert_generic_timestamps,
     convert_histogram,
+    convert_observation_histogram,
     convert_observation_timestamps,
     ensure_list,
 )
@@ -110,7 +111,7 @@ def get_observation_histogram(**params) -> HistogramResponse:
         'week of year' intervals, and :py:class:`~datetime.datetime` objects for all other intervals.
     """
     response = get_v1('observations/histogram', **params)
-    return convert_histogram(response.json())
+    return convert_observation_histogram(response.json())
 
 
 @document_request_params(*docs._get_observations, docs._pagination, docs._only_id)
@@ -162,35 +163,34 @@ def get_observations(**params) -> JsonResponse:
 
 
 @document_request_params(*docs._get_observations, docs._pagination)
-def get_observation_species_counts(**params) -> JsonResponse:
-    """Get all species (or other 'leaf taxa') associated with observations matching the search
-    criteria, and the count of observations they are associated with.
-    **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
+def get_observation_identifiers(**params) -> JsonResponse:
+    """Get identifiers of observations matching the search criteria and the count of
+    observations they have identified. By default, results are sorted by ID count in descending.
 
     .. rubric:: Notes
 
-    * API reference: :v1:`GET /observations/species_counts <Observations/get_observations_species_counts>`
+    * API reference: :v1:`GET /observations/identifiers <Observations/get_observations_identifiers>`
+    * This endpoint will only return up to 500 results.
 
     Example:
-        >>> response = get_observation_species_counts(user_login='my_username', quality_grade='research')
+        >>> response = get_observation_identifiers(place_id=72645)
         >>> pprint(response)
-        [62060] Species: Palomena prasina (Green Shield Bug): 10
-        [84804] Species: Graphosoma italicum (European Striped Shield Bug): 8
-        [55727] Species: Cymbalaria muralis (Ivy-leaved toadflax): 3
-        ...
+        [409010  ] jdoe42 (Jane Doe)
+        [691216  ] jbrown252 (James Brown)
+        [3959037 ] tnsparkleberry
 
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_observation_species_counts.py
+            .. literalinclude:: ../sample_data/get_observation_identifiers_ex_results.json
+                :language: JSON
 
     Returns:
-        Response dict containing taxon records with counts
+        Response dict of identifiers
     """
-    if params.get('page') == 'all':
-        return paginate_all(get_v1, 'observations/species_counts', **params)
-    else:
-        return get_v1('observations/species_counts', **params).json()
+    params.setdefault('per_page', 500)
+    response = get_v1('observations/identifiers', **params)
+    return response.json()
 
 
 @document_request_params(*docs._get_observations, docs._pagination)
@@ -228,34 +228,63 @@ def get_observation_observers(**params) -> JsonResponse:
 
 
 @document_request_params(*docs._get_observations, docs._pagination)
-def get_observation_identifiers(**params) -> JsonResponse:
-    """Get identifiers of observations matching the search criteria and the count of
-    observations they have identified. By default, results are sorted by ID count in descending.
+def get_observation_species_counts(**params) -> JsonResponse:
+    """Get all species (or other 'leaf taxa') associated with observations matching the search
+    criteria, and the count of observations they are associated with.
+    **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
 
     .. rubric:: Notes
 
-    * API reference: :v1:`GET /observations/identifiers <Observations/get_observations_identifiers>`
-    * This endpoint will only return up to 500 results.
+    * API reference: :v1:`GET /observations/species_counts <Observations/get_observations_species_counts>`
 
     Example:
-        >>> response = get_observation_identifiers(place_id=72645)
+        >>> response = get_observation_species_counts(user_login='my_username', quality_grade='research')
         >>> pprint(response)
-        [409010  ] jdoe42 (Jane Doe)
-        [691216  ] jbrown252 (James Brown)
-        [3959037 ] tnsparkleberry
+        [62060] Species: Palomena prasina (Green Shield Bug): 10
+        [84804] Species: Graphosoma italicum (European Striped Shield Bug): 8
+        [55727] Species: Cymbalaria muralis (Ivy-leaved toadflax): 3
+        ...
 
         .. admonition:: Example Response
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_observation_identifiers_ex_results.json
-                :language: JSON
+            .. literalinclude:: ../sample_data/get_observation_species_counts.py
 
     Returns:
-        Response dict of identifiers
+        Response dict containing taxon records with counts
     """
-    params.setdefault('per_page', 500)
-    response = get_v1('observations/identifiers', **params)
-    return response.json()
+    if params.get('page') == 'all':
+        return paginate_all(get_v1, 'observations/species_counts', **params)
+    else:
+        return get_v1('observations/species_counts', **params).json()
+
+
+@document_request_params(*docs._get_observations)
+def get_observation_popular_field_values(**params) -> JsonResponse:
+    """Get controlled terms values and a monthly histogram of observations matching the search
+
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /observations/popular_field_values <Observations/get_observations_popular_field_values>`
+
+    Example:
+        >>> response = get_observation_popular_field_values(
+        ...     species_name='Danaus plexippus', place_id=24,
+        ... )
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observation_popular_field_values.py
+
+    Returns:
+        Response dict. Each record contains a ``count``, a ``month_of_year`` histogram, a
+            ``controlled_attribute``, and a ``controlled_value``.
+    """
+    response_json = get_v1('observations/popular_field_values', **params).json()
+    for r in response_json['results']:
+        r['month_of_year'] = convert_histogram(r['month_of_year'], interval='month_of_year')
+    return response_json
 
 
 def get_observation_taxonomy(user_id: IntOrStr = None, **params) -> JsonResponse:

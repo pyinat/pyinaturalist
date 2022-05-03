@@ -111,6 +111,20 @@ def test_life_list(requests_mock):
     assert results[0].descendant_obs_count == results.get_count(1) == 3023
 
 
+def test_popular_fields(requests_mock):
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/observations/popular_field_values',
+        json=SAMPLE_DATA['get_observation_popular_field_values'],
+        status_code=200,
+    )
+    client = iNatClient()
+    results = client.observations.popular_fields(species_name='Danaus plexippus', place_id=24)
+    assert results[0].count == 231
+    assert results[0].histogram[10] == 29
+    assert results[0].term.id == 1
+    assert results[0].value.label == 'Adult'
+
+
 def test_species_counts(requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/observations/species_counts',

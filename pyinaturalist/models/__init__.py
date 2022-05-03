@@ -75,7 +75,13 @@ from pyinaturalist.models.taxon_meta import (
     TaxonSummary,
 )
 from pyinaturalist.models.taxon import Taxon, TaxonCount, TaxonCounts
-from pyinaturalist.models.controlled_term import Annotation, ControlledTerm, ControlledTermValue
+from pyinaturalist.models.controlled_term import (
+    Annotation,
+    ControlledTerm,
+    ControlledTermCount,
+    ControlledTermCounts,
+    ControlledTermValue,
+)
 from pyinaturalist.models.comment import Comment
 from pyinaturalist.models.identification import Identification
 from pyinaturalist.models.life_list import LifeList, LifeListTaxon
