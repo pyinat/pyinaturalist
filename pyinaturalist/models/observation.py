@@ -8,6 +8,7 @@ from pyinaturalist.constants import (
     ALL_LICENSES,
     DATETIME_SHORT_FORMAT,
     GEOPRIVACY_LEVELS,
+    INAT_BASE_URL,
     QUALITY_GRADES,
     Coordinates,
     DateTime,
@@ -218,6 +219,9 @@ class Observation(BaseModel):
             kwargs['observed_on'] = convert_observation_timestamp(
                 observed_on_string, tz_offset, tz_name, ignoretz=True
             )
+
+        if not kwargs.get('uri'):
+            kwargs['uri'] = f'{INAT_BASE_URL}/observations/{kwargs.get("id", "")}'
 
         self.__attrs_init__(**kwargs)  # type: ignore
 
