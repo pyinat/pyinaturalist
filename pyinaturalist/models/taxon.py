@@ -135,15 +135,6 @@ class Taxon(BaseModel):
     # universal_search_rank: int = field(default=None)
 
     @classmethod
-    def copy(cls, taxon: 'Taxon') -> 'Taxon':
-        """Copy a taxon object. Defined as a classmethod for use with subclasses."""
-        new_taxon = cls()
-        for key in fields_dict(cls).keys():
-            key = key.lstrip('_')  # Use getters/setters for LazyProperty instead of temp attrs
-            setattr(new_taxon, key, getattr(taxon, key, None))
-        return new_taxon
-
-    @classmethod
     def from_sorted_json_list(cls, value: JsonResponse) -> List['Taxon']:
         """Sort Taxon objects by rank then by name"""
         taxa = cls.from_json_list(value)
