@@ -1,6 +1,7 @@
 """Base class and utilities for data models"""
 import json
 from collections import UserList
+from copy import deepcopy
 from datetime import datetime
 from logging import getLogger
 from os.path import expanduser
@@ -30,6 +31,14 @@ class BaseModel:
     id: int = field(default=None, metadata={'doc': 'Unique record ID'})
     temp_attrs: List[str] = []
     headers: Dict[str, str] = {}
+
+    @classmethod
+    def copy(cls, obj: 'BaseModel') -> 'BaseModel':
+        """Copy a model object. This is defined as a classmethod to easily initialize a subclass
+        from a parent class instance. For copying an instance to the same type,
+        :py:func:`copy.deepcopy` can be used.
+        """
+        return cls(**obj.to_dict(recurse=False))
 
     @classmethod
     def from_json(cls: Type[T], value: JsonResponse, **kwargs) -> T:
@@ -64,10 +73,13 @@ class BaseModel:
         """Get values and headers to display as a row in a table"""
         raise NotImplementedError
 
-    # TODO: Use cattr.unstructure() to handle recursion properly (for nested model objects)?
-    def to_json(self) -> JsonResponse:
-        """Convert this object back to JSON (dict) format"""
-        return asdict(self)
+    def to_dict(self, **kwargs) -> JsonResponse:
+        """Convert this object back to dict format"""
+
+        def vs(_inst, _key, value):
+            return value.to_dict() if isinstance(value, BaseModel) else value
+
+        return {k.lstrip('_'): v for k, v in asdict(self, value_serializer=vs, **kwargs).items()}
 
     def __rich_repr__(self):
         """Custom output to use when pretty-printed with rich. Compared to default rich behavior for
@@ -110,6 +122,11 @@ class BaseModelCollection(BaseModel, UserList, Generic[T]):
 
     data: List[T] = field(factory=list, init=False, repr=False)
     _id_map: Dict[int, T] = field(default=None, init=False, repr=False)
+
+    @classmethod
+    def copy(cls, obj):
+        """Copy a model collection"""
+        return cls(data=[deepcopy(item) for item in obj])
 
     @classmethod
     def from_json(cls: Type[TC], value: JsonResponse, **kwargs) -> TC:

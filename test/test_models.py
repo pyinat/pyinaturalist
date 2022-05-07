@@ -8,6 +8,7 @@
 * Any additional properties or aliases on the model
 * Formatting in the model's __str__ method
 """
+from copy import deepcopy
 from datetime import datetime
 
 # flake8: noqa: F405
@@ -30,9 +31,10 @@ from test.sample_data import *
 # --------------------
 
 
-# TODO
 def test_from_json():
-    pass
+    obs = Observation.from_json(j_observation_1)
+    assert obs.id == 16227955
+    assert Observation.from_json(obs) is obs
 
 
 def test_from_json_file():
@@ -40,11 +42,47 @@ def test_from_json_file():
     assert isinstance(obs_list, list)
     assert isinstance(obs_list[0], Observation)
     assert obs_list[0].id == 57754375
+    assert Observation.from_json_file(None) == []
 
 
-# TODO
 def test_from_json_list():
-    pass
+    obs_list = Observation.from_json_list(SAMPLE_DATA['get_observations_node_page1'])
+    assert isinstance(obs_list, list)
+    assert isinstance(obs_list[0], Observation)
+    assert obs_list[0].id == 57754375
+
+
+def test_copy():
+    obs_1 = Observation.from_json(j_observation_1)
+    obs_2 = Observation.copy(obs_1)
+    assert obs_1.id == obs_2.id and obs_1.taxon == obs_2.taxon
+
+    # Make sure it's not a shallow copy
+    obs_2.taxon.id = 1234
+    assert obs_1.taxon.id != obs_2.taxon.id
+
+
+def test_deepcopy():
+    obs_1 = Observation.from_json(j_observation_1)
+    obs_2 = deepcopy(obs_1)
+    assert obs_1.id == obs_2.id and obs_1.taxon == obs_2.taxon
+    obs_2.taxon.id = 1234
+    assert obs_1.taxon.id != obs_2.taxon.id
+
+
+def test_copy_collection():
+    obs_list_1 = Observations.from_json([j_observation_1, j_observation_2])
+    obs_list_2 = Observations.copy(obs_list_1)
+    assert obs_list_1[0].id == obs_list_2[0].id and obs_list_1[0].taxon == obs_list_2[0].taxon
+    obs_list_2[0].taxon.id = 1234
+    assert obs_list_1[0].taxon.id != obs_list_2[0].taxon.id
+
+
+def test_deduplicate():
+    obs_list = Observations.from_json([j_observation_1, j_observation_1, j_observation_2])
+    assert len(obs_list) == 3
+    obs_list.deduplicate()
+    assert len(obs_list) == 2
 
 
 # Controlled Terms

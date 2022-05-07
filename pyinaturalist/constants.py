@@ -10,7 +10,6 @@ from platformdirs import user_cache_dir
 API_V0_BASE_URL = 'https://www.inaturalist.org'
 API_V1_BASE_URL = 'https://api.inaturalist.org/v1'
 API_V2_BASE_URL = 'https://api.inaturalist.org/v2'
-DWC_ARCHIVE_URL = 'http://www.inaturalist.org/observations/gbif-observations-dwca.zip'
 EXPORT_URL = 'https://www.inaturalist.org/observations/export'
 INAT_BASE_URL = API_V0_BASE_URL
 INAT_REPO = 'https://raw.githubusercontent.com/inaturalist/inaturalist/main'
@@ -54,6 +53,9 @@ CACHE_EXPIRATION = {
     'api.inaturalist.org/v*/controlled_terms*': timedelta(days=7),
     'api.inaturalist.org/v*/places*': timedelta(days=7),
     'api.inaturalist.org/v*/taxa*': timedelta(days=7),
+    f'{PHOTO_CC_BASE_URL}/*': -1,
+    f'{PHOTO_BASE_URL}/*': -1,
+    f'{ICONIC_TAXA_BASE_URL}/*': -1,
     '*': timedelta(minutes=30),
 }
 CACHE_FILE = join(CACHE_DIR, 'api_requests.db')
