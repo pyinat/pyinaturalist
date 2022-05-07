@@ -125,6 +125,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             per_second=per_second,
             per_minute=per_minute,
             per_day=per_day,
+            per_host=True,
             burst=burst,
             max_delay=MAX_DELAY,
             **kwargs,
