@@ -8,7 +8,6 @@ These functions will accept any of the following:
 * A single response object
 """
 import json
-from copy import deepcopy
 from datetime import date, datetime, timedelta
 from functools import partial
 from logging import basicConfig, getLogger
@@ -250,38 +249,6 @@ def _format_body(body):
         return body
     except Exception:
         return '(non-JSON request body)'
-
-
-# TODO: This maybe belongs in a different module
-def simplify_observations(
-    observations: ResponseOrResults, align: bool = False
-) -> List[ResponseResult]:
-    """Flatten out some nested data structures within observation records:
-
-    * annotations
-    * comments
-    * identifications
-    * non-owner IDs
-    """
-    return [_simplify_observation(o) for o in ensure_list(observations)]
-
-
-def _simplify_observation(obs):
-    # Reduce annotations to IDs and values
-    obs = deepcopy(obs)
-    obs['annotations'] = [
-        (a['controlled_attribute_id'], a['controlled_value_id']) for a in obs['annotations']
-    ]
-
-    # Reduce identifications to just a list of identification IDs and taxon IDs
-    obs['identifications'] = [(i['id'], i['taxon_id']) for i in obs['identifications']]
-    obs['non_owner_ids'] = [(i['id'], i['taxon_id']) for i in obs['non_owner_ids']]
-
-    # Reduce comments to usernames and comment text
-    obs['comments'] = [(c['user']['login'], c['body']) for c in obs['comments']]
-    del obs['observation_photos']
-
-    return obs
 
 
 def _format_model_objects(obj: ResponseOrResults, cls: Type[BaseModel], **kwargs):
