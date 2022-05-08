@@ -5,7 +5,7 @@ from io import BytesIO
 from logging import getLogger
 from os.path import abspath, expanduser
 from pathlib import Path
-from typing import IO, Any, Dict, List, MutableSequence, Optional, Union
+from typing import IO, Any, Dict, List, Mapping, MutableSequence, Optional, Union
 from warnings import catch_warnings, simplefilter
 
 from dateutil.parser import UnknownTimezoneWarning  # type: ignore  # (missing from type stubs)
@@ -314,9 +314,10 @@ def format_dimensions(dimensions: Union[Dict[str, int], Dimensions, None]) -> Di
     """Simplify a 'dimensions' dict into a ``(width, height)`` tuple"""
     if not dimensions:
         return (0, 0)
-    if isinstance(dimensions, tuple):
-        return dimensions
-    return dimensions.get("width", 0), dimensions.get("height", 0)
+    if isinstance(dimensions, (tuple, list, set)):
+        return (dimensions[0], dimensions[1])
+    elif isinstance(dimensions, Mapping):
+        return dimensions.get('width', 0), dimensions.get('height', 0)
 
 
 def format_file_size(n_bytes: int) -> str:

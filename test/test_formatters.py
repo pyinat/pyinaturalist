@@ -153,12 +153,6 @@ def test_format_users(input):
     assert format_users(input) == expected_str
 
 
-def test_simplify_observation():
-    simplified_obs = simplify_observations(j_observation_1)
-    # Not much worth testing here, just make sure it returns something that can be formatted
-    assert format_observations(simplified_obs)
-
-
 PRINTED_OBSERVATION = """
 Observation(
     id=16227955,
