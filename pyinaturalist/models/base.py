@@ -30,7 +30,6 @@ class BaseModel:
 
     id: int = field(default=None, metadata={'doc': 'Unique record ID'})
     temp_attrs: List[str] = []
-    headers: Dict[str, str] = {}
 
     @classmethod
     def copy(cls, obj: 'BaseModel') -> 'BaseModel':
@@ -51,11 +50,12 @@ class BaseModel:
         if isinstance(value, cls):
             return value
 
-        attr_names = [a.lstrip('_') for a in fields_dict(cls)]
-        if cls.temp_attrs:
-            attr_names.extend(cls.temp_attrs)
+        cls_attrs = {k.lstrip('_'): v for k, v in fields_dict(cls).items()}
 
-        valid_json = {k: v for k, v in value.items() if k in attr_names and v is not None}
+        def is_valid_attr(k):
+            return (k in cls_attrs and cls_attrs[k].init is True) or k in cls.temp_attrs
+
+        valid_json = {k: v for k, v in value.items() if is_valid_attr(k) and v is not None}
         return cls(**valid_json, **kwargs)
 
     @classmethod
@@ -79,7 +79,8 @@ class BaseModel:
         def vs(_inst, _key, value):
             return value.to_dict() if isinstance(value, BaseModel) else value
 
-        return {k.lstrip('_'): v for k, v in asdict(self, value_serializer=vs, **kwargs).items()}
+        obj_dict = asdict(self, value_serializer=vs, retain_collection_types=True, **kwargs)
+        return {k.lstrip('_'): v for k, v in obj_dict.items()}
 
     def __rich_repr__(self):
         """Custom output to use when pretty-printed with rich. Compared to default rich behavior for
