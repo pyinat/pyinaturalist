@@ -2,7 +2,7 @@
 import threading
 from logging import getLogger
 from os import getenv
-from typing import Dict
+from typing import Dict, Type
 from unittest.mock import Mock
 
 import forge
@@ -11,6 +11,7 @@ from requests.adapters import HTTPAdapter
 from requests.utils import default_user_agent
 from requests_cache import CacheMixin, ExpirationTime
 from requests_ratelimiter import (
+    AbstractBucket,
     BucketFullException,
     Limiter,
     LimiterMixin,
@@ -83,6 +84,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         per_minute: int = REQUESTS_PER_MINUTE,
         per_day: float = REQUESTS_PER_DAY,
         burst: int = REQUEST_BURST_RATE,
+        bucket_class: Type[AbstractBucket] = SQLiteBucket,
         retries: int = REQUEST_RETRIES,
         backoff_factor: float = RETRY_BACKOFF,
         timeout: int = REQUEST_TIMEOUT,
@@ -99,6 +101,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             per_minute: Max requests per minute
             per_day: Max requests per day
             burst: Max number of consecutive requests allowed before applying per-second rate-limiting
+            bucket_class: Rate-limiting backend to use. Defaults to a persistent SQLite database.
             retries: Maximum number of times to retry a failed request
             backoff_factor: Factor for increasing delays between retries
             timeout: Maximum number of seconds to wait for a response from the server
@@ -120,7 +123,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             ignored_parameters=['Authorization', 'access_token'],
             old_data_on_error=True,
             # Rate limit settings
-            bucket_class=SQLiteBucket,
+            bucket_class=bucket_class,
             bucket_kwargs={'path': RATELIMIT_FILE},
             per_second=per_second,
             per_minute=per_minute,

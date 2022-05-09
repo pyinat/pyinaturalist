@@ -387,6 +387,23 @@ rate to 50 requests per minute:
 >>> get_taxa(q='warbler', locale=1, session=session)
 ```
 
+### Distributed Application Rate Limiting
+The default rate-limiting backend is thread-safe, and persistent across application restarts. If
+you have a larger application running from multiple processes, you will need an additional locking
+mechanism to make sure these processes don't conflict with each other. This is available with
+{py:class}`pyrate_limter.FileLockSQLiteBucket`, which can be passed as the session's `bucket_class`:
+
+```python
+>>> from pyinaturalist import ClientSession
+>>> from pyrate_limter import FileLockSQLiteBucket
+>>> session = ClientSession(bucket_class=FileLockSQLiteBucket)
+```
+
+This requires installing one additional dependency, [py-filelock](https://github.com/tox-dev/py-filelock):
+```bash
+pip install filelock
+```
+
 ## Logging
 You can configure logging for pyinaturalist using the standard Python `logging` module, for example
 with {py:func}`logging.basicConfig`:
