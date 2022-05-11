@@ -178,7 +178,7 @@ class Taxon(BaseModel):
             return self.name
 
         common_name = f' ({self.preferred_common_name})' if self.preferred_common_name else ''
-        return f'{self.emoji} {self.rank.title()}: {self.name}{common_name}'
+        return f'{self.rank.title()}: {self.name}{common_name}'
 
     @property
     def icon(self) -> IconPhoto:
@@ -229,7 +229,7 @@ class Taxon(BaseModel):
         }
 
     def __str__(self) -> str:
-        return f'[{self.id}] {self.full_name}'
+        return f'[{self.id}] {self.emoji} {self.full_name}'
 
 
 @define_model
@@ -261,7 +261,7 @@ class TaxonCount(Taxon):
         }
 
     def __str__(self) -> str:
-        return f'[{self.id}] {self.full_name}: {self.count}'
+        return f'[{self.id}] {self.emoji} {self.full_name}: {self.count}'
 
 
 @define_model_collection

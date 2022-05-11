@@ -510,10 +510,10 @@ def test_taxon__str():
     assert str(taxon_2) == '[3] 🐦 Class: Aves'
 
     taxon_3 = Taxon(id=3, name='Aves')
-    assert str(taxon_3) == '[3] Aves'
+    assert str(taxon_3) == '[3] 🐦 Aves'
 
-    taxon_4 = Taxon(id=3)
-    assert str(taxon_4) == '[3] unknown taxon'
+    taxon_4 = Taxon(id=0)
+    assert str(taxon_4) == '[0] ❓ unknown taxon'
 
 
 def test_taxon__all_names():

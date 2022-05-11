@@ -65,7 +65,7 @@ class Identification(BaseModel):
     def __str__(self) -> str:
         """Format into a condensed summary: id, what, when, and who"""
         return (
-            f'[{self.id}] {self.taxon.full_name} ({self.category}) '
+            f'[{self.id}] {self.taxon.emoji} {self.taxon.full_name} ({self.category}) '
             f'added on {self.created_at.strftime(DATETIME_SHORT_FORMAT)} '
             f'by {self.user.login}'
         )
