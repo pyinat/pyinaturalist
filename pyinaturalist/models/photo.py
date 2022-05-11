@@ -6,6 +6,8 @@ import requests
 from pyinaturalist.constants import (
     ALL_LICENSES,
     CC_LICENSES,
+    ICON_SIZES,
+    ICONIC_TAXA_BASE_URL,
     PHOTO_BASE_URL,
     PHOTO_CC_BASE_URL,
     PHOTO_INFO_BASE_URL,
@@ -136,3 +138,28 @@ class Photo(BaseModel):
 
     def __str__(self) -> str:
         return f'[{self.id}] {self.original_url} ({self.license_code}, {self.dimensions_str})'
+
+
+@define_model
+class IconPhoto(Photo):
+    """:fa:`camera` Class used for displaying an iconic taxon in place of a taxon photo"""
+
+    def __attrs_post_init__(self):
+        self._url_format = self.url.replace('.png', '-{size}px.png')
+
+    @classmethod
+    def from_iconic_taxon(cls, iconic_taxon_name: str):
+        url = f'{ICONIC_TAXA_BASE_URL}/{iconic_taxon_name.lower()}.png'
+        return cls(url=url)  # type: ignore  # A weird false positive as of mypy 0.950
+
+    @property
+    def icon_url(self) -> Optional[str]:
+        """Image URL (32px icon size)"""
+        return self.url_size('icon')
+
+    def url_size(self, size: str) -> str:
+        size = size.replace('thumbnail', 'square').replace('thumb', 'square')
+        return self._url_format.format(size=ICON_SIZES.get(size, 'square'))
+
+    def __str__(self) -> str:
+        return self.url

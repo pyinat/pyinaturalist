@@ -496,9 +496,9 @@ def test_taxon__converters():
 def test_taxon__empty():
     taxon = Taxon()
     assert taxon.preferred_common_name == ''
+    assert taxon.iconic_taxon_name == 'Unknown'
     assert taxon.ancestors == []
     assert taxon.children == []
-    assert taxon.default_photo is None
     assert taxon.taxon_photos == []
 
 
@@ -599,6 +599,16 @@ def test_taxon__emoji(taxon_id):
 def test_taxon__icon_url(taxon_name):
     taxon = Taxon(iconic_taxon_name=taxon_name)
     assert taxon.icon_url is not None
+
+
+@pytest.mark.parametrize('taxon_id', ICONIC_TAXA.keys())
+def test_taxon__no_default_photo(taxon_id):
+    taxon = Taxon(iconic_taxon_id=taxon_id)
+    photo = taxon.default_photo
+    assert isinstance(photo, IconPhoto)
+    assert taxon.icon_url is not None
+    assert taxon.iconic_taxon_name is not None
+    assert photo.url is not None
 
 
 def test_taxon_properties__partial():

@@ -63,7 +63,7 @@ RATELIMIT_FILE = join(CACHE_DIR, 'api_ratelimit.db')
 TOKEN_EXPIRATION = timedelta(hours=1)
 JWT_EXPIRATION = timedelta(days=1)
 
-# Response formats supported by GET /observations endpoint
+# Response formats supported by v0 GET /observations endpoint
 OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
 
 # IUCN Conservation status codes; for more info, see: https://www.iucnredlist.org
@@ -143,6 +143,7 @@ GEOPRIVACY_LEVELS = ['obscured', 'obscured_private', 'open', 'private']
 HAS_PROPERTIES = ['photo', 'geo']
 HISTOGRAM_DATE_FIELDS = ['created', 'observed']
 HISTOGRAM_INTERVALS = ['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
+ICON_SIZES = {'icon': 32, 'square': 75, 'small': 75, 'medium': 200, 'large': 200, 'original': 200}
 ID_CATEGORIES = ['improving', 'supporting', 'leading', 'maverick']
 INBOXES = ['inbox', 'sent', 'any']
 ORDER_DIRECTIONS = ['asc', 'desc']

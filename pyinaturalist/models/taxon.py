@@ -4,7 +4,7 @@ from attr import fields_dict
 
 from pyinaturalist.constants import (
     ICONIC_EMOJI,
-    ICONIC_TAXA_BASE_URL,
+    ICONIC_TAXA,
     INAT_BASE_URL,
     RANKS,
     DateTime,
@@ -25,6 +25,7 @@ from pyinaturalist.models import (
     define_model_collection,
     field,
 )
+from pyinaturalist.models.photo import IconPhoto
 
 
 @define_model
@@ -55,7 +56,7 @@ class Taxon(BaseModel):
         default=0, doc='ID of the iconic taxon (e.g., general taxon "category")'
     )
     iconic_taxon_name: str = field(
-        default='unknown', doc='Name of the iconic taxon (e.g., general taxon "category")'
+        default=None, doc='Name of the iconic taxon (e.g., general taxon "category")'
     )
     is_active: bool = field(
         default=None, doc='Indicates if the taxon is active (and not renamed, moved, etc.)'
@@ -134,6 +135,12 @@ class Taxon(BaseModel):
     # photos_locked: bool = field(default=None)
     # universal_search_rank: int = field(default=None)
 
+    def __attrs_post_init__(self):
+        if not self.iconic_taxon_name:
+            self.iconic_taxon_name = ICONIC_TAXA.get(self.iconic_taxon_id, 'Unknown')
+        if not self.default_photo:
+            self.default_photo = self.icon
+
     @classmethod
     def from_sorted_json_list(cls, value: JsonResponse) -> List['Taxon']:
         """Sort Taxon objects by rank then by name"""
@@ -174,9 +181,13 @@ class Taxon(BaseModel):
         return f'{self.emoji} {self.rank.title()}: {self.name}{common_name}'
 
     @property
+    def icon(self) -> IconPhoto:
+        return IconPhoto.from_iconic_taxon(self.iconic_taxon_name)
+
+    @property
     def icon_url(self) -> str:
-        """URL for the iconic taxon's icon"""
-        return f'{ICONIC_TAXA_BASE_URL}/{self.iconic_taxon_name.lower()}-75px.png'
+        """Iconic URL for the icon of the iconic taxon"""
+        return str(self.icon.thumbnail_url)
 
     @property
     def gbif_url(self) -> str:
