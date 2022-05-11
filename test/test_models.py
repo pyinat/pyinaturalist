@@ -573,7 +573,7 @@ def test_taxon__listed_taxa():
     assert str(listed_taxon) == '[70118] (native): 0 observations, 0 comments'
 
 
-def test_taxon__taxonomy():
+def test_taxon__children_ancestors():
     taxon = Taxon.from_json(j_taxon_1)
     parent = taxon.ancestors[0]
     child = taxon.children[0]
@@ -615,6 +615,25 @@ def test_taxon_properties__partial():
     taxon = Taxon.from_json(j_taxon_2_partial)
     assert taxon.ancestry.startswith('48460 | 1 | 47120 | ')
     assert taxon.parent is None
+
+
+def test_taxon__taxonomy():
+    taxon = Taxon.from_json(j_taxon_1)
+    assert taxon.taxonomy == {
+        'kingdom': 'Animalia',
+        'phylum': 'Arthropoda',
+        'subphylum': 'Hexapoda',
+        'class': 'Insecta',
+        'subclass': 'Pterygota',
+        'order': 'Coleoptera',
+        'suborder': 'Polyphaga',
+        'infraorder': 'Staphyliniformia',
+        'superfamily': 'Staphylinoidea',
+        'family': 'Silphidae',
+        'subfamily': 'Nicrophorinae',
+        'genus': 'Nicrophorus',
+        'species': 'Nicrophorus vespilloides',
+    }
 
 
 # TODO

@@ -200,10 +200,16 @@ class Taxon(BaseModel):
         return self.ancestors[-1] if self.ancestors else None
 
     @property
+    def taxonomy(self) -> Dict[str, str]:
+        """Ancestor + current taxon as a ``{rank: name}`` dict"""
+        return {t.rank: t.name for t in self.ancestors + [self]}
+
+    @property
     def url(self) -> str:
         """Info URL on iNaturalist.org"""
         return f'{INAT_BASE_URL}/taxa/{self.id}'
 
+    # TODO: Probably remove this
     @classmethod
     def from_id(cls, id: int) -> 'Taxon':
         """Lookup and create a new Taxon object by ID"""
