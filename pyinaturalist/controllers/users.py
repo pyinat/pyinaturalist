@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pyinaturalist.constants import IntOrStr
 from pyinaturalist.controllers import BaseController
@@ -11,7 +11,11 @@ from pyinaturalist.v1 import get_user_by_id, get_users_autocomplete
 class UserController(BaseController):
     """:fa:`user` Controller for User requests"""
 
-    def from_id(self, *user_ids: IntOrStr, **params) -> Paginator[User]:
+    def __call__(self, user_id, **kwargs) -> Optional[User]:
+        """Get a single user by ID"""
+        return self.from_ids(user_id, **kwargs).one()
+
+    def from_ids(self, *user_ids: IntOrStr, **params) -> Paginator[User]:
         """Get users by ID
 
         Example:

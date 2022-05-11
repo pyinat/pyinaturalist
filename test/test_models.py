@@ -496,9 +496,9 @@ def test_taxon__converters():
 def test_taxon__empty():
     taxon = Taxon()
     assert taxon.preferred_common_name == ''
+    assert taxon.iconic_taxon_name == 'Unknown'
     assert taxon.ancestors == []
     assert taxon.children == []
-    assert taxon.default_photo is None
     assert taxon.taxon_photos == []
 
 
@@ -510,10 +510,10 @@ def test_taxon__str():
     assert str(taxon_2) == '[3] 🐦 Class: Aves'
 
     taxon_3 = Taxon(id=3, name='Aves')
-    assert str(taxon_3) == '[3] Aves'
+    assert str(taxon_3) == '[3] 🐦 Aves'
 
-    taxon_4 = Taxon(id=3)
-    assert str(taxon_4) == '[3] unknown taxon'
+    taxon_4 = Taxon(id=0)
+    assert str(taxon_4) == '[0] ❓ unknown taxon'
 
 
 def test_taxon__all_names():
@@ -573,7 +573,7 @@ def test_taxon__listed_taxa():
     assert str(listed_taxon) == '[70118] (native): 0 observations, 0 comments'
 
 
-def test_taxon__taxonomy():
+def test_taxon__children_ancestors():
     taxon = Taxon.from_json(j_taxon_1)
     parent = taxon.ancestors[0]
     child = taxon.children[0]
@@ -601,10 +601,39 @@ def test_taxon__icon_url(taxon_name):
     assert taxon.icon_url is not None
 
 
+@pytest.mark.parametrize('taxon_id', ICONIC_TAXA.keys())
+def test_taxon__no_default_photo(taxon_id):
+    taxon = Taxon(iconic_taxon_id=taxon_id)
+    photo = taxon.default_photo
+    assert isinstance(photo, IconPhoto)
+    assert taxon.icon_url is not None
+    assert taxon.iconic_taxon_name is not None
+    assert photo.url is not None
+
+
 def test_taxon_properties__partial():
     taxon = Taxon.from_json(j_taxon_2_partial)
     assert taxon.ancestry.startswith('48460 | 1 | 47120 | ')
     assert taxon.parent is None
+
+
+def test_taxon__taxonomy():
+    taxon = Taxon.from_json(j_taxon_1)
+    assert taxon.taxonomy == {
+        'kingdom': 'Animalia',
+        'phylum': 'Arthropoda',
+        'subphylum': 'Hexapoda',
+        'class': 'Insecta',
+        'subclass': 'Pterygota',
+        'order': 'Coleoptera',
+        'suborder': 'Polyphaga',
+        'infraorder': 'Staphyliniformia',
+        'superfamily': 'Staphylinoidea',
+        'family': 'Silphidae',
+        'subfamily': 'Nicrophorinae',
+        'genus': 'Nicrophorus',
+        'species': 'Nicrophorus vespilloides',
+    }
 
 
 # TODO

@@ -83,7 +83,7 @@ def test_format_controlled_terms(input):
 
 @pytest.mark.parametrize('input', get_variations(j_identification_1))
 def test_format_identifications(input):
-    expected_str = '[155554373] Species: 60132 (supporting) added on Feb 18, 2021 by jkcook'
+    expected_str = '[155554373] 🌼 Species: 60132 (supporting) added on Feb 18, 2021 by jkcook'
     assert format_identifications(input) == expected_str
 
 

@@ -260,7 +260,7 @@ class Observation(BaseModel):
 
     def __str__(self) -> str:
         return (
-            f'[{self.id}] {self.taxon.full_name} '
+            f'[{self.id}] {self.taxon.emoji} {self.taxon.full_name} '
             f'observed on {self.observed_on.strftime(DATETIME_SHORT_FORMAT)} '
             f'by {self.user.login} at {self.place_guess or self.location}'
         )

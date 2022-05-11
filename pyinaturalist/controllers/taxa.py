@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import Taxon
@@ -8,7 +10,11 @@ from pyinaturalist.v1 import get_taxa, get_taxa_autocomplete, get_taxa_by_id
 class TaxonController(BaseController):
     """:fa:`dove,style=fas` Controller for Taxon requests"""
 
-    def from_id(self, *taxon_ids, **params) -> Paginator[Taxon]:
+    def __call__(self, taxon_id, **kwargs) -> Optional[Taxon]:
+        """Get a single taxon by ID"""
+        return self.from_ids(taxon_id, **kwargs).one()
+
+    def from_ids(self, *taxon_ids, **params) -> Paginator[Taxon]:
         """Get taxa by ID
 
         Args:

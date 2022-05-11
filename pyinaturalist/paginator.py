@@ -37,7 +37,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         request_function: API request function to paginate
         model: Model class to use for results
         method: Pagination method; either 'page' or 'id' (see note below)
-        limit: Maximum number of results to fetch
+        limit: Maximum number of total results to fetch
         per_page: Maximum number of results to fetch per page
         kwargs: Original request parameters
 
@@ -61,12 +61,12 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         per_page: int = None,
         **kwargs,
     ):
-        self.limit = limit
         self.kwargs = kwargs
         self.request_function = request_function
         self.request_args = request_args
         self.method = method
         self.model = model
+        self.total_limit = limit
         self.per_page = per_page or PER_PAGE_RESULTS
 
         self.exhausted = False
@@ -104,6 +104,11 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         """Get all results in a single list"""
         return list(self)
 
+    def limit(self, limit: int) -> List[T]:
+        """Get at most ``limit`` results"""
+        self.total_limit = limit
+        return list(self)
+
     def one(self) -> Optional[T]:
         """Get the first result from the query"""
         self.per_page = 1
@@ -124,20 +129,14 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             self.total_results = int(count_response['total_results'])
         return self.total_results
 
-    def deduplicate(self, results):
-        """Deduplicate results by ID"""
-        unique_results = {result.id: result for result in results}
-        self.total_results = len(unique_results)
-        return list(unique_results.values())
-
     def next_page(self) -> List[ResponseResult]:
         """Get the next page of results"""
         if self.exhausted:
             return []
 
         # If a limit is specified, avoid fetching more results than needed
-        if self.limit and self.results_fetched + self.per_page > self.limit:
-            self.per_page = self.limit - self.results_fetched
+        if self.total_limit and self.results_fetched + self.per_page > self.total_limit:
+            self.per_page = self.total_limit - self.results_fetched
 
         # Fetch results; handle response object or dict
         response = self.request_function(*self.request_args, **self.kwargs, per_page=self.per_page)
@@ -159,10 +158,16 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
 
     def _check_exhausted(self):
         return (
-            (self.limit and self.results_fetched >= self.limit)
+            (self.total_limit and self.results_fetched >= self.total_limit)
             or (self.total_results and self.results_fetched >= self.total_results)
             or (self.per_page and self.results_fetched > self.per_page)
         )
+
+    def _deduplicate(self, results) -> List[T]:
+        """Deduplicate results by ID"""
+        unique_results = {result.id: result for result in results}
+        self.total_results = len(unique_results)
+        return list(unique_results.values())
 
     def _update_next_page_params(self, page_results):
         """Set params for next request, if there are more results. Also check page size, in case
@@ -240,7 +245,7 @@ class AutocompletePaginator(Paginator):
 
     def all(self) -> List[T]:
         """Get all results in a single de-duplicated list"""
-        return self.deduplicate(list(self))
+        return self._deduplicate(list(self))
 
     def _update_next_page_params(self, page_results):
         """After the first request, update the order_by param. After the second request, we're done."""
@@ -271,7 +276,7 @@ class JsonPaginator(Paginator):
             'total_results': len(results),
         }
 
-    def deduplicate(self, results):
+    def _deduplicate(self, results) -> List[T]:
         """Deduplicate results by ID"""
         unique_results = {result['id']: result for result in results}
         self.total_results = len(unique_results)
