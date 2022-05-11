@@ -31,6 +31,16 @@ def test_from_id(requests_mock):
     assert result.id == observation_id
 
 
+def test_from_id__not_found(requests_mock):
+    observation_id = 57754375
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/observations',
+        json={'results': [], 'total_results': 0},
+        status_code=200,
+    )
+    assert iNatClient().observations(observation_id) is None
+
+
 def test_from_ids(requests_mock):
     observation_id = 57754375
     requests_mock.get(
@@ -43,6 +53,21 @@ def test_from_ids(requests_mock):
     results = iNatClient().observations.from_ids(observation_id).all()
 
     assert len(results) == 2 and isinstance(results[0], Observation)
+    assert results[0].id == observation_id
+
+
+def test_from_ids__limit(requests_mock):
+    observation_id = 57754375
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/observations',
+        [
+            {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
+        ],
+    )
+    results = iNatClient().observations.from_ids(observation_id).limit(1)
+
+    assert len(results) == 1 and isinstance(results[0], Observation)
     assert results[0].id == observation_id
 
 
