@@ -12,8 +12,20 @@ def test_from_id(requests_mock):
         status_code=200,
     )
 
-    client = iNatClient()
-    results = client.taxa.from_id(taxon_id).all()
+    result = iNatClient().taxa(taxon_id)
+    assert isinstance(result, Taxon)
+    assert result.id == taxon_id
+
+
+def test_from_ids(requests_mock):
+    taxon_id = 70118
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/taxa/{taxon_id}',
+        json=SAMPLE_DATA['get_taxa_by_id'],
+        status_code=200,
+    )
+
+    results = iNatClient().taxa.from_ids(taxon_id).all()
     assert len(results) == 1 and isinstance(results[0], Taxon)
     assert results[0].id == taxon_id
 
@@ -25,8 +37,7 @@ def test_autocomplete(requests_mock):
         status_code=200,
     )
 
-    client = iNatClient()
-    results = client.taxa.autocomplete(q='vespi').all()
+    results = iNatClient().taxa.autocomplete(q='vespi').all()
     assert len(results) == 10 and isinstance(results[0], Taxon)
     assert results[0].id == 52747
 
@@ -38,7 +49,6 @@ def test_search(requests_mock):
         status_code=200,
     )
 
-    client = iNatClient()
-    results = client.taxa.search(q='vespi', rank=['genus', 'subgenus', 'species']).all()
+    results = iNatClient().taxa.search(q='vespi', rank=['genus', 'subgenus', 'species']).all()
     assert len(results) == 30 and isinstance(results[0], Taxon)
     assert results[0].id == 70118

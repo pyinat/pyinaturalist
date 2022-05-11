@@ -22,13 +22,25 @@ def test_from_id(requests_mock):
     observation_id = 57754375
     requests_mock.get(
         f'{API_V1_BASE_URL}/observations',
+        json=SAMPLE_DATA['get_observations_node_page1'],
+        status_code=200,
+    )
+    result = iNatClient().observations(observation_id)
+
+    assert isinstance(result, Observation)
+    assert result.id == observation_id
+
+
+def test_from_ids(requests_mock):
+    observation_id = 57754375
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/observations',
         [
             {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
             {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
         ],
     )
-    client = iNatClient()
-    results = client.observations.from_id(observation_id).all()
+    results = iNatClient().observations.from_ids(observation_id).all()
 
     assert len(results) == 2 and isinstance(results[0], Observation)
     assert results[0].id == observation_id
@@ -40,10 +52,11 @@ def test_search(requests_mock):
         json=SAMPLE_DATA['get_observations_node_page1'],
         status_code=200,
     )
-    client = iNatClient()
-    results = client.observations.search(
-        taxon_name='Danaus plexippus', created_on='2020-08-27'
-    ).all()
+    results = (
+        iNatClient()
+        .observations.search(taxon_name='Danaus plexippus', created_on='2020-08-27')
+        .all()
+    )
 
     assert isinstance(results[0], Observation)
     assert results[0].id == 57754375
@@ -57,8 +70,7 @@ def test_histogram(requests_mock):
         json=SAMPLE_DATA['get_observation_histogram_day'],
         status_code=200,
     )
-    client = iNatClient()
-    results = client.observations.histogram(user_id='username')
+    results = iNatClient().observations.histogram(user_id='username')
 
     assert len(results) == 31
     assert results[datetime(2020, 1, 1, 0, 0)] == 11
@@ -70,8 +82,7 @@ def test_identifiers(requests_mock):
         json=j_observation_identifiers,
         status_code=200,
     )
-    client = iNatClient()
-    results = client.observations.identifiers(place_id=125323, iconic_taxa='Amphibia')
+    results = iNatClient().observations.identifiers(place_id=125323, iconic_taxa='Amphibia')
 
     assert len(results) == 3 and isinstance(results[0], User)
     assert results[0].id == 112514
@@ -85,8 +96,7 @@ def test_observers(requests_mock):
         json=j_observation_observers,
         status_code=200,
     )
-    client = iNatClient()
-    results = client.observations.observers(place_id=125323, iconic_taxa='Amphibia')
+    results = iNatClient().observations.observers(place_id=125323, iconic_taxa='Amphibia')
 
     assert len(results) == 2 and isinstance(results[0], User)
     assert results[0].id == 53153

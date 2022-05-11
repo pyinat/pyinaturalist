@@ -14,11 +14,22 @@ def test_from_id(requests_mock):
     project_id = 8291
     requests_mock.get(
         f'{API_V1_BASE_URL}/projects/{project_id}',
+        json={'results': [j_project_1]},
+        status_code=200,
+    )
+    result = iNatClient().projects(project_id)
+    assert isinstance(result, Project)
+    assert result.id == project_id
+
+
+def test_from_ids(requests_mock):
+    project_id = 8291
+    requests_mock.get(
+        f'{API_V1_BASE_URL}/projects/{project_id}',
         json={'results': [j_project_1, j_project_2], 'total_results': 2},
         status_code=200,
     )
-    client = iNatClient()
-    results = client.projects.from_id(project_id).all()
+    results = iNatClient().projects.from_ids(project_id).all()
     project = results[0]
     assert len(results) == 2 and isinstance(project, Project)
 
@@ -40,14 +51,17 @@ def test_search(requests_mock):
         json=SAMPLE_DATA['get_projects'],
         status_code=200,
     )
-    client = iNatClient()
-    results = client.projects.search(
-        q='invasive',
-        lat=49.27,
-        lng=-123.08,
-        radius=400,
-        order_by='distance',
-    ).all()
+    results = (
+        iNatClient()
+        .projects.search(
+            q='invasive',
+            lat=49.27,
+            lng=-123.08,
+            radius=400,
+            order_by='distance',
+        )
+        .all()
+    )
 
     project = results[0]
     assert len(results) == 5 and isinstance(project, Project)
@@ -65,8 +79,7 @@ def test_search__with_obs_fields(requests_mock):
         json={'results': [j_project_3_obs_fields], 'total_results': 1},
         status_code=200,
     )
-    client = iNatClient()
-    results = client.projects.search(id=1234).all()
+    results = iNatClient().projects.search(id=1234).all()
     obs_field = results[0].project_observation_fields[0]
 
     assert isinstance(obs_field, ProjectObservationField)
@@ -82,23 +95,19 @@ def test_add_observation(get_access_token, requests_mock):
         json=SAMPLE_DATA['add_project_observation'],
         status_code=200,
     )
-    client = iNatClient()
     observation_ids = 5678, 9012
-    client.projects.add_observations(1234, *observation_ids)
+    iNatClient().projects.add_observations(1234, *observation_ids)
     get_access_token.assert_called()
 
 
 # TODO:
 # def test_update():
-#     client = iNatClient()
-#     results = client.projects.update()
+#     results = iNatClient().projects.update()
 
 
 # def test_add_users():
-#     client = iNatClient()
-#     results = client.project.add_users()
+#     results = iNatClient().project.add_users()
 
 
 # def test_delete_users():
-#     client = iNatClient()
-#     results = client.project.delete_users()
+#     results = iNatClient().project.delete_users()

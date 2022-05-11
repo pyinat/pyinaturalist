@@ -4,20 +4,19 @@ from pyinaturalist.models import User
 from test.sample_data import SAMPLE_DATA
 
 
-def test_from_id__one(requests_mock):
+def test_from_id(requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/users/1',
         json=SAMPLE_DATA['get_user_by_id'],
         status_code=200,
     )
 
-    client = iNatClient()
-    result = client.users.from_id(1).one()
+    result = iNatClient().users(1)
     assert isinstance(result, User)
     assert result.id == 1
 
 
-def test_from_id__multiple(requests_mock):
+def test_from_ids(requests_mock):
     requests_mock.get(
         f'{API_V1_BASE_URL}/users/1',
         json=SAMPLE_DATA['get_user_by_id'],
@@ -29,8 +28,7 @@ def test_from_id__multiple(requests_mock):
         status_code=200,
     )
 
-    client = iNatClient()
-    results = client.users.from_id(1, 2).all()
+    results = iNatClient().users.from_ids(1, 2).all()
     assert len(results) == 2 and isinstance(results[0], User)
     assert results[0].id == 1
 
@@ -42,7 +40,6 @@ def test_autocomplete(requests_mock):
         status_code=200,
     )
 
-    client = iNatClient()
-    results = client.users.autocomplete(q='nico')
+    results = iNatClient().users.autocomplete(q='nico')
     assert len(results) == 3 and isinstance(results[0], User)
     assert results[0].id == 886482

@@ -6,12 +6,22 @@ from test.sample_data import SAMPLE_DATA, j_place_1, j_place_2
 
 def test_from_id(requests_mock):
     requests_mock.get(
+        f'{API_V1_BASE_URL}/places/89191',
+        json={'results': [j_place_1]},
+        status_code=200,
+    )
+    result = iNatClient().places(89191)
+    assert isinstance(result, Place)
+    assert result.id == 89191
+
+
+def test_from_ids(requests_mock):
+    requests_mock.get(
         f'{API_V1_BASE_URL}/places/89191,67591',
         json={'results': [j_place_1, j_place_2], 'total_results': 2},
         status_code=200,
     )
-    client = iNatClient()
-    results = client.places.from_id(89191, 67591).all()
+    results = iNatClient().places.from_ids(89191, 67591).all()
     place = results[0]
 
     assert len(results) == 2 and isinstance(place, Place)
@@ -26,8 +36,7 @@ def test_autocomplete(requests_mock):
         json=SAMPLE_DATA['get_places_autocomplete'],
         status_code=200,
     )
-    client = iNatClient()
-    place = client.places.autocomplete('springbok').one()
+    place = iNatClient().places.autocomplete('springbok').one()
 
     assert place.id == 93735
     assert place.name == 'Springbok'
@@ -45,8 +54,7 @@ def test_get_places_autocomplete__all_pages(requests_mock):
             {'json': page_2, 'status_code': 200},
         ],
     )
-    client = iNatClient()
-    results = client.places.autocomplete('springbok').all()
+    results = iNatClient().places.autocomplete('springbok').all()
 
     # Expect 2 requests, and for results to be deduplicated
     assert len(results) == 25
@@ -58,9 +66,7 @@ def test_nearby(requests_mock):
         json=SAMPLE_DATA['get_places_nearby'],
         status_code=200,
     )
-    client = iNatClient()
-
-    results = client.places.nearby(150.0, -50.0, -149.999, -49.999).all()
+    results = iNatClient().places.nearby(150.0, -50.0, -149.999, -49.999).all()
     place = results[0]
 
     assert isinstance(place, Place)

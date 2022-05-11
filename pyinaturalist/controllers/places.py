@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pyinaturalist.constants import IntOrStr
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
@@ -9,7 +11,11 @@ from pyinaturalist.v1 import get_places_autocomplete, get_places_by_id, get_plac
 class PlaceController(BaseController):
     """:fa:`map-marker-alt,style=fas` Controller for Place requests"""
 
-    def from_id(self, *place_ids: IntOrStr, **params) -> Paginator[Place]:
+    def __call__(self, place_id, **kwargs) -> Optional[Place]:
+        """Get a single place by ID"""
+        return self.from_ids(place_id, **kwargs).one()
+
+    def from_ids(self, *place_ids: IntOrStr, **params) -> Paginator[Place]:
         """Get places by ID
 
         Args:

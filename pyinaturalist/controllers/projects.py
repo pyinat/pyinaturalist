@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pyinaturalist.constants import IntOrStr, ListResponse
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
@@ -16,7 +18,11 @@ from pyinaturalist.v1 import (
 class ProjectController(BaseController):
     """:fa:`users` Controller for Project requests"""
 
-    def from_id(self, *project_ids: IntOrStr, **params) -> Paginator[Project]:
+    def __call__(self, project_id, **kwargs) -> Optional[Project]:
+        """Get a single project by ID"""
+        return self.from_ids(project_id, **kwargs).one()
+
+    def from_ids(self, *project_ids: IntOrStr, **params) -> Paginator[Project]:
         """Get projects by ID
 
         Args:

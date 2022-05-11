@@ -31,9 +31,15 @@ class iNatClient:
     Examples:
         **Basic usage**
 
+        Search for observations by taxon name:
+
         >>> from pyinaturalist import iNatClient
         >>> client = iNatClient()
         >>> observations = client.observations.search(taxon_name='Danaus plexippus')
+
+        Get a single observation by ID:
+
+        >>> observation = client.observations(12345)
 
         **Authentication**
 

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pyinaturalist.constants import HistogramResponse, IntOrStr, ListResponse
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
@@ -29,7 +31,11 @@ from pyinaturalist.v1 import (
 class ObservationController(BaseController):
     """:fa:`binoculars` Controller for Observation requests"""
 
-    def from_id(self, *observation_ids, **params) -> Paginator[Observation]:
+    def __call__(self, observation_id, **kwargs) -> Optional[Observation]:
+        """Get a single observation by ID"""
+        return self.from_ids(observation_id, **kwargs).one()
+
+    def from_ids(self, *observation_ids, **params) -> Paginator[Observation]:
         """Get observations by ID
 
         Args:
