@@ -25,6 +25,10 @@ include = [
     { path = "examples", format = "sdist" },
     { path = "test", format = "sdist" }
 ]
+packages = [
+    { include = "pyinaturalist" },
+    { include = "pyinat" },
+]
 
 [tool.poetry.dependencies]
 python                      = "^3.7"
@@ -85,7 +89,7 @@ directory = 'test-reports'
 
 [tool.coverage.run]
 branch = true
-source = ['pyinaturalist']
+source = ['pyinaturalist', 'pyinat']
 omit = ['pyinaturalist/docs/model_docs.py']
 
 [tool.isort]

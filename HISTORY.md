@@ -26,6 +26,7 @@
 
 ### Other Changes
 * Dropped support for python 3.6
+* Add an optional, abbreviated namespace `pyinat` as an alias for `pyinaturalist`
 * Updated rate limiting with a SQLite-based backend. This adds persistence for rate limit tracking
   across multiple threads, processes, and/or application restarts. See
   [pyrate-limiter docs](https://github.com/vutran1710/PyrateLimiter#sqlite) for more details.
