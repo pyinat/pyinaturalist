@@ -240,7 +240,7 @@ def request(
         session_kwargs['expire_after'] = expire_after
         session_kwargs['refresh'] = refresh
     response = session.send(request, **session_kwargs)
-    logger.info(format_response(response))
+    logger.debug(format_response(response))
 
     if raise_for_status:
         response.raise_for_status()

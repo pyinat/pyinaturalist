@@ -45,7 +45,7 @@ from pyinaturalist.models import (
 from pyinaturalist.paginator import Paginator
 
 
-def enable_logging(level: str = 'INFO'):
+def enable_logging(level: str = 'INFO', external_level: str = 'WARNING'):
     """Configure logging to standard output with prettier tracebacks, formatting, and terminal
     colors (if supported).
 
@@ -53,7 +53,8 @@ def enable_logging(level: str = 'INFO'):
     provides some convenient defaults.
 
     Args:
-        level: Logging level to use
+        level: Logging level to use for pyinaturalist
+        external_level: Logging level to use for other libraries
     """
     from rich.logging import RichHandler
 
@@ -61,8 +62,10 @@ def enable_logging(level: str = 'INFO'):
         format='%(message)s',
         datefmt='[%m-%d %H:%M:%S]',
         handlers=[RichHandler(rich_tracebacks=True, markup=True)],
+        level=external_level,
     )
     getLogger('pyinaturalist').setLevel(level)
+    getLogger('pyinaturalist_convert').setLevel(level)
 
 
 # Default colors for table headers

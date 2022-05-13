@@ -1,4 +1,3 @@
-from io import BytesIO
 from typing import BinaryIO, Optional, Tuple
 
 import requests
@@ -56,6 +55,11 @@ class Photo(BaseModel):
                 self._url_format = self.url.replace(size, '{size}')
 
     @property
+    def ext(self) -> str:
+        """File extension from URL"""
+        return self.url.lower().split('.')[-1].split('?')[0]
+
+    @property
     def dimensions_str(self) -> str:
         """Dimensions as a string, formatted as ``{width}x{height}``"""
         return f'{self.original_dimensions[0]}x{self.original_dimensions[1]}'
@@ -83,9 +87,7 @@ class Photo(BaseModel):
     @property
     def mimetype(self) -> str:
         """MIME type of the image"""
-        ext = self.url.lower().split('.')[-1].split('?')[0]
-        ext = ext.replace('jpg', 'jpeg')
-        return f'image/{ext}'
+        return f'image/{self.ext.replace("jpg", "jpeg")}'
 
     @property
     def original_url(self) -> Optional[str]:
@@ -115,13 +117,11 @@ class Photo(BaseModel):
 
     def open(self, size: str = 'large') -> BinaryIO:
         """Download the image and return as a file-like object"""
-        url = self.url_size(size)
-        return requests.get(url, stream=True).raw if url else BytesIO()
+        url = self.url_size(size) or self.url
+        return requests.get(url, stream=True).raw
 
     def show(self, size: str = 'large'):
-        """Download and display the image with the system's default image viewer.
-        Requires ``pillow``.
-        """
+        """Display the image with the system's default image viewer. Requires ``pillow``."""
         from PIL import Image
 
         img = Image.open(self.open(size=size))
