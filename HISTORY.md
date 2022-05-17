@@ -1,6 +1,6 @@
 # History
 
-## 0.17.0 (Unreleased)
+## 0.17.0 (2022-05-17)
 [See all Issues & PRs for 0.17](https://github.com/niconoe/pyinaturalist/milestone/8?closed=1)
 
 ### New Endpoints
@@ -23,6 +23,12 @@
   * To get an OAuth access token instead of a JWT, call `get_access_token(jwt=False)`
 * Added caching to `get_access_token()`. JWTs will be stored in the API response cache and reused
   until they expire.
+
+### Models
+* Remove default values from output when model objects are printed with `rich`
+* Add `ControlledTermCount` model for use with `/observations/popular_field_values`
+* `Photo`: Add `ext` and `mimetype` properties
+* `Taxon`: Use icon in place of `default_photo` if missing
 
 ### Other Changes
 * Dropped support for python 3.6
