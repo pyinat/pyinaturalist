@@ -87,7 +87,10 @@ class ObservationFieldValue(BaseModel):
     def __attrs_post_init__(self):
         if self.datatype in OFV_DATATYPES and self.value is not None:
             converter = OFV_DATATYPES[self.datatype]
-            self.value = converter(self.value)
+            try:
+                self.value = converter(self.value)
+            except ValueError:
+                self.value = None
 
     @property
     def row(self) -> TableRow:

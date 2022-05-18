@@ -331,6 +331,11 @@ def test_observation_field_value__converters():
     assert isinstance(ofv.user, User) and ofv.user.id == 2115051
 
 
+def test_observation_field_value__converter_error():
+    ofv = OFV(datatype='numeric', value='one')
+    assert ofv.value is None
+
+
 def test_observation_field_value__taxon():
     ofv = OFV.from_json(j_ofv_2_taxon)
     assert ofv.datatype == 'taxon'
