@@ -259,7 +259,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "exceptiongroup"
-version = "1.0.0rc5"
+version = "1.0.0rc6"
 description = "Backport of PEP 654 (exception groups)"
 category = "main"
 optional = false
@@ -1844,8 +1844,8 @@ entrypoints = [
     {file = "entrypoints-0.4.tar.gz", hash = "sha256:b706eddaa9218a19ebcd67b56818f05bb27589b1ca9e8d797b74affad4ccacd4"},
 ]
 exceptiongroup = [
-    {file = "exceptiongroup-1.0.0rc5-py3-none-any.whl", hash = "sha256:295a9d7847f9ad08267f47c701a676ec70a64200a360dd49eb513f72209b09f4"},
-    {file = "exceptiongroup-1.0.0rc5.tar.gz", hash = "sha256:665422550b9653acd46e9cd35d933f28c5158ca4c058c53619cfa112915cd69e"},
+    {file = "exceptiongroup-1.0.0rc6-py3-none-any.whl", hash = "sha256:1ce181e67ce038f3a187f003df3e744d653c8e5bae1387e405003cac2c7d0c97"},
+    {file = "exceptiongroup-1.0.0rc6.tar.gz", hash = "sha256:a32d91b08dba53b3c419eb4e5e1d9aae2c9032e0e8004aec9bc7192881a0c422"},
 ]
 execnet = [
     {file = "execnet-1.9.0-py2.py3-none-any.whl", hash = "sha256:a295f7cc774947aac58dde7fdc85f4aa00c42adf5d8f5468fc630c1acf30a142"},

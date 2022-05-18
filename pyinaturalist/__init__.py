@@ -1,6 +1,6 @@
 # flake8: noqa: F401, F403
 # isort: skip_file
-__version__ = '0.17.0'
+__version__ = '0.17.1'
 
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.client import iNatClient
