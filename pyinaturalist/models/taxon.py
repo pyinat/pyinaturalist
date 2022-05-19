@@ -11,6 +11,7 @@ from pyinaturalist.constants import (
     JsonResponse,
     TableRow,
 )
+from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import EMOJI
 from pyinaturalist.models import (
     BaseModel,
@@ -39,7 +40,9 @@ class Taxon(BaseModel):
 
     ancestry: str = field(default=None, doc='Slash-delimited string of ancestor IDs', repr=False)
     ancestor_ids: List[int] = field(
-        factory=list, doc='Taxon IDs of ancestors, from highest rank to lowest'
+        factory=list,
+        converter=ensure_list,  # Handle arrays when converting from a dataframe
+        doc='Taxon IDs of ancestors, from highest rank to lowest',
     )
     complete_rank: str = field(
         default=None, doc='Complete or "leaf taxon" rank, e.g. species or subspecies'
