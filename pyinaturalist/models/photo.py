@@ -149,6 +149,7 @@ class IconPhoto(Photo):
 
     def __attrs_post_init__(self):
         self._url_format = self.url.replace('.png', '-{size}px.png')
+        self.url = self.medium_url
 
     @classmethod
     def from_iconic_taxon(cls, iconic_taxon_name: str):
