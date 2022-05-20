@@ -11,6 +11,7 @@ from pyinaturalist.constants import (
     JsonResponse,
     TableRow,
 )
+from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import EMOJI
 from pyinaturalist.models import (
     BaseModel,
@@ -37,8 +38,11 @@ class Taxon(BaseModel):
     include nested ``ancestors``, ``children``, and results from :py:func:`.get_taxa_autocomplete`.
     """
 
+    ancestry: str = field(default=None, doc='Slash-delimited string of ancestor IDs', repr=False)
     ancestor_ids: List[int] = field(
-        factory=list, doc='Taxon IDs of ancestors, from highest rank to lowest'
+        factory=list,
+        converter=ensure_list,  # Handle arrays when converting from a dataframe
+        doc='Taxon IDs of ancestors, from highest rank to lowest',
     )
     complete_rank: str = field(
         default=None, doc='Complete or "leaf taxon" rank, e.g. species or subspecies'
@@ -136,10 +140,16 @@ class Taxon(BaseModel):
     # universal_search_rank: int = field(default=None)
 
     def __attrs_post_init__(self):
+        # Look up iconic taxon name, if only ID is provided
         if not self.iconic_taxon_name:
             self.iconic_taxon_name = ICONIC_TAXA.get(self.iconic_taxon_id, 'Unknown')
+        # If default photo is missing, use iconic taxon icon
         if not self.default_photo:
             self.default_photo = self.icon
+        # If only ancestor string is provided, split into IDs
+        if self.ancestry and not self.ancestor_ids:
+            delimiter = ',' if ',' in self.ancestry else '/'
+            self.ancestor_ids = [int(x) for x in self.ancestry.split(delimiter)]
 
     @classmethod
     def from_sorted_json_list(cls, value: JsonResponse) -> List['Taxon']:
@@ -147,12 +157,6 @@ class Taxon(BaseModel):
         taxa = cls.from_json_list(value)
         taxa.sort(key=_get_rank_name_idx)
         return taxa
-
-    @property
-    def ancestry(self) -> str:
-        """String containing either ancestor names (if available) or IDs"""
-        tokens = [t.name for t in self.ancestors] if self.ancestors else self.ancestor_ids
-        return ' | '.join([str(t) for t in tokens])
 
     @property
     def child_ids(self) -> List[int]:

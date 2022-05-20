@@ -1,5 +1,10 @@
 # History
 
+## 0.17.1 (Unreleased)
+* Add Photo.uuid, observation_id, and user_id fields (for compatibility with inaturalist-open-data)
+* Handle errors in ObservationField type conversions
+* If only `Taxon.ancestry` string is provided, split into IDS (`ancestor_ids`)
+
 ## 0.17.0 (2022-05-17)
 [See all Issues & PRs for 0.17](https://github.com/niconoe/pyinaturalist/milestone/8?closed=1)
 

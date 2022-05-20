@@ -331,6 +331,11 @@ def test_observation_field_value__converters():
     assert isinstance(ofv.user, User) and ofv.user.id == 2115051
 
 
+def test_observation_field_value__converter_error():
+    ofv = OFV(datatype='numeric', value='one')
+    assert ofv.value is None
+
+
 def test_observation_field_value__taxon():
     ofv = OFV.from_json(j_ofv_2_taxon)
     assert ofv.datatype == 'taxon'
@@ -516,6 +521,19 @@ def test_taxon__str():
     assert str(taxon_4) == '[0] ❓ unknown taxon'
 
 
+def test_taxon__ancestors_children():
+    taxon = Taxon.from_json(j_taxon_1)
+    parent = taxon.ancestors[0]
+    child = taxon.children[0]
+    assert isinstance(parent, Taxon) and parent.id == 1
+    assert isinstance(child, Taxon) and child.id == 70116
+
+
+def test_taxon__ancestor_ids():
+    taxon = Taxon(ancestry='1/70116/70118')
+    assert taxon.ancestor_ids == [1, 70116, 70118]
+
+
 def test_taxon__all_names():
     taxon = Taxon.from_json(j_taxon_8_all_names)
     assert taxon.names[1] == {
@@ -573,20 +591,16 @@ def test_taxon__listed_taxa():
     assert str(listed_taxon) == '[70118] (native): 0 observations, 0 comments'
 
 
-def test_taxon__children_ancestors():
-    taxon = Taxon.from_json(j_taxon_1)
-    parent = taxon.ancestors[0]
-    child = taxon.children[0]
-    assert isinstance(parent, Taxon) and parent.id == 1
-    assert isinstance(child, Taxon) and child.id == 70116
-
-
 def test_taxon__properties():
     taxon = Taxon.from_json(j_taxon_1)
     assert taxon.url == f'{INAT_BASE_URL}/taxa/70118'
-    assert taxon.ancestry.startswith('Animalia | Arthropoda | Hexapoda | ')
     assert taxon.child_ids == [70116, 70114, 70117, 70115]
     assert isinstance(taxon.parent, Taxon) and taxon.parent.id == 53850
+
+
+def test_taxon_properties__partial():
+    taxon = Taxon.from_json(j_taxon_2_partial)
+    assert taxon.parent is None
 
 
 @pytest.mark.parametrize('taxon_id', ICONIC_TAXA.keys())
@@ -609,12 +623,6 @@ def test_taxon__no_default_photo(taxon_id):
     assert taxon.icon_url is not None
     assert taxon.iconic_taxon_name is not None
     assert photo.url is not None
-
-
-def test_taxon_properties__partial():
-    taxon = Taxon.from_json(j_taxon_2_partial)
-    assert taxon.ancestry.startswith('48460 | 1 | 47120 | ')
-    assert taxon.parent is None
 
 
 def test_taxon__taxonomy():

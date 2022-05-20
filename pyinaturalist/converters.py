@@ -291,8 +291,15 @@ def ensure_list(
     value: Any, convert_csv: bool = False, delimiter: str = ','
 ) -> MutableSequence[Any]:
     """Convert an object, response, or (optionally) comma-separated string into a list"""
+    # Handle the occacsional stray numpy array that got lost and made its way here
+    try:
+        value = value.tolist()
+    except (AttributeError, TypeError):
+        pass
     if not value:
         return []
+
+    # Handle response results and comma-separated strings
     elif isinstance(value, dict) and 'results' in value:
         value = value['results']
     elif convert_csv and isinstance(value, str) and delimiter in value:
