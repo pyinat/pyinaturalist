@@ -1,9 +1,10 @@
 # History
 
-## 0.17.1 (Unreleased)
+## 0.17.1 (2022-05-20)
+* Fix pagination bug causing only the first two pages of results to be returned
 * Add Photo.uuid, observation_id, and user_id fields (for compatibility with inaturalist-open-data)
 * Handle errors in ObservationField type conversions
-* If only `Taxon.ancestry` string is provided, split into IDS (`ancestor_ids`)
+* If `Taxon.ancestor_ids` is missing, populate from either `ancestry` string or `ancestor` objects, if possible
 
 ## 0.17.0 (2022-05-17)
 [See all Issues & PRs for 0.17](https://github.com/niconoe/pyinaturalist/milestone/8?closed=1)

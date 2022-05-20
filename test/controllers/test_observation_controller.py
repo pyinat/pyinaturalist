@@ -50,7 +50,7 @@ def test_from_ids(requests_mock):
             {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
         ],
     )
-    results = iNatClient().observations.from_ids(observation_id).all()
+    results = iNatClient().observations.from_ids(observation_id, per_page=1).all()
 
     assert len(results) == 2 and isinstance(results[0], Observation)
     assert results[0].id == observation_id

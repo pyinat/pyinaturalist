@@ -143,13 +143,17 @@ class Taxon(BaseModel):
         # Look up iconic taxon name, if only ID is provided
         if not self.iconic_taxon_name:
             self.iconic_taxon_name = ICONIC_TAXA.get(self.iconic_taxon_id, 'Unknown')
+
         # If default photo is missing, use iconic taxon icon
         if not self.default_photo:
             self.default_photo = self.icon
-        # If only ancestor string is provided, split into IDs
+
+        # If only ancestor string (or objects) are provided, split into IDs
         if self.ancestry and not self.ancestor_ids:
             delimiter = ',' if ',' in self.ancestry else '/'
             self.ancestor_ids = [int(x) for x in self.ancestry.split(delimiter)]
+        elif self.ancestors and not self.ancestor_ids:
+            self.ancestor_ids = [t.name for t in self.ancestors]
 
     @classmethod
     def from_sorted_json_list(cls, value: JsonResponse) -> List['Taxon']:
