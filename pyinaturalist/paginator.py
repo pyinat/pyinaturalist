@@ -156,11 +156,11 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
 
         return results
 
-    def _check_exhausted(self):
+    def _check_exhausted(self, page_results: List = None):
         return (
             (self.total_limit and self.results_fetched >= self.total_limit)
             or (self.total_results and self.results_fetched >= self.total_results)
-            or (self.per_page and self.results_fetched > self.per_page)
+            or (self.per_page and page_results is not None and len(page_results) < self.per_page)
         )
 
     def _deduplicate(self, results) -> List[T]:
@@ -173,7 +173,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         """Set params for next request, if there are more results. Also check page size, in case
         total_results is off due to race condition, outdated index, etc.
         """
-        if self._check_exhausted() or len(page_results) == 0:
+        if self._check_exhausted(page_results):
             self.exhausted = True
         elif self.method == 'id':
             self.kwargs['id_above'] = page_results[-1]['id']

@@ -92,7 +92,7 @@ def test_get_observations__all_pages(requests_mock):
         ],
     )
 
-    observations = get_observations(id=[57754375, 57707611], page='all')
+    observations = get_observations(id=[57754375, 57707611], per_page=1, page='all')
     assert len(observations['results']) == 2
 
 
@@ -182,7 +182,7 @@ def test_get_observation_species_counts__all_pages(requests_mock):
         ],
     )
     response = get_observation_species_counts(
-        user_login='my_username', quality_grade='research', page='all'
+        user_login='my_username', quality_grade='research', per_page=1, page='all'
     )
     first_result = response['results'][0]
     last_result = response['results'][-1]
