@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import List
 
-from pyinaturalist.constants import DATETIME_SHORT_FORMAT, TableRow
+from pyinaturalist.constants import TableRow
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
@@ -33,20 +34,22 @@ class Comment(BaseModel):
         """Comment text, truncated"""
         truncated_body = self.body.replace('\n', ' ').strip()
         if len(truncated_body) > 50:
-            truncated_body = truncated_body[:47] + '...'
+            truncated_body = truncated_body[:47].strip() + '...'
         return truncated_body
 
     @property
-    def row(self) -> TableRow:
+    def username(self) -> str:
+        return self.user.login
+
+    @property
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
-            'User': self.user.login,
+            'User': self.username,
             'Created at': self.created_at,
             'Comment': self.truncated_body,
         }
 
-    def __str__(self) -> str:
-        return (
-            f'{self.user.login} on {self.created_at.strftime(DATETIME_SHORT_FORMAT)}: '
-            f'{self.truncated_body}'
-        )
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'username', 'created_at', 'truncated_body']

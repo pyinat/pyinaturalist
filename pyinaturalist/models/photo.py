@@ -1,4 +1,4 @@
-from typing import BinaryIO, Optional, Tuple
+from typing import BinaryIO, List, Optional, Tuple
 
 import requests
 
@@ -131,7 +131,7 @@ class Photo(BaseModel):
         img.show()
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'License': self.license_code,
@@ -139,13 +139,16 @@ class Photo(BaseModel):
             'URL': self.original_url,
         }
 
-    def __str__(self) -> str:
-        return f'[{self.id}] {self.original_url} ({self.license_code}, {self.dimensions_str})'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'license_code', 'url']
 
 
 @define_model
 class IconPhoto(Photo):
     """:fa:`camera` Class used for displaying an iconic taxon in place of a taxon photo"""
+
+    iconic_taxon_name: str = field(default=None, doc='Iconic taxon name')
 
     def __attrs_post_init__(self):
         self._url_format = self.url.replace('.png', '-{size}px.png')
@@ -165,5 +168,6 @@ class IconPhoto(Photo):
         size = size.replace('thumbnail', 'square').replace('thumb', 'square')
         return self._url_format.format(size=ICON_SIZES.get(size, 'square'))
 
-    def __str__(self) -> str:
-        return self.url
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['iconic_taxon_name', 'url']

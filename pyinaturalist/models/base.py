@@ -8,9 +8,10 @@ from os.path import expanduser
 from pathlib import Path
 from typing import Dict, Generic, List, Type, TypeVar
 
-from attr import Factory, asdict, define, field, fields_dict
+from attr import Factory, asdict, define, field, fields, fields_dict
 
 from pyinaturalist.constants import (
+    DATETIME_SHORT_FORMAT,
     AnyFile,
     JsonResponse,
     ResponseOrFile,
@@ -29,6 +30,7 @@ class BaseModel:
     """Base class for data models"""
 
     id: int = field(default=None, metadata={'doc': 'Unique record ID'})
+    _nested: bool = field(default=False, repr=False, init=False)
     temp_attrs: List[str] = []
 
     @classmethod
@@ -37,7 +39,11 @@ class BaseModel:
         from a parent class instance. For copying an instance to the same type,
         :py:func:`copy.deepcopy` can be used.
         """
-        return cls(**obj.to_dict(recurse=False))
+        kwargs = obj.to_dict(recurse=False)
+        for a in fields(cls):
+            if a.init is False:
+                kwargs.pop(a.name.lstrip('_'), None)
+        return cls(**kwargs)
 
     @classmethod
     def from_json(cls: Type[T], value: JsonResponse, **kwargs) -> T:
@@ -69,8 +75,13 @@ class BaseModel:
         return [cls.from_json(item) for item in ensure_list(value)]
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         """Get values and headers to display as a row in a table"""
+        raise NotImplementedError
+
+    @property
+    def _str_attrs(self) -> List[str]:
+        """Get the subset of attribute names to show in the model's string representation"""
         raise NotImplementedError
 
     def to_dict(self, **kwargs) -> JsonResponse:
@@ -98,8 +109,19 @@ class BaseModel:
         """
         from pyinaturalist.models import get_lazy_properties
 
+        # If this is a nested object, show only a minimal representation
+        if self._nested:
+            for a in self._str_attrs:
+                value = getattr(self, a)
+                if isinstance(value, datetime):
+                    value = value.strftime(DATETIME_SHORT_FORMAT)
+                yield a, value, None
+            return
+
         # Handle regular public attributes
-        public_attrs = [a for a in self.__attrs_attrs__ if not a.name.startswith('_')]
+        public_attrs = [
+            a for a in self.__attrs_attrs__ if a.repr is True and not a.name.startswith('_')
+        ]
         for a in public_attrs:
             default = a.default.factory() if isinstance(a.default, Factory) else a.default
             value = getattr(self, a.name)
@@ -108,11 +130,18 @@ class BaseModel:
 
         # Handle LazyProperties
         for name, prop in get_lazy_properties(type(self)).items():
-            value = prop.__get__(self, type(self))
-            if isinstance(value, list):
-                yield name, [str(v) for v in value], []
-            else:
-                yield name, str(value) if value is not None else None, None
+            yield name, prop.__get__(self, type(self))
+
+    def __str__(self):
+        """Make a string representation based on a minimal set of attributes defined on each model,
+        via ``_str_attrs``.
+        """
+        repr_attrs = {a: getattr(self, a) for a in self._str_attrs}
+        for k, v in repr_attrs.items():
+            if isinstance(v, datetime):
+                repr_attrs[k] = v.strftime(DATETIME_SHORT_FORMAT)
+        repr_attrs_str = ', '.join([f'{k}={v}' for k, v in repr_attrs.items()])
+        return f'{self.__class__.__name__}({repr_attrs_str})'
 
 
 @define(auto_attribs=False, order=False, slots=False)

@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import List
 
-from pyinaturalist.constants import DATETIME_SHORT_FORMAT, ID_CATEGORIES, TableRow
+from pyinaturalist.constants import ID_CATEGORIES, TableRow
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
@@ -44,6 +45,10 @@ class Identification(BaseModel):
         User.from_json, type=User, doc='User that added the indentification'
     )
 
+    @property
+    def taxon_name(self) -> str:
+        return self.taxon.full_name
+
     # Unused attributes
     # created_at_details: {}
     # spam: bool = field(default=None)
@@ -52,20 +57,16 @@ class Identification(BaseModel):
     # observation: {}
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Taxon ID': self.taxon.id,
-            'Taxon': self.taxon.full_name,
+            'Taxon': f'{self.taxon.emoji} {self.taxon.full_name}',
             'User': self.user.login,
             'Category': self.category.title(),
             'From CV': self.vision,
         }
 
-    def __str__(self) -> str:
-        """Format into a condensed summary: id, what, when, and who"""
-        return (
-            f'[{self.id}] {self.taxon.emoji} {self.taxon.full_name} ({self.category}) '
-            f'added on {self.created_at.strftime(DATETIME_SHORT_FORMAT)} '
-            f'by {self.user.login}'
-        )
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'taxon_name', 'created_at']
