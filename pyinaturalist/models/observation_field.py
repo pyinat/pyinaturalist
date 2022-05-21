@@ -46,7 +46,7 @@ class ObservationField(BaseModel):
     values_count: int = field(default=None)
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Type': self.datatype,
@@ -54,9 +54,9 @@ class ObservationField(BaseModel):
             'Description': self.description,
         }
 
-    def __str__(self) -> str:
-        description = ': {self.description}' if self.description else ''
-        return f'[{self.id}] {self.name} ({self.datatype}){description}'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'datatype', 'name', 'description']
 
 
 @define_model
@@ -93,7 +93,7 @@ class ObservationFieldValue(BaseModel):
                 self.value = None
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Type': self.datatype,
@@ -101,5 +101,6 @@ class ObservationFieldValue(BaseModel):
             'Value': self.value,
         }
 
-    def __str__(self) -> str:
-        return f'{self.name}: {self.value}'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'datatype', 'name', 'value']

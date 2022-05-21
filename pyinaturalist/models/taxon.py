@@ -234,7 +234,7 @@ class Taxon(BaseModel):
             setattr(self, key, getattr(t, key))
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Rank': self.rank,
@@ -242,8 +242,9 @@ class Taxon(BaseModel):
             'Common name': self.preferred_common_name,
         }
 
-    def __str__(self) -> str:
-        return f'[{self.id}] {self.emoji} {self.full_name}'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'full_name']
 
 
 @define_model
@@ -265,7 +266,7 @@ class TaxonCount(Taxon):
         return super(TaxonCount, cls).from_json(value)
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Rank': self.rank,
@@ -274,8 +275,9 @@ class TaxonCount(Taxon):
             'Count': self.count,
         }
 
-    def __str__(self) -> str:
-        return f'[{self.id}] {self.emoji} {self.full_name}: {self.count}'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'full_name', 'count']
 
 
 @define_model_collection

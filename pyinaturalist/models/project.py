@@ -34,6 +34,10 @@ class ProjectObservation(BaseModel):
         User.from_json, type=User, doc='User that added the observation to the project'
     )
 
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['project', 'user_id']
+
 
 @define_model
 class ProjectObservationField(ObservationField):
@@ -52,6 +56,10 @@ class ProjectObservationField(ObservationField):
         obs_field['required'] = value['required']
         return super(ProjectObservationField, cls).from_json(obs_field, **kwargs)
 
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['project_observation_field_id', 'required']
+
 
 @define_model
 class ProjectUser(User):
@@ -69,6 +77,10 @@ class ProjectUser(User):
         user['project_user_id'] = value['id']
         user['role'] = value['role']
         return super(ProjectUser, cls).from_json(user, **kwargs)
+
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['project_id', 'project_user_id', 'role']
 
 
 @define_model
@@ -141,7 +153,7 @@ class Project(BaseModel):
         return f'{INAT_BASE_URL}/projects/{self.id}'
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Title': self.title,
@@ -149,5 +161,6 @@ class Project(BaseModel):
             'URL': self.url,
         }
 
-    def __str__(self) -> str:
-        return f'[{self.id}] {self.title}'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'title']

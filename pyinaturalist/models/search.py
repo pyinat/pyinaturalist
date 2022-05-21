@@ -32,7 +32,7 @@ class SearchResult(BaseModel):
         return getattr(self.record, name_attr)
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.record.id,
             'Type': self.type,
@@ -40,5 +40,6 @@ class SearchResult(BaseModel):
             'Name': self.record_name,
         }
 
-    def __str__(self) -> str:
-        return f'[{self.type}] {self.record}'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'type', 'score', 'record_name']

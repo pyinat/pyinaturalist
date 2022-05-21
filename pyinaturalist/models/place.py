@@ -88,7 +88,7 @@ class Place(BaseModel):
         return f'{INAT_BASE_URL}/places/{self.id}'
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Latitude': f'{self.location[0]:9.4f}',
@@ -98,5 +98,6 @@ class Place(BaseModel):
             'URL': self.url,
         }
 
-    def __str__(self) -> str:
-        return f'[{self.id}] {self.name}'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'location', 'name']

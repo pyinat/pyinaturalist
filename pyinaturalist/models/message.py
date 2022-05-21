@@ -24,7 +24,15 @@ class Message(BaseModel):
     to_user: property = LazyProperty(User.from_json, type=User, doc='Message recipient')
 
     @property
-    def row(self) -> TableRow:
+    def truncated_body(self):
+        """Comment text, truncated"""
+        truncated_body = self.body.replace('\n', ' ').strip()
+        if len(truncated_body) > 50:
+            truncated_body = truncated_body[:47].strip() + '...'
+        return truncated_body
+
+    @property
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Date': self.created_at,
@@ -32,6 +40,10 @@ class Message(BaseModel):
             'From': self.from_user.login,
             'Subject': self.subject,
         }
+
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'created_at', 'self.to_user', 'self.from_user', 'subject', 'truncated_body']
 
     def __str__(self) -> str:
         return (

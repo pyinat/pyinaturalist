@@ -27,7 +27,7 @@ class LifeListTaxon(TaxonCount):
         return int(((70 - self.rank_level) / 5))
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Rank': self.rank,
@@ -35,9 +35,9 @@ class LifeListTaxon(TaxonCount):
             'Count': self.count,
         }
 
-    def __str__(self) -> str:
-        padding = " " * self.indent_level
-        return f'[{self.id:<8}] {padding} {self.rank.title()} {self.name}: {self.count}'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'rank', 'name', 'count']
 
 
 @define_model_collection

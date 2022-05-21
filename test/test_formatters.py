@@ -73,86 +73,6 @@ def test_pprint(response):
     rendered = output.get()
 
 
-@pytest.mark.parametrize('input', get_variations(j_controlled_term_1))
-def test_format_controlled_terms(input):
-    assert (
-        format_controlled_terms(input)
-        == '[12] Plant Phenology: No Evidence of Flowering, Flowering, Fruiting, Flower Budding'
-    )
-
-
-@pytest.mark.parametrize('input', get_variations(j_identification_1))
-def test_format_identifications(input):
-    expected_str = '[155554373] 🌼 Species: 60132 (supporting) added on Feb 18, 2021 by jkcook'
-    assert format_identifications(input) == expected_str
-
-
-@pytest.mark.parametrize('input', get_variations(j_observation_1))
-def test_format_observation(input):
-    expected_str = (
-        '[16227955] 🪲 Species: Lixus bardanae observed on Sep 05, 2018 '
-        'by niconoe at 54 rue des Badauds'
-    )
-    assert format_observations(input) == expected_str
-
-
-@pytest.mark.parametrize('input', get_variations(j_project_1))
-def test_format_projects(input):
-    expected_str = '[8291] PNW Invasive Plant EDDR'
-    assert format_projects(input) == expected_str
-
-
-@pytest.mark.parametrize('input', get_variations(j_place_1))
-def test_format_places(input):
-    expected_str = '[89191] Conservation Area Riversdale'
-    assert format_places(input) == expected_str
-
-
-def test_format_places__nearby():
-    places_str = """
-[97394] North America
-[97395] Asia
-[97393] Oceania
-[11770] Mehedinti
-[119755] Mahurangi College
-[150981] Ceap Breatainn
-""".strip()
-    assert format_places(j_places_nearby) == places_str
-
-
-def test_format_search_results():
-    expected_str = (
-        '[Taxon] [47792] 🐛 Order: Odonata (Dragonflies and Damselflies)\n'
-        '[Place] [113562] Odonates of Peninsular India and Sri Lanka\n'
-        '[Project] [9978] Ohio Dragonfly Survey  (Ohio Odonata Survey)\n'
-        '[User] [113886] odonatanb (Gilles Belliveau)'
-    )
-    assert format_search_results(j_search_results) == expected_str
-
-
-@pytest.mark.parametrize('input', get_variations(j_species_count_1))
-def test_format_species_counts(input):
-    expected_str = '[48484] 🐞 Species: Harmonia axyridis (Asian Lady Beetle): 31'
-    assert format_species_counts(input) == expected_str
-
-
-@pytest.mark.parametrize('input', get_variations(j_taxon_1))
-def test_format_taxa__with_common_name(input):
-    expected_str = '[70118] 🪲 Species: Nicrophorus vespilloides (Lesser Vespillo Burying Beetle)'
-    assert format_taxa(input) == expected_str
-
-
-@pytest.mark.parametrize('input', get_variations(j_taxon_3_no_common_name))
-def test_format_taxon__without_common_name(input):
-    assert format_taxa(input) == '[124162] 🪰 Species: Temnostoma vespiforme'
-
-
-@pytest.mark.parametrize('input', get_variations(j_user_2_partial))
-def test_format_users(input):
-    expected_str = '[886482] niconoe (Nicolas Noé)'
-    assert format_users(input) == expected_str
-
-
 PRINTED_OBSERVATION = """
 Observation(
     id=16227955,
@@ -185,32 +105,36 @@ Observation(
     updated_at='2018-09-22 19:19:27+02:00',
     uri='https://www.inaturalist.org/observations/16227955',
     uuid='6448d03a-7f9a-4099-86aa-ca09a7740b00',
+    annotations=[],
     comments=[
-        'borisb on Sep 05, 2018: I now see: Bonus species on observation! You ma...',
-        'borisb on Sep 05, 2018: suspect L. bardanae - but sits on Solanum (non-...'
+        Comment(id=2071896, username='borisb', created_at='Sep 05, 2018', truncated_body='I now see: Bonus species on observation! You ma...'),
+        Comment(id=2071611, username='borisb', created_at='Sep 05, 2018', truncated_body='suspect L. bardanae - but sits on Solanum (non-...')
     ],
     identifications=[
-        '[34896306] 🪲 Genus: Lixus (improving) added on Sep 05, 2018 by niconoe',
-        '[34926789] 🪲 Species: Lixus bardanae (improving) added on Sep 05, 2018 by borisb',
-        '[36039221] 🪲 Species: Lixus bardanae (supporting) added on Sep 22, 2018 by jpreudhomme'
+        Identification(id=34896306, taxon_name='Genus: Lixus', created_at='Sep 05, 2018'),
+        Identification(id=34926789, taxon_name='Species: Lixus bardanae', created_at='Sep 05, 2018'),
+        Identification(id=36039221, taxon_name='Species: Lixus bardanae', created_at='Sep 22, 2018')
     ],
+    ofvs=[],
     photos=[
-        '[24355315] https://static.inaturalist.org/photos/24355315/original.jpeg?1536150664 (CC-BY, 1445x1057)',
-        '[24355313] https://static.inaturalist.org/photos/24355313/original.jpeg?1536150659 (CC-BY, 2048x1364)'
+        Photo(id=24355315, license_code='CC-BY', url='https://static.inaturalist.org/photos/24355315/square.jpeg?1536150664'),
+        Photo(id=24355313, license_code='CC-BY', url='https://static.inaturalist.org/photos/24355313/square.jpeg?1536150659')
     ],
-    taxon='[493595] 🪲 Species: Lixus bardanae',
-    user='[886482] niconoe (Nicolas Noé)'
+    project_observations=[],
+    taxon=Taxon(id=493595, full_name='Species: Lixus bardanae'),
+    user=User(id=886482, login='niconoe', name='Nicolas Noé')
 )
 """
 
 
 def test_pretty_print():
     """Test rich.pretty with modifications, via get_model_fields()"""
-    console = Console(force_terminal=False, width=120, file=StringIO())
+    console = Console(force_terminal=False, width=220, file=StringIO())
     observation = Observation.from_json(j_observation_1)
 
     console.print(observation)
     rendered = console.file.getvalue()
+    print(rendered)
 
     # Don't check for differences in indendtation
     rendered = re.sub(' +', ' ', rendered.strip())
