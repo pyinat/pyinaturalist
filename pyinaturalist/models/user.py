@@ -59,7 +59,7 @@ class User(BaseModel):
         return f'{INAT_BASE_URL}/users/{self.id}'
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Username': self.username,
@@ -68,9 +68,9 @@ class User(BaseModel):
             'Identifications': self.identifications_count,
         }
 
-    def __str__(self) -> str:
-        real_name = f' ({self.name})' if self.name else ''
-        return f"[{self.id}] {self.login}{real_name}"
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'login', 'name']
 
 
 @define_model
@@ -96,7 +96,7 @@ class UserCount(User):
         return super(UserCount, cls).from_json(value)
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Username': self.username,

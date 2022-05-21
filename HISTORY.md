@@ -4,6 +4,7 @@
 * Fix pagination bug causing only the first two pages of results to be returned
 * Add Photo.uuid, observation_id, and user_id fields (for compatibility with inaturalist-open-data)
 * Handle errors in ObservationField type conversions
+* Improve terminal output for nested model objects (like `Observation.taxon`, `Taxon.ancestors`, etc.)
 * If `Taxon.ancestor_ids` is missing, populate from either `ancestry` string or `ancestor` objects, if possible
 
 ## 0.17.0 (2022-05-17)

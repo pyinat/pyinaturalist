@@ -1,6 +1,6 @@
 """Models for additional endpoint-specific metadata associated with a taxon"""
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from pyinaturalist.constants import CONSERVATION_STATUSES, ESTABLISTMENT_MEANS, DateTime, TableRow
 from pyinaturalist.models import (
@@ -96,10 +96,9 @@ class ConservationStatus(IdWrapperMixin, BaseModel):
     # iucn_status: str = field(default=None)
     # iucn_status_code: str = field(default=None)
 
-    def __str__(self) -> str:
-        name = f' ({self.status_name})' if self.status_name else ''
-        source = f' via {self.authority}' if self.authority else ''
-        return f'{self.status}{name}{source}'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['status_name', 'status', 'authority']
 
 
 @define_model
@@ -129,7 +128,7 @@ class EstablishmentMeans(BaseModel):
         self.establishment_means = value
 
     def __str__(self) -> str:
-        return self.establishment_means
+        return f'EstablishmentMeans({self.establishment_means})'
 
 
 @define_model
@@ -181,7 +180,7 @@ class ListedTaxon(IdWrapperMixin, EstablishmentMeans):
         self.list_title = str(value.get('title', ''))
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Taxon ID': self.taxon_id,
@@ -192,11 +191,12 @@ class ListedTaxon(IdWrapperMixin, EstablishmentMeans):
             'Comments': self.comments_count,
         }
 
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'taxon_id', 'place', 'establishment_means', 'observations_count']
+
     def __str__(self) -> str:
-        return (
-            f'[{self.taxon_id}] ({self.establishment_means}): '
-            f'{self.observations_count} observations, {self.comments_count} comments'
-        )
+        return BaseModel.__str__(self)
 
 
 @define_model
@@ -218,5 +218,6 @@ class TaxonSummary(BaseModel):
     )
     wikipedia_summary: str = field(default=None, doc='Taxon summary from Wikipedia article')
 
-    def __str__(self) -> str:
-        return f'{self.conservation_status}\n{self.listed_taxon}'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['conservation_status', 'listed_taxon']

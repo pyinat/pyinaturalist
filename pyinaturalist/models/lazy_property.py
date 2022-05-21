@@ -80,6 +80,14 @@ class LazyProperty(property):
         if value and not _is_model_object_or_list(value):
             value = self.converter(value)
             setattr(obj, self.temp_attr, value)
+
+        # '_nested' attribute is used for condensed formatting of nested model objects
+        if isinstance(value, list):
+            for v in value:
+                v._nested = True
+        elif value:
+            value._nested = True
+
         return value
 
     def __set__(self, obj, raw_value):

@@ -9,13 +9,12 @@ These functions will accept any of the following:
 """
 import json
 from datetime import date, datetime, timedelta
-from functools import partial
 from logging import basicConfig, getLogger
 from typing import List, Mapping, Type
 
 from requests import PreparedRequest, Response
 
-from pyinaturalist.constants import DATETIME_SHORT_FORMAT, ResponseOrResults, ResponseResult
+from pyinaturalist.constants import DATETIME_SHORT_FORMAT, ResponseResult
 from pyinaturalist.converters import ensure_list
 from pyinaturalist.models import (
     Annotation,
@@ -184,7 +183,7 @@ def format_table(values: ResponseOrObjects):
             return values
 
         values = ensure_model_list(values)
-        headers = {k: HEADER_COLORS.get(k, '') for k in values[0].row.keys()}
+        headers = {k: HEADER_COLORS.get(k, '') for k in values[0]._row.keys()}
     except (ImportError, NotImplementedError):
         return '\n'.join([str(obj) for obj in ensure_model_list(values)])
 
@@ -198,7 +197,7 @@ def format_table(values: ResponseOrObjects):
     table = Table(*columns, box=SIMPLE_HEAVY, header_style='bold white', row_styles=['dim', 'none'])
 
     for obj in values:
-        table.add_row(*[_str(value) for value in obj.row.values()])
+        table.add_row(*[_str(value) for value in obj._row.values()])
     return table
 
 
@@ -253,22 +252,6 @@ def _format_body(body):
     except Exception:
         return '(non-JSON request body)'
 
-
-def _format_model_objects(obj: ResponseOrResults, cls: Type[BaseModel], **kwargs):
-    """Generic function to format a response, object, or list of objects"""
-    objects = cls.from_json_list(obj)
-    return '\n'.join([str(obj) for obj in objects])
-
-
-format_controlled_terms = partial(_format_model_objects, cls=ControlledTerm)
-format_identifications = partial(_format_model_objects, cls=Identification)
-format_observations = partial(_format_model_objects, cls=Observation)
-format_places = partial(_format_model_objects, cls=Place)
-format_projects = partial(_format_model_objects, cls=Project)
-format_search_results = partial(_format_model_objects, cls=SearchResult)
-format_species_counts = partial(_format_model_objects, cls=TaxonCount)
-format_taxa = partial(_format_model_objects, cls=Taxon)
-format_users = partial(_format_model_objects, cls=User)
 
 # If rich is installed, install pretty-printer
 try:

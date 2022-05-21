@@ -107,7 +107,7 @@ def test_annotation__values():
 
 def test_annotation__str():
     annotation = Annotation.from_json(j_annotation_1)
-    assert str(annotation) == '[1] 1|2 (0 votes)'
+    assert str(annotation) == 'Annotation(controlled_attribute_id=1, concatenated_attr_val=1|2)'
 
 
 def test_controlled_term__converters():
@@ -125,24 +125,25 @@ def test_controlled_term__empty():
 
 def test_controlled_term__properties():
     controlled_term = ControlledTerm.from_json(j_controlled_term_1)
-    assert (
-        controlled_term.value_labels
-        == 'No Evidence of Flowering, Flowering, Fruiting, Flower Budding'
+    assert controlled_term.value_labels == (
+        'No Evidence of Flowering, Flowering, Fruiting, Flower Budding'
     )
 
 
 def test_controlled_term__str():
     controlled_term = ControlledTerm.from_json(j_controlled_term_1)
-    assert (
-        str(controlled_term)
-        == '[12] Plant Phenology: No Evidence of Flowering, Flowering, Fruiting, Flower Budding'
+    assert str(controlled_term) == (
+        'ControlledTerm(id=12, label=Plant Phenology, '
+        'value_labels=No Evidence of Flowering, Flowering, Fruiting, Flower Budding)'
     )
 
 
 def test_controlled_term__value():
     controlled_term_value = ControlledTermValue.from_json(j_controlled_term_value_1)
     assert controlled_term_value.taxon_ids == [47125]
-    assert str(controlled_term_value) == '[21] No Evidence of Flowering'
+    assert (
+        str(controlled_term_value) == 'ControlledTermValue(id=21, label=No Evidence of Flowering)'
+    )
 
 
 # Comments
@@ -162,7 +163,10 @@ def test_comment__empty():
 
 def test_comment__str():
     comment = Comment.from_json(j_comment_1)
-    assert str(comment) == 'samroom on Aug 28, 2020: Thankyou'
+    assert (
+        str(comment)
+        == 'Comment(id=5326888, username=samroom, created_at=Aug 28, 2020, truncated_body=Thankyou)'
+    )
 
 
 # Identifications
@@ -183,9 +187,10 @@ def test_identification__empty():
 
 def test_identification__str():
     identification = ID.from_json(j_identification_3)
+    print(identification._nested)
     assert str(identification) == (
-        '[126501311] 🦋 Species: Danaus plexippus (Monarch) (improving) added on '
-        'Aug 27, 2020 by samroom'
+        'Identification(id=126501311, taxon_name=Species: Danaus plexippus (Monarch), '
+        'created_at=Aug 27, 2020)'
     )
 
 
@@ -320,7 +325,10 @@ def test_observation_field__empty():
 
 def test_observation_field__str():
     obs_field = ObservationField.from_json(j_obs_field_1)
-    assert str(obs_field) == '[4813] Sex (deer/turkey) (text)'
+    assert (
+        str(obs_field)
+        == 'ObservationField(id=4813, datatype=text, name=Sex (deer/turkey), description=)'
+    )
 
 
 def test_observation_field_value__converters():
@@ -351,7 +359,10 @@ def test_observation_field_value__empty():
 
 def test_observation_field_value__str():
     ofv = OFV.from_json(j_ofv_2_taxon)
-    assert str(ofv) == 'Feeding on: 119900'
+    assert (
+        str(ofv)
+        == 'ObservationFieldValue(id=14106828, datatype=taxon, name=Feeding on, value=119900)'
+    )
 
 
 # Photos
@@ -411,8 +422,8 @@ def test_photo__urls(size):
 def test_photo__str():
     photo = Photo.from_json(j_photo_1)
     assert str(photo) == (
-        '[38359335] https://static.inaturalist.org/photos/38359335/original.jpg?1557348751 '
-        '(CC-BY-NC, 2048x1365)'
+        'Photo(id=38359335, license_code=CC-BY-NC, '
+        'url=https://static.inaturalist.org/photos/38359335/square.jpg?1557348751)'
     )
 
 
@@ -509,16 +520,16 @@ def test_taxon__empty():
 
 def test_taxon__str():
     taxon_1 = Taxon(id=3, name='Aves', preferred_common_name='birb', rank='class')
-    assert str(taxon_1) == '[3] 🐦 Class: Aves (birb)'
+    assert str(taxon_1) == 'Taxon(id=3, full_name=Class: Aves (birb))'
 
     taxon_2 = Taxon(id=3, name='Aves', rank='class')
-    assert str(taxon_2) == '[3] 🐦 Class: Aves'
+    assert str(taxon_2) == 'Taxon(id=3, full_name=Class: Aves)'
 
     taxon_3 = Taxon(id=3, name='Aves')
-    assert str(taxon_3) == '[3] 🐦 Aves'
+    assert str(taxon_3) == 'Taxon(id=3, full_name=Aves)'
 
     taxon_4 = Taxon(id=0)
-    assert str(taxon_4) == '[0] ❓ unknown taxon'
+    assert str(taxon_4) == 'Taxon(id=0, full_name=unknown taxon)'
 
 
 def test_taxon__ancestors_children():
@@ -554,7 +565,7 @@ def test_taxon__conservation_status():
     assert isinstance(cs, ConservationStatus)
     assert cs.authority == 'NatureServe'
     assert cs.status_name == 'imperiled'
-    assert str(cs) == 'S2B (imperiled) via NatureServe'
+    assert str(cs) == 'ConservationStatus(status_name=imperiled, status=S2B, authority=NatureServe)'
 
 
 def test_taxon__conservation_status_aliases():
@@ -579,7 +590,7 @@ def test_taxon__establishment_means():
     es = Taxon.from_json(j_taxon_4_preferred_place).establishment_means
     assert isinstance(es, EstablishmentMeans)
     assert es.id == 5660131
-    assert es.establishment_means == str(es) == 'introduced'
+    assert str(es) == 'EstablishmentMeans(introduced)'
 
 
 def test_taxon__listed_taxa():
@@ -588,7 +599,10 @@ def test_taxon__listed_taxa():
     assert isinstance(listed_taxon, ListedTaxon)
     assert listed_taxon.taxon_id == taxon.id
     assert taxon.listed_taxa_count == 4
-    assert str(listed_taxon) == '[70118] (native): 0 observations, 0 comments'
+    assert str(listed_taxon) == (
+        'ListedTaxon(id=5577060, taxon_id=70118, place=Place(id=1, location=(0, 0), '
+        'name=United States), establishment_means=native, observations_count=0)'
+    )
 
 
 def test_taxon__properties():
@@ -691,12 +705,12 @@ def test_user__properties():
 
 def test_user__str():
     user = User.from_json(j_user_1)
-    assert str(user) == '[1] kueda (Ken-ichi Ueda)'
+    assert str(user) == 'User(id=1, login=kueda, name=Ken-ichi Ueda)'
 
 
 def test_user_count__str():
     user_count = UserCount.from_json(j_observation_identifiers['results'][0])
-    assert str(user_count) == '[112514] earthstephen (Stephen): 1'
+    assert str(user_count) == 'UserCount(id=112514, login=earthstephen, name=Stephen): 1'
 
 
 def test_user_counts__identifiers():

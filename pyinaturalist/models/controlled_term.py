@@ -36,7 +36,7 @@ class Annotation(BaseModel):
         return self.concatenated_attr_val.split('|')
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.controlled_attribute_id,
             'Values': ', '.join(self.values),
@@ -44,11 +44,9 @@ class Annotation(BaseModel):
             'User': self.user.login,
         }
 
-    def __str__(self) -> str:
-        return (
-            f'[{self.controlled_attribute_id}] {self.concatenated_attr_val} '
-            f'({len(self.votes)} votes)'
-        )
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['controlled_attribute_id', 'concatenated_attr_val']
 
 
 @define_model
@@ -64,8 +62,9 @@ class ControlledTermValue(BaseModel):
     uuid: str = field(default=None)
     taxon_ids: List[int] = field(factory=list)
 
-    def __str__(self):
-        return f'[{self.id}] {self.label}'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'label']
 
 
 @define_model
@@ -93,15 +92,16 @@ class ControlledTerm(BaseModel):
         return ', '.join([value.label for value in self.values])
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Label': self.label,
             'Values': self.value_labels,
         }
 
-    def __str__(self):
-        return f'[{self.id}] {self.label}: {self.value_labels}'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'label', 'value_labels']
 
 
 @define_model
@@ -122,15 +122,24 @@ class ControlledTermCount(BaseModel):
         return super(ControlledTermCount, cls).from_json(value)
 
     @property
-    def row(self) -> TableRow:
+    def term_label(self) -> str:
+        return self.term.label
+
+    @property
+    def value_label(self) -> str:
+        return self.value.label
+
+    @property
+    def _row(self) -> TableRow:
         return {
             'Term': self.term.label,
             'Value': self.value.label,
             'Count': self.count,
         }
 
-    def __str__(self) -> str:
-        return f'{self.term.label}={self.value.label}: {self.count}'
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['term_label', 'value_label', 'count']
 
 
 @define_model_collection

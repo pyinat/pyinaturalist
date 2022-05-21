@@ -6,7 +6,6 @@ from attr import define
 
 from pyinaturalist.constants import (
     ALL_LICENSES,
-    DATETIME_SHORT_FORMAT,
     GEOPRIVACY_LEVELS,
     INAT_BASE_URL,
     QUALITY_GRADES,
@@ -248,7 +247,7 @@ class Observation(BaseModel):
         return self.photos[0].thumbnail_url
 
     @property
-    def row(self) -> TableRow:
+    def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Taxon ID': self.taxon.id,
@@ -258,12 +257,9 @@ class Observation(BaseModel):
             'Location': self.place_guess or self.location,
         }
 
-    def __str__(self) -> str:
-        return (
-            f'[{self.id}] {self.taxon.emoji} {self.taxon.full_name} '
-            f'observed on {self.observed_on.strftime(DATETIME_SHORT_FORMAT)} '
-            f'by {self.user.login} at {self.place_guess or self.location}'
-        )
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'taxon', 'observed_on', 'user', 'place_guess']
 
 
 @define_model_collection
