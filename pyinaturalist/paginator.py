@@ -92,12 +92,12 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         with ThreadPoolExecutor(max_workers=1) as executor:
             while not self.exhausted:
                 for result in executor.submit(self.next_page).result():
-                    yield self.model.from_json(result)
+                    yield result
 
     def __iter__(self) -> Iterator[T]:
         """Iterate over paginated results"""
         while not self.exhausted:
-            for result in self.model.from_json_list(self.next_page()):
+            for result in self.next_page():
                 yield result
 
     def all(self) -> List[T]:
@@ -113,9 +113,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         """Get the first result from the query"""
         self.per_page = 1
         results = self.next_page()
-        if not results:
-            return None
-        return self.model.from_json(results[0])
+        return results[0] if results else None
 
     def count(self) -> int:
         """Get the total number of results for this query, without fetching response data.
@@ -129,8 +127,12 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             self.total_results = int(count_response['total_results'])
         return self.total_results
 
-    def next_page(self) -> List[ResponseResult]:
-        """Get the next page of results"""
+    def next_page(self) -> List[T]:
+        """Get the next page of results, as model objects"""
+        return self.model.from_json_list(self._next_page())
+
+    def _next_page(self) -> List[ResponseResult]:
+        """Get the next page of results, as raw JSON"""
         if self.exhausted:
             return []
 
@@ -212,7 +214,7 @@ class IDPaginator(Paginator):
         self.ids = deque(ids or [])
         self.total_results = len(self.ids)
 
-    def next_page(self) -> List[ResponseResult]:
+    def _next_page(self) -> List[ResponseResult]:
         """Get the next record by ID"""
         try:
             next_id = self.ids.popleft()
@@ -264,9 +266,9 @@ class JsonPaginator(Paginator):
     """Paginator that returns raw response dicts instead of model objects"""
 
     def __iter__(self) -> Iterator[ResponseResult]:
-        """Iterate over paginated results"""
+        """Iterate over paginated results, and skip conversion to model objects"""
         while not self.exhausted:
-            for result in self.next_page():
+            for result in self._next_page():
                 yield result
 
     def all(self) -> JsonResponse:  # type: ignore
