@@ -67,9 +67,9 @@ class BaseModel:
         return cls.from_json_list(load_json(value))
 
     @classmethod
-    def from_json_list(cls: Type[T], value: ResponseOrResults) -> List[T]:
+    def from_json_list(cls: Type[T], value: ResponseOrResults, **kwargs) -> List[T]:
         """Initialize a collection of model objects from an API response or response results"""
-        return [cls.from_json(item) for item in ensure_list(value)]
+        return [cls.from_json(item, **kwargs) for item in ensure_list(value)]
 
     @property
     def _row(self) -> TableRow:
