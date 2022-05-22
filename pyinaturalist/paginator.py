@@ -209,22 +209,25 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
 
 
 class IDPaginator(Paginator):
-    """Paginator for endpoints that only accept a single ID per request"""
+    """Paginator for ID-based endpoints that only accept a limited number of IDs per request"""
 
-    def __init__(self, *args, ids: Iterable[IntOrStr] = None, **kwargs):
+    def __init__(self, *args, ids: Iterable[IntOrStr] = None, ids_per_request: int = 1, **kwargs):
         super().__init__(*args, **kwargs)
-        self.ids = deque(ids or [])
-        self.total_results = len(self.ids)
+        if ids_per_request == 1:
+            self.id_batches = deque(ids or [])
+        else:
+            self.id_batches = deque(list(chunkify(ids, ids_per_request)))  # type: ignore
+        self.total_results = len(ids)  # type: ignore
 
     def _next_page(self) -> List[ResponseResult]:
         """Get the next record by ID"""
         try:
-            next_id = self.ids.popleft()
+            next_ids = self.id_batches.popleft()
         except IndexError:
             self.exhausted = True
             return []
 
-        response = self.request_function(next_id, *self.request_args, **self.kwargs)
+        response = self.request_function(next_ids, *self.request_args, **self.kwargs)
         self.results_fetched += 1
         return response['results'] if 'results' in response else [response]
 
@@ -287,15 +290,6 @@ class JsonPaginator(Paginator):
         return list(unique_results.values())
 
 
-def paginate_all(request_function: Callable, *args, method: str = 'page', **kwargs) -> JsonResponse:
-    """Get all pages of a multi-page request. Explicit pagination parameters will be overridden.
-
-    Returns:
-        Response dict containing combined results, in the same format as ``api_func``
-    """
-    return JsonPaginator(request_function, None, *args, method=method, **kwargs).all()
-
-
 class WrapperPaginator(Paginator):
     """Paginator class that wraps results that have already been fetched."""
 
@@ -310,3 +304,19 @@ class WrapperPaginator(Paginator):
     def next_page(self):
         self.exhausted = True
         return self.results
+
+
+def chunkify(iterable: Iterable, max_size: int) -> Iterator[List]:
+    """Split an iterable into chunks of a max size"""
+    iterable = list(iterable)
+    for index in range(0, len(iterable), max_size):
+        yield iterable[index : index + max_size]
+
+
+def paginate_all(request_function: Callable, *args, method: str = 'page', **kwargs) -> JsonResponse:
+    """Get all pages of a multi-page request. Explicit pagination parameters will be overridden.
+
+    Returns:
+        Response dict containing combined results, in the same format as ``api_func``
+    """
+    return JsonPaginator(request_function, None, *args, method=method, **kwargs).all()
