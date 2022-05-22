@@ -11,6 +11,7 @@ from pyinaturalist.constants import (
     PHOTO_CC_BASE_URL,
     PHOTO_INFO_BASE_URL,
     PHOTO_SIZES,
+    JsonResponse,
     TableRow,
 )
 from pyinaturalist.converters import format_dimensions, format_license
@@ -56,6 +57,13 @@ class Photo(BaseModel):
         for size in PHOTO_SIZES:
             if f'{size}.' in self.url:
                 self._url_format = self.url.replace(size, '{size}')
+
+    @classmethod
+    def from_json(cls, value: JsonResponse, **kwargs) -> 'Photo':
+        """Flatten out potentially nested photo field before initializing"""
+        if 'photo' in value:
+            value = value['photo']
+        return super(Photo, cls).from_json(value, **kwargs)
 
     @property
     def ext(self) -> str:
