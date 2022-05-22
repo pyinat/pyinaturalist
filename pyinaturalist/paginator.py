@@ -82,10 +82,12 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         elif self.method == 'page':
             self.kwargs['page'] = 1
 
-        logger.debug(
-            f'Prepared paginated request: {self.request_function.__name__}('
-            f'args={self.request_args}, kwargs={self.kwargs})'
-        )
+        if request_function:
+            log_kwargs = {k: v for k, v in self.kwargs.items() if k != 'session'}
+            logger.debug(
+                f'Prepared paginated request: {self.request_function.__name__}'
+                f'(args={self.request_args}, kwargs={log_kwargs})'
+            )
 
     async def __aiter__(self) -> AsyncIterator[T]:
         """Iterate over paginated results, with non-blocking requests sent from a separate thread"""
@@ -292,3 +294,19 @@ def paginate_all(request_function: Callable, *args, method: str = 'page', **kwar
         Response dict containing combined results, in the same format as ``api_func``
     """
     return JsonPaginator(request_function, None, *args, method=method, **kwargs).all()
+
+
+class WrapperPaginator(Paginator):
+    """Paginator class that wraps results that have already been fetched."""
+
+    def __init__(self, results: List[T], *args, **kwargs):
+        super().__init__(None, None, *args, **kwargs)  # type: ignore  # no request_function
+        self.results = results
+        self.results_fetched = self.total_results = len(results)
+
+    def count(self) -> int:
+        return len(self.results)
+
+    def next_page(self):
+        self.exhausted = True
+        return self.results
