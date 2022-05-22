@@ -4,7 +4,7 @@ import pytest
 
 from pyinaturalist.constants import API_V1_BASE_URL
 from pyinaturalist.models import Observation
-from pyinaturalist.paginator import Paginator
+from pyinaturalist.paginator import Paginator, WrapperPaginator
 from pyinaturalist.v1 import get_observations
 from test.sample_data import SAMPLE_DATA
 
@@ -87,3 +87,12 @@ def test_str():
 
     paginator.total_results = 50
     assert '0/50' in str(paginator)
+
+
+def test_wrapper_paginator():
+    results = [Observation(id=i) for i in range(10)]
+    paginator = WrapperPaginator(results)
+    paged_results = paginator.all()
+    assert len(paged_results) == paginator.count() == 10
+    assert paginator.exhausted is True
+    assert paginator.all() == []
