@@ -56,10 +56,16 @@ class LazyProperty(property):
     """
 
     def __init__(
-        self, converter: Callable, name: str = None, doc: str = None, type: Type = BaseModel
+        self,
+        converter: Callable,
+        name: str = None,
+        doc: str = None,
+        type: Type = BaseModel,
+        **converter_kwargs,
     ):
         update_wrapper(self, converter)
         self.converter = converter
+        self.converter_kwargs = converter_kwargs
         self.default = None
         self.type = type
         self.__doc__ = doc
@@ -78,7 +84,7 @@ class LazyProperty(property):
 
         value = getattr(obj, self.temp_attr)
         if value and not _is_model_object_or_list(value):
-            value = self.converter(value)
+            value = self.converter(value, **self.converter_kwargs)
             setattr(obj, self.temp_attr, value)
 
         # '_nested' attribute is used for condensed formatting of nested model objects
