@@ -1,13 +1,13 @@
 # flake8: noqa: F401, F403
 # isort: skip_file
-__version__ = '0.17.1'
+__version__ = '0.17.2'
 
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.client import iNatClient
 from pyinaturalist.constants import *
 from pyinaturalist.formatters import enable_logging, format_table, pprint
 from pyinaturalist.models import *
-from pyinaturalist.paginator import Paginator, IDPaginator
+from pyinaturalist.paginator import Paginator, IDPaginator, WrapperPaginator
 from pyinaturalist.request_params import get_interval_ranges
 from pyinaturalist.session import ClientSession, clear_cache
 from pyinaturalist.v0 import *

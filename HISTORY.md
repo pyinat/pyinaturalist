@@ -1,5 +1,8 @@
 # History
 
+## 0.17.1 (Unreleased)
+* Handle nested 'photo' dictionaries when loading `Taxon.taxon_photos`
+
 ## 0.17.1 (2022-05-20)
 * Fix pagination bug causing only the first two pages of results to be returned
 * Add Photo.uuid, observation_id, and user_id fields (for compatibility with inaturalist-open-data)

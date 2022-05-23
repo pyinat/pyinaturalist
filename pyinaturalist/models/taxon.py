@@ -130,6 +130,9 @@ class Taxon(BaseModel):
         Photo.from_json_list, type=List[Photo], doc='All taxon photos shown on taxon info page'
     )
 
+    # Indicates this is a partial record (e.g. from nested Taxon.ancestors or children)
+    _partial: bool = field(default=False, repr=False)
+
     # Unused attributes
     # atlas_id: int = field(default=None)
     # flag_counts: Dict[str, int] = field(factory=dict)  # {"unresolved": 1, "resolved": 2}
@@ -153,12 +156,12 @@ class Taxon(BaseModel):
             delimiter = ',' if ',' in self.ancestry else '/'
             self.ancestor_ids = [int(x) for x in self.ancestry.split(delimiter)]
         elif self.ancestors and not self.ancestor_ids:
-            self.ancestor_ids = [t.name for t in self.ancestors]
+            self.ancestor_ids = [t.id for t in self.ancestors]
 
     @classmethod
-    def from_sorted_json_list(cls, value: JsonResponse) -> List['Taxon']:
+    def from_sorted_json_list(cls, value: JsonResponse, **kwargs) -> List['Taxon']:
         """Sort Taxon objects by rank then by name"""
-        taxa = cls.from_json_list(value)
+        taxa = cls.from_json_list(value, **kwargs)
         taxa.sort(key=_get_rank_name_idx)
         return taxa
 
@@ -296,12 +299,14 @@ Taxon.ancestors = LazyProperty(
     name='ancestors',
     type=List[Taxon],
     doc='Ancestor taxa, from highest rank to lowest',
+    partial=True,
 )
 Taxon.children = LazyProperty(
     Taxon.from_sorted_json_list,
     name='children',
     type=List[Taxon],
     doc='Child taxa, sorted by rank then name',
+    partial=True,
 )
 
 

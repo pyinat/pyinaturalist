@@ -40,9 +40,6 @@ class BaseModel:
         :py:func:`copy.deepcopy` can be used.
         """
         kwargs = obj.to_dict(recurse=False)
-        for a in fields(cls):
-            if a.init is False:
-                kwargs.pop(a.name.lstrip('_'), None)
         return cls(**kwargs)
 
     @classmethod
@@ -70,9 +67,9 @@ class BaseModel:
         return cls.from_json_list(load_json(value))
 
     @classmethod
-    def from_json_list(cls: Type[T], value: ResponseOrResults) -> List[T]:
+    def from_json_list(cls: Type[T], value: ResponseOrResults, **kwargs) -> List[T]:
         """Initialize a collection of model objects from an API response or response results"""
-        return [cls.from_json(item) for item in ensure_list(value)]
+        return [cls.from_json(item, **kwargs) for item in ensure_list(value)]
 
     @property
     def _row(self) -> TableRow:
@@ -91,6 +88,10 @@ class BaseModel:
             return value.to_dict() if isinstance(value, BaseModel) else value
 
         obj_dict = asdict(self, value_serializer=vs, retain_collection_types=True, **kwargs)
+        for a in fields(self.__class__):
+            if a.init is False:
+                obj_dict.pop(a.name, None)
+
         return {k.lstrip('_'): v for k, v in obj_dict.items()}
 
     def __rich_repr__(self):
