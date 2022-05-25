@@ -1,8 +1,8 @@
-from pyinaturalist.constants import ListResponse
+from pyinaturalist.constants import API_V1, ListResponse
 from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.v1 import get_v1
+from pyinaturalist.session import get
 
 
 @document_request_params(docs._get_posts)
@@ -21,7 +21,7 @@ def get_posts(**params) -> ListResponse:
     Returns:
         List containing journal posts from the iNaturalist site
     """
-    response = get_v1('posts', **params)
+    response = get(f'{API_V1}/posts', **params)
 
     posts = response.json()
     posts = convert_all_coordinates(posts)

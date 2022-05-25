@@ -1,8 +1,8 @@
-from pyinaturalist.constants import JsonResponse
+from pyinaturalist.constants import API_V1, JsonResponse
 from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.v1 import get_v1
+from pyinaturalist.session import get
 
 
 @document_request_params(docs._search_params, docs._pagination)
@@ -29,7 +29,7 @@ def search(q: str, **params) -> JsonResponse:
     Returns:
         Response dict containing search results
     """
-    response = get_v1('search', q=q, **params)
+    response = get(f'{API_V1}/search', q=q, **params)
     search_results = response.json()
     search_results['results'] = convert_all_timestamps(search_results['results'])
     search_results['results'] = convert_all_coordinates(search_results['results'])

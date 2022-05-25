@@ -2,7 +2,7 @@ from copy import deepcopy
 
 import pytest
 
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1
 from pyinaturalist.models import Observation
 from pyinaturalist.paginator import Paginator, WrapperPaginator
 from pyinaturalist.v1 import get_observations
@@ -13,7 +13,7 @@ def test_iter(requests_mock):
     page_1 = deepcopy(SAMPLE_DATA['get_observations_node_page1'])
     page_1['total_results'] = 3
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations',
+        f'{API_V1}/observations',
         [
             {'json': page_1, 'status_code': 200},
             {'json': page_1, 'status_code': 200},
@@ -30,7 +30,7 @@ def test_iter(requests_mock):
 
 def test_iter__with_limit(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations',
+        f'{API_V1}/observations',
         [
             {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
             {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
@@ -45,7 +45,7 @@ def test_iter__with_limit(requests_mock):
 @pytest.mark.asyncio
 async def test_async_iter(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations',
+        f'{API_V1}/observations',
         [
             {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
             {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
@@ -61,7 +61,7 @@ async def test_async_iter(requests_mock):
 
 def test_count(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations?per_page=0', json={'results': [], 'total_results': 50}
+        f'{API_V1}/observations?per_page=0', json={'results': [], 'total_results': 50}
     )
 
     paginator = Paginator(get_observations, Observation, q='asdf')

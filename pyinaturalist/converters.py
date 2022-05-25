@@ -197,7 +197,7 @@ def convert_observation_timestamp(
     timestamp: str, tz_offset: str = None, tz_name: str = None, ignoretz: bool = False
 ) -> Optional[datetime]:
     """Convert an observation timestamp + timezone info to a datetime. This is needed because
-    observed_on and created_at can be in in inconsistent (user-submitted?) formats.
+    observed_on and created_at can be in inconsistent (user-submitted?) formats.
     """
     dt = try_datetime(timestamp, ignoretz=ignoretz)
     return convert_offset(dt, tz_offset, tz_name)

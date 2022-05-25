@@ -2,7 +2,7 @@ from logging import getLogger
 from typing import List, Union
 
 from pyinaturalist.constants import (
-    API_V0_BASE_URL,
+    API_V0,
     OBSERVATION_FORMATS,
     V0_OBS_ORDER_BY_PROPERTIES,
     ListResponse,
@@ -78,7 +78,7 @@ def get_observations(**params) -> Union[List, str]:
         raise ValueError('Invalid response format')
     validate_multiple_choice_param(params, 'order_by', V0_OBS_ORDER_BY_PROPERTIES)
 
-    response = get(f'{API_V0_BASE_URL}/observations.{response_format}', **params)
+    response = get(f'{API_V0}/observations.{response_format}', **params)
     if response_format == 'json':
         observations = response.json()
         observations = convert_all_coordinates(observations)
@@ -126,7 +126,7 @@ def create_observation(**params) -> ListResponse:
     """
     photos, sounds, _, params, kwargs = convert_observation_params(params)
     response = post(
-        url=f'{API_V0_BASE_URL}/observations.json',
+        url=f'{API_V0}/observations.json',
         json={'observation': params},
         **kwargs,
     )
@@ -184,7 +184,7 @@ def update_observation(observation_id: int, **params) -> ListResponse:
     """
     photos, sounds, _, params, kwargs = convert_observation_params(params)
     response = put(
-        url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
+        url=f'{API_V0}/observations/{observation_id}.json',
         json={'observation': params},
         **kwargs,
     )
@@ -231,13 +231,13 @@ def upload_photos(observation_id: int, photos: MultiFile, **params) -> ListRespo
         Information about the uploaded photo(s)
     """
     responses = []
+    params['observation_photo[observation_id]'] = observation_id
 
     for photo in ensure_list(photos):
         response = post(
-            url=f'{API_V0_BASE_URL}/observation_photos',
+            url=f'{API_V0}/observation_photos',
             files=photo,
             raise_for_status=False,
-            **{'observation_photo[observation_id]': observation_id},
             **params,
         )
         responses.append(response)
@@ -282,13 +282,13 @@ def upload_sounds(observation_id: int, sounds: MultiFile, **params) -> ListRespo
         Information about the uploaded sound(s)
     """
     responses = []
+    params['observation_sound[observation_id]'] = observation_id
 
     for sound in ensure_list(sounds):
         response = post(
-            url=f'{API_V0_BASE_URL}/observation_sounds',
+            url=f'{API_V0}/observation_sounds',
             files=sound,
             raise_for_status=False,
-            **{'observation_sound[observation_id]': observation_id},
             **params,
         )
         responses.append(response)
@@ -321,7 +321,7 @@ def delete_observation(observation_id: int, **params):
         :py:exc:`~urllib3.exceptions.HTTPError`: 403 if the observation belongs to another user
     """
     response = delete(
-        url=f'{API_V0_BASE_URL}/observations/{observation_id}.json',
+        url=f'{API_V0}/observations/{observation_id}.json',
         raise_for_status=False,
         **params,
     )

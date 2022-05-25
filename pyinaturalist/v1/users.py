@@ -1,10 +1,10 @@
 from logging import getLogger
 
-from pyinaturalist.constants import IntOrStr, JsonResponse
+from pyinaturalist.constants import API_V1, IntOrStr, JsonResponse
 from pyinaturalist.converters import convert_all_timestamps, convert_generic_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.v1 import get_v1
+from pyinaturalist.session import get
 
 logger = getLogger(__name__)
 
@@ -32,7 +32,7 @@ def get_user_by_id(user_id: IntOrStr, **params) -> JsonResponse:
     Returns:
         Response dict containing user record
     """
-    response = get_v1('users', ids=user_id, allow_str_ids=True, **params)
+    response = get(f'{API_V1}/users', ids=user_id, allow_str_ids=True, **params)
     results = response.json()['results']
     if not results:
         return {}
@@ -62,7 +62,7 @@ def get_users_autocomplete(q: str, **params) -> JsonResponse:
     Returns:
         Response dict containing user records
     """
-    response = get_v1('users/autocomplete', q=q, **params)
+    response = get(f'{API_V1}/users/autocomplete', q=q, **params)
     users = response.json()
     users['results'] = convert_all_timestamps(users['results'])
     return users

@@ -195,14 +195,7 @@ class Observation(BaseModel):
     ]
 
     # Convert observation timestamps prior to __attrs_init__
-    def __init__(
-        self,
-        # created_at_details: Dict = None,
-        # observed_on_string: str = None,
-        # observed_time_zone: str = None,
-        # time_zone_offset: str = None,
-        **kwargs,
-    ):
+    def __init__(self, **kwargs):
         created_at_details = kwargs.pop('created_at_details', None)
         observed_on_string = kwargs.pop('observed_on_string', None)
         observed_time_zone = kwargs.pop('observed_time_zone', None)

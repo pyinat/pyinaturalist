@@ -1,6 +1,6 @@
-from pyinaturalist.constants import JsonResponse
+from pyinaturalist.constants import API_V1, JsonResponse
 from pyinaturalist.exceptions import TaxonNotFound
-from pyinaturalist.v1 import get_v1
+from pyinaturalist.session import get
 
 
 def get_controlled_terms(taxon_id: int = None, **params) -> JsonResponse:
@@ -44,7 +44,7 @@ def get_controlled_terms(taxon_id: int = None, **params) -> JsonResponse:
     """
     # This is actually two endpoints, but they are so similar it seems best to combine them
     endpoint = 'controlled_terms/for_taxon' if taxon_id else 'controlled_terms'
-    response = get_v1(endpoint, taxon_id=taxon_id, **params)
+    response = get(f'{API_V1}/{endpoint}', taxon_id=taxon_id, **params)
 
     # controlled_terms/for_taxon returns a 422 if the specified taxon does not exist
     if response.status_code in (404, 422):

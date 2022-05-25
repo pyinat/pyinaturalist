@@ -8,7 +8,7 @@ from requests_cache import CachedResponse
 from rich.console import Console
 from rich.table import Table
 
-from pyinaturalist.constants import API_V0_BASE_URL
+from pyinaturalist.constants import API_V0
 from pyinaturalist.formatters import *
 from test.sample_data import *
 
@@ -148,12 +148,12 @@ def test_pretty_print():
 def test_format_request():
     request = Request(
         method='GET',
-        url=API_V0_BASE_URL,
+        url=API_V0,
         headers={'Accept': 'application/json', 'Authorization': 'password123'},
         json={'client_secret': 'password123'},
     ).prepare()
     request_str = format_request(request)
-    assert API_V0_BASE_URL in request_str
+    assert API_V0 in request_str
     assert 'Accept: application/json' in request_str
     assert 'password123' not in request_str
 

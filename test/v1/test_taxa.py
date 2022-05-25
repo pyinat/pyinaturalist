@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 
 import pytest
 
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1
 from pyinaturalist.v1 import get_taxa, get_taxa_autocomplete, get_taxa_by_id, get_taxa_map_layers
 from test.conftest import load_sample_data
 
@@ -15,7 +15,7 @@ CLASS_THOUGH_PHYLUM = ['class', 'superclass', 'subphylum', 'phylum']
 def test_get_taxa(requests_mock):
     params = {'q': 'vespi', 'rank': 'genus,subgenus,species'}
     requests_mock.get(
-        f'{API_V1_BASE_URL}/taxa?{urlencode(params)}',
+        f'{API_V1}/taxa?{urlencode(params)}',
         json=load_sample_data('get_taxa.json'),
         status_code=200,
     )
@@ -41,7 +41,7 @@ def test_get_taxa(requests_mock):
         ({'max_rank': 'species', 'rank': 'override_me'}, SPECIES_AND_LOWER),
     ],
 )
-@patch('pyinaturalist.v1.taxa.get_v1')
+@patch('pyinaturalist.v1.taxa.get')
 def test_get_taxa_by_rank_range(
     mock_get,
     params,
@@ -57,7 +57,7 @@ def test_get_taxa_by_rank_range(
 def test_get_taxa_by_id(requests_mock):
     taxon_id = 70118
     requests_mock.get(
-        f'{API_V1_BASE_URL}/taxa/{taxon_id}',
+        f'{API_V1}/taxa/{taxon_id}',
         json=load_sample_data('get_taxa_by_id.json'),
         status_code=200,
     )
@@ -80,7 +80,7 @@ def test_get_taxa_by_id__invalid_inputs(taxon_id):
 
 def test_get_taxa_autocomplete(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/taxa/autocomplete',
+        f'{API_V1}/taxa/autocomplete',
         json=load_sample_data('get_taxa_autocomplete.json'),
         status_code=200,
     )
@@ -99,7 +99,7 @@ def test_get_taxa_autocomplete(requests_mock):
 
 def test_get_taxa_map_layers(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/taxa/47588/map_layers',
+        f'{API_V1}/taxa/47588/map_layers',
         json=load_sample_data('get_taxa_map_layers.json'),
         status_code=200,
     )

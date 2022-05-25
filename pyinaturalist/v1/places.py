@@ -1,12 +1,11 @@
 from functools import wraps
 
-from pyinaturalist.constants import JsonResponse, MultiInt
+from pyinaturalist.constants import API_V1, JsonResponse, MultiInt
 from pyinaturalist.converters import convert_all_coordinates, convert_all_place_coordinates
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.models import Place
 from pyinaturalist.paginator import AutocompletePaginator, JsonPaginator
-from pyinaturalist.v1 import get_v1
+from pyinaturalist.session import get
 
 
 def get_places_by_id(place_id: MultiInt, **params) -> JsonResponse:
@@ -33,7 +32,7 @@ def get_places_by_id(place_id: MultiInt, **params) -> JsonResponse:
     Returns:
         Response dict containing place records
     """
-    response = get_v1('places', ids=place_id, **params)
+    response = get(f'{API_V1}/places', ids=place_id, **params)
 
     # Convert coordinates to floats
     places = response.json()
@@ -78,7 +77,9 @@ def get_places_nearby(
     Returns:
         Response dict containing place records, divided into 'standard' and 'community' places.
     """
-    response = get_v1('places/nearby', nelat=nelat, nelng=nelng, swlat=swlat, swlng=swlng, **params)
+    response = get(
+        f'{API_V1}/places/nearby', nelat=nelat, nelng=nelng, swlat=swlat, swlng=swlng, **params
+    )
     return convert_all_place_coordinates(response.json())
 
 
@@ -110,10 +111,9 @@ def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
         Response dict containing place records
     """
     if params.get('page') == 'all':
-        pagninator = PlaceAutocompletePaginator(q=q, **params)
-        places = pagninator.all()
+        places = PlaceAutocompletePaginator(q=q, **params).all()
     else:
-        places = get_v1('places/autocomplete', q=q, **params).json()
+        places = get(f'{API_V1}/places/autocomplete', q=q, **params).json()
 
     places['results'] = convert_all_coordinates(places['results'])
     return places
@@ -123,8 +123,8 @@ class PlaceAutocompletePaginator(JsonPaginator, AutocompletePaginator):  # type:
     def __init__(self, **kwargs):
         kwargs['per_page'] = 20
 
-        @wraps(get_v1)
+        @wraps(get)
         def reqeuest_function(**request_kwargs):
-            return get_v1('places/autocomplete', **request_kwargs)
+            return get(f'{API_V1}/places/autocomplete', **request_kwargs)
 
-        super().__init__(reqeuest_function, model=Place, **kwargs)
+        super().__init__(reqeuest_function, **kwargs)

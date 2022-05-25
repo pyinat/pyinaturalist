@@ -1,6 +1,8 @@
+from copy import deepcopy
 from logging import getLogger
 
 from pyinaturalist.constants import (
+    API_V1,
     V1_OBS_ORDER_BY_PROPERTIES,
     HistogramResponse,
     IntOrStr,
@@ -23,7 +25,7 @@ from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import convert_observation_params, validate_multiple_choice_param
-from pyinaturalist.v1 import delete_v1, get_v1, post_v1, put_v1
+from pyinaturalist.session import delete, get, post, put
 
 logger = getLogger(__name__)
 
@@ -110,7 +112,7 @@ def get_observation_histogram(**params) -> HistogramResponse:
         Dict of ``{time_key: observation_count}``. Keys are ints for 'month of year' and\
         'week of year' intervals, and :py:class:`~datetime.datetime` objects for all other intervals.
     """
-    response = get_v1('observations/histogram', **params)
+    response = get(f'{API_V1}/observations/histogram', **params)
     return convert_observation_histogram(response.json())
 
 
@@ -150,12 +152,12 @@ def get_observations(**params) -> JsonResponse:
     Returns:
         Response dict containing observation records
     """
-    validate_multiple_choice_param(params, 'order_by', V1_OBS_ORDER_BY_PROPERTIES)
+    params = validate_multiple_choice_param(params, 'order_by', V1_OBS_ORDER_BY_PROPERTIES)
 
     if params.get('page') == 'all':
-        observations = paginate_all(get_v1, 'observations', method='id', **params)
+        observations = paginate_all(get, f'{API_V1}/observations', method='id', **params)
     else:
-        observations = get_v1('observations', **params).json()
+        observations = get(f'{API_V1}/observations', **params).json()
 
     observations['results'] = convert_all_coordinates(observations['results'])
     observations['results'] = convert_all_timestamps(observations['results'])
@@ -189,7 +191,7 @@ def get_observation_identifiers(**params) -> JsonResponse:
         Response dict of identifiers
     """
     params.setdefault('per_page', 500)
-    response = get_v1('observations/identifiers', **params)
+    response = get(f'{API_V1}/observations/identifiers', **params)
     return response.json()
 
 
@@ -223,7 +225,7 @@ def get_observation_observers(**params) -> JsonResponse:
         Response dict of observers
     """
     params.setdefault('per_page', 500)
-    response = get_v1('observations/observers', **params)
+    response = get(f'{API_V1}/observations/observers', **params)
     return response.json()
 
 
@@ -254,9 +256,9 @@ def get_observation_species_counts(**params) -> JsonResponse:
         Response dict containing taxon records with counts
     """
     if params.get('page') == 'all':
-        return paginate_all(get_v1, 'observations/species_counts', **params)
+        return paginate_all(get, f'{API_V1}/observations/species_counts', **params)
     else:
-        return get_v1('observations/species_counts', **params).json()
+        return get(f'{API_V1}/observations/species_counts', **params).json()
 
 
 @document_request_params(*docs._get_observations)
@@ -281,7 +283,7 @@ def get_observation_popular_field_values(**params) -> JsonResponse:
         Response dict. Each record contains a ``count``, a ``month_of_year`` histogram, a
             ``controlled_attribute``, and a ``controlled_value``.
     """
-    response_json = get_v1('observations/popular_field_values', **params).json()
+    response_json = get(f'{API_V1}/observations/popular_field_values', **params).json()
     for r in response_json['results']:
         r['month_of_year'] = convert_histogram(r['month_of_year'], interval='month_of_year')
     return response_json
@@ -307,9 +309,9 @@ def get_observation_taxonomy(user_id: IntOrStr = None, **params) -> JsonResponse
         Response dict containing taxon records with counts
     """
     if params.get('page') == 'all':
-        return paginate_all(get_v1, 'observations/taxonomy', user_id=user_id, **params)
+        return paginate_all(get, f'{API_V1}/observations/taxonomy', user_id=user_id, **params)
     else:
-        return get_v1('observations/taxonomy', user_id=user_id, **params).json()
+        return get(f'{API_V1}/observations/taxonomy', user_id=user_id, **params).json()
 
 
 @document_common_args
@@ -334,7 +336,7 @@ def get_observation_taxon_summary(observation_id: int, **params) -> JsonResponse
     Returns:
         Response dict containing taxon summary, optionally with conservation status and listed taxon
     """
-    results = get_v1(f'observations/{observation_id}/taxon_summary', **params).json()
+    results = get(f'{API_V1}/observations/{observation_id}/taxon_summary', **params).json()
     results['conservation_status'] == convert_generic_timestamps(results['conservation_status'])
     results['listed_taxon'] == convert_generic_timestamps(results['listed_taxon'])
     return results
@@ -376,7 +378,7 @@ def create_observation(**params) -> JsonResponse:
         JSON response containing the newly created observation(s)
     """
     photos, sounds, photo_ids, params, kwargs = convert_observation_params(params)
-    response = post_v1('observations', json={'observation': params}, **kwargs)
+    response = post(f'{API_V1}/observations', json={'observation': params}, **kwargs)
     response_json = response.json()
     observation_id = response_json['id']
 
@@ -427,7 +429,7 @@ def update_observation(observation_id: int, **params) -> ListResponse:
         payload['local_photos'] = {str(observation_id): combined_photo_ids}
         kwargs.pop('ignore_photos', None)
 
-    response = put_v1(f'observations/{observation_id}', json=payload, **kwargs)
+    response = put(f'{API_V1}/observations/{observation_id}', json=payload, **kwargs)
     upload(observation_id, photos=photos, sounds=sounds, **kwargs)
     return response.json()
 
@@ -483,23 +485,17 @@ def upload(
     logger.info(f'Uploading {len(photos)} photos and {len(sounds)} sounds')
 
     # Upload photos
+    photo_params = deepcopy(params)
+    photo_params['observation_photo[observation_id]'] = observation_id
     for photo in photos:
-        response = post_v1(
-            'observation_photos',
-            files=photo,
-            **{'observation_photo[observation_id]': observation_id},
-            **params,
-        )
+        response = post(f'{API_V1}/observation_photos', files=photo, **photo_params)
         responses.append(response)
 
     # Upload sounds
+    sound_params = deepcopy(params)
+    sound_params['observation_sound[observation_id]'] = observation_id
     for sound in sounds:
-        response = post_v1(
-            'observation_sounds',
-            files=sound,
-            **{'observation_sound[observation_id]': observation_id},
-            **params,
-        )
+        response = post(f'{API_V1}/observation_sounds', files=sound, **sound_params)
         responses.append(response)
 
     # Attach previously uploaded photos by ID
@@ -535,8 +531,8 @@ def delete_observation(observation_id: int, access_token: str = None, **params):
         :py:exc:`.ObservationNotFound` if the requested observation doesn't exist
         :py:exc:`requests.HTTPError` (403) if the observation belongs to another user
     """
-    response = delete_v1(
-        f'observations/{observation_id}',
+    response = delete(
+        f'{API_V1}/observations/{observation_id}',
         access_token=access_token,
         raise_for_status=False,
         **params,

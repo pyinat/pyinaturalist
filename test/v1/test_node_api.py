@@ -2,7 +2,7 @@ from datetime import datetime
 
 from dateutil.tz import tzutc
 
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1
 from pyinaturalist.v1 import get_user_by_id, get_users_autocomplete
 from test.conftest import load_sample_data
 
@@ -10,7 +10,7 @@ from test.conftest import load_sample_data
 def test_get_user_by_id(requests_mock):
     user_id = 1
     requests_mock.get(
-        f'{API_V1_BASE_URL}/users/{user_id}',
+        f'{API_V1}/users/{user_id}',
         json=load_sample_data('get_user_by_id.json'),
         status_code=200,
     )
@@ -23,7 +23,7 @@ def test_get_user_by_id(requests_mock):
 
 def test_get_users_autocomplete(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/users/autocomplete',
+        f'{API_V1}/users/autocomplete',
         json=load_sample_data('get_users_autocomplete.json'),
         status_code=200,
     )

@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from dateutil.tz import tzutc
 
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1
 from pyinaturalist.v1 import (
     add_project_observation,
     add_project_users,
@@ -18,7 +18,7 @@ from test.sample_data import SAMPLE_DATA
 
 def test_get_projects(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/projects',
+        f'{API_V1}/projects',
         json=SAMPLE_DATA['get_projects'],
         status_code=200,
     )
@@ -37,7 +37,7 @@ def test_get_projects(requests_mock):
 
 def test_get_projects_by_id(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/projects/8348,6432',
+        f'{API_V1}/projects/8348,6432',
         json=SAMPLE_DATA['get_projects_by_id'],
         status_code=200,
     )
@@ -55,7 +55,7 @@ def test_get_projects_by_id(requests_mock):
 
 def test_add_project_observation(requests_mock):
     requests_mock.post(
-        f'{API_V1_BASE_URL}/project_observations',
+        f'{API_V1}/project_observations',
         json=SAMPLE_DATA['add_project_observation'],
         status_code=200,
     )
@@ -63,10 +63,10 @@ def test_add_project_observation(requests_mock):
     assert response['id'] == 54986584
 
 
-@patch('pyinaturalist.v1.projects.put_v1')
+@patch('pyinaturalist.v1.projects.put')
 def test_add_project_users(mock_put, requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/projects/1234',
+        f'{API_V1}/projects/1234',
         json=SAMPLE_DATA['get_projects'],
         status_code=200,
     )
@@ -79,7 +79,7 @@ def test_add_project_users(mock_put, requests_mock):
 
 def test_delete_project_observation(requests_mock):
     requests_mock.delete(
-        f'{API_V1_BASE_URL}/projects/1234/remove',
+        f'{API_V1}/projects/1234/remove',
         status_code=200,
     )
     response = delete_project_observation(
@@ -88,10 +88,10 @@ def test_delete_project_observation(requests_mock):
     assert response.status_code == 200
 
 
-@patch('pyinaturalist.v1.projects.put_v1')
+@patch('pyinaturalist.v1.projects.put')
 def test_delete_project_users(mock_put, requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/projects/1234',
+        f'{API_V1}/projects/1234',
         json=SAMPLE_DATA['get_projects'],
         status_code=200,
     )
@@ -103,7 +103,7 @@ def test_delete_project_users(mock_put, requests_mock):
     assert rules[1]['operand_id'] == 5678 and rules[1]['_destroy'] is True
 
 
-@patch('pyinaturalist.v1.projects.put_v1')
+@patch('pyinaturalist.v1.projects.put')
 def test_update_project(mock_put):
     update_project(1234, title='New Title', description='New Description')
 

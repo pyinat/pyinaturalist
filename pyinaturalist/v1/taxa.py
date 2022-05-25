@@ -1,10 +1,10 @@
-from pyinaturalist.constants import JsonResponse, MultiInt
+from pyinaturalist.constants import API_V1, JsonResponse, MultiInt
 from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import convert_rank_range
-from pyinaturalist.v1 import get_v1
+from pyinaturalist.session import get
 
 
 @document_request_params(docs._taxon_params, docs._taxon_id_params, docs._pagination)
@@ -34,9 +34,9 @@ def get_taxa(**params) -> JsonResponse:
     """
     params = convert_rank_range(params)
     if params.get('page') == 'all':
-        taxa = paginate_all(get_v1, 'taxa', **params)
+        taxa = paginate_all(get, f'{API_V1}/taxa', **params)
     else:
-        taxa = get_v1('taxa', **params).json()
+        taxa = get(f'{API_V1}/taxa', **params).json()
 
     taxa['results'] = convert_all_timestamps(taxa['results'])
     return taxa
@@ -71,7 +71,7 @@ def get_taxa_by_id(taxon_id: MultiInt, **params) -> JsonResponse:
     Returns:
         Response dict containing taxon records
     """
-    response = get_v1('taxa', ids=taxon_id, **params)
+    response = get(f'{API_V1}/taxa', ids=taxon_id, **params)
     taxa = response.json()
     taxa['results'] = convert_all_timestamps(taxa['results'])
     return taxa
@@ -124,7 +124,7 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
         Response dict containing taxon records
     """
     params = convert_rank_range(params)
-    response = get_v1('taxa/autocomplete', **params)
+    response = get(f'{API_V1}/taxa/autocomplete', **params)
     return response.json()
 
 
@@ -145,6 +145,6 @@ def get_taxa_map_layers(taxon_id: int, **params) -> JsonResponse:
     Args:
         taxon_id: iNaturalist taxon ID. Only one value is allowed.
     """
-    response = get_v1(f'taxa/{taxon_id}/map_layers', **params).json()
+    response = get(f'{API_V1}/taxa/{taxon_id}/map_layers', **params).json()
     response['gbif_url'] = f'https://www.gbif.org/species/{response["gbif_id"]}'
     return response

@@ -6,7 +6,7 @@ import pytest
 from dateutil.tz import tzutc
 from requests import HTTPError
 
-from pyinaturalist.constants import API_V0_BASE_URL, OBSERVATION_FORMATS
+from pyinaturalist.constants import API_V0, OBSERVATION_FORMATS
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.v0 import (
     create_observation,
@@ -31,7 +31,7 @@ def test_get_observations(response_format, requests_mock):
     key = 'json' if response_format == 'json' else 'text'
 
     requests_mock.get(
-        f'{API_V0_BASE_URL}/observations.{response_format}',
+        f'{API_V0}/observations.{response_format}',
         status_code=200,
         **{key: mock_response},
     )
@@ -60,7 +60,7 @@ def test_get_observations__invalid_format(response_format):
 
 def test_create_observation(requests_mock):
     requests_mock.post(
-        f'{API_V0_BASE_URL}/observations.json',
+        f'{API_V0}/observations.json',
         json=load_sample_data('create_observation_result.json'),
         status_code=200,
     )
@@ -79,7 +79,7 @@ def test_create_observation__with_datetime(post, requests_mock):
     prepare_request().
     """
     requests_mock.post(
-        f'{API_V0_BASE_URL}/observations.json',
+        f'{API_V0}/observations.json',
         json=load_sample_data('create_observation_result.json'),
         status_code=200,
     )
@@ -119,7 +119,7 @@ def test_create_observation_fail(requests_mock):
     }
 
     requests_mock.post(
-        f'{API_V0_BASE_URL}/observations.json',
+        f'{API_V0}/observations.json',
         json=load_sample_data('create_observation_fail.json'),
         status_code=422,
     )
@@ -132,7 +132,7 @@ def test_create_observation_fail(requests_mock):
 
 def test_update_observation(requests_mock):
     requests_mock.put(
-        f'{API_V0_BASE_URL}/observations/17932425.json',
+        f'{API_V0}/observations/17932425.json',
         json=load_sample_data('update_observation_result.json'),
         status_code=200,
     )
@@ -174,7 +174,7 @@ def test_update_nonexistent_observation(requests_mock):
     'observation does not exist'
     """
     requests_mock.put(
-        f'{API_V0_BASE_URL}/observations/999999999.json',
+        f'{API_V0}/observations/999999999.json',
         json={'error': 'Cette observation n’existe plus.'},
         status_code=410,
     )
@@ -193,7 +193,7 @@ def test_update_nonexistent_observation(requests_mock):
 def test_update_observation_not_mine(requests_mock):
     """When we try to update the obs of another user, iNat returns an error 410 with 'obs does not longer exists'."""
     requests_mock.put(
-        f'{API_V0_BASE_URL}/observations/16227955.json',
+        f'{API_V0}/observations/16227955.json',
         json={'error': 'Cette observation n’existe plus.'},
         status_code=410,
     )
@@ -211,7 +211,7 @@ def test_update_observation_not_mine(requests_mock):
 
 def test_upload_photos(requests_mock):
     requests_mock.post(
-        f'{API_V0_BASE_URL}/observation_photos',
+        f'{API_V0}/observation_photos',
         json=load_sample_data('post_observation_photos.json'),
         status_code=200,
     )
@@ -224,7 +224,7 @@ def test_upload_photos(requests_mock):
 
 def test_upload_sounds(requests_mock):
     requests_mock.post(
-        f'{API_V0_BASE_URL}/observation_sounds',
+        f'{API_V0}/observation_sounds',
         json=load_sample_data('post_observation_sounds.json'),
         status_code=200,
     )
@@ -236,14 +236,14 @@ def test_upload_sounds(requests_mock):
 
 
 def test_delete_observation(requests_mock):
-    requests_mock.delete(f'{API_V0_BASE_URL}/observations/24774619.json', status_code=200)
+    requests_mock.delete(f'{API_V0}/observations/24774619.json', status_code=200)
     response = delete_observation(observation_id=24774619, access_token='valid token')
     assert response is None
 
 
 def test_delete_unexisting_observation(requests_mock):
     """ObservationNotFound is raised if the observation doesn't exists"""
-    requests_mock.delete(f'{API_V0_BASE_URL}/observations/24774619.json', status_code=404)
+    requests_mock.delete(f'{API_V0}/observations/24774619.json', status_code=404)
 
     with pytest.raises(ObservationNotFound):
         delete_observation(observation_id=24774619, access_token='valid token')

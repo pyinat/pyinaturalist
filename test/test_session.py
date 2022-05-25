@@ -1,5 +1,5 @@
 from time import sleep
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from requests import Request
@@ -16,7 +16,6 @@ from pyinaturalist.session import (
     get_refresh_params,
     post,
     put,
-    request,
 )
 
 
@@ -40,18 +39,9 @@ def test_http_methods(mock_send, mock_format, http_func, http_method):
 @patch('pyinaturalist.session.Session.send')
 def test_request_headers(mock_send, mock_format):
     """Test that the request() wrapper passes along expected headers"""
-    request('GET', 'https://url', access_token='token')
+    ClientSession().request('GET', 'https://url', access_token='token')
     request_obj = mock_send.call_args[0][0]
     assert request_obj.headers['Authorization'] == 'Bearer token'
-
-
-@patch('pyinaturalist.session.format_response')
-@patch('pyinaturalist.session.ClientSession')
-def test_request_session(mock_ClientSession, mock_format):
-    mock_session = MagicMock()
-    request('GET', 'https://url', session=mock_session)
-    mock_session.send.assert_called()
-    mock_ClientSession.assert_not_called()
 
 
 # Test relevant combinations of dry-run settings and HTTP methods
@@ -83,7 +73,7 @@ def test_request_session(mock_ClientSession, mock_format):
 )
 @patch('pyinaturalist.session.format_response')
 @patch('pyinaturalist.session.getenv')
-@patch('pyinaturalist.session.Session.send')
+@patch.object(ClientSession, 'send')
 def test_request_dry_run(
     mock_send,
     mock_getenv,
@@ -102,7 +92,7 @@ def test_request_dry_run(
     mock_getenv.side_effect = env_vars.__getitem__
 
     # Mock constants and run request
-    response = request(method, 'http://url')
+    response = ClientSession().request(method, 'http://url')
 
     # Verify that the request was or wasn't mocked based on settings
     if expected_real_request:
@@ -115,7 +105,7 @@ def test_request_dry_run(
 
 @patch('pyinaturalist.session.Session.send')
 def test_request_dry_run_kwarg(mock_request):
-    response = request('GET', 'http://url', dry_run=True)
+    response = ClientSession().request('GET', 'http://url', dry_run=True)
     assert response == MOCK_RESPONSE
     assert mock_request.call_count == 0
 
@@ -125,7 +115,7 @@ def test_request_dry_run_disabled(requests_mock):
     real_response = {'results': ['response object']}
     requests_mock.get('http://url', json={'results': ['response object']}, status_code=200)
 
-    assert request('GET', 'http://url').json() == real_response
+    assert ClientSession().request('GET', 'http://url').json() == real_response
 
 
 def test_session__cache_file():

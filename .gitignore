@@ -59,6 +59,9 @@ docs/modules/
 *.sqlite
 *.db
 
+# Profilers
+profile.json
+
 # Editors
 .~*
 .idea/

@@ -4,7 +4,7 @@ from datetime import datetime
 from dateutil.tz import tzutc
 
 from pyinaturalist.client import iNatClient
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1
 from pyinaturalist.models import (
     ConservationStatus,
     LifeList,
@@ -21,7 +21,7 @@ from test.sample_data import *
 def test_from_id(requests_mock):
     observation_id = 57754375
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations',
+        f'{API_V1}/observations',
         json=SAMPLE_DATA['get_observations_node_page1'],
         status_code=200,
     )
@@ -34,7 +34,7 @@ def test_from_id(requests_mock):
 def test_from_id__not_found(requests_mock):
     observation_id = 57754375
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations',
+        f'{API_V1}/observations',
         json={'results': [], 'total_results': 0},
         status_code=200,
     )
@@ -44,7 +44,7 @@ def test_from_id__not_found(requests_mock):
 def test_from_ids(requests_mock):
     observation_id = 57754375
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations',
+        f'{API_V1}/observations',
         [
             {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
             {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
@@ -59,7 +59,7 @@ def test_from_ids(requests_mock):
 def test_from_ids__limit(requests_mock):
     observation_id = 57754375
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations',
+        f'{API_V1}/observations',
         [
             {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
             {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
@@ -73,7 +73,7 @@ def test_from_ids__limit(requests_mock):
 
 def test_search(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations',
+        f'{API_V1}/observations',
         json=SAMPLE_DATA['get_observations_node_page1'],
         status_code=200,
     )
@@ -91,7 +91,7 @@ def test_search(requests_mock):
 
 def test_histogram(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/histogram',
+        f'{API_V1}/observations/histogram',
         json=SAMPLE_DATA['get_observation_histogram_day'],
         status_code=200,
     )
@@ -103,7 +103,7 @@ def test_histogram(requests_mock):
 
 def test_identifiers(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/identifiers',
+        f'{API_V1}/observations/identifiers',
         json=j_observation_identifiers,
         status_code=200,
     )
@@ -117,7 +117,7 @@ def test_identifiers(requests_mock):
 
 def test_observers(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/observers',
+        f'{API_V1}/observations/observers',
         json=j_observation_observers,
         status_code=200,
     )
@@ -132,7 +132,7 @@ def test_observers(requests_mock):
 
 def test_life_list(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/taxonomy',
+        f'{API_V1}/observations/taxonomy',
         json=j_life_list,
         status_code=200,
     )
@@ -148,7 +148,7 @@ def test_life_list(requests_mock):
 
 def test_popular_fields(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/popular_field_values',
+        f'{API_V1}/observations/popular_field_values',
         json=SAMPLE_DATA['get_observation_popular_field_values'],
         status_code=200,
     )
@@ -162,7 +162,7 @@ def test_popular_fields(requests_mock):
 
 def test_species_counts(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/species_counts',
+        f'{API_V1}/observations/species_counts',
         json=SAMPLE_DATA['get_observation_species_counts'],
         status_code=200,
     )
@@ -178,7 +178,7 @@ def test_species_counts(requests_mock):
 
 def test_taxon_summary__with_conservation_status(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/89238647/taxon_summary',
+        f'{API_V1}/observations/89238647/taxon_summary',
         json=j_taxon_summary_1_conserved,
         status_code=200,
     )
@@ -193,7 +193,7 @@ def test_taxon_summary__with_conservation_status(requests_mock):
 
 def test_taxon_summary__with_listed_taxon(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/7849808/taxon_summary',
+        f'{API_V1}/observations/7849808/taxon_summary',
         json=j_taxon_summary_2_listed,
         status_code=200,
     )

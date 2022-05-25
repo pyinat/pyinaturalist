@@ -2,7 +2,7 @@ from datetime import datetime
 
 from dateutil.tz import tzutc
 
-from pyinaturalist.constants import API_V0_BASE_URL
+from pyinaturalist.constants import API_V0
 from pyinaturalist.v0 import get_observation_fields, put_observation_field_values
 from test.sample_data import SAMPLE_DATA
 
@@ -10,7 +10,7 @@ from test.sample_data import SAMPLE_DATA
 def test_get_observation_fields(requests_mock):
     """get_observation_fields() work as expected (basic use)"""
     requests_mock.get(
-        f'{API_V0_BASE_URL}/observation_fields.json?q=sex',
+        f'{API_V0}/observation_fields.json?q=sex',
         json=SAMPLE_DATA['get_observation_fields_page2'],
         status_code=200,
     )
@@ -29,7 +29,7 @@ def test_get_observation_fields__all_pages(requests_mock):
     page_2_json_response = SAMPLE_DATA['get_observation_fields_page2']
 
     requests_mock.get(
-        f'{API_V0_BASE_URL}/observation_fields.json',
+        f'{API_V0}/observation_fields.json',
         [
             {'json': page_1_json_response, 'status_code': 200},
             {'json': page_2_json_response, 'status_code': 200},
@@ -47,7 +47,7 @@ def test_get_observation_fields__all_pages(requests_mock):
 
 def test_put_observation_field_values(requests_mock):
     requests_mock.put(
-        f'{API_V0_BASE_URL}/observation_field_values/31',
+        f'{API_V0}/observation_field_values/31',
         json=SAMPLE_DATA['post_put_observation_field_value'],
         status_code=200,
     )
