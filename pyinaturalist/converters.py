@@ -168,9 +168,10 @@ def convert_observation_timestamps(result: ResponseResult) -> ResponseResult:
     """Replace observation date/time info with datetime objects"""
     observation = result.copy()
 
-    observed_on = observation.pop('time_observed_at', None)
-    if not isinstance(observation.get('observed_on'), datetime) and observed_on:
-        observation['observed_on'] = try_datetime(observed_on)
+    if not isinstance(observation.get('observed_on'), datetime):
+        observation['observed_on'] = try_datetime(
+            observation.pop('time_observed_at', None) or observation.get('observed_on')
+        )
 
     created_at = observation.get('created_at')
     if not isinstance(created_at, datetime):

@@ -98,6 +98,7 @@ def test_format_histogram__int_keys():
     assert all([isinstance(v, int) for v in histogram.values()])
 
 
+@pytest.mark.parametrize('observed_key', ['time_observed_at', 'observed_on'])
 @pytest.mark.parametrize(
     'observed_on, created_at, expected_observed, expected_created',
     [
@@ -128,12 +129,9 @@ def test_format_histogram__int_keys():
     ],
 )
 def test_convert_observation_timestamps(
-    observed_on, created_at, expected_observed, expected_created
+    observed_on, created_at, expected_observed, expected_created, observed_key
 ):
-    observation = {
-        'created_at': created_at,
-        'time_observed_at': observed_on,
-    }
+    observation = {'created_at': created_at, observed_key: observed_on}
     converted = convert_observation_timestamps(observation)
     assert converted.get('observed_on') == expected_observed
     assert converted['created_at'] == expected_created
