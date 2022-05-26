@@ -1,6 +1,12 @@
 from typing import Optional
 
-from pyinaturalist.constants import HistogramResponse, IntOrStr, ListResponse
+from pyinaturalist.constants import (
+    API_V1,
+    V1_OBS_ORDER_BY_PROPERTIES,
+    HistogramResponse,
+    IntOrStr,
+    ListResponse,
+)
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import (
@@ -12,6 +18,7 @@ from pyinaturalist.models import (
     UserCounts,
 )
 from pyinaturalist.paginator import Paginator
+from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import (
     create_observation,
     delete_observation,
@@ -45,7 +52,12 @@ class ObservationController(BaseController):
 
     @document_controller_params(get_observations)
     def search(self, **params) -> Paginator[Observation]:
-        return self.client.paginate(get_observations, Observation, method='id', **params)
+        params = validate_multiple_choice_param(params, 'order_by', V1_OBS_ORDER_BY_PROPERTIES)
+        params = self.client.add_client_settings(get_observations, params)
+        # self.client.session.get(f'{API_V1}/observations', **params).json()
+        return Paginator(
+            self.client.session.get, Observation, f'{API_V1}/observations', method='id', **params
+        )
 
     # TODO: Does this need a model with utility functions, or is {datetime: count} sufficient?
     @document_controller_params(get_observation_histogram)

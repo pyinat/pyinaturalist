@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 from dateutil.tz import tzoffset, tzutc
 
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.v1 import (
     create_observation,
@@ -28,7 +28,7 @@ from test.sample_data import SAMPLE_DATA, j_taxon_summary_1_conserved, j_taxon_s
 
 def test_get_observation(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations',
+        f'{API_V1}/observations',
         json=SAMPLE_DATA['get_observation'],
         status_code=200,
     )
@@ -42,7 +42,7 @@ def test_get_observation(requests_mock):
 
 def test_get_observation_histogram(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/histogram',
+        f'{API_V1}/observations/histogram',
         json=SAMPLE_DATA['get_observation_histogram_month'],
         status_code=200,
     )
@@ -57,7 +57,7 @@ def test_get_observation_histogram(requests_mock):
 
 def test_get_observations(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations',
+        f'{API_V1}/observations',
         json=SAMPLE_DATA['get_observations_node_page1'],
         status_code=200,
     )
@@ -85,7 +85,7 @@ def test_get_observations(requests_mock):
 
 def test_get_observations__all_pages(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations',
+        f'{API_V1}/observations',
         [
             {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
             {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
@@ -98,7 +98,7 @@ def test_get_observations__all_pages(requests_mock):
 
 def test_get_observation__non_existent(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations',
+        f'{API_V1}/observations',
         json=SAMPLE_DATA['get_nonexistent_observation'],
         status_code=200,
     )
@@ -108,7 +108,7 @@ def test_get_observation__non_existent(requests_mock):
 
 def test_get_observation_identifiers(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/identifiers',
+        f'{API_V1}/observations/identifiers',
         json=SAMPLE_DATA['get_observation_identifiers_node_page1'],
         status_code=200,
     )
@@ -124,7 +124,7 @@ def test_get_observation_identifiers(requests_mock):
 
 def test_get_observation_observers(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/observers',
+        f'{API_V1}/observations/observers',
         json=SAMPLE_DATA['get_observation_observers_node_page1'],
         status_code=200,
     )
@@ -140,7 +140,7 @@ def test_get_observation_observers(requests_mock):
 
 def test_get_observation_popular_field_values(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/popular_field_values',
+        f'{API_V1}/observations/popular_field_values',
         json=SAMPLE_DATA['get_observation_popular_field_values'],
         status_code=200,
     )
@@ -155,7 +155,7 @@ def test_get_observation_popular_field_values(requests_mock):
 
 def test_get_observation_species_counts(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/species_counts',
+        f'{API_V1}/observations/species_counts',
         json=SAMPLE_DATA['get_observation_species_counts'],
         status_code=200,
     )
@@ -169,7 +169,7 @@ def test_get_observation_species_counts(requests_mock):
 
 def test_get_observation_species_counts__all_pages(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/species_counts',
+        f'{API_V1}/observations/species_counts',
         [
             {
                 'json': SAMPLE_DATA['get_all_observation_species_counts_page1'],
@@ -203,7 +203,7 @@ def test_get_observation_species_counts__invalid_multiple_choice_params():
 
 def test_get_observation_taxonomy(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/taxonomy',
+        f'{API_V1}/observations/taxonomy',
         json=SAMPLE_DATA['get_observation_taxonomy'],
         status_code=200,
     )
@@ -218,7 +218,7 @@ def test_get_observation_taxonomy(requests_mock):
 
 def test_get_observation_taxon_summary__with_conservation_status(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/89238647/taxon_summary',
+        f'{API_V1}/observations/89238647/taxon_summary',
         json=j_taxon_summary_1_conserved,
         status_code=200,
     )
@@ -232,7 +232,7 @@ def test_get_observation_taxon_summary__with_conservation_status(requests_mock):
 
 def test_get_observation_taxon_summary__with_listed_taxon(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/observations/7849808/taxon_summary',
+        f'{API_V1}/observations/7849808/taxon_summary',
         json=j_taxon_summary_2_listed,
         status_code=200,
     )
@@ -247,7 +247,7 @@ def test_get_observation_taxon_summary__with_listed_taxon(requests_mock):
 
 def test_create_observation(requests_mock):
     requests_mock.post(
-        f'{API_V1_BASE_URL}/observations',
+        f'{API_V1}/observations',
         json=SAMPLE_DATA['create_observation_v1'],
         status_code=200,
     )
@@ -260,7 +260,7 @@ def test_create_observation(requests_mock):
 
 
 @patch('pyinaturalist.v1.observations.upload')
-@patch('pyinaturalist.v1.observations.post_v1')
+@patch('pyinaturalist.v1.observations.post')
 def test_create_observation__with_files(mock_post, mock_upload):
     create_observation(
         access_token='token',
@@ -278,7 +278,7 @@ def test_create_observation__with_files(mock_post, mock_upload):
 
 def test_update_observation(requests_mock):
     requests_mock.put(
-        f'{API_V1_BASE_URL}/observations/17932425',
+        f'{API_V1}/observations/17932425',
         json=SAMPLE_DATA['update_observation_result'],
         status_code=200,
     )
@@ -293,7 +293,7 @@ def test_update_observation(requests_mock):
 
 
 @patch('pyinaturalist.v1.observations.upload')
-@patch('pyinaturalist.v1.observations.put_v1')
+@patch('pyinaturalist.v1.observations.put')
 def test_update_observation__with_photos(mock_put, mock_upload):
     update_observation(1234, access_token='token', photos='photo.jpg')
 
@@ -306,7 +306,7 @@ def test_update_observation__with_photos(mock_put, mock_upload):
 
 
 @patch('pyinaturalist.v1.observations.get_observation')
-@patch('pyinaturalist.v1.observations.put_v1')
+@patch('pyinaturalist.v1.observations.put')
 def test_update_observation__with_photo_ids(mock_put, mock_get_observation):
     mock_get_observation.return_value = {'photos': [{'id': 1234}]}
     update_observation(1234, access_token='token', photo_ids=5678)
@@ -316,7 +316,7 @@ def test_update_observation__with_photo_ids(mock_put, mock_get_observation):
     assert payload['local_photos'] == {'1234': [1234, 5678]}
 
 
-@patch('pyinaturalist.v1.observations.put_v1')
+@patch('pyinaturalist.v1.observations.put')
 def test_update_observation__remove_existing_photos(mock_put):
     update_observation(1234, access_token='token', ignore_photos=False)
 
@@ -326,12 +326,12 @@ def test_update_observation__remove_existing_photos(mock_put):
 
 def test_upload(requests_mock):
     requests_mock.post(
-        f'{API_V1_BASE_URL}/observation_photos',
+        f'{API_V1}/observation_photos',
         json=SAMPLE_DATA['post_observation_photos'],
         status_code=200,
     )
     requests_mock.post(
-        f'{API_V1_BASE_URL}/observation_sounds',
+        f'{API_V1}/observation_sounds',
         json=SAMPLE_DATA['post_observation_sounds'],
         status_code=200,
     )
@@ -353,6 +353,6 @@ def test_upload__with_photo_ids(mock_update_observation):
 
 
 def test_delete_observation(requests_mock):
-    requests_mock.delete(f'{API_V1_BASE_URL}/observations/24774619', status_code=200)
+    requests_mock.delete(f'{API_V1}/observations/24774619', status_code=200)
     response = delete_observation(observation_id=24774619, access_token='valid token')
     assert response is None

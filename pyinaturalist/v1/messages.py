@@ -1,10 +1,10 @@
 from logging import getLogger
 
-from pyinaturalist.constants import JsonResponse, MultiInt
+from pyinaturalist.constants import API_V1, JsonResponse, MultiInt
 from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.v1 import get_v1
+from pyinaturalist.session import get
 
 logger = getLogger(__name__)
 
@@ -30,7 +30,7 @@ def get_message_by_id(message_id: MultiInt, **params) -> JsonResponse:
     Returns:
         Response dict containing user record
     """
-    response = get_v1('messages', ids=message_id, **params)
+    response = get(f'{API_V1}/messages', ids=message_id, **params)
     messages = response.json()
     messages['results'] = convert_all_timestamps(messages['results'])
     return messages
@@ -62,7 +62,7 @@ def get_messages(**params) -> JsonResponse:
         params['box'] = 'any'
         params['q'] = None
 
-    response = get_v1('messages', **params)
+    response = get(f'{API_V1}/messages', **params)
     messages = response.json()
     messages['results'] = convert_all_timestamps(messages['results'])
     return messages
@@ -83,7 +83,7 @@ def get_unread_meassage_count(**params) -> int:
     Returns:
         Unread message count
     """
-    response = get_v1('messages/unread', **params)
+    response = get(f'{API_V1}/messages/unread', **params)
     try:
         return int(response.json()['count'])
     except (KeyError, TypeError, ValueError):

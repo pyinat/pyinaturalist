@@ -2,14 +2,14 @@ from datetime import datetime
 
 from dateutil.tz import tzutc
 
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1
 from pyinaturalist.v1 import get_posts
 from test.conftest import load_sample_data
 
 
 def test_get_posts_from_login(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/posts?login=eduramirezh',
+        f'{API_V1}/posts?login=eduramirezh',
         json=load_sample_data('get_posts_login.json'),
         status_code=200,
     )
@@ -25,7 +25,7 @@ def test_get_posts_from_login(requests_mock):
 
 def test_get_posts_from_project(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/posts?project_id=100',
+        f'{API_V1}/posts?project_id=100',
         json=load_sample_data('get_posts_project.json'),
         status_code=200,
     )

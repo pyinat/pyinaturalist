@@ -1,6 +1,6 @@
 from typing import Any
 
-from pyinaturalist.constants import API_V0_BASE_URL, JsonResponse
+from pyinaturalist.constants import API_V0, JsonResponse
 from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
@@ -35,14 +35,14 @@ def get_observation_fields(**params) -> JsonResponse:
     all_pages = params.pop('page', None)
     params['page'] = 1
     params['per_page'] = 30  # This seems to return 30 results regardless of the per_page param
-    obs_fields = get(f'{API_V0_BASE_URL}/observation_fields.json', **params).json()
+    obs_fields = get(f'{API_V0}/observation_fields.json', **params).json()
 
     # This endpoint returns a list with no pagination metadata, so iterate until there are no more pages
     if all_pages:
         page_results = obs_fields
         while len(page_results) == 30:
             params['page'] += 1
-            page_results = get(f'{API_V0_BASE_URL}/observation_fields.json', **params).json()
+            page_results = get(f'{API_V0}/observation_fields.json', **params).json()
             obs_fields.extend(page_results)
 
     obs_fields = convert_all_timestamps(obs_fields)
@@ -91,7 +91,5 @@ def put_observation_field_values(
             'value': value,
         }
     }
-    response = put(
-        f'{API_V0_BASE_URL}/observation_field_values/{observation_field_id}', json=body, **params
-    )
+    response = put(f'{API_V0}/observation_field_values/{observation_field_id}', json=body, **params)
     return response.json()

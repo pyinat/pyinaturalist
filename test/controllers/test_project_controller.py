@@ -5,7 +5,7 @@ from unittest.mock import patch
 from dateutil.tz import tzutc
 
 from pyinaturalist.client import iNatClient
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1
 from pyinaturalist.models import Project, ProjectObservationField, ProjectUser, User
 from test.sample_data import SAMPLE_DATA, j_project_1, j_project_2, j_project_3_obs_fields
 
@@ -13,7 +13,7 @@ from test.sample_data import SAMPLE_DATA, j_project_1, j_project_2, j_project_3_
 def test_from_id(requests_mock):
     project_id = 8291
     requests_mock.get(
-        f'{API_V1_BASE_URL}/projects/{project_id}',
+        f'{API_V1}/projects/{project_id}',
         json={'results': [j_project_1]},
         status_code=200,
     )
@@ -25,7 +25,7 @@ def test_from_id(requests_mock):
 def test_from_ids(requests_mock):
     project_id = 8291
     requests_mock.get(
-        f'{API_V1_BASE_URL}/projects/{project_id}',
+        f'{API_V1}/projects/{project_id}',
         json={'results': [j_project_1, j_project_2], 'total_results': 2},
         status_code=200,
     )
@@ -47,7 +47,7 @@ def test_from_ids(requests_mock):
 
 def test_search(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/projects',
+        f'{API_V1}/projects',
         json=SAMPLE_DATA['get_projects'],
         status_code=200,
     )
@@ -75,7 +75,7 @@ def test_search(requests_mock):
 
 def test_search__with_obs_fields(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/projects',
+        f'{API_V1}/projects',
         json={'results': [j_project_3_obs_fields], 'total_results': 1},
         status_code=200,
     )
@@ -91,7 +91,7 @@ def test_search__with_obs_fields(requests_mock):
 @patch('pyinaturalist.client.get_access_token', return_value='token')
 def test_add_observation(get_access_token, requests_mock):
     requests_mock.post(
-        f'{API_V1_BASE_URL}/project_observations',
+        f'{API_V1}/project_observations',
         json=SAMPLE_DATA['add_project_observation'],
         status_code=200,
     )

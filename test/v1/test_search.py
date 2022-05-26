@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1
 from pyinaturalist.v1 import search
 from test.conftest import load_sample_data
 
@@ -8,7 +8,7 @@ from test.conftest import load_sample_data
 def test_search(requests_mock):
     """Simulate /search results with one of each record type"""
     requests_mock.get(
-        f'{API_V1_BASE_URL}/search',
+        f'{API_V1}/search',
         json=load_sample_data('get_search.json'),
         status_code=200,
     )

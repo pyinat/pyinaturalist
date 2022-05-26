@@ -11,6 +11,7 @@ from typing import (
     Iterator,
     List,
     Optional,
+    Type,
 )
 
 from requests import Response
@@ -54,7 +55,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
     def __init__(
         self,
         request_function: Callable,
-        model: T,
+        model: Type[T],
         *request_args,
         method: str = 'page',
         limit: int = None,
@@ -83,7 +84,9 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             self.kwargs['page'] = 1
 
         if request_function:
-            log_kwargs = {k: v for k, v in self.kwargs.items() if k != 'session'}
+            log_kwargs = {
+                k: v for k, v in self.kwargs.items() if k not in ['session', 'access_token']
+            }
             logger.debug(
                 f'Prepared paginated request: {self.request_function.__name__}'
                 f'(args={self.request_args}, kwargs={log_kwargs})'
@@ -125,8 +128,10 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         """
         if self.total_results is None:
             kwargs = {**self.kwargs, 'per_page': 0}
-            count_response = self.request_function(*self.request_args, **kwargs)
-            self.total_results = int(count_response['total_results'])
+            response = self.request_function(*self.request_args, **kwargs)
+            if isinstance(response, Response):
+                response = response.json()
+            self.total_results = int(response['total_results'])
         return self.total_results
 
     def next_page(self) -> List[T]:
@@ -228,6 +233,8 @@ class IDPaginator(Paginator):
             return []
 
         response = self.request_function(next_ids, *self.request_args, **self.kwargs)
+        if isinstance(response, Response):
+            response = response.json()
         self.results_fetched += 1
         return response['results'] if 'results' in response else [response]
 
@@ -269,6 +276,14 @@ class AutocompletePaginator(Paginator):
 
 class JsonPaginator(Paginator):
     """Paginator that returns raw response dicts instead of model objects"""
+
+    def __init__(
+        self,
+        request_function: Callable,
+        *request_args,
+        **kwargs,
+    ):
+        super().__init__(request_function, None, *request_args, **kwargs)  # type: ignore
 
     def __iter__(self) -> Iterator[ResponseResult]:
         """Iterate over paginated results, and skip conversion to model objects"""
@@ -319,4 +334,4 @@ def paginate_all(request_function: Callable, *args, method: str = 'page', **kwar
     Returns:
         Response dict containing combined results, in the same format as ``api_func``
     """
-    return JsonPaginator(request_function, None, *args, method=method, **kwargs).all()
+    return JsonPaginator(request_function, *args, method=method, **kwargs).all()

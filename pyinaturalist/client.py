@@ -1,10 +1,13 @@
+# TODO: "optional auth" option
+# TODO: Improve Sphinx docs generated for controller attributes
+from inspect import ismethod
 from logging import getLogger
 from typing import Any, Callable, Dict, Type
 
 from requests import Session
 
 from pyinaturalist.auth import get_access_token
-from pyinaturalist.constants import JsonResponse
+from pyinaturalist.constants import RequestParams
 from pyinaturalist.controllers import (
     ObservationController,
     PlaceController,
@@ -109,48 +112,38 @@ class iNatClient:
         self._token_expires = None
 
         # Controllers
-        # TODO: Improve Sphinx docs generated for these attributes
         self.observations = ObservationController(self)  #: Interface for observation requests
         self.places = PlaceController(self)  #: Interface for project requests
         self.projects = ProjectController(self)  #: Interface for project requests
         self.taxa = TaxonController(self)  #: Interface for taxon requests
         self.users = UserController(self)  #: Interface for user requests
 
-    def _update_kwargs(self, request_function, auth: bool = False, **kwargs):
-        """Apply any applicable client settings to request parameters before sending a request.
+    def add_client_settings(
+        self, request_function, kwargs: RequestParams = None, auth: bool = False
+    ) -> RequestParams:
+        """Add any applicable client settings to request parameters before sending a request.
         Explicit keyword arguments will override any client settings.
         """
-        kwargs = strip_empty_values(kwargs)
-        client_settings = {
-            'dry_run': self.dry_run,
-            'session': self.session,
-        }
+        kwargs = strip_empty_values(kwargs or {})
+        client_kwargs = {'dry_run': self.dry_run, 'session': self.session}
 
         # Add access token and default params, if applicable
         if auth:
-            client_settings['access_token'] = get_access_token(**self.creds)  # type: ignore
-        client_settings.update(get_valid_kwargs(request_function, self.default_params))
-
-        for k, v in client_settings.items():
+            client_kwargs['access_token'] = get_access_token(**self.creds)  # type: ignore
+        client_kwargs.update(get_valid_kwargs(request_function, self.default_params))
+        for k, v in client_kwargs.items():
             kwargs.setdefault(k, v)
 
+        # If we're directly calling a ClientSession method, we don't need to pass a session object
+        if ismethod(request_function):
+            kwargs.pop('session')
+
         return kwargs
-
-    def request(self, request_function: Callable, auth: bool = False, **kwargs) -> JsonResponse:
-        """Send a request, with client settings applied
-
-        Args:
-            request_function: The API request function to call, which should return a JSON response
-            auth: Indicates that the request requires authentication
-            params: Original request parameters
-        """
-        kwargs = self._update_kwargs(request_function, auth, **kwargs)
-        return request_function(**kwargs)
 
     def paginate(
         self,
         request_function: Callable,
-        model: T,
+        model: Type[T],
         auth: bool = False,
         cls: Type[Paginator] = Paginator,
         **kwargs,
@@ -158,11 +151,25 @@ class iNatClient:
         """Create a paginator for a request, with client settings applied
 
         Args:
-            request_function: The API request function to call, which should return a JSON response
+            request_function: The API request function to call
             model: Model class used for the response
             auth: Indicates that the request requires authentication
             cls: Alternative Paginator class to use
             params: Original request parameters
         """
-        kwargs = self._update_kwargs(request_function, auth, **kwargs)
+        kwargs = self.add_client_settings(request_function, kwargs, auth)
         return cls(request_function, model, **kwargs)
+
+    def request(self, request_function: Callable, *args, auth: bool = False, **kwargs):
+        """Send a request, with client settings applied.
+
+        Args:
+            request_function: The API request function to call
+            auth: Indicates that the request requires authentication
+            params: Original request parameters
+
+        Returns:
+            Results of ``request_function()``
+        """
+        kwargs = self.add_client_settings(request_function, kwargs, auth)
+        return request_function(*args, **kwargs)

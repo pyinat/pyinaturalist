@@ -248,7 +248,7 @@ def test_message__str():
 def test_observation__converters():
     obs = Observation.from_json(j_observation_2)
     utc = tzoffset('Etc/UTC', 0)
-    assert obs.created_at == datetime(2020, 8, 27, 0, 0, tzinfo=utc)
+    assert obs.created_at == datetime(2020, 8, 27, 18, 0, 51, tzinfo=utc)
     assert obs.observed_on == datetime(2020, 8, 27, 8, 57, 22, tzinfo=utc)
 
     assert isinstance(obs.comments[0], Comment) and obs.comments[0].id == 5326888

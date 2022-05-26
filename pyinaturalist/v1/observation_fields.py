@@ -1,9 +1,9 @@
 from typing import Any, Union
 
-from pyinaturalist.constants import JsonResponse
+from pyinaturalist.constants import API_V1, JsonResponse
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.v1 import delete_v1, post_v1
+from pyinaturalist.session import delete, post
 
 
 @document_request_params(docs._ofvs, docs._access_token)
@@ -45,7 +45,7 @@ def set_observation_field(
         'observation_field_id': observation_field_id,
         'value': value,
     }
-    response = post_v1('observation_field_values', json=body, **params)
+    response = post(f'{API_V1}/observation_field_values', json=body, **params)
     return response.json()
 
 
@@ -70,5 +70,5 @@ def delete_observation_field(observation_field_value_id: Union[int, str], **para
         observation_field_value_id: ID or UUID of the observation field value to delete
         access_token: An access token required for user authentication, as returned by :py:func:`.get_access_token()`
     """
-    response = delete_v1(f'observation_field_values/{observation_field_value_id}', **params)
+    response = delete(f'{API_V1}/observation_field_values/{observation_field_value_id}', **params)
     return response.json()

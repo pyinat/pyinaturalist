@@ -1,6 +1,10 @@
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 
 from pyinaturalist.paginator import Paginator
+
+if TYPE_CHECKING:
+    from pyinaturalist.client import iNatClient
 
 
 class BaseController:
@@ -10,7 +14,7 @@ class BaseController:
     to navigate.
     """
 
-    def __init__(self, client):
+    def __init__(self, client: 'iNatClient'):
         self.client = client
 
     @abstractmethod

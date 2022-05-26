@@ -10,10 +10,11 @@ from os.path import join
 from unittest.mock import MagicMock, patch
 
 import pytest
-from requests import Session
+from requests_cache import DO_NOT_CACHE, BaseCache
 
 from pyinaturalist import enable_logging
 from pyinaturalist.constants import SAMPLE_DATA_DIR
+from pyinaturalist.session import ClientSession
 
 # If ipdb is installed, register it as the default debugger
 try:
@@ -43,18 +44,18 @@ MOCK_CREDS_OAUTH = {
 enable_logging('DEBUG')
 
 
-class TestSession(Session):
-    """Session subclass that adds additional keyword args to main methods, so it can be used in
-    place of `ClientSession` during tests
-    """
+class TestSession(ClientSession):
+    """Session class to use for tests, which disables rate-limiting and caching"""
 
-    def request(self, *args, expire_after=None, only_if_cached=None, refresh=False, **kwargs):
-        return super().request(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.limiter = MagicMock()
+        self.cache = BaseCache(expire_after=DO_NOT_CACHE)
 
 
 @pytest.fixture(scope='function', autouse=True)
-def patch_cached_session(request):
-    """Use a regular requests.Session to disable request caching and rate-limiting during tests"""
+def patch_session(request):
+    """Disable request caching and rate-limiting during tests"""
     if 'enable_client_session' in request.keywords:
         yield
     else:

@@ -1,6 +1,6 @@
 """Type conversion utilities used for both requests and responses"""
 import re
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from io import BytesIO
 from logging import getLogger
 from os.path import abspath, expanduser
@@ -10,7 +10,7 @@ from warnings import catch_warnings, simplefilter
 
 from dateutil.parser import UnknownTimezoneWarning  # type: ignore  # (missing from type stubs)
 from dateutil.parser import parse as parse_date
-from dateutil.tz import tzlocal, tzoffset
+from dateutil.tz import tzlocal
 from requests import Session
 
 from pyinaturalist.constants import (
@@ -164,95 +164,19 @@ def convert_generic_timestamps(result: ResponseResult) -> ResponseResult:
     return result
 
 
-# TODO: Replace this with attrs version
 def convert_observation_timestamps(result: ResponseResult) -> ResponseResult:
     """Replace observation date/time info with datetime objects"""
-    if 'created_at_details' not in result and 'observed_on_string' not in result:
-        return result
-
     observation = result.copy()
-    tz_offset = observation.get('time_zone_offset', '')
-    tz_name = observation.get('observed_time_zone')
 
-    created_datetime = observation.get('created_at')
-    if not isinstance(created_datetime, datetime):
-        created_datetime = try_datetime(observation.get('created_at_details', {}).get('date'))
-        created_datetime = convert_offset(created_datetime, tz_offset, tz_name)
+    observed_on = observation.pop('time_observed_at', None)
+    if not isinstance(observation.get('observed_on'), datetime) and observed_on:
+        observation['observed_on'] = try_datetime(observed_on)
 
-    # Ignore any timezone info in observed_on timestamp; offset field is more reliable
-    observed_datetime = try_datetime(observation.get('observed_on_string', ''), ignoretz=True)
-    observed_datetime = convert_offset(observed_datetime, tz_offset, tz_name)
-
-    # If valid, add the datetime objects and remove all other redundant date/time fields
-    if created_datetime and observed_datetime:
-        for field in OBSERVATION_TIME_FIELDS:
-            observation.pop(field, None)
-    observation['created_at'] = created_datetime
-    observation['observed_on'] = observed_datetime
+    created_at = observation.get('created_at')
+    if not isinstance(created_at, datetime):
+        observation['created_at'] = try_datetime(created_at)
 
     return observation
-
-
-def convert_observation_timestamp(
-    timestamp: str, tz_offset: str = None, tz_name: str = None, ignoretz: bool = False
-) -> Optional[datetime]:
-    """Convert an observation timestamp + timezone info to a datetime. This is needed because
-    observed_on and created_at can be in in inconsistent (user-submitted?) formats.
-    """
-    dt = try_datetime(timestamp, ignoretz=ignoretz)
-    return convert_offset(dt, tz_offset, tz_name)
-
-
-def convert_offset(
-    datetime_obj: Optional[datetime], tz_offset: str = None, tz_name: str = None
-) -> Optional[datetime]:
-    """Use timezone offset info to replace a datetime's tzinfo"""
-    if not datetime_obj or not tz_offset:
-        return datetime_obj
-
-    try:
-        offset = parse_offset(tz_offset, tz_name)
-        return datetime_obj.replace(tzinfo=offset)
-    except (AttributeError, TypeError, ValueError) as e:
-        logger.debug(f'Could not parse offset: {tz_offset}: {str(e)}')
-        return None
-
-
-def parse_offset(tz_offset: str, tz_name: str = None) -> tzoffset:
-    """Convert a timezone offset string to a tzoffset object, accounting for some common variations
-    in format
-
-    Examples:
-
-        >>> parse_offset('GMT-08:00', 'PST')
-        tzoffset('PST', -28800)
-        >>> parse_offset('-06:00')
-        tzoffset(None, -21600)
-        >>> parse_offset('+05:30')
-        tzoffset(None, 19800)
-        >>> parse_offset('0530')
-        tzoffset(None, 19800)
-
-    """
-
-    def remove_prefixes(text, prefixes):
-        for prefix in prefixes:
-            if text.startswith(prefix):
-                text = text[len(prefix) :]  # noqa  # black and flake8 fight over this one
-        return text
-
-    # Parse hours, minutes, and sign from offset string; account for either `hh:mm` or `hhmm` format
-    tz_offset = remove_prefixes(tz_offset, ['GMT', 'UTC']).strip()
-    multiplier = -1 if tz_offset.startswith('-') else 1
-    tz_offset = tz_offset.lstrip('+-')
-    if ':' in tz_offset:
-        hours, minutes = tz_offset.split(':')
-    else:
-        hours, minutes = tz_offset[:2], tz_offset[2:]
-
-    # Convert to a timezone offset in +/- seconds
-    delta = timedelta(hours=int(hours), minutes=int(minutes))
-    return tzoffset(tz_name, delta.total_seconds() * multiplier)
 
 
 def safe_split(value: Any, delimiter: str = '|') -> List[str]:

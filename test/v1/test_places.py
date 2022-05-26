@@ -1,13 +1,13 @@
 import pytest
 
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1
 from pyinaturalist.v1 import get_places_autocomplete, get_places_by_id, get_places_nearby
 from test.sample_data import SAMPLE_DATA
 
 
 def test_get_places_by_id(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/places/93735,89191',
+        f'{API_V1}/places/93735,89191',
         json=SAMPLE_DATA['get_places_by_id'],
         status_code=200,
     )
@@ -31,7 +31,7 @@ def test_get_places_by_id__invalid_inputs(place_id):
 
 def test_get_places_nearby(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/places/nearby',
+        f'{API_V1}/places/nearby',
         json=SAMPLE_DATA['get_places_nearby'],
         status_code=200,
     )
@@ -51,7 +51,7 @@ def test_get_places_nearby(requests_mock):
 
 def test_get_places_autocomplete(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/places/autocomplete',
+        f'{API_V1}/places/autocomplete',
         json=SAMPLE_DATA['get_places_autocomplete'],
         status_code=200,
     )
@@ -71,7 +71,7 @@ def test_get_places_autocomplete__all_pages(requests_mock):
     page_1 = {'total_results': 25, 'results': [{'id': i} for i in range(20)]}
     page_2 = {'total_results': 25, 'results': [{'id': i} for i in range(15, 25)]}
     requests_mock.get(
-        f'{API_V1_BASE_URL}/places/autocomplete',
+        f'{API_V1}/places/autocomplete',
         [
             {'json': page_1, 'status_code': 200},
             {'json': page_2, 'status_code': 200},
@@ -88,7 +88,7 @@ def test_get_places_autocomplete__single_page(requests_mock):
     page_1 = {'total_results': 20, 'results': [{'id': i} for i in range(20)]}
     page_2 = {'total_results': 20, 'results': [{'id': i} for i in range(15, 25)]}
     requests_mock.get(
-        f'{API_V1_BASE_URL}/places/autocomplete',
+        f'{API_V1}/places/autocomplete',
         [
             {'json': page_1, 'status_code': 200},
             {'json': page_2, 'status_code': 200},

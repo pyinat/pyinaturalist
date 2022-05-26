@@ -1,5 +1,5 @@
 from pyinaturalist.client import iNatClient
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1
 from pyinaturalist.models import Taxon
 from test.sample_data import SAMPLE_DATA
 
@@ -7,7 +7,7 @@ from test.sample_data import SAMPLE_DATA
 def test_from_id(requests_mock):
     taxon_id = 70118
     requests_mock.get(
-        f'{API_V1_BASE_URL}/taxa/{taxon_id}',
+        f'{API_V1}/taxa/{taxon_id}',
         json=SAMPLE_DATA['get_taxa_by_id'],
         status_code=200,
     )
@@ -20,7 +20,7 @@ def test_from_id(requests_mock):
 def test_from_ids(requests_mock):
     taxon_id = 70118
     requests_mock.get(
-        f'{API_V1_BASE_URL}/taxa/{taxon_id}',
+        f'{API_V1}/taxa/{taxon_id}',
         json=SAMPLE_DATA['get_taxa_by_id'],
         status_code=200,
     )
@@ -32,7 +32,7 @@ def test_from_ids(requests_mock):
 
 def test_autocomplete(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/taxa/autocomplete',
+        f'{API_V1}/taxa/autocomplete',
         json=SAMPLE_DATA['get_taxa_autocomplete'],
         status_code=200,
     )
@@ -44,7 +44,7 @@ def test_autocomplete(requests_mock):
 
 def test_search(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/taxa',
+        f'{API_V1}/taxa',
         json=SAMPLE_DATA['get_taxa'],
         status_code=200,
     )

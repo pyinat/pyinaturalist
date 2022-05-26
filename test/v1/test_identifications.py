@@ -2,14 +2,14 @@ from datetime import datetime
 
 from dateutil.tz import tzoffset
 
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1
 from pyinaturalist.v1 import get_identifications, get_identifications_by_id
 from test.conftest import load_sample_data
 
 
 def test_get_identifications(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/identifications',
+        f'{API_V1}/identifications',
         json=load_sample_data('get_identifications.json'),
         status_code=200,
     )
@@ -30,7 +30,7 @@ def test_get_identifications_by_id(requests_mock):
     mock_response = load_sample_data('get_identifications.json')
     mock_response['results'] = [mock_response['results'][0]]
     requests_mock.get(
-        f'{API_V1_BASE_URL}/identifications/155554373',
+        f'{API_V1}/identifications/155554373',
         json=mock_response,
         status_code=200,
     )

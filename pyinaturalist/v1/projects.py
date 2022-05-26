@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from pyinaturalist.constants import (
+    API_V1,
     PROJECT_ORDER_BY_PROPERTIES,
     IntOrStr,
     JsonResponse,
@@ -12,8 +13,7 @@ from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import split_common_params, validate_multiple_choice_param
-from pyinaturalist.session import get_refresh_params
-from pyinaturalist.v1 import delete_v1, get_v1, post_v1, put_v1
+from pyinaturalist.session import delete, get, get_refresh_params, post, put
 
 logger = getLogger(__name__)
 
@@ -55,9 +55,9 @@ def get_projects(**params) -> JsonResponse:
     """
     validate_multiple_choice_param(params, 'order_by', PROJECT_ORDER_BY_PROPERTIES)
     if params.get('page') == 'all':
-        projects = paginate_all(get_v1, 'projects', **params)
+        projects = paginate_all(get, f'{API_V1}/projects', **params)
     else:
-        projects = get_v1('projects', **params).json()
+        projects = get(f'{API_V1}/projects', **params).json()
 
     projects['results'] = convert_all_coordinates(projects['results'])
     projects['results'] = convert_all_timestamps(projects['results'])
@@ -99,8 +99,12 @@ def get_projects_by_id(
     """
     if force_refresh:
         params.update(get_refresh_params(f'/projects/{project_id}'))
-    response = get_v1(
-        'projects', rule_details=rule_details, ids=project_id, allow_str_ids=True, **params
+    response = get(
+        f'{API_V1}/projects',
+        rule_details=rule_details,
+        ids=project_id,
+        allow_str_ids=True,
+        **params,
     )
 
     projects = response.json()
@@ -133,8 +137,8 @@ def add_project_observation(
     Returns:
         Information about the added project observation
     """
-    response = post_v1(
-        'project_observations',
+    response = post(
+        f'{API_V1}/project_observations',
         access_token=access_token,
         json={'observation_id': observation_id, 'project_id': project_id},
         **params,
@@ -186,8 +190,8 @@ def delete_project_observation(
 
         >>> delete_project_observation(24237, 1234, access_token=access_token)
     """
-    return delete_v1(
-        f'projects/{project_id}/remove',
+    return delete(
+        f'{API_V1}/projects/{project_id}/remove',
         access_token=access_token,
         json={'observation_id': observation_id},
         **params,
@@ -268,8 +272,8 @@ def update_project(project_id: IntOrStr, **params) -> JsonResponse:
     params, kwargs = split_common_params(params)
     kwargs['timeout'] = kwargs.get('timeout') or 60  # This endpoint can be a bit slow
 
-    response = put_v1(
-        f'projects/{project_id}',
+    response = put(
+        f'{API_V1}/projects/{project_id}',
         json={'project': params},
         **kwargs,
     )

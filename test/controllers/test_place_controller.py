@@ -1,12 +1,12 @@
 from pyinaturalist.client import iNatClient
-from pyinaturalist.constants import API_V1_BASE_URL
+from pyinaturalist.constants import API_V1
 from pyinaturalist.models import Place
 from test.sample_data import SAMPLE_DATA, j_place_1, j_place_2
 
 
 def test_from_id(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/places/89191',
+        f'{API_V1}/places/89191',
         json={'results': [j_place_1]},
         status_code=200,
     )
@@ -17,7 +17,7 @@ def test_from_id(requests_mock):
 
 def test_from_ids(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/places/89191,67591',
+        f'{API_V1}/places/89191,67591',
         json={'results': [j_place_1, j_place_2], 'total_results': 2},
         status_code=200,
     )
@@ -32,7 +32,7 @@ def test_from_ids(requests_mock):
 
 def test_autocomplete(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/places/autocomplete',
+        f'{API_V1}/places/autocomplete',
         json=SAMPLE_DATA['get_places_autocomplete'],
         status_code=200,
     )
@@ -48,7 +48,7 @@ def test_get_places_autocomplete__all_pages(requests_mock):
     page_1 = {'total_results': 25, 'results': [{'id': i} for i in range(20)]}
     page_2 = {'total_results': 25, 'results': [{'id': i} for i in range(15, 25)]}
     requests_mock.get(
-        f'{API_V1_BASE_URL}/places/autocomplete',
+        f'{API_V1}/places/autocomplete',
         [
             {'json': page_1, 'status_code': 200},
             {'json': page_2, 'status_code': 200},
@@ -62,7 +62,7 @@ def test_get_places_autocomplete__all_pages(requests_mock):
 
 def test_nearby(requests_mock):
     requests_mock.get(
-        f'{API_V1_BASE_URL}/places/nearby',
+        f'{API_V1}/places/nearby',
         json=SAMPLE_DATA['get_places_nearby'],
         status_code=200,
     )
