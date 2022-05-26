@@ -13,7 +13,6 @@ from pyinaturalist.constants import (
     DateTime,
     TableRow,
 )
-from pyinaturalist.converters import convert_observation_timestamp
 from pyinaturalist.docs import extend_init_signature
 from pyinaturalist.models import (
     Annotation,
@@ -187,34 +186,15 @@ class Observation(BaseModel):
     # time_zone_offset: str = field(default=None)
 
     # Attributes that will only be used during init and then omitted
-    temp_attrs = [
-        'created_at_details',
-        'observed_on_string',
-        'observed_time_zone',
-        'time_zone_offset',
-    ]
+    temp_attrs = ['time_observed_at']
 
     # Convert observation timestamps prior to __attrs_init__
     def __init__(self, **kwargs):
-        created_at_details = kwargs.pop('created_at_details', None)
-        observed_on_string = kwargs.pop('observed_on_string', None)
-        observed_time_zone = kwargs.pop('observed_time_zone', None)
-        time_zone_offset = kwargs.pop('time_zone_offset', None)
-
-        tz_offset = time_zone_offset
-        tz_name = observed_time_zone
-        created_date = (created_at_details or {}).get('date')
-
-        if not isinstance(kwargs.get('created_at'), datetime) and created_date:
-            kwargs['created_at'] = convert_observation_timestamp(created_date, tz_offset, tz_name)
-        if not isinstance(kwargs.get('observed_on'), datetime) and observed_on_string:
-            kwargs['observed_on'] = convert_observation_timestamp(
-                observed_on_string, tz_offset, tz_name, ignoretz=True
-            )
-
+        observed_on = kwargs.pop('time_observed_at', None)
+        if not isinstance(kwargs['observed_on'], datetime) and observed_on:
+            kwargs['observed_on'] = observed_on
         if not kwargs.get('uri'):
             kwargs['uri'] = f'{INAT_BASE_URL}/observations/{kwargs.get("id", "")}'
-
         self.__attrs_init__(**kwargs)  # type: ignore
 
     @classmethod

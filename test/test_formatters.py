@@ -76,7 +76,7 @@ def test_pprint(response):
 PRINTED_OBSERVATION = """
 Observation(
     id=16227955,
-    created_at='2018-09-05 00:00:00+01:00',
+    created_at='2018-09-05 14:31:08+02:00',
     captive=False,
     community_taxon_id=493595,
     description='',
@@ -90,7 +90,7 @@ Observation(
     num_identification_agreements=2,
     num_identification_disagreements=0,
     obscured=False,
-    observed_on='2018-09-05 14:06:00+01:00',
+    observed_on='2018-09-05 14:06:00+02:00',
     outlinks=[{'source': 'GBIF', 'url': 'http://www.gbif.org/occurrence/1914197587'}],
     owners_identification_from_vision=True,
     place_guess='54 rue des Badauds',

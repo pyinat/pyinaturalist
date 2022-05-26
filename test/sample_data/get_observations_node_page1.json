@@ -5,7 +5,6 @@
   "results": [
     {
       "quality_grade": "research",
-      "time_observed_at": "2020-08-27T08:57:22+00:00",
       "taxon_geoprivacy": "open",
       "annotations": [],
       "uuid": "c44b91f3-534d-48c4-933d-a8b4e1d8f87b",
@@ -20,6 +19,7 @@
       "id": 57754375,
       "cached_votes_total": 0,
       "identifications_most_agree": true,
+      "created_at": "2020-08-27T18:00:51+00:00",
       "created_at_details": {
         "date": "2020-08-27",
         "week": 35,
@@ -28,15 +28,20 @@
         "year": 2020,
         "day": 27
       },
+      "created_time_zone": "Etc/UTC",
+      "time_zone_offset": "+00:00",
+      "time_observed_at": "2020-08-27T08:57:22+00:00",
+      "observed_on": "2020-08-27",
+      "observed_time_zone": "Etc/UTC",
+      "observed_on_string": "Thu Aug 27 2020 08:57:22 GMT-0600 (CST)",
+      "updated_at": "2020-08-28T04:54:19+00:00",
       "species_guess": "Monarch",
       "identifications_most_disagree": false,
       "tags": [],
       "positional_accuracy": null,
       "comments_count": 2,
       "site_id": 5,
-      "created_time_zone": "Etc/UTC",
       "license_code": "cc-by-nc",
-      "observed_time_zone": "Etc/UTC",
       "quality_metrics": [],
       "public_positional_accuracy": null,
       "reviewed_by": [
@@ -45,13 +50,8 @@
       ],
       "oauth_application_id": 3,
       "flags": [],
-      "created_at": "2020-08-27T18:00:51+00:00",
       "description": null,
-      "time_zone_offset": "+00:00",
       "project_ids_with_curator_id": [],
-      "observed_on": "2020-08-27",
-      "observed_on_string": "Thu Aug 27 2020 08:57:22 GMT-0600 (CST)",
-      "updated_at": "2020-08-28T04:54:19+00:00",
       "sounds": [],
       "place_ids": [
         6712,
