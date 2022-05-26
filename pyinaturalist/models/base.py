@@ -18,7 +18,7 @@ from pyinaturalist.constants import (
     ResponseOrResults,
     TableRow,
 )
-from pyinaturalist.converters import ensure_list
+from pyinaturalist.converters import ensure_list, try_int
 
 T = TypeVar('T', bound='BaseModel')
 TC = TypeVar('TC', bound='BaseModelCollection')
@@ -29,7 +29,7 @@ logger = getLogger(__name__)
 class BaseModel:
     """Base class for data models"""
 
-    id: int = field(default=None, metadata={'doc': 'Unique record ID'})
+    id: int = field(default=None, converter=try_int, metadata={'doc': 'Unique record ID'})
     _nested: bool = field(default=False, repr=False, init=False)
     temp_attrs: List[str] = []
 

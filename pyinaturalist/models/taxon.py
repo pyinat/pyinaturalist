@@ -138,7 +138,6 @@ class Taxon(BaseModel):
     # flag_counts: Dict[str, int] = field(factory=dict)  # {"unresolved": 1, "resolved": 2}
     # min_species_ancestry: str = field(default=None)  # Used internally by iNaturalist for Elasticsearch aggregations
     # min_species_taxon_id: int = field(default=None)
-    # partial: bool = field(default=None, repr=False)
     # photos_locked: bool = field(default=None)
     # universal_search_rank: int = field(default=None)
 

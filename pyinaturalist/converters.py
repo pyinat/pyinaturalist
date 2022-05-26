@@ -116,9 +116,9 @@ def convert_lat_long(obj: Union[Dict, List, None, str]) -> Optional[Coordinates]
     """Convert a coordinate pair as a dict, list, or string into a pair of floats, if valid"""
     if not obj:
         return None
-    if isinstance(obj, str):
+    elif isinstance(obj, str):
         return try_float_pair(*str(obj).split(','))
-    elif isinstance(obj, list):
+    elif isinstance(obj, (list, tuple)):
         return try_float_pair(*obj)
     elif isinstance(obj, dict):
         return try_float_pair(obj.get('latitude'), obj.get('longitude'))
