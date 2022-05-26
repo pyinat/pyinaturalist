@@ -8,7 +8,7 @@ from os.path import expanduser
 from pathlib import Path
 from typing import Dict, Generic, List, Type, TypeVar
 
-from attr import Factory, asdict, define, field, fields, fields_dict
+from attr import Factory, asdict, define, field, fields_dict
 
 from pyinaturalist.constants import (
     DATETIME_SHORT_FORMAT,
@@ -81,17 +81,19 @@ class BaseModel:
         """Get the subset of attribute names to show in the model's string representation"""
         raise NotImplementedError
 
-    def to_dict(self, **kwargs) -> JsonResponse:
+    def to_dict(self, recurse: bool = True) -> JsonResponse:
         """Convert this object back to dict format"""
 
         def vs(_inst, _key, value):
             return value.to_dict() if isinstance(value, BaseModel) else value
 
-        obj_dict = asdict(self, value_serializer=vs, retain_collection_types=True, **kwargs)
-        for a in fields(self.__class__):
-            if a.init is False:
-                obj_dict.pop(a.name, None)
-
+        obj_dict = asdict(
+            self,
+            filter=lambda a, _: a.init is True,
+            retain_collection_types=True,
+            recurse=recurse,
+            value_serializer=vs if recurse else None,
+        )
         return {k.lstrip('_'): v for k, v in obj_dict.items()}
 
     def __rich_repr__(self):
