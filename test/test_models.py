@@ -663,6 +663,18 @@ def test_taxon__update_from_full_record():
     pass
 
 
+def test_taxon_count__copy():
+    """When an IconPhoto is used in place of a missing Taxon.default_photo, and the taxon is copied
+    into a TaxonCount object, the IconPhoto object should be copied as-is instead of converting
+    back to a dict and then into a Photo.
+    """
+    taxon = Taxon(id=1, iconic_taxon_id=3)
+    taxon_counts = TaxonCount.copy(taxon)
+    assert isinstance(taxon.default_photo, IconPhoto)
+    assert isinstance(taxon_counts.default_photo, IconPhoto)
+    assert taxon.default_photo.medium_url == taxon_counts.default_photo.medium_url
+
+
 def test_taxon_counts__converters():
     taxon_counts = TaxonCounts.from_json(j_obs_species_counts)
     assert taxon_counts.data[0] == taxon_counts[0]
