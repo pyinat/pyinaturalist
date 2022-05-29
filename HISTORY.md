@@ -1,7 +1,8 @@
 # History
 
-## 0.17.1 (Unreleased)
+## 0.17.2 (Unreleased)
 * Handle nested 'photo' dictionaries when loading `Taxon.taxon_photos`
+* Minor fixes and improvements for creating and converting `Observation`, `Taxon`, and other model objects
 
 ## 0.17.1 (2022-05-20)
 * Fix pagination bug causing only the first two pages of results to be returned

@@ -151,17 +151,20 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         self,
         method: str,
         url: str,
+        headers: Dict = None,
+        json: Dict = None,
         access_token: str = None,
+        allow_redirects: bool = False,
         allow_str_ids: bool = False,
         dry_run: bool = False,
         expire_after: ExpirationTime = None,
         files: FileOrPath = None,
-        headers: Dict = None,
         ids: MultiInt = None,
-        json: Dict = None,
         raise_for_status: bool = True,
         refresh: bool = False,
+        stream: bool = False,
         timeout: int = None,
+        verify: bool = True,
         **params: RequestParams,
     ) -> Response:
         """Wrapper around :py:func:`requests.request` with additional options specific to iNat API requests
@@ -169,17 +172,17 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         Args:
             method: HTTP method
             url: Request URL
+            headers: Request headers
+            json: JSON request body
             access_token: access_token: the access token, as returned by :func:`get_access_token()`
             dry_run: Just log the request instead of sending a real request
             expire_after: How long to keep cached API requests
             files: File object, path, or URL to upload
-            headers: Request headers
             ids: One or more integer IDs used as REST resource(s) to request
-            json: JSON request body
             refresh: Skip reading from the cache and always fetch a fresh response
             timeout: Time (in seconds) to wait for a response from the server; if exceeded, a
                 :py:exc:`requests.exceptions.Timeout` will be raised.
-            params: All other keyword arguments are interpreted as request parameters
+            params: All other keyword arguments will be used as request parameters
 
         Returns:
             API response
@@ -202,7 +205,15 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             return MOCK_RESPONSE
 
         # Otherwise, send the request
-        response = self.send(request, timeout=timeout, expire_after=expire_after, refresh=refresh)
+        response = self.send(
+            request,
+            timeout=timeout,
+            expire_after=expire_after,
+            refresh=refresh,
+            allow_redirects=allow_redirects,
+            stream=stream,
+            verify=verify,
+        )
         logger.debug(format_response(response))
 
         if raise_for_status:
