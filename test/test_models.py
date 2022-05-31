@@ -598,6 +598,8 @@ def test_taxon__listed_taxa():
     listed_taxon = taxon.listed_taxa[0]
     assert isinstance(listed_taxon, ListedTaxon)
     assert listed_taxon.taxon_id == taxon.id
+    assert listed_taxon.list.id == 299
+    assert listed_taxon.list.title == 'United States Check List'
     assert taxon.listed_taxa_count == 4
     assert str(listed_taxon) == (
         'ListedTaxon(id=5577060, taxon_id=70118, place=Place(id=1, location=(0, 0), '

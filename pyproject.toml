@@ -92,6 +92,12 @@ branch = true
 source = ['pyinaturalist', 'pyinat']
 omit = ['pyinaturalist/docs/model_docs.py']
 
+[tool.coverage.report]
+exclude_lines = [
+    'pragma: no cover',
+    'if TYPE_CHECKING:',
+]
+
 [tool.isort]
 profile = 'black'
 line_length = 100

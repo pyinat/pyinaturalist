@@ -204,15 +204,11 @@ def test_taxon_summary__with_listed_taxon(requests_mock):
     assert isinstance(results, TaxonSummary)
     assert isinstance(lt, ListedTaxon)
     assert isinstance(lt.place, Place)
+    assert lt.list.id == 2684267
     assert lt.taxon_id == 47219
     assert lt.place.id == 144952
     assert lt.establishment_means == lt.establishment_means_label == 'introduced'
     assert 'western honey bee' in results.wikipedia_summary
-
-    # Test 'list' alias
-    assert lt.list_id == lt.list['id'] == 2684267
-    lt.list = {'id': 111}
-    assert lt.list_id == lt.list['id'] == 111
 
 
 # TODO:

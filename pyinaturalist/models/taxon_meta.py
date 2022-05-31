@@ -1,6 +1,6 @@
 """Models for additional endpoint-specific metadata associated with a taxon"""
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Dict, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from pyinaturalist.constants import CONSERVATION_STATUSES, ESTABLISTMENT_MEANS, DateTime, TableRow
 from pyinaturalist.models import (
@@ -132,6 +132,15 @@ class EstablishmentMeans(BaseModel):
 
 
 @define_model
+class Checklist(BaseModel):
+    """:fa:`dove,style=fas` :fa:`list` A taxon checklist (aka
+    `"original life list" <https://www.inaturalist.org/blog/43337-upcoming-changes-to-lists>`_)
+    """
+
+    title: str = field(default=None)
+
+
+@define_model
 class ListedTaxon(IdWrapperMixin, EstablishmentMeans):
     """:fa:`dove,style=fas` :fa:`list` A taxon with additional stats associated with a list
     (aka `"original life list" <https://www.inaturalist.org/blog/43337-upcoming-changes-to-lists>`_),
@@ -146,8 +155,8 @@ class ListedTaxon(IdWrapperMixin, EstablishmentMeans):
     description: str = field(default=None, doc='Listed taxon description')
     first_observation_id: int = field(default=None, doc='Oldest recent observation ID in the list')
     last_observation_id: int = field(default=None, doc='Most recent observation ID in the list')
-    list_id: int = field(default=None, doc='List ID')
-    list_title: str = field(default=None, doc='List title')
+    list_id: int = field(default=None, repr=False)
+    list_title: str = field(default=None, repr=False)
     manually_added: bool = field(
         default=None, doc='Indicates if the taxon was manually added to the list'
     )
@@ -163,21 +172,16 @@ class ListedTaxon(IdWrapperMixin, EstablishmentMeans):
     taxon_range_id: int = field(default=None, doc='')
     updated_at: DateTime = datetime_field(doc='Date and time the record was last updated')
 
-    # Lazy-loaded nested model objects
+    list: Checklist = field(default=None, converter=Checklist.from_json, doc='Associated checklist')
     updater: User = field(
         default=None, converter=User.from_json, doc='User that last updated the record'
     )
     user: User = field(default=None, converter=User.from_json, doc='User that created the record')
 
-    @property
-    def list(self) -> Dict:
-        """Alias to handle differences between taxa and taxon_summary endpoints"""
-        return {'id': self.list_id, 'title': self.list_title}
-
-    @list.setter
-    def list(self, value: Dict):
-        self.list_id = int(value.get('id', -1))
-        self.list_title = str(value.get('title', ''))
+    def __attrs_post_init__(self):
+        """Handle differences between taxa and taxon_summary endpoints"""
+        if not self.list.id:
+            self.list.id = self.list_id
 
     @property
     def _row(self) -> TableRow:
@@ -185,7 +189,7 @@ class ListedTaxon(IdWrapperMixin, EstablishmentMeans):
             'ID': self.id,
             'Taxon ID': self.taxon_id,
             'Place ID': self.place.id,
-            'Life list': self.list_title or self.list_id,
+            'Life list': self.list.title or self.list.id,
             'Establishment means': self.establishment_means,
             'Observations': self.observations_count,
             'Comments': self.comments_count,
