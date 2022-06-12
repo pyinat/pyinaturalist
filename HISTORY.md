@@ -1,6 +1,6 @@
 # History
 
-## 0.17.2 (Unreleased)
+## 0.17.2 (2022-06-12)
 * Handle nested 'photo' dictionaries when loading `Taxon.taxon_photos`
 * Add model for `ListedTaxon.list`, and handle differences in format between `/taxa` and `/observations/{id}/taxon_summary`
 * Minor fixes and improvements for creating and converting `Observation`, `Taxon`, and other model objects

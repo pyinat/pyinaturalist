@@ -38,7 +38,7 @@ platformdirs                = ">=2.5"
 python-dateutil             = ">=2.0"
 python-forge                = ">=18.6"
 requests                    = ">=2.22"
-requests-cache              = ">=1.0.0a0"
+requests-cache              = ">=1.0.0a1"
 requests-ratelimiter        = ">=0.3.2"
 rich                        = ">=10.9"
 

@@ -1,4 +1,3 @@
-# TODO: Possible models for faves, sounds, and votes?
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
