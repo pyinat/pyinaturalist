@@ -5,7 +5,7 @@ little bit helps, and credit will always be given.
 ## Installation
 To set up for local development (requires [poetry](https://python-poetry.org)):
 ```bash
-$ git clone https://github.com/niconoe/pyinaturalist.git
+$ git clone https://github.com/pyinat/pyinaturalist.git
 $ cd pyinaturalist
 $ poetry install -v -E docs
 ```
@@ -61,7 +61,7 @@ $ nox -e livedocs
 
 Project documentation is generated using [Sphinx](https://www.sphinx-doc.org),
 [MyST](https://myst-parser.readthedocs.io), and several Sphinx extensions and custom templates.
-See [conf.py](https://github.com/niconoe/pyinaturalist/blob/main/docs/conf.py) for more details.
+See [conf.py](https://github.com/pyinat/pyinaturalist/blob/main/docs/conf.py) for more details.
 
 Documentation is automatically built by ReadTheDocs whenever code is merged into `main`:
 * [Stable version (tags only))](https://pyinaturalist.readthedocs.io/en/stable/)
@@ -108,8 +108,7 @@ Releases are based on git tags. GitHub Actions will build and deploy packages to
 on the `main` branch. Release steps:
 - Update the version in both `pyproject.toml` and `pyinaturalist/__init__.py`
 - Update the release notes in `HISTORY.md`
-- Merge changes into the `main` branch
-- Push a new tag, e.g.: `git tag v0.1.0 && git push upstream --tags`
+- Push a new tag, e.g.: `git tag v0.1.0 && git push --tags`
 - This will trigger a deployment. Verify that this completes successfully and that the new version
   can be installed from PyPI with `pip install pyinaturalist`.
 - Verify that the docs are built and published to [Read The Docs](https://pyinaturalist.readthedocs.io).

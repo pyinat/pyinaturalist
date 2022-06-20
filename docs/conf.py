@@ -84,7 +84,7 @@ nbsphinx_allow_errors = True
 
 # Prefixes to shorten common links
 extlinks = {
-    'issue': ('https://github.com/niconoe/pyinaturalist/issues/%s', 'issue #%s'),
+    'issue': ('https://github.com/pyinat/pyinaturalist/issues/%s', 'issue #%s'),
     'v0': ('https://www.inaturalist.org/pages/api+reference#', '%s'),
     'v1': ('https://api.inaturalist.org/v1/docs/#/%s', '%s'),
     'v2': ('https://api.inaturalist.org/v2/docs/#/%s', '%s'),

@@ -42,7 +42,7 @@ def create_test_obs(client: iNatClient):
         observed_on=datetime.now(),
         description=(
             'This is a test observation used for testing '
-            '[pyinaturalist](https://github.com/niconoe/pyinaturalist), '
+            '[pyinaturalist](https://github.com/pyinat/pyinaturalist), '
             'and will be deleted shortly.'
         ),
         positional_accuracy=50,

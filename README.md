@@ -1,15 +1,15 @@
 # pyinaturalist
 
-[![Build](https://github.com/niconoe/pyinaturalist/workflows/Build/badge.svg)](https://github.com/niconoe/pyinaturalist/actions)
-[![Codecov](https://codecov.io/gh/niconoe/pyinaturalist/branch/main/graph/badge.svg)](https://codecov.io/gh/niconoe/pyinaturalist)
+[![Build](https://github.com/pyinat/pyinaturalist/workflows/Build/badge.svg)](https://github.com/pyinat/pyinaturalist/actions)
+[![Codecov](https://codecov.io/gh/pyinat/pyinaturalist/branch/main/graph/badge.svg)](https://codecov.io/gh/pyinat/pyinaturalist)
 [![Documentation](https://img.shields.io/readthedocs/pyinaturalist/stable)](https://pyinaturalist.readthedocs.io)
 
 [![PyPI](https://img.shields.io/pypi/v/pyinaturalist?color=blue)](https://pypi.org/project/pyinaturalist)
 [![Conda](https://img.shields.io/conda/vn/conda-forge/pyinaturalist?color=blue)](https://anaconda.org/conda-forge/pyinaturalist)
 [![PyPI - Python Versions](https://img.shields.io/pypi/pyversions/pyinaturalist)](https://pypi.org/project/pyinaturalist)
 
-[![Run with Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?urlpath=lab/tree/examples)
-[![Open in VSCode](docs/images/open-in-vscode.svg)](https://open.vscode.dev/niconoe/pyinaturalist)
+[![Run with Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pyinat/pyinaturalist/main?urlpath=lab/tree/examples)
+[![Open in VSCode](docs/images/open-in-vscode.svg)](https://open.vscode.dev/pyinat/pyinaturalist)
 
 <br/>
 
@@ -38,7 +38,7 @@ these data easily accessible in the python programming language.
 * 🔒 **Security:** Keyring integration for secure credential storage
 * 📗 **Docs:** Example requests, responses, scripts, and Jupyter notebooks to help get you started
 * 💚 **Responsible use:** Follows the
-  [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices),
+  [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
   by default, so you can be nice to the iNaturalist servers and not worry about rate-limiting errors
 * 🧪 **Testing:** A dry-run testing mode to preview your requests before potentially modifying data
 
@@ -75,27 +75,30 @@ Let's start by searching for all your own observations. There are
 >>> observations = get_observations(user_id='my_username')
 ```
 
-The full response will be in JSON format, but we can just print out a few basic details:
+The full response will be in JSON format, but we can use `pyinaturalist.pprint()` to print out a summary:
 ```python
 >>> for obs in observations['results']:
 >>>    pprint(obs)
-[78242978] Species: Agelastica alni (Alder Leaf Beetle) observed by niconoe on 2021-05-10 18:45:38+01:00 at 1428 Braine-l'Alleud, Belgique
-[78218860] Genus: Bradybatus observed by niconoe on 2021-05-10 15:22:49+01:00 at 1428 Braine-l'Alleud, Belgique
+ID         Taxon                               Observed on   User     Location
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+117585709  Genus: Hyoscyamus (henbanes)        May 18, 2022  niconoe  Calvi, France
+117464920  Genus: Omophlus                     May 17, 2022  niconoe  Galéria, France
+117464393  Genus: Briza (Rattlesnake Grasses)  May 17, 2022  niconoe  Galéria, France
 ...
 ```
 
 You can also get
 [observation counts by species](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.v1.observations.html#pyinaturalist.v1.observations.get_observation_species_counts).
 On iNaturalist.org, this information can be found on the 'Species' tab of search results.
-For example, to get the counts of all your own research-grade observations:
+For example, to get species counts of all your own research-grade observations:
 ```python
 >>> counts = get_observation_species_counts(user_id='my_username', quality_grade='research')
 >>> pprint(counts)
-[48473   ]: Species:          Ganoderma applanatum (Artist's bracket): 4
-[50310   ]: Species:         Arisaema triphyllum (Jack-in-the-pulpit): 4
-[50817   ]:   Genus:                     Auricularia (Wood ear fungi): 3
-[81599   ]: Species:                 Silphium perfoliatum (Cup plant): 3
-[120215  ]: Species:    Bombus griseocollis (Brown-belted Bumble Bee): 2
+ ID     Rank      Scientific name               Common name             Count
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+47934   species   🐛 Libellula luctuosa         Widow Skimmer           7
+48627   species   🌻 Echinacea purpurea         Purple Coneflower       6
+504060  species   🍄 Pleurotus citrinopileatus  Golden Oyster Mushroom  6
 ...
 ```
 
@@ -125,9 +128,8 @@ token = get_access_token(
     app_secret='my_app_secret',
 )
 ```
-See
-[Authentication](https://pyinaturalist.readthedocs.io/en/latest/user_guide.html#authentication)
-for additional authentication options, including environment variables, keyrings, and password managers.
+See [Authentication](https://pyinaturalist.readthedocs.io/en/latest/user_guide.html#authentication)
+for more options including environment variables, keyrings, and password managers.
 
 Now we can [create a new observation](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.v1.observations.html#pyinaturalist.v1.observations.create_observation):
 ```python
@@ -190,24 +192,24 @@ For more information, see:
 * [Reference](https://pyinaturalist.readthedocs.io/en/latest/reference.html): Detailed API documentation
 * [Contributing Guide](https://pyinaturalist.readthedocs.io/en/stable/contributing.html):
   development details for anyone interested in contributing to pyinaturalist
-* [History](https://github.com/niconoe/pyinaturalist/blob/dev/HISTORY.md):
+* [History](https://github.com/pyinat/pyinaturalist/blob/dev/HISTORY.md):
   details on past and current releases
-* [Issues](https://github.com/niconoe/pyinaturalist/issues): planned & proposed features
+* [Issues](https://github.com/pyinat/pyinaturalist/issues): planned & proposed features
 
 ## Feedback
 If you have any problems, suggestions, or questions about pyinaturalist, please let us know!
-Just [create an issue](https://github.com/niconoe/pyinaturalist/issues/new/choose).
+Just [create an issue](https://github.com/pyinat/pyinaturalist/issues/new/choose).
 Also, **PRs are welcome!**
 
 **Note:** pyinaturalist is developed by members of the iNaturalist community, and is not endorsed by
 iNaturalist.org or the California Academy of Sciences. If you have non-python-specific questions
-about iNaturalist, the [iNaturalist Community Forum](https://forum.inaturalist.org/) is the best
-place to start.
+about the iNaturalist API or iNaturalist in general, the
+[iNaturalist Community Forum](https://forum.inaturalist.org/) is the best place to start.
 
 ## Related Projects
 Other python projects related to iNaturalist:
 
-* [Dronefly](https://github.com/synrg/dronefly): A Discord bot with iNaturalist integration, used by the iNaturalist Discord server.
-* [pyinaturalist-convert](https://github.com/JWCook/pyinaturalist-convert): Tools to convert observation data to and from multiple formats
-* [pyinaturalist-open-data](https://github.com/JWCook/pyinaturalist-open-data):  Tools for working with [iNaturalist open data](https://registry.opendata.aws/inaturalist-open-data/)
-* [pyinaturalist-notebook](https://github.com/JWCook/pyinaturalist-notebook): Jupyter notebook Docker image for pyinaturalist
+* [naturtag](https://github.com/pyinat/naturtag): A desktop application for tagging image files with iNaturalist taxonomy & observation metadata
+* [pyinaturalist-convert](https://github.com/pyinat/pyinaturalist-convert): Tools to convert observation data to and from a variety of useful formats
+* [pyinaturalist-notebook](https://github.com/pyinat/pyinaturalist-notebook): Jupyter notebook Docker image for pyinaturalist
+* [dronefly](https://github.com/dronefly-garden/dronefly): A Discord bot with iNaturalist integration, used by the iNaturalist Discord server.

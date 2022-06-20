@@ -13,7 +13,7 @@
 * If `Taxon.ancestor_ids` is missing, populate from either `ancestry` string or `ancestor` objects, if possible
 
 ## 0.17.0 (2022-05-17)
-[See all Issues & PRs for 0.17](https://github.com/niconoe/pyinaturalist/milestone/8?closed=1)
+[See all Issues & PRs for 0.17](https://github.com/pyinat/pyinaturalist/milestone/8?closed=1)
 
 ### New Endpoints
 * Added new **Observation** endpoint:
@@ -52,7 +52,7 @@
 * Misc improvements for response pretty-printing
 
 ## 0.16.0 (2022-02-22)
-[See all Issues & PRs for 0.16](https://github.com/niconoe/pyinaturalist/milestone/7?closed=1)
+[See all Issues & PRs for 0.16](https://github.com/pyinat/pyinaturalist/milestone/7?closed=1)
 
 ### New Endpoints
 * Added new **Taxon** endpoint: `get_taxa_map_layers()`
@@ -76,7 +76,7 @@ The following changes apply to `upload()`, `create_observation()`, and `update_o
 
 
 ## 0.15.0 (2021-09-07)
-[See all Issues & PRs for 0.15](https://github.com/niconoe/pyinaturalist/milestone/6?closed=1)
+[See all Issues & PRs for 0.15](https://github.com/pyinat/pyinaturalist/milestone/6?closed=1)
 
 ### New Endpoints
 * Added new functions for v1 **Observation** endpoints:
@@ -104,8 +104,8 @@ The following changes apply to `upload()`, `create_observation()`, and `update_o
   * UserCounts
 * Added a preview version of `iNatClient`, a higher-level interface for API requests, which returns
   model objects instead of JSON. See issues
-  [#163](https://github.com/niconoe/pyinaturalist/issues/163) and
-  [#217](https://github.com/niconoe/pyinaturalist/issues/217) for details.
+  [#163](https://github.com/pyinat/pyinaturalist/issues/163) and
+  [#217](https://github.com/pyinat/pyinaturalist/issues/217) for details.
 
 ### Performance
 * Added API request caching with [requests-cache](https://github.com/reclosedev/requests-cache)
@@ -129,7 +129,7 @@ The following changes apply to `upload()`, `create_observation()`, and `update_o
 * Fixed broken `response_format` parameter in `v0.get_observations()`
 
 ## 0.14.0 (2021-07-14)
-[See all Issues & PRs for 0.14](https://github.com/niconoe/pyinaturalist/milestone/5?closed=1)
+[See all Issues & PRs for 0.14](https://github.com/pyinat/pyinaturalist/milestone/5?closed=1)
 
 ### New Endpoints
 * Added new function for **Observation sounds** endpoint: `upload_sounds()`
@@ -196,11 +196,11 @@ Model features:
 * Added a default response timeout of 5 seconds
 * Added an example (`examples/sample_responses.py`) containing response JSON, model objects, and tables of every type to experiment with
 * Added a tutorial notebook (`examples/Tutorial.ipynb`)
-* Set up pyinaturalist-notebook to be [runnable with Binder](https://mybinder.org/v2/gh/niconoe/pyinaturalist/main?filepath=examples)
+* Set up pyinaturalist-notebook to be [runnable with Binder](https://mybinder.org/v2/gh/pyinat/pyinaturalist/main?filepath=examples)
 
 -----
 ## 0.13.0 (2021-05-22)
-[See all Issues & PRs for 0.13](https://github.com/niconoe/pyinaturalist/milestone/4?closed=1)
+[See all Issues & PRs for 0.13](https://github.com/pyinat/pyinaturalist/milestone/4?closed=1)
 
 ### New Endpoints
 * Added new function for **Search** endpoint: `search()` (combined search for places, projects, taxa, and users)
@@ -242,14 +242,14 @@ Model features:
   ([pyinaturalist-notebook](https://github.com/JWCook/pyinaturalist-notebook))
   and published on Docker Hub
 * Packaging is now handled with Poetry. For users, installation still works the same. For developers,
-  see [Contributing Guide](https://github.com/niconoe/pyinaturalist/blob/main/CONTRIBUTING.md) for details.
+  see [Contributing Guide](https://github.com/pyinat/pyinaturalist/blob/main/CONTRIBUTING.md) for details.
 
 -----
 ## 0.12.1 (2021-03-07)
 * Add undocumented `ident_user_id` parameter to `get_observations()`
 
 ## 0.12.0 (2021-02-02)
-[See all Issues & PRs for 0.12](https://github.com/niconoe/pyinaturalist/milestone/3?closed=1)
+[See all Issues & PRs for 0.12](https://github.com/pyinat/pyinaturalist/milestone/3?closed=1)
 
 ### New Endpoints
 * Added new function for **Observation Histogram** endpoint: `get_observation_histogram()`
@@ -288,7 +288,7 @@ Model features:
 
 -----
 ## 0.11.0 (2020-11-04)
-[See all Issues & PRs for 0.11](https://github.com/niconoe/pyinaturalist/milestone/2?closed=1)
+[See all Issues & PRs for 0.11](https://github.com/pyinat/pyinaturalist/milestone/2?closed=1)
 
 ### New Endpoints
 * Added new functions for Node API **Places** endpoints:
@@ -332,7 +332,7 @@ Model features:
 * Added parameter validation for multiple-choice request parameters
 
 ## 0.10.0 (2020-06-16)
-[See all Issues & PRs for 0.10](https://github.com/niconoe/pyinaturalist/milestone/1?closed=1)
+[See all Issues & PRs for 0.10](https://github.com/pyinat/pyinaturalist/milestone/1?closed=1)
 
 ### New Endpoints
 * Added new **Observation** endpoint: `rest_api.get_observations()`, with 6 additional observation response formats, including GeoJSON, Darwin Core, and others
@@ -349,7 +349,7 @@ Model features:
 -----
 ## 0.9.1 (2020-05-26)
 
-* Bugfix: proper support for boolean and integer list parameters ([Issue #17](https://github.com/niconoe/pyinaturalist/issues/17))
+* Bugfix: proper support for boolean and integer list parameters ([Issue #17](https://github.com/pyinat/pyinaturalist/issues/17))
 
 ## 0.9.0 (2020-05-06)
 
