@@ -539,7 +539,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 
 [[package]]
 name = "linkify-it-py"
-version = "1.0.3"
+version = "2.0.0"
 description = "Links recognition library with FULL unicode support."
 category = "main"
 optional = true
@@ -1638,7 +1638,7 @@ docs = ["furo", "ipython", "linkify-it-py", "myst-parser", "nbsphinx", "sphinx",
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "5890841cf44aad57276a5d0a66976de6f25b14ea1c57d3e6c58618a1aaf31faa"
+content-hash = "365b0ad704eeae08e772a86ca46eebac95844f26b11ac9fee58313c5751fb7c1"
 
 [metadata.files]
 alabaster = [
@@ -1925,8 +1925,8 @@ keyring = [
     {file = "keyring-23.6.0.tar.gz", hash = "sha256:3ac00c26e4c93739e19103091a9986a9f79665a78cf15a4df1dba7ea9ac8da2f"},
 ]
 linkify-it-py = [
-    {file = "linkify-it-py-1.0.3.tar.gz", hash = "sha256:2b3f168d5ce75e3a425e34b341a6b73e116b5d9ed8dbbbf5dc7456843b7ce2ee"},
-    {file = "linkify_it_py-1.0.3-py3-none-any.whl", hash = "sha256:11e29f00150cddaa8f434153f103c14716e7e097a8fd372d9eb1ed06ed91524d"},
+    {file = "linkify-it-py-2.0.0.tar.gz", hash = "sha256:476464480906bed8b2fa3813bf55566282e55214ad7e41b7d1c2b564666caf2f"},
+    {file = "linkify_it_py-2.0.0-py3-none-any.whl", hash = "sha256:1bff43823e24e507a099e328fc54696124423dd6320c75a9da45b4b754b748ad"},
 ]
 livereload = [
     {file = "livereload-2.6.3.tar.gz", hash = "sha256:776f2f865e59fde56490a56bcc6773b6917366bce0c267c60ee8aaf1a0959869"},
