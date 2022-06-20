@@ -47,7 +47,7 @@ rich                        = ">=10.9"
 furo                        = {optional=true, version="^2022.2.14.1"}
 ipython                     = {optional=true, version="^7.25.0"}
 linkify-it-py               = {optional=true, version="^1.0.1"}
-myst-parser                 = {optional=true, version="^0.17.0"}
+myst-parser                 = {optional=true, version=">=0.17,<0.19"}
 nbsphinx                    = {optional=true, version="^0.8.5"}
 sphinx                      = {optional=true, version="^4.2.0"}
 sphinx-automodapi           = {optional=true, version="^0.14"}
