@@ -327,12 +327,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             return self.send(request, **kwargs)
         # Save decoded JSON on response object, to avoid decoding twice
         else:
-            response._json = response_json  # type: ignore
-
-            def get_cached_json(self, **kwargs):
-                return self._json
-
-            response.json = get_cached_json.__get__(response, type(response))  # type: ignore
+            response.json = lambda **kwargs: response_json  # type: ignore
             return response
 
 
