@@ -1,9 +1,12 @@
+from io import BytesIO
 from time import sleep
 from unittest.mock import patch
 
 import pytest
+import urllib3.util.retry
 from requests import Request
 from requests_ratelimiter import Limiter, RequestRate
+from urllib3.exceptions import MaxRetryError
 
 from pyinaturalist.session import (
     CACHE_FILE,
@@ -113,9 +116,50 @@ def test_request_dry_run_kwarg(mock_request):
 # In addition to the test cases above, ensure that the request/response isn't altered with dry-run disabled
 def test_request_dry_run_disabled(requests_mock):
     real_response = {'results': ['response object']}
-    requests_mock.get('http://url', json={'results': ['response object']}, status_code=200)
+    requests_mock.get('http://url', json=real_response, status_code=200)
 
     assert ClientSession().request('GET', 'http://url').json() == real_response
+
+
+@patch.object(urllib3.util.retry.time, 'sleep')  # type: ignore
+def test_request_validate_json__retry_failure(mock_sleep, requests_mock):
+    requests_mock.get(
+        'http://url/invalid_json',
+        body=BytesIO(b'{"results": "invalid respo"'),
+        headers={'Content-Type': 'application/json'},
+        status_code=200,
+    )
+
+    # Expect a MaxRetryError after exhausing retries
+    retries = 7
+    session = ClientSession(max_retries=retries)
+    with pytest.raises(MaxRetryError) as e:
+        session.get('http://url/invalid_json')
+        assert 'JSONDecodeError' in str(e.value)
+    assert mock_sleep.call_count == retries - 1
+
+
+def test_request_validate_json__retry_success(requests_mock):
+    requests_mock.get(
+        'http://url/maybe_valid_json',
+        [
+            {
+                'body': BytesIO(b'{"results": "invalid respo"'),
+                'headers': {'Content-Type': 'application/json'},
+                'status_code': 200,
+            },
+            {
+                'body': BytesIO(b'{"results": "valid response"}'),
+                'headers': {'Content-Type': 'application/json'},
+                'status_code': 200,
+            },
+        ],
+    )
+
+    # Expect valid JSON on the second attempt
+    session = ClientSession(max_retries=7)
+    response = session.get('http://url/maybe_valid_json', refresh=True)
+    assert response.json() == {"results": "valid response"}
 
 
 def test_session__cache_file():
@@ -146,7 +190,8 @@ def test_session__send(mock_limiter, mock_requests_send):
 
 @pytest.mark.enable_client_session  # For all other tests, caching is disabled. Re-enable that here.
 @patch('requests_cache.session.CacheMixin.send')
-def test_session__send__cache_settings(mock_cache_send):
+@patch('pyinaturalist.session.ClientSession._validate_json')
+def test_session__send__cache_settings(mock_validate_json, mock_cache_send):
     session = ClientSession()
     request = Request(method='GET', url='http://test.com').prepare()
 

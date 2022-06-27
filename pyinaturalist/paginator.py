@@ -62,7 +62,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         per_page: int = None,
         **kwargs,
     ):
-        self.kwargs = kwargs
+        self.kwargs = {k: v for k, v in kwargs.items() if v is not None}
         self.request_function = request_function
         self.request_args = request_args
         self.method = method
