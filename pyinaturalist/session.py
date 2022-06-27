@@ -1,5 +1,6 @@
 """Session class and related functions for preparing and sending API requests"""
 import threading
+from json import JSONDecodeError
 from logging import getLogger
 from os import getenv
 from typing import Dict, Type
@@ -33,6 +34,7 @@ from pyinaturalist.constants import (
     REQUESTS_PER_MINUTE,
     REQUESTS_PER_SECOND,
     RETRY_BACKOFF,
+    RETRY_STATUSES,
     WRITE_HTTP_METHODS,
     FileOrPath,
     MultiInt,
@@ -143,9 +145,51 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         self.headers['User-Agent'] = ' '.join(user_agent_details).strip()
 
         # Mount an adapter to apply retry settings
-        retry = Retry(total=retries, backoff_factor=backoff_factor)
-        adapter = HTTPAdapter(max_retries=retry)
+        self.retry = Retry(
+            total=retries, backoff_factor=backoff_factor, status_forcelist=RETRY_STATUSES
+        )
+        adapter = HTTPAdapter(max_retries=self.retry)
         self.mount('https://', adapter)
+
+    def prepare_inat_request(
+        self,
+        method: str,
+        url: str,
+        access_token: str = None,
+        files: FileOrPath = None,
+        headers: Dict = None,
+        ids: MultiInt = None,
+        json: Dict = None,
+        params: RequestParams = None,
+        allow_str_ids: bool = False,
+        **kwargs,
+    ) -> PreparedRequest:
+        """Translate pyinaturalist-specific options into standard request arguments"""
+        # Prepare request params and URL
+        params = preprocess_request_params(params)
+        url = convert_url_ids(url, ids, allow_str_ids)
+
+        # Set auth header
+        headers = headers or {}
+        if access_token:
+            headers['Authorization'] = f'Bearer {access_token}'
+
+        # Convert any datetimes in request body, and read any files or URLs for uploading
+        json = preprocess_request_body(json)
+        if files:
+            files = {'file': ensure_file_obj(files, self)}  # type: ignore
+
+        # Convert into a PreparedRequest
+        request = Request(
+            method=method,
+            url=url,
+            files=files,
+            headers=headers,
+            json=json,
+            params=params,
+            **kwargs,
+        )
+        return super().prepare_request(request)
 
     def request(  # type: ignore
         self,
@@ -216,55 +260,17 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         )
         logger.debug(format_response(response))
 
+        # Raise an exception if the request failed (after retries are exceeded)
         if raise_for_status:
             response.raise_for_status()
         return response
-
-    def prepare_inat_request(
-        self,
-        method: str,
-        url: str,
-        access_token: str = None,
-        files: FileOrPath = None,
-        headers: Dict = None,
-        ids: MultiInt = None,
-        json: Dict = None,
-        params: RequestParams = None,
-        allow_str_ids: bool = False,
-        **kwargs,
-    ) -> PreparedRequest:
-        """Translate pyinaturalist-specific options into standard request arguments"""
-        # Prepare request params and URL
-        params = preprocess_request_params(params)
-        url = convert_url_ids(url, ids, allow_str_ids)
-
-        # Set auth header
-        headers = headers or {}
-        if access_token:
-            headers['Authorization'] = f'Bearer {access_token}'
-
-        # Convert any datetimes in request body, and read any files or URLs for uploading
-        json = preprocess_request_body(json)
-        if files:
-            files = {'file': ensure_file_obj(files, self)}  # type: ignore
-
-        # Convert into a PreparedRequest
-        request = Request(
-            method=method,
-            url=url,
-            files=files,
-            headers=headers,
-            json=json,
-            params=params,
-            **kwargs,
-        )
-        return super().prepare_request(request)
 
     def send(  # type: ignore  # Adds kwargs not present in Session.send()
         self,
         request: PreparedRequest,
         expire_after: ExpirationTime = None,
         refresh: bool = False,
+        retries: Retry = None,
         timeout: int = None,
         **kwargs,
     ) -> Response:
@@ -280,13 +286,54 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         read timeouts. The ``timeout`` argument will be used as the read timeout.
         """
         read_timeout = timeout or self.timeout
-        return super().send(
+        response = super().send(
             request,
             expire_after=expire_after,
             refresh=refresh,
             timeout=(CONNECT_TIMEOUT, read_timeout),
             **kwargs,
         )
+        response = self._validate_json(
+            request, response, expire_after=expire_after, retries=retries, timeout=timeout, **kwargs
+        )
+        return response
+
+    def _validate_json(
+        self, request: PreparedRequest, response: Response, retries: Retry = None, **kwargs
+    ) -> Response:
+        """Occasionally, the API may return invalid (truncated) JSON, requiring a retry. This method
+        checks for this condition, treats it as a request error, and applies existing retry settings
+        (so behavior is consistent with ``urllib3.ConnectionPool.urlopen()``).
+        """
+        # Skip for non-JSON responses
+        if not response.headers.get('Content-Type', '').startswith('application/json'):
+            return response
+
+        # Attempt to decode the response content as JSON
+        try:
+            response_json = response.json()
+        # Update retry state and wait before sending the request again
+        except JSONDecodeError as e:
+            logger.info('Invalid JSON response; retrying...')
+            retries = retries or self.retry
+            retries = retries.increment(
+                response.request.method,
+                response.request.url,
+                error=e,
+            )
+            retries.sleep()
+            kwargs['force_refresh'] = True
+            kwargs['retries'] = retries
+            return self.send(request, **kwargs)
+        # Save decoded JSON on response object, to avoid decoding twice
+        else:
+            response._json = response_json  # type: ignore
+
+            def get_cached_json(self, **kwargs):
+                return self._json
+
+            response.json = get_cached_json.__get__(response, type(response))  # type: ignore
+            return response
 
 
 def delete(url: str, session: ClientSession = None, **kwargs) -> Response:
