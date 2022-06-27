@@ -1,5 +1,8 @@
 # History
 
+## 0.17.3 (Unreleased)
+* Add retries for requests that return invalid (truncated) JSON
+
 ## 0.17.2 (2022-06-12)
 * Handle nested 'photo' dictionaries when loading `Taxon.taxon_photos`
 * Add model for `ListedTaxon.list`, and handle differences in format between `/taxa` and `/observations/{id}/taxon_summary`
