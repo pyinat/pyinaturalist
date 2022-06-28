@@ -1,5 +1,9 @@
 # History
 
+## 0.17.4 (2022-07-11)
+* Use a single data directory instead of separate 'cache' and 'user data' dirs
+    * Platform-dependent; on Linux, for example, this will be `~/.local/share/pyinaturalist`
+
 ## 0.17.3 (2022-06-28)
 * Add retries for requests that return invalid (truncated) JSON
 * `max_retries` and `backoff_factor` arguments for `ClientSession` will apply to these retries (in
