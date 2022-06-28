@@ -132,7 +132,7 @@ def test_request_validate_json__retry_failure(mock_sleep, requests_mock):
 
     # Expect a MaxRetryError after exhausing retries
     retries = 7
-    session = ClientSession(retries=retries)
+    session = ClientSession(max_retries=retries)
     with pytest.raises(MaxRetryError) as e:
         session.get('http://url/invalid_json')
         assert 'JSONDecodeError' in str(e.value)
@@ -157,7 +157,7 @@ def test_request_validate_json__retry_success(requests_mock):
     )
 
     # Expect valid JSON on the second attempt
-    session = ClientSession(retries=7)
+    session = ClientSession(max_retries=7)
     response = session.get('http://url/maybe_valid_json', refresh=True)
     assert response.json() == {"results": "valid response"}
 

@@ -86,8 +86,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         per_day: float = REQUESTS_PER_DAY,
         burst: int = REQUEST_BURST_RATE,
         bucket_class: Type[AbstractBucket] = SQLiteBucket,
-        retries: int = REQUEST_RETRIES,
         backoff_factor: float = RETRY_BACKOFF,
+        max_retries: int = REQUEST_RETRIES,
         timeout: int = REQUEST_TIMEOUT,
         user_agent: str = None,
         **kwargs,
@@ -103,8 +103,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             per_day: Max requests per day
             burst: Max number of consecutive requests allowed before applying per-second rate-limiting
             bucket_class: Rate-limiting backend to use. Defaults to a persistent SQLite database.
-            retries: Maximum number of times to retry a failed request
             backoff_factor: Factor for increasing delays between retries
+            max_retries: Maximum number of times to retry a failed request
             timeout: Maximum number of seconds to wait for a response from the server
             user_agent: Additional User-Agent info to pass to API requests
             kwargs: Additional keyword arguments for :py:class:`~requests_cache.session.CachedSession`
@@ -135,7 +135,14 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             **kwargs,
         )
 
-        # Set default headers
+        # Retry settings
+        self.retries = Retry(
+            total=max_retries, backoff_factor=backoff_factor, status_forcelist=RETRY_STATUSES
+        )
+        adapter = HTTPAdapter(max_retries=self.retries)
+        self.mount('https://', adapter)
+
+        # Default headers
         self.headers['Accept'] = 'application/json'
         user_agent_details = [
             default_user_agent(),
@@ -143,13 +150,6 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             user_agent or '',
         ]
         self.headers['User-Agent'] = ' '.join(user_agent_details).strip()
-
-        # Mount an adapter to apply retry settings
-        self.retry = Retry(
-            total=retries, backoff_factor=backoff_factor, status_forcelist=RETRY_STATUSES
-        )
-        adapter = HTTPAdapter(max_retries=self.retry)
-        self.mount('https://', adapter)
 
     def prepare_inat_request(
         self,
@@ -294,7 +294,12 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             **kwargs,
         )
         response = self._validate_json(
-            request, response, expire_after=expire_after, retries=retries, timeout=timeout, **kwargs
+            request,
+            response,
+            expire_after=expire_after,
+            retries=retries,
+            timeout=timeout,
+            **kwargs,
         )
         return response
 
@@ -315,7 +320,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         # Update retry state and wait before sending the request again
         except JSONDecodeError as e:
             logger.info('Invalid JSON response; retrying...')
-            retries = retries or self.retry
+            retries = retries or self.retries
             retries = retries.increment(
                 response.request.method,
                 response.request.url,

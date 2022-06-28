@@ -1,7 +1,9 @@
 # History
 
-## 0.17.3 (Unreleased)
+## 0.17.3 (2022-06-28)
 * Add retries for requests that return invalid (truncated) JSON
+* `max_retries` and `backoff_factor` arguments for `ClientSession` will apply to these retries (in
+  addition to other request errors)
 
 ## 0.17.2 (2022-06-12)
 * Handle nested 'photo' dictionaries when loading `Taxon.taxon_photos`
