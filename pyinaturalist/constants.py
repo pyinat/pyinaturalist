@@ -103,6 +103,7 @@ ICONIC_EMOJI = {
     48222: '🟢',
     47686: '🦠',
 }
+ROOT_TAXON_ID = 48460
 
 # Taxonomic ranks that can be filtered on
 RANKS = [
@@ -130,6 +131,20 @@ RANKS = [
     'class',
     'superclass',
     'subphylum',
+    'phylum',
+    'kingdom',
+]
+
+# Simplified subset of ranks that are useful for display
+COMMON_RANKS = [
+    'form',
+    'variety',
+    'species',
+    'genus',
+    'tribe',
+    'family',
+    'order',
+    'class',
     'phylum',
     'kingdom',
 ]
