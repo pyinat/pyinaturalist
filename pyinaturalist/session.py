@@ -71,10 +71,6 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
     * Rate-limiting (skipped for cached requests)
     * Retries
     * Timeouts
-
-    This is the default and recommended session class to use for API requests, but can be safely
-    replaced with any :py:class:`~requests.session.Session`-compatible class via the ``session``
-    argument for API request functions.
     """
 
     def __init__(

@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Optional, Tuple, Union
 
 from dateutil.relativedelta import relativedelta
-from platformdirs import user_cache_dir
+from platformdirs import user_data_dir
 
 # iNaturalist URLs
 API_V0 = 'https://www.inaturalist.org'
@@ -42,7 +42,7 @@ WRITE_HTTP_METHODS = ['PATCH', 'POST', 'PUT', 'DELETE']
 
 # Project directories
 PROJECT_DIR = abspath(dirname(dirname(__file__)))
-CACHE_DIR = user_cache_dir('pyinaturalist')
+DATA_DIR = Path(user_data_dir()) / 'pyinaturalist'
 DOCS_DIR = join(PROJECT_DIR, 'docs')
 DOWNLOAD_DIR = join(PROJECT_DIR, 'downloads')
 EXAMPLES_DIR = join(PROJECT_DIR, 'examples')
@@ -59,8 +59,8 @@ CACHE_EXPIRATION = {
     f'{ICONIC_TAXA_BASE_URL}/*': -1,
     '*': timedelta(minutes=30),
 }
-CACHE_FILE = join(CACHE_DIR, 'api_requests.db')
-RATELIMIT_FILE = join(CACHE_DIR, 'api_ratelimit.db')
+CACHE_FILE = join(DATA_DIR, 'api_requests.db')
+RATELIMIT_FILE = join(DATA_DIR, 'api_ratelimit.db')
 TOKEN_EXPIRATION = timedelta(hours=1)
 JWT_EXPIRATION = timedelta(days=1)
 
@@ -103,6 +103,7 @@ ICONIC_EMOJI = {
     48222: '🟢',
     47686: '🦠',
 }
+ROOT_TAXON_ID = 48460
 
 # Taxonomic ranks that can be filtered on
 RANKS = [
@@ -130,6 +131,20 @@ RANKS = [
     'class',
     'superclass',
     'subphylum',
+    'phylum',
+    'kingdom',
+]
+
+# Simplified subset of ranks that are useful for display
+COMMON_RANKS = [
+    'form',
+    'variety',
+    'species',
+    'genus',
+    'tribe',
+    'family',
+    'order',
+    'class',
     'phylum',
     'kingdom',
 ]

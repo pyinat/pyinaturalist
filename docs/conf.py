@@ -16,6 +16,7 @@
 """
 # flake8: noqa: E402
 import sys
+from importlib.metadata import version as pkg_version
 from os import makedirs, symlink
 from os.path import dirname, exists, join
 from shutil import copytree, rmtree
@@ -28,7 +29,6 @@ except ImportError:
 
 # Add project path so we can import our package
 sys.path.insert(0, '..')
-from pyinaturalist import __version__
 from pyinaturalist.constants import DOCS_DIR, EXAMPLES_DIR, PROJECT_DIR, SAMPLE_DATA_DIR
 from pyinaturalist.docs.model_docs import document_models
 
@@ -50,7 +50,7 @@ needs_sphinx = '4.0'
 project = 'pyinaturalist'
 source_suffix = ['.rst', '.md']
 templates_path = ['_templates']
-version = release = __version__
+version = release = pkg_version('pyinaturalist')
 
 # Sphinx extensions
 extensions = [
