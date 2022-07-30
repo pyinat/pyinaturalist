@@ -31,11 +31,12 @@ logger = getLogger(__name__)
 
 
 @document_common_args
-def get_observation(observation_id: int, **params) -> JsonResponse:
+def get_observation(observation_id: int, access_token: str = None, **params) -> JsonResponse:
     """Get details about a single observation by ID
 
     .. rubric:: Notes
 
+    * :fas:`lock-opens` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
     * API reference: :v1:`GET /observations/{id} <Observations/get_observations_id>`
 
     Example:
@@ -50,6 +51,7 @@ def get_observation(observation_id: int, **params) -> JsonResponse:
 
     Args:
         observation_id: Get the observation with this ID. Only a single value is allowed.
+        access_token: An access token, as returned by :py:func:`.get_access_token()`
 
     Returns:
         A dict with details on the observation
@@ -58,7 +60,7 @@ def get_observation(observation_id: int, **params) -> JsonResponse:
         :py:exc:`.ObservationNotFound` If an invalid observation is specified
     """
 
-    response = get_observations(id=observation_id, **params)
+    response = get_observations(id=observation_id, access_token=access_token, **params)
     if response['results']:
         return convert_observation_timestamps(response['results'][0])
     raise ObservationNotFound()
@@ -116,12 +118,15 @@ def get_observation_histogram(**params) -> HistogramResponse:
     return convert_observation_histogram(response.json())
 
 
-@document_request_params(*docs._get_observations, docs._pagination, docs._only_id)
+@document_request_params(
+    *docs._get_observations, docs._pagination, docs._only_id, docs._access_token
+)
 def get_observations(**params) -> JsonResponse:
     """Search observations
 
     .. rubric:: Notes
 
+    * :fas:`lock-open` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
     * API reference: :v1:`GET /observations <Observations/get_observations>`
 
     Examples:

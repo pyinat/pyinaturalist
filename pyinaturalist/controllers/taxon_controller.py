@@ -10,7 +10,7 @@ IDS_PER_REQUEST = 30
 
 
 class TaxonController(BaseController):
-    """:fa:`dove,style=fas` Controller for Taxon requests"""
+    """:fa:`dove` Controller for Taxon requests"""
 
     def __call__(self, taxon_id, **kwargs) -> Optional[Taxon]:
         """Get a single taxon by ID"""

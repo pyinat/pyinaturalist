@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyinaturalist"
-version = "0.17.4"
+version = "0.17.5"
 description = "iNaturalist API client for python"
 authors = ["Nicolas Noé <nicolas@niconoe.eu>", "Jordan Cook <Jordan.Cook@pioneer.com>"]
 license = "MIT"
@@ -53,8 +53,7 @@ sphinx                      = {optional=true, version="^4.2.0"}
 sphinx-automodapi           = {optional=true, version="^0.14"}
 sphinx-autodoc-typehints    = {optional=true, version="^1.17"}
 sphinx-copybutton           = {optional=true, version=">=0.5"}
-sphinx-inline-tabs          = {optional=true, version="^2022.1.2b11", python=">=3.8"}
-sphinx-panels               = {optional=true, version="^0.6.0"}
+sphinx-design               = {optional=true, version=">=0.2.0"}
 sphinxcontrib-apidoc        = {optional=true, version="^0.3"}
 
 [tool.poetry.dev-dependencies]
@@ -73,8 +72,7 @@ sphinx-autobuild            = ">=2021.3.14"
 [tool.poetry.extras]
 all = []  # Placeholder for optional dependencies needed to run examples in docs
 docs = ["furo", "ipython", "linkify-it-py", "myst-parser", "nbsphinx", "sphinx", "sphinx-automodapi",
-        "sphinx-autodoc-typehints", "sphinx-copybutton", "sphinx-inline-tabs", "sphinx-panels",
-        "sphinxcontrib-apidoc"]
+        "sphinx-autodoc-typehints", "sphinx-copybutton", "sphinx-design", "sphinxcontrib-apidoc"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

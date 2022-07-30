@@ -5,27 +5,29 @@ This page summarizes how to use the main features of pyinaturalist.
 ## Installation
 Installation instructions:
 
-:::{tab} Pip
+::::{tab-set}
+:::{tab-item} Pip
 Install the latest stable version with pip:
 ```
 pip install pyinaturalist
 ```
 :::
-:::{tab} Conda
+:::{tab-item} Conda
 Or install from conda-forge, if you prefer:
 ```
 conda install -c conda-forge pyinaturalist
 ```
 :::
-:::{tab} Pre-release
+:::{tab-item} Pre-release
 If you would like to use the latest development (pre-release) version:
 ```
 pip install --pre pyinaturalist
 ```
 :::
-:::{tab} Local development
+:::{tab-item} Local development
 See {ref}`contributing` for details on setup for local development.
 :::
+::::
 
 :::{admonition} Python version compatibility
 :class: toggle, tip
@@ -56,21 +58,24 @@ and [search URLs](https://forum.inaturalist.org/t/how-to-use-inaturalists-search
 
 For example, if you wanted to search observations by user, these three requests are equivalent:
 
-:::{tab} search URL
+
+::::{tab-set}
+:::{tab-item} search URL
 ```
 https://www.inaturalist.org/observations?user_id=tiwane,jdmore
 ```
 :::
-:::{tab} API request
+:::{tab-item} API request
 ```
 https://api.inaturalist.org/v1/observations?user_id=tiwane%2Cjdmore
 ```
 :::
-:::{tab} pyinaturalist search
+:::{tab-item} pyinaturalist search
 ```python
 >>> get_observations(user_id=['tiwane', 'jdmore'])
 ```
 :::
+::::
 
 Compared to search URLs and raw API requests, pyinaturalist provides some conveniences for making
 requests easier:
@@ -111,7 +116,9 @@ condensed, color-highlighted table.
 
 **Examples:**
 
-:::{tab} Observations
+
+::::{tab-set}
+:::{tab-item} Observations
 ```
 >>> from pyinaturalist import get_observations, pprint
 >>> observations = get_observations(user_id='niconoe', per_page=5)
@@ -125,7 +132,7 @@ ID         Taxon ID   Taxon                                                  Obs
 82696334   472617     Species: Tomocerus vulgaris                            Jun 07, 2021   niconoe   1428 Braine-l'Alleud, Belgique
 ```
 :::
-:::{tab} Places
+:::{tab-item} Places
 ```
 >>> from pyinaturalist import get_places, pprint
 >>> places = get_places_autocomplete('Vale')
@@ -144,10 +151,11 @@ ID         Taxon ID   Taxon                                                  Obs
 104268     46.7917     27.0905   Valea Ursului                    https://www.inaturalist.org/places/104268
 ```
 :::
-:::{tab} Places (with terminal colors)
+:::{tab-item} Places (with terminal colors)
 ```{figure} images/pprint_table.png
 ```
 :::
+::::
 
 ## Models
 Data models ({py:mod}`pyinaturalist.models`) are included for all API response types. These allow
@@ -258,7 +266,11 @@ environment variable names are the keyword arguments in uppercase, prefixed with
 * `INAT_APP_SECRET`
 
 **Examples:**
-:::{tab} Python
+
+::::{tab-set}
+:::{tab-item} Python
+:sync: python
+
 ```python
 >>> import os
 >>> os.environ['INAT_USERNAME'] = 'my_inaturalist_username'
@@ -267,7 +279,9 @@ environment variable names are the keyword arguments in uppercase, prefixed with
 >>> os.environ['INAT_APP_SECRET'] = 'bbce628be722bfe283de4'
 ```
 :::
-:::{tab} Unix (MacOS / Linux)
+:::{tab-item} Unix (MacOS / Linux)
+:sync: unix
+
 ```bash
 export INAT_USERNAME="my_inaturalist_username"
 export INAT_PASSWORD="my_inaturalist_password"
@@ -275,7 +289,9 @@ export INAT_APP_ID="33f27dc63bdf27f4ca6cd95df"
 export INAT_APP_SECRET="bbce628be722bfe283de4"
 ```
 :::
-:::{tab} Windows CMD
+:::{tab-item} Windows CMD
+:sync: cmd
+
 ```bat
 set INAT_USERNAME="my_inaturalist_username"
 set INAT_PASSWORD="my_inaturalist_password"
@@ -283,7 +299,9 @@ set INAT_APP_ID="33f27dc63bdf27f4ca6cd95df"
 set INAT_APP_SECRET="bbce628be722bfe283de4"
 ```
 :::
-:::{tab} PowerShell
+:::{tab-item} PowerShell
+:sync: ps1
+
 ```powershell
 $Env:INAT_USERNAME="my_inaturalist_username"
 $Env:INAT_PASSWORD="my_inaturalist_password"
@@ -291,6 +309,7 @@ $Env:INAT_APP_ID="33f27dc63bdf27f4ca6cd95df"
 $Env:INAT_APP_SECRET="bbce628be722bfe283de4"
 ```
 :::
+::::
 
 Note that in any shell, these environment variables will only be set for your current shell
 session. I.e., you can't set them in one terminal and then access them in another.
@@ -440,54 +459,74 @@ Accept: application/json
 ### Dry-run all requests
 To enable dry-run mode for all requests, set the `DRY_RUN_ENABLED` environment variable:
 
-:::{tab} Python
+::::{tab-set}
+:::{tab-item} Python
+:sync: python
+
 ```python
 >>> import os
 >>> os.environ['DRY_RUN_ENABLED'] = 'true'
 ```
 :::
-:::{tab} Unix (MacOS / Linux)
+:::{tab-item} Unix (MacOS / Linux)
+:sync: unix
+
 ```bash
 export DRY_RUN_ENABLED=true
 ```
 :::
-:::{tab} Windows CMD
+:::{tab-item} Windows CMD
+:sync: cmd
+
 ```bat
 set DRY_RUN_ENABLED="true"
 ```
 :::
-:::{tab} PowerShell
+:::{tab-item} PowerShell
+:sync: ps1
+
 ```powershell
 $Env:DRY_RUN_ENABLED="true"
 ```
 :::
+::::
 
 
 ### Dry-run only write requests
 If you would like to send real `GET` requests but mock out any requests that modify data
 (`POST`, `PUT`, and `DELETE`), you can use the `DRY_RUN_WRITE_ONLY` variable instead:
 
-:::{tab} Python
+::::{tab-set}
+:::{tab-item} Python
+:sync: python
+
 ```python
 >>> import os
 >>> os.environ['DRY_RUN_WRITE_ONLY'] = 'true'
 ```
 :::
-:::{tab} Unix (MacOS / Linux)
+:::{tab-item} Unix (MacOS / Linux)
+:sync: unix
+
 ```bash
 export DRY_RUN_WRITE_ONLY=true
 ```
 :::
-:::{tab} Windows CMD
+:::{tab-item} Windows CMD
+:sync: cmd
+
 ```bat
 set DRY_RUN_WRITE_ONLY="true"
 ```
 :::
-:::{tab} PowerShell
+:::{tab-item} PowerShell
+:sync: ps1
+
 ```powershell
 $Env:DRY_RUN_WRITE_ONLY="true"
 ```
 :::
+::::
 
 ## User Agent
 If you're using the API as part of a project or application, it's good practice to add that info to
