@@ -36,7 +36,7 @@ def get_observation(observation_id: int, access_token: str = None, **params) -> 
 
     .. rubric:: Notes
 
-    * :fa:`lock-open,style=fas` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
+    * :fas:`lock-opens` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
     * API reference: :v1:`GET /observations/{id} <Observations/get_observations_id>`
 
     Example:
@@ -126,7 +126,7 @@ def get_observations(**params) -> JsonResponse:
 
     .. rubric:: Notes
 
-    * :fa:`lock-open,style=fas` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
+    * :fas:`lock-open` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
     * API reference: :v1:`GET /observations <Observations/get_observations>`
 
     Examples:

@@ -1,5 +1,5 @@
 (examples)=
-# {fa}`laptop-code,style=fas` Examples
+# {fa}`laptop-code` Examples
 Below are some examples of building data visualizations and other neat things using
 iNaturalist data. These can also be found in the
 [examples/](https://github.com/pyinat/pyinaturalist/tree/main/examples) folder on GitHub.

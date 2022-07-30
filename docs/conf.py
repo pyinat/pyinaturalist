@@ -64,8 +64,7 @@ extensions = [
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
     'sphinx_copybutton',
-    'sphinx_inline_tabs',
-    'sphinx_panels',
+    'sphinx_design',
     'sphinxcontrib.apidoc',
     'myst_parser',
     'nbsphinx',
@@ -158,8 +157,7 @@ html_css_files = [
     'collapsible_container.css',
     'colors.css',
     'table.css',
-    'https://use.fontawesome.com/releases/v5.15.3/css/all.css',
-    'https://use.fontawesome.com/releases/v5.15.3/css/v4-shims.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css',
 ]
 html_show_sphinx = False
 pygments_style = 'friendly'

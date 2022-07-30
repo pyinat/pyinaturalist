@@ -133,7 +133,7 @@ class EstablishmentMeans(BaseModel):
 
 @define_model
 class Checklist(BaseModel):
-    """:fa:`dove,style=fas` :fa:`list` A taxon checklist (aka
+    """:fa:`dove` :fa:`list` A taxon checklist (aka
     `"original life list" <https://www.inaturalist.org/blog/43337-upcoming-changes-to-lists>`_)
     """
 
@@ -142,7 +142,7 @@ class Checklist(BaseModel):
 
 @define_model
 class ListedTaxon(IdWrapperMixin, EstablishmentMeans):
-    """:fa:`dove,style=fas` :fa:`list` A taxon with additional stats associated with a list
+    """:fa:`dove` :fa:`list` A taxon with additional stats associated with a list
     (aka `"original life list" <https://www.inaturalist.org/blog/43337-upcoming-changes-to-lists>`_),
     based on the schema of:
 
@@ -204,7 +204,7 @@ class ListedTaxon(IdWrapperMixin, EstablishmentMeans):
 
 @define_model
 class TaxonSummary(BaseModel):
-    """:fa:`dove,style=fas` :fa:`list` Information about an observation's taxon, within the context
+    """:fa:`dove` :fa:`list` Information about an observation's taxon, within the context
     of the observation's location. Based on the schema of
     :v1:`GET /observations/{id}/taxon_summary <Observations/get_observations_id_taxon_summary>`
     """

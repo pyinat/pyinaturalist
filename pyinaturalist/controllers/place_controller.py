@@ -9,7 +9,7 @@ from pyinaturalist.v1 import get_places_autocomplete, get_places_by_id, get_plac
 
 
 class PlaceController(BaseController):
-    """:fa:`map-marker-alt,style=fas` Controller for Place requests"""
+    """:fa:`location-dot` Controller for Place requests"""
 
     def __call__(self, place_id, **kwargs) -> Optional[Place]:
         """Get a single place by ID"""
