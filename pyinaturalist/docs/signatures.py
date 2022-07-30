@@ -2,7 +2,7 @@
 from functools import partial
 from inspect import Parameter, ismethod, signature
 from logging import getLogger
-from typing import Callable, Dict, Iterable, List, Type
+from typing import Callable, Dict, Iterable, List, Optional, Type
 
 import forge
 from requests import Session
@@ -167,13 +167,13 @@ def deduplicate_var_kwargs(params: Dict) -> Dict:
 # ----------
 
 
-def _dry_run(dry_run: bool = False):
+def _dry_run(dry_run: Optional[bool] = False):
     """Args:
     dry_run: Just log the request instead of sending a real request
     """
 
 
-def _session(session: Session = None):
+def _session(session: Optional[Session] = None):
     """Args:
     session: An existing `Session object <https://docs.python-requests.org/en/latest/user/advanced/>`_ to use instead of creating a new one
     """

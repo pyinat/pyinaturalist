@@ -616,7 +616,7 @@ def _taxon_id_params(
 
 def _access_token(access_token: str = None):
     """Args:
-    access_token: An access token required for user authentication, as returned by :py:func:`.get_access_token()`
+    access_token: An access token for user authentication, as returned by :py:func:`.get_access_token()`
     """
 
 
