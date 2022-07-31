@@ -1,5 +1,8 @@
 # History
 
+## Unreleased
+* Use taxon icon as placeholder for `Observation.photo_url` if observation has no photos
+
 ## 0.17.4 (2022-07-11)
 * Use a single data directory instead of separate 'cache' and 'user data' dirs
     * Platform-dependent; on Linux, for example, this will be `~/.local/share/pyinaturalist`

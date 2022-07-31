@@ -208,14 +208,14 @@ class Observation(BaseModel):
     def photo_url(self) -> Optional[str]:
         """Original size photo URL for first observation photo (if any)"""
         if not self.photos:
-            return None
+            return self.taxon.icon.original_url if self.taxon else None
         return self.photos[0].original_url
 
     @property
     def thumbnail_url(self) -> Optional[str]:
         """Thumbnail size photo URL for first observation photo (if any)"""
         if not self.photos:
-            return None
+            return self.taxon.icon.thumbnail_url if self.taxon else None
         return self.photos[0].thumbnail_url
 
     @property

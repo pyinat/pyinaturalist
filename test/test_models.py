@@ -286,11 +286,28 @@ def test_observation__project_observations():
     assert isinstance(proj_obs, ProjectObservation) and proj_obs.id == 48899479
 
 
+def test_observation__photol_url():
+    obs = Observation.from_json(j_observation_2)
+    assert obs.photo_url == 'https://static.inaturalist.org/photos/92152429/original.jpg?1598551272'
+
+
+def test_observation__photo_url__no_photo():
+    obs = Observation.from_json(j_observation_2)
+    obs.photos = []
+    assert obs.photo_url.endswith('insecta-200px.png')
+
+
 def test_observation__thumbnail_url():
     obs = Observation.from_json(j_observation_2)
     assert (
         obs.thumbnail_url == 'https://static.inaturalist.org/photos/92152429/square.jpg?1598551272'
     )
+
+
+def test_observation__thumbnail_url__no_photo():
+    obs = Observation.from_json(j_observation_2)
+    obs.photos = []
+    assert obs.thumbnail_url.endswith('insecta-75px.png')
 
 
 def test_observations():
