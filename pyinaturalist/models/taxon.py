@@ -92,6 +92,7 @@ class Taxon(BaseModel):
         default=None,
         doc='Number indicating rank level, for easier comparison between ranks (kingdom=higest)',
     )
+    reference_url: str = field(default=None, doc='Reference URL for the taxonomy source')
     ranges: bool = field(default=None, doc='Indicates if there is range data for this taxon')
     rank: str = field(default=None, options=RANKS, doc='Taxon rank')
     taxon_changes_count: int = field(default=None, doc='Number of curator changes to this taxon')
