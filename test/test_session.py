@@ -8,6 +8,7 @@ from requests import Request
 from requests_ratelimiter import Limiter, RequestRate
 from urllib3.exceptions import MaxRetryError
 
+from pyinaturalist.constants import CACHE_EXPIRATION
 from pyinaturalist.session import (
     CACHE_FILE,
     MOCK_RESPONSE,
@@ -168,9 +169,21 @@ def test_session__cache_file():
 
 
 def test_session__custom_expiration():
-    session = ClientSession(expire_after=3600)
+    session = ClientSession(
+        cache_control=False,
+        expire_after=3600,
+        urls_expire_after={
+            'custom-domain/*': 3600,
+            'api.inaturalist.org/v*/taxa*': 3600,
+        },
+    )
+    assert session.settings.cache_control is False
     assert session.settings.expire_after == 3600
-    assert not session.settings.urls_expire_after
+
+    # User-provided URL patterns should be appended to the default patterns
+    assert session.settings.urls_expire_after['custom-domain/*'] == 3600
+    assert session.settings.urls_expire_after['api.inaturalist.org/v*/taxa*'] == 3600
+    assert session.settings.urls_expire_after['*'] == CACHE_EXPIRATION['*']
 
 
 def test_session__custom_retry():
