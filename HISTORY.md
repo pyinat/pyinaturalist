@@ -1,8 +1,11 @@
 # History
 
-## Unreleased
+## 0.18.0 (Unreleased)
 * Use taxon icon as placeholder for `Observation.photo_url` if observation has no photos
 * Optionally use `ultrajson` instead of stdlib `json`, if installed
+* Add `cache_control` option to `ClientSession` to disable using Cache-Control headers for cache
+  expiration (enabled by default)
+* Add `urls_expire_after` option to `ClientSession` to update default cache expiration URL patterns
 
 ## 0.17.4 (2022-07-11)
 * Use a single data directory instead of separate 'cache' and 'user data' dirs
