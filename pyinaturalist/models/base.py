@@ -1,5 +1,4 @@
 """Base class and utilities for data models"""
-import json
 from collections import UserList
 from copy import deepcopy
 from datetime import datetime
@@ -19,6 +18,12 @@ from pyinaturalist.constants import (
     TableRow,
 )
 from pyinaturalist.converters import ensure_list, try_int
+
+# Optionally use ultrajson instead of stdlib json, if available
+try:
+    import ujson as json
+except ImportError:
+    import json  # type: ignore
 
 T = TypeVar('T', bound='BaseModel')
 TC = TypeVar('TC', bound='BaseModelCollection')
