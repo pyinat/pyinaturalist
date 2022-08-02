@@ -42,6 +42,9 @@ requests-cache              = ">=1.0.0a1"
 requests-ratelimiter        = ">=0.3.2"
 rich                        = ">=10.9"
 
+# Optional dependencies
+ujson                       = {optional=true, version="^5.4.0"}
+
 # Documentation dependencies needed for Readthedocs builds (rtd doesn't support poetry.dev-dependencies)
 # [tool.poetry.dev-dependencies]
 furo                        = {optional=true, version="^2022.2.14.1"}
@@ -70,7 +73,7 @@ requests-mock               = "^1.8"
 sphinx-autobuild            = ">=2021.3.14"
 
 [tool.poetry.extras]
-all = []  # Placeholder for optional dependencies needed to run examples in docs
+all = ["ujson"]  # Placeholder for optional dependencies needed to run examples in docs
 docs = ["furo", "ipython", "linkify-it-py", "myst-parser", "nbsphinx", "sphinx", "sphinx-automodapi",
         "sphinx-autodoc-typehints", "sphinx-copybutton", "sphinx-design", "sphinxcontrib-apidoc"]
 

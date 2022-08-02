@@ -34,4 +34,4 @@ repos:
     rev: v0.961
     hooks:
       - id: mypy
-        additional_dependencies: [attrs, types-python-dateutil, types-requests]
+        additional_dependencies: [attrs, types-python-dateutil, types-requests, types-ujson]
