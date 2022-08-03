@@ -537,7 +537,7 @@ def test_taxon__empty():
 
 def test_taxon__str():
     taxon_1 = Taxon(id=3, name='Aves', preferred_common_name='birb', rank='class')
-    assert str(taxon_1) == 'Taxon(id=3, full_name=Class: Aves (birb))'
+    assert str(taxon_1) == 'Taxon(id=3, full_name=Class: Aves (Birb))'
 
     taxon_2 = Taxon(id=3, name='Aves', rank='class')
     assert str(taxon_2) == 'Taxon(id=3, full_name=Class: Aves)'

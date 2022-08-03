@@ -188,7 +188,9 @@ class Taxon(BaseModel):
         elif not self.rank:
             return self.name
 
-        common_name = f' ({self.preferred_common_name})' if self.preferred_common_name else ''
+        common_name = (
+            f' ({self.preferred_common_name.title()})' if self.preferred_common_name else ''
+        )
         return f'{self.rank.title()}: {self.name}{common_name}'
 
     @property
