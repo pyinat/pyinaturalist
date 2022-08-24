@@ -9,7 +9,7 @@ from unittest.mock import Mock
 from requests import PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
 from requests.utils import default_user_agent
-from requests_cache import CacheMixin, ExpirationTime
+from requests_cache import CacheMixin, ExpirationPatterns, ExpirationTime
 from requests_ratelimiter import (
     AbstractBucket,
     BucketFullException,
@@ -75,8 +75,10 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
 
     def __init__(
         self,
-        expire_after: ExpirationTime = None,
         cache_file: FileOrPath = CACHE_FILE,
+        cache_control: bool = True,
+        expire_after: ExpirationTime = None,
+        urls_expire_after: ExpirationPatterns = None,
         per_second: int = REQUESTS_PER_SECOND,
         per_minute: int = REQUESTS_PER_MINUTE,
         per_day: float = REQUESTS_PER_DAY,
@@ -91,9 +93,13 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         """Get a Session object, optionally with custom settings for caching and rate-limiting.
 
         Args:
+            cache_file: Cache file path to use; defaults to the system default cache directory
+            cache_control: Use server-provided Cache-Control headers to set cache expiration when
+                possible (instead of ``expire_after`` or ``urls_expire_after``)
             expire_after: How long to keep cached API requests; for advanced options, see
                 `requests-cache: Expiration <https://requests-cache.readthedocs.io/en/latest/user_guide/expiration.html>`_
-            cache_file: Cache file path to use; defaults to the system default cache directory
+            urls_expire_after Glob patterns for per-URL cache expiration; See
+                `requests-cache: URL Patterns <https://requests-cache.readthedocs.io/en/stable/user_guide/expiration.html#url-patterns>`_
             per_second: Max requests per second
             per_minute: Max requests per minute
             per_day: Max requests per day
@@ -106,19 +112,21 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             kwargs: Additional keyword arguments for :py:class:`~requests_cache.session.CachedSession`
                 and/or :py:class:`~requests_ratelimiter.requests_ratelimiter.LimiterSession`
         """
-        # If not overridden, use Cache-Control when possible, and some default expiration times
-        if not expire_after:
-            kwargs.setdefault('cache_control', True)
-            kwargs.setdefault('urls_expire_after', CACHE_EXPIRATION)
+        # Extend default URL expiration patterns with user-provided ones, if any
+        url_patterns = CACHE_EXPIRATION
+        if urls_expire_after:
+            url_patterns.update(urls_expire_after)
         self.timeout = timeout
 
         super().__init__(  # type: ignore  # false positive
             # Cache settings
             cache_name=cache_file,
             backend='sqlite',
+            cache_control=cache_control,
             expire_after=expire_after,
+            urls_expire_after=url_patterns,
             ignored_parameters=['Authorization', 'access_token'],
-            old_data_on_error=True,
+            stale_if_error=True,
             # Rate limit settings
             bucket_class=bucket_class,
             bucket_kwargs={'path': RATELIMIT_FILE},
@@ -200,6 +208,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         expire_after: ExpirationTime = None,
         files: FileOrPath = None,
         ids: MultiInt = None,
+        only_if_cached: bool = False,
         raise_for_status: bool = True,
         refresh: bool = False,
         stream: bool = False,
@@ -249,6 +258,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             request,
             timeout=timeout,
             expire_after=expire_after,
+            only_if_cached=only_if_cached,
             refresh=refresh,
             allow_redirects=allow_redirects,
             stream=stream,
