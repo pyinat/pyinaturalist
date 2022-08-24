@@ -1,3 +1,4 @@
+import json
 import os
 from unittest.mock import patch
 
@@ -17,11 +18,11 @@ jwt_json = load_sample_data('get_jwt.json')
 
 OAUTH_ACCESS_TOKEN = '604e5df329b98eecd22bb0a84f88b68'
 JWT_API_TOKEN = 'eyJ1c2VyX2lkIjoyMTE1MDUxLCJvYXV0aF9hcHBsaWNhdGlvbl9pZCI6NjQzLCJx'
+JWT_RESPONSE_200 = Response()
+JWT_RESPONSE_200.status_code = 200
+JWT_RESPONSE_200._content = json.dumps(jwt_json).encode()
 NOT_CACHED_RESPONSE = Response()
 NOT_CACHED_RESPONSE.status_code = 504
-MOCK_JWT_200 = {'json': jwt_json, 'status_code': 200}
-MOCK_JWT_401 = {'json': token_rejected_json, 'status_code': 401}
-MOCK_JWT_504 = {'json': {}, 'status_code': 504}
 
 
 # get_access_token
@@ -29,15 +30,12 @@ MOCK_JWT_504 = {'json': {}, 'status_code': 504}
 
 
 @patch.dict(os.environ, {}, clear=True)
-def test_get_access_token__oauth(requests_mock):
+@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+def test_get_access_token__oauth(mock_get_jwt, requests_mock):
     requests_mock.post(
         f'{API_V0}/oauth/token',
         json=token_accepted_json,
         status_code=200,
-    )
-    requests_mock.get(
-        f'{API_V0}/users/api_token',
-        [MOCK_JWT_504, MOCK_JWT_401],
     )
 
     token = get_access_token(
@@ -47,20 +45,15 @@ def test_get_access_token__oauth(requests_mock):
 
 
 @patch.dict(os.environ, {}, clear=True)
-def test_get_access_token__jwt(requests_mock):
+@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+def test_get_access_token__jwt(mock_get_jwt, requests_mock):
     requests_mock.post(
         f'{API_V0}/oauth/token',
         json=token_accepted_json,
         status_code=200,
     )
-    requests_mock.get(
-        f'{API_V0}/users/api_token',
-        [MOCK_JWT_504, MOCK_JWT_200],
-    )
 
-    token = get_access_token(
-        'valid_username', 'valid_password', 'valid_app_id', 'valid_app_secret', jwt=True
-    )
+    token = get_access_token('valid_username', 'valid_password', 'valid_app_id', 'valid_app_secret')
     assert token == JWT_API_TOKEN
 
 
@@ -78,23 +71,23 @@ def test_get_access_token__cached_jwt(requests_mock):
         status_code=200,
     )
 
-    token = get_access_token(
-        'valid_username', 'valid_password', 'valid_app_id', 'valid_app_secret', jwt=True
+    token_1 = get_access_token(
+        'valid_username', 'valid_password', 'valid_app_id', 'valid_app_secret'
     )
-    assert token == JWT_API_TOKEN
+    token_2 = get_access_token(
+        'valid_username', 'valid_password', 'valid_app_id', 'valid_app_secret'
+    )
+    assert token_1 == token_2 == JWT_API_TOKEN
 
 
 @patch.dict(os.environ, MOCK_CREDS_ENV)
 @patch('pyinaturalist.auth.get_keyring_credentials')
-def test_get_access_token__envars(mock_keyring_credentials, requests_mock):
+@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+def test_get_access_token__envars(mock_get_jwt, mock_keyring_credentials, requests_mock):
     requests_mock.post(
         f'{API_V0}/oauth/token',
         json=token_accepted_json,
         status_code=200,
-    )
-    requests_mock.get(
-        f'{API_V0}/users/api_token',
-        [MOCK_JWT_504, MOCK_JWT_200],
     )
 
     token = get_access_token()
@@ -109,15 +102,12 @@ def test_get_access_token__envars(mock_keyring_credentials, requests_mock):
         'INAT_PASSWORD': 'valid_password',
     },
 )
-def test_get_access_token__mixed_args_and_envars(requests_mock):
+@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+def test_get_access_token__mixed_args_and_envars(mock_get_jwt, requests_mock):
     requests_mock.post(
         f'{API_V0}/oauth/token',
         json=token_accepted_json,
         status_code=200,
-    )
-    requests_mock.get(
-        f'{API_V0}/users/api_token',
-        [MOCK_JWT_504, MOCK_JWT_200],
     )
 
     token = get_access_token(app_id='valid_app_id', app_secret='valid_app_secret')
@@ -127,16 +117,15 @@ def test_get_access_token__mixed_args_and_envars(requests_mock):
 @pytest.mark.enable_client_session
 @patch.dict(os.environ, {}, clear=True)
 @patch('pyinaturalist.auth.get_keyring_credentials', return_value=MOCK_CREDS_OAUTH)
+@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
 @patch.object(ClientSession, 'post')
-def test_get_access_token__keyring(mock_post, mock_keyring_credentials, requests_mock):
+def test_get_access_token__keyring(
+    mock_post, mock_get_jwt, mock_keyring_credentials, requests_mock
+):
     requests_mock.post(
         f'{API_V0}/oauth/token',
         json=token_accepted_json,
         status_code=200,
-    )
-    requests_mock.get(
-        f'{API_V0}/users/api_token',
-        [MOCK_JWT_504, MOCK_JWT_200],
     )
 
     get_access_token()
