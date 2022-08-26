@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from attr import define
 
@@ -18,6 +18,7 @@ from pyinaturalist.models import (
     BaseModel,
     BaseModelCollection,
     Comment,
+    IconPhoto,
     Identification,
     LazyProperty,
     ObservationFieldValue,
@@ -187,13 +188,17 @@ class Observation(BaseModel):
     # Attributes that will only be used during init and then omitted
     temp_attrs = ['time_observed_at']
 
-    # Convert observation timestamps prior to __attrs_init__
     def __init__(self, **kwargs):
+        # Convert observation timestamps prior to __attrs_init__
         observed_on = kwargs.pop('time_observed_at', None)
         if not isinstance(kwargs['observed_on'], datetime) and observed_on:
             kwargs['observed_on'] = observed_on
+        # Set default URL based on observation ID
         if not kwargs.get('uri'):
             kwargs['uri'] = f'{INAT_BASE_URL}/observations/{kwargs.get("id", "")}'
+        # Set identifications_count if missing
+        if kwargs.get('identifications') and not kwargs.get('identifications_count'):
+            kwargs['identifications_count'] = len(kwargs['identifications'])
         self.__attrs_init__(**kwargs)  # type: ignore
 
     @classmethod
@@ -205,18 +210,14 @@ class Observation(BaseModel):
         return cls.from_json(json)
 
     @property
-    def photo_url(self) -> Optional[str]:
-        """Original size photo URL for first observation photo (if any)"""
-        if not self.photos:
-            return self.taxon.icon.original_url if self.taxon else None
-        return self.photos[0].original_url
-
-    @property
-    def thumbnail_url(self) -> Optional[str]:
-        """Thumbnail size photo URL for first observation photo (if any)"""
-        if not self.photos:
-            return self.taxon.icon.thumbnail_url if self.taxon else None
-        return self.photos[0].thumbnail_url
+    def default_photo(self) -> Photo:
+        """Get the default observation photo if any; otherwise use taxon default photo or icon"""
+        if self.photos:
+            return self.photos[0]
+        elif self.taxon:
+            return self.taxon.icon
+        else:
+            return IconPhoto.from_iconic_taxon('unknown')
 
     @property
     def _row(self) -> TableRow:
@@ -253,15 +254,15 @@ class Observations(BaseModelCollection):
         return list(unique_users.values())
 
     @property
+    def photos(self) -> List[Photo]:
+        """Get default photo for each observation"""
+        return [obs.default_photo for obs in self.data]
+
+    @property
     def taxa(self) -> List[Taxon]:
         """Get all unique taxa"""
         unique_taxa = {obs.taxon.id: obs.taxon for obs in self.data}
         return list(unique_taxa.values())
-
-    @property
-    def thumbnail_urls(self) -> List[str]:
-        """Get thumbnails for all observation default photos"""
-        return [obs.thumbnail_url for obs in self.data if obs.thumbnail_url]
 
 
 # Fix __init__ and class docstring
