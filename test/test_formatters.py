@@ -111,9 +111,9 @@ Observation(
         Comment(id=2071611, username='borisb', created_at='Sep 05, 2018', truncated_body='suspect L. bardanae - but sits on Solanum (non-...')
     ],
     identifications=[
-        Identification(id=34896306, taxon_name='Genus: Lixus', created_at='Sep 05, 2018'),
-        Identification(id=34926789, taxon_name='Species: Lixus bardanae', created_at='Sep 05, 2018'),
-        Identification(id=36039221, taxon_name='Species: Lixus bardanae', created_at='Sep 22, 2018')
+        Identification(id=34896306, username='niconoe', taxon_name='Genus: Lixus', created_at='Sep 05, 2018', truncated_body=''),
+        Identification(id=34926789, username='borisb', taxon_name='Species: Lixus bardanae', created_at='Sep 05, 2018', truncated_body=''),
+        Identification(id=36039221, username='jpreudhomme', taxon_name='Species: Lixus bardanae', created_at='Sep 22, 2018', truncated_body='')
     ],
     ofvs=[],
     photos=[

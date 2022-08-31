@@ -187,10 +187,9 @@ def test_identification__empty():
 
 def test_identification__str():
     identification = ID.from_json(j_identification_3)
-    print(identification._nested)
     assert str(identification) == (
-        'Identification(id=126501311, taxon_name=Species: Danaus plexippus (Monarch), '
-        'created_at=Aug 27, 2020)'
+        'Identification(id=126501311, username=samroom, taxon_name=Species: '
+        'Danaus plexippus (Monarch), created_at=Aug 27, 2020, truncated_body=)'
     )
 
 
