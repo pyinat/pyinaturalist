@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from pyinaturalist.paginator import Paginator
@@ -17,6 +16,6 @@ class BaseController:
     def __init__(self, client: 'iNatClient'):
         self.client = client
 
-    @abstractmethod
     def from_ids(self, *object_ids, **params) -> Paginator:
         """Get records by ID"""
+        raise NotImplementedError
