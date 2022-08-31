@@ -90,7 +90,7 @@ class ObservationFieldValue(BaseModel):
             try:
                 self.value = converter(self.value)
             except ValueError:
-                self.value = None
+                None
 
     @property
     def _row(self) -> TableRow:
