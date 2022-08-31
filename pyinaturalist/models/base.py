@@ -86,10 +86,17 @@ class BaseModel:
         """Get the subset of attribute names to show in the model's string representation"""
         raise NotImplementedError
 
-    def to_dict(self, recurse: bool = True) -> JsonResponse:
-        """Convert this object back to dict format"""
+    def to_dict(self, keys: List[str] = None, recurse: bool = True) -> JsonResponse:
+        """Convert this object back to dict format
 
-        def vs(_inst, _key, value):
+        Args:
+            keys: Only keep the specified keys (attribute names)
+            recurse: Recurse into nested model objects
+        """
+
+        def recursive_serializer(_inst, _attribute, value):
+            if keys and _attribute and _attribute.name.lstrip('_') not in keys:
+                return None
             return value.to_dict() if isinstance(value, BaseModel) else value
 
         obj_dict = asdict(
@@ -97,9 +104,13 @@ class BaseModel:
             filter=lambda a, _: a.init is True,
             retain_collection_types=True,
             recurse=recurse,
-            value_serializer=vs if recurse else None,
+            value_serializer=recursive_serializer if recurse else None,
         )
-        return {k.lstrip('_'): v for k, v in obj_dict.items()}
+
+        obj_dict = {k.lstrip('_'): v for k, v in obj_dict.items()}
+        if keys:
+            obj_dict = {k: v for k, v in obj_dict.items() if k in keys}
+        return obj_dict
 
     def __rich_repr__(self):
         """Custom output to use when pretty-printed with rich. Compared to default rich behavior for
