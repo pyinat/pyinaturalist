@@ -85,6 +85,21 @@ def test_deduplicate():
     assert len(obs_list) == 2
 
 
+def test_to_dict():
+    obs_dict = Observation.from_json(j_observation_1).to_dict()
+    assert obs_dict['id'] == j_observation_1['id']
+    assert obs_dict['user']['login'] == j_observation_1['user']['login']
+
+
+def test_to_dict__specific_keys():
+    keys = ['id', 'created_at', 'taxon']
+    obs_dict = Observation.from_json(j_observation_1).to_dict(keys=['id', 'created_at', 'taxon'])
+    assert list(obs_dict.keys()) == keys
+    assert obs_dict['id'] == j_observation_1['id']
+    assert isinstance(obs_dict['created_at'], datetime)
+    assert obs_dict['taxon']['id'] == j_observation_1['taxon']['id']
+
+
 # Controlled Terms
 # --------------------
 
