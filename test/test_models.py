@@ -85,6 +85,21 @@ def test_deduplicate():
     assert len(obs_list) == 2
 
 
+def test_to_dict():
+    obs_dict = Observation.from_json(j_observation_1).to_dict()
+    assert obs_dict['id'] == j_observation_1['id']
+    assert obs_dict['user']['login'] == j_observation_1['user']['login']
+
+
+def test_to_dict__specific_keys():
+    keys = ['id', 'created_at', 'taxon']
+    obs_dict = Observation.from_json(j_observation_1).to_dict(keys=['id', 'created_at', 'taxon'])
+    assert list(obs_dict.keys()) == keys
+    assert obs_dict['id'] == j_observation_1['id']
+    assert isinstance(obs_dict['created_at'], datetime)
+    assert obs_dict['taxon']['id'] == j_observation_1['taxon']['id']
+
+
 # Controlled Terms
 # --------------------
 
@@ -187,10 +202,9 @@ def test_identification__empty():
 
 def test_identification__str():
     identification = ID.from_json(j_identification_3)
-    print(identification._nested)
     assert str(identification) == (
-        'Identification(id=126501311, taxon_name=Species: Danaus plexippus (Monarch), '
-        'created_at=Aug 27, 2020)'
+        'Identification(id=126501311, username=samroom, taxon_name=Species: '
+        'Danaus plexippus (Monarch), created_at=Aug 27, 2020, truncated_body=)'
     )
 
 
@@ -286,28 +300,25 @@ def test_observation__project_observations():
     assert isinstance(proj_obs, ProjectObservation) and proj_obs.id == 48899479
 
 
-def test_observation__photol_url():
-    obs = Observation.from_json(j_observation_2)
-    assert obs.photo_url == 'https://static.inaturalist.org/photos/92152429/original.jpg?1598551272'
-
-
-def test_observation__photo_url__no_photo():
-    obs = Observation.from_json(j_observation_2)
-    obs.photos = []
-    assert obs.photo_url.endswith('insecta-200px.png')
-
-
-def test_observation__thumbnail_url():
+def test_observation__default_photo():
     obs = Observation.from_json(j_observation_2)
     assert (
-        obs.thumbnail_url == 'https://static.inaturalist.org/photos/92152429/square.jpg?1598551272'
+        obs.default_photo.original_url
+        == 'https://static.inaturalist.org/photos/92152429/original.jpg?1598551272'
     )
 
 
-def test_observation__thumbnail_url__no_photo():
+def test_observation__missing_default_photo():
     obs = Observation.from_json(j_observation_2)
     obs.photos = []
-    assert obs.thumbnail_url.endswith('insecta-75px.png')
+    assert obs.default_photo.original_url.endswith('insecta-200px.png')
+
+
+def test_observation__missing_default_photo_and_taxon():
+    obs = Observation.from_json(j_observation_2)
+    obs.photos = []
+    obs.taxon = None
+    assert obs.default_photo.original_url.endswith('unknown-200px.png')
 
 
 def test_observations():
@@ -316,10 +327,10 @@ def test_observations():
     )
     assert isinstance(obs_list.identifiers[0], User) and len(obs_list.identifiers) == 6
     assert isinstance(obs_list.observers[0], User) and len(obs_list.observers) == 3
+    assert isinstance(obs_list.photos[0], Photo) and len(obs_list.photos) == 4
     assert isinstance(obs_list.taxa[0], Taxon) and len(obs_list.taxa) == 3
-    assert len(obs_list.thumbnail_urls) == 4
     assert (
-        obs_list.thumbnail_urls[0]
+        obs_list.photos[0].thumbnail_url
         == 'https://static.inaturalist.org/photos/24355315/square.jpeg?1536150664'
     )
 
@@ -348,7 +359,16 @@ def test_observation_field__str():
     )
 
 
-def test_observation_field_value__converters():
+# TODO: Test with a datetime observation field value
+# def test_observation_field_value__datetime():
+#     ofv = OFV.from_json(j_ofv_3_datetime)
+#     assert ofv.datatype == 'datetime'
+#     assert ofv.value == datetime(2022, 2,2)
+#     assert ofv.taxon is None
+#     assert isinstance(ofv.user, User) and ofv.user.id == 2115051
+
+
+def test_observation_field_value__numeric():
     ofv = OFV.from_json(j_ofv_1_numeric)
     assert ofv.datatype == 'numeric'
     assert ofv.value == 100
@@ -356,16 +376,16 @@ def test_observation_field_value__converters():
     assert isinstance(ofv.user, User) and ofv.user.id == 2115051
 
 
-def test_observation_field_value__converter_error():
-    ofv = OFV(datatype='numeric', value='one')
-    assert ofv.value is None
-
-
 def test_observation_field_value__taxon():
     ofv = OFV.from_json(j_ofv_2_taxon)
     assert ofv.datatype == 'taxon'
     assert ofv.value == 119900
     assert isinstance(ofv.taxon, Taxon) and ofv.taxon.id == 119900
+
+
+def test_observation_field_value__converter_error():
+    ofv = OFV(datatype='numeric', value='one')
+    assert ofv.value is None
 
 
 def test_observation_field_value__empty():
