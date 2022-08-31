@@ -1,18 +1,21 @@
 from typing import Dict, List, Optional
 
+from attr import define
+
 from pyinaturalist.constants import JsonResponse, TableRow
 from pyinaturalist.models import (
     BaseModel,
+    BaseModelCollection,
     LazyProperty,
     User,
+    add_lazy_attrs,
     define_model,
     define_model_collection,
     field,
 )
-from pyinaturalist.models.base import BaseModelCollection
 
 
-@define_model
+@define(auto_attribs=False, init=False, field_transformer=add_lazy_attrs)
 class Annotation(BaseModel):
     """:fa:`tag` An annotation, meaning a **controlled term value** applied by a **user** to an **observation**.
     Based on the schema of annotations from
@@ -31,7 +34,42 @@ class Annotation(BaseModel):
     term: Optional['ControlledTerm'] = field(default=None)
     value: Optional['ControlledTermValue'] = field(default=None)
 
-    # Unused attributres
+    # Attributes that will only be used during init and then omitted
+    temp_attrs = ['term_label', 'value_label']
+
+    def __init__(self, **kwargs):
+        # Allow passing term_label and value_label as shorthand for creating ControlledTerm + Value
+        term_label = kwargs.pop('term_label', None)
+        value_label = kwargs.pop('value_label', None)
+        self.__attrs_init__(**kwargs)
+        if term_label:
+            self.term_label = term_label
+        if value_label:
+            self.value_label = value_label
+
+    @property
+    def term_label(self) -> str:
+        """Convenience property for getting/setting the term label"""
+        return self.term.label if self.term else str(self.controlled_attribute_id)
+
+    @term_label.setter
+    def term_label(self, label: str):
+        if not self.term:
+            self.term = ControlledTerm(id=self.controlled_attribute_id)
+        self.term.label = label
+
+    @property
+    def value_label(self) -> str:
+        """Convenience property for getting/setting the value label"""
+        return self.value.label if self.value else str(self.controlled_value_id)
+
+    @value_label.setter
+    def value_label(self, label: str):
+        if not self.value:
+            self.value = ControlledTermValue(id=self.controlled_value_id)
+        self.value.label = label
+
+    # Unused attributes
     # concatenated_attr_val: str = field(default=None)
 
     @property
@@ -45,9 +83,7 @@ class Annotation(BaseModel):
 
     def __str__(self) -> str:
         """Show term/value label if available, otherwise just IDs"""
-        term_str = self.term.label if self.term else self.controlled_attribute_id
-        value_str = self.value.label if self.value else self.controlled_value_id
-        return f'{self.__class__.__name__}(term={term_str}, value={value_str})'
+        return f'{self.__class__.__name__}(term={self.term_label}, value={self.value_label})'
 
 
 @define_model
