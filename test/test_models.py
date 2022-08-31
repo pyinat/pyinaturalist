@@ -115,14 +115,9 @@ def test_annotation__empty():
     assert annotation.user is None
 
 
-def test_annotation__values():
-    annotation = Annotation.from_json(j_annotation_1)
-    assert annotation.values == ['1', '2']
-
-
 def test_annotation__str():
     annotation = Annotation.from_json(j_annotation_1)
-    assert str(annotation) == 'Annotation(controlled_attribute_id=1, concatenated_attr_val=1|2)'
+    assert str(annotation) == 'Annotation(term=1, value=2)'
 
 
 def test_controlled_term__converters():
@@ -143,6 +138,13 @@ def test_controlled_term__properties():
     assert controlled_term.value_labels == (
         'No Evidence of Flowering, Flowering, Fruiting, Flower Budding'
     )
+
+
+def test_controlled_term__get_value_by_id():
+    controlled_term = ControlledTerm.from_json(j_controlled_term_1)
+    value = controlled_term.get_value_by_id(13)
+    assert value.label == 'Flowering'
+    assert controlled_term.get_value_by_id(999) is None
 
 
 def test_controlled_term__str():
