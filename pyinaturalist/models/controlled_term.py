@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from pyinaturalist.constants import JsonResponse, TableRow
 from pyinaturalist.models import (
@@ -19,7 +19,6 @@ class Annotation(BaseModel):
     `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
     """
 
-    concatenated_attr_val: str = field(default=None)
     controlled_attribute_id: int = field(default=None)
     controlled_value_id: int = field(default=None)
     user_id: int = field(default=None)
@@ -28,25 +27,27 @@ class Annotation(BaseModel):
     votes: List = field(factory=list)
     user: property = LazyProperty(User.from_json, type=User, doc='User who added the annotation')
 
-    @property
-    def values(self) -> List[str]:
-        """Split pipe-delimited annotation values into separate tokens"""
-        if not self.concatenated_attr_val:
-            return []
-        return self.concatenated_attr_val.split('|')
+    # Manually loaded attributes
+    term: Optional['ControlledTerm'] = field(default=None)
+    value: Optional['ControlledTermValue'] = field(default=None)
+
+    # Unused attributres
+    # concatenated_attr_val: str = field(default=None)
 
     @property
     def _row(self) -> TableRow:
         return {
             'ID': self.controlled_attribute_id,
-            'Values': ', '.join(self.values),
+            'Value': self.controlled_value_id,
             'Votes': self.vote_score,
             'User': self.user.login,
         }
 
-    @property
-    def _str_attrs(self) -> List[str]:
-        return ['controlled_attribute_id', 'concatenated_attr_val']
+    def __str__(self) -> str:
+        """Show term/value label if available, otherwise just IDs"""
+        term_str = self.term.label if self.term else self.controlled_attribute_id
+        value_str = self.value.label if self.value else self.controlled_value_id
+        return f'{self.__class__.__name__}(term={term_str}, value={value_str})'
 
 
 @define_model
@@ -90,6 +91,10 @@ class ControlledTerm(BaseModel):
     def value_labels(self) -> str:
         """Combined labels from all controlled term values"""
         return ', '.join([value.label for value in self.values])
+
+    def get_value_by_id(self, controlled_value_id: int) -> Optional[ControlledTermValue]:
+        """Get the value with the specified controlled value ID"""
+        return next((v for v in self.values if v.id == controlled_value_id), None)
 
     @property
     def _row(self) -> TableRow:

@@ -1,12 +1,12 @@
 from pyinaturalist.constants import API_V1
 from pyinaturalist.v1 import get_controlled_terms
-from test.conftest import load_sample_data
+from test.sample_data import SAMPLE_DATA
 
 
 def test_get_controlled_terms(requests_mock):
     requests_mock.get(
         f'{API_V1}/controlled_terms',
-        json=load_sample_data('get_controlled_terms.json'),
+        json=SAMPLE_DATA['get_controlled_terms'],
         status_code=200,
     )
     response = get_controlled_terms()
@@ -25,7 +25,7 @@ def test_get_controlled_terms(requests_mock):
 def test_get_controlled_terms_for_taxon(requests_mock):
     requests_mock.get(
         f'{API_V1}/controlled_terms/for_taxon',
-        json=load_sample_data('get_controlled_terms_for_taxon.json'),
+        json=SAMPLE_DATA['get_controlled_terms_for_taxon'],
         status_code=200,
     )
     response = get_controlled_terms(47651)
@@ -36,6 +36,5 @@ def test_get_controlled_terms_for_taxon(requests_mock):
     assert first_result['multivalued'] is False
     assert first_result['label'] == 'Sex'
     assert len(first_result['values']) == 3
-    assert first_result['values'][0]
     assert first_result['values'][0]['id'] == 10
     assert first_result['values'][0]['label'] == 'Female'

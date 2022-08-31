@@ -9,9 +9,6 @@ def get_controlled_terms(taxon_id: int = None, **params) -> JsonResponse:
     .. rubric:: Notes
 
     * API reference: :v1:`GET /controlled_terms <Controlled_Terms/get_controlled_terms>`
-    * API reference: :v1:`GET /controlled_terms/for_taxon <Controlled_Terms/get_controlled_terms_for_taxon>`
-    * A taxon ID can optionally be provided to show only terms that are valid for that taxon.
-      Otherwise, all controlled terms will be returned.
 
     Example:
         >>> response = get_controlled_terms()
@@ -22,13 +19,39 @@ def get_controlled_terms(taxon_id: int = None, **params) -> JsonResponse:
             4: Pupa
         ...
 
-        .. admonition:: Example Response (all terms)
+        .. admonition:: Example Response
             :class: toggle
 
             .. literalinclude:: ../sample_data/get_controlled_terms.json
                 :language: JSON
+    Returns:
+        A dict containing details on controlled terms and their values
+    """
+    # For backwards-compatibility
+    if taxon_id:
+        return get_controlled_terms_for_taxon(taxon_id, **params)
 
-        .. admonition:: Example Response (for a specific taxon)
+    response = get(f'{API_V1}/controlled_terms', **params)
+    return response.json()
+
+
+def get_controlled_terms_for_taxon(taxon_id: int, **params) -> JsonResponse:
+    """List controlled terms that are valid for the specified taxon.
+
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /controlled_terms/for_taxon <Controlled_Terms/get_controlled_terms_for_taxon>`
+
+    Example:
+        >>> response = get_controlled_terms_for_taxon(12345)
+        >>> pprint(response)
+        1: Life Stage
+            2: Adult
+            3: Teneral
+            4: Pupa
+        ...
+
+        .. admonition:: Example Response
             :class: toggle
 
             .. literalinclude:: ../sample_data/get_controlled_terms_for_taxon.json
@@ -42,11 +65,9 @@ def get_controlled_terms(taxon_id: int = None, **params) -> JsonResponse:
     Raises:
         :py:exc:`.TaxonNotFound`: If an invalid ``taxon_id`` is specified
     """
-    # This is actually two endpoints, but they are so similar it seems best to combine them
-    endpoint = 'controlled_terms/for_taxon' if taxon_id else 'controlled_terms'
-    response = get(f'{API_V1}/{endpoint}', taxon_id=taxon_id, **params)
+    response = get(f'{API_V1}/controlled_terms/for_taxon', taxon_id=taxon_id, **params)
 
-    # controlled_terms/for_taxon returns a 422 if the specified taxon does not exist
+    # This endpoint returns a 422 if the specified taxon does not exist
     if response.status_code in (404, 422):
         raise TaxonNotFound
     return response.json()
