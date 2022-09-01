@@ -120,6 +120,13 @@ def test_annotation__str():
     assert str(annotation) == 'Annotation(term=1, value=2)'
 
 
+def test_annotation_with_labels():
+    annotation = Annotation(term_label='term', value_label='value')
+    assert annotation.term.label == 'term'
+    assert annotation.value.label == 'value'
+    assert str(annotation) == 'Annotation(term=term, value=value)'
+
+
 def test_controlled_term__converters():
     controlled_term = ControlledTerm.from_json(j_controlled_term_1)
     value = controlled_term.values[0]
