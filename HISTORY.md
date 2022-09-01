@@ -1,11 +1,20 @@
 # History
 
 ## 0.18.0 (Unreleased)
-* Use taxon icon as placeholder for `Observation.photo_url` if observation has no photos
-* Optionally use `ultrajson` instead of stdlib `json`, if installed
+
+### Models
+* Add `Observation.default_photo` property
+* Use taxon icon as placeholder for `Observation.default_photo` if observation has no photos
+* Add `Annotation.term_label` and `value_label` properties and init arguments to initialize with term and value labels
+
+### Sessions
+* Fix JWT caching
 * Add `cache_control` option to `ClientSession` to disable using Cache-Control headers for cache
   expiration (enabled by default)
 * Add `urls_expire_after` option to `ClientSession` to update default cache expiration URL patterns
+
+### Other Changes
+* Optionally use `ultrajson` instead of stdlib `json`, if installed
 
 ## 0.17.4 (2022-07-11)
 * Use a single data directory instead of separate 'cache' and 'user data' dirs
