@@ -1,5 +1,6 @@
 # TODO: "optional auth" option
 # TODO: Improve Sphinx docs generated for controller attributes
+from asyncio import AbstractEventLoop
 from inspect import ismethod
 from logging import getLogger
 from typing import Any, Callable, Dict, Type
@@ -92,6 +93,7 @@ class iNatClient:
             tokens as needed. Using a keyring instead is recommended, though.
         default_params: Default request parameters to pass to any applicable API requests
         dry_run: Just log all requests instead of sending real requests
+        loop: An event loop to use to run any executors used for async iteration
         session: Session object to use instead of creating a new one
         kwargs: Keyword arguments for :py:class:`.ClientSession`
     """
@@ -101,12 +103,14 @@ class iNatClient:
         creds: Dict[str, str] = None,
         default_params: Dict[str, Any] = None,
         dry_run: bool = False,
+        loop: AbstractEventLoop = None,
         session: Session = None,
         **kwargs,
     ):
         self.creds = creds or {}
         self.default_params = default_params or {}
         self.dry_run = dry_run
+        self.loop = loop
         self.session = session or ClientSession(**kwargs)
 
         self._access_token = None
@@ -162,7 +166,7 @@ class iNatClient:
             params: Original request parameters
         """
         kwargs = self.add_client_settings(request_function, kwargs, auth)
-        return cls(request_function, model, **kwargs)
+        return cls(request_function, model, loop=self.loop, **kwargs)
 
     def request(self, request_function: Callable, *args, auth: bool = False, **kwargs):
         """Send a request, with client settings applied.
