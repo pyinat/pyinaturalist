@@ -15,6 +15,8 @@
 
 ### Other Changes
 * Optionally use `ultrajson` instead of stdlib `json`, if installed
+* Add `loop` argument to iNatClient and Paginator classes to allow passing an async event loop to be used for async iteration
+* Add `Paginator.async_all()` method (async, non-blocking version of `.all()`)
 
 ## 0.17.4 (2022-07-11)
 * Use a single data directory instead of separate 'cache' and 'user data' dirs
