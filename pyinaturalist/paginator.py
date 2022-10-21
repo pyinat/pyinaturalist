@@ -97,6 +97,10 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             for result in self.next_page():
                 yield result
 
+    async def async_all(self) -> List[T]:  # Better name TBD?
+        """Get all results in a single list (non-blocking)"""
+        return [result async for result in self]
+
     def all(self) -> List[T]:
         """Get all results in a single list"""
         return list(self)

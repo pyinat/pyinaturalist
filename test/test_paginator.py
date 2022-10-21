@@ -66,6 +66,27 @@ async def test_async_iter(requests_mock):
 
 
 @pytest.mark.asyncio
+async def test_async_all(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/observations',
+        [
+            {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
+        ],
+    )
+
+    paginator = Paginator(
+        get_observations,
+        Observation,
+        id=[57754375, 57707611],
+        per_page=1,
+        page='all',
+    )
+    observations = await paginator.async_all()
+    assert len(observations) == 2
+
+
+@pytest.mark.asyncio
 @patch('pyinaturalist.paginator.get_running_loop')
 async def test_async_iter__custom_loop(mock_get_running_loop, requests_mock):
     """If an async event loop is specified, make sure that is used instead of the default loop"""
