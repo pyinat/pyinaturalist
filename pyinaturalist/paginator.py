@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from logging import getLogger
 from math import ceil
 from typing import (
+    TYPE_CHECKING,
     AsyncIterable,
     AsyncIterator,
     Callable,
@@ -38,19 +39,12 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
     Args:
         request_function: API request function to paginate
         model: Model class to use for results
-        method: Pagination method; either 'page' or 'id' (see note below)
         limit: Maximum number of total results to fetch
         per_page: Maximum number of results to fetch per page
         loop: An event loop to use to run any executors used for async iteration
         kwargs: Original request parameters
 
 
-    .. note::
-        Note on pagination by ID, from the iNaturalist documentation:
-
-        *The large size of the observations index prevents us from supporting the page parameter
-        when retrieving records from large result sets. If you need to retrieve large numbers of
-        records, use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead.*
 
     """
 
@@ -59,7 +53,6 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         request_function: Callable,
         model: Type[T],
         *request_args,
-        method: str = 'page',
         limit: int = None,
         per_page: int = None,
         loop: AbstractEventLoop = None,
@@ -69,7 +62,6 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         self.request_function = request_function
         self.request_args = request_args
         self.loop = loop
-        self.method = method
         self.model = model
         self.total_limit = limit
         self.per_page = per_page or PER_PAGE_RESULTS
@@ -78,14 +70,9 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         self.results_fetched = 0
         self.total_results: Optional[int] = None
 
-        # Set initial pagination params based on pagination method
-        self.kwargs.pop('page', None)
+        # Set initial pagination params
         self.kwargs.pop('per_page', None)
-        if self.method == 'id':
-            self.kwargs['order_by'] = 'id'
-            self.kwargs['order'] = 'asc'
-        elif self.method == 'page':
-            self.kwargs['page'] = 1
+        self.kwargs['page'] = 1
 
         if request_function:
             log_kwargs = {
@@ -189,10 +176,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         """
         if self._check_exhausted(page_results):
             self.exhausted = True
-        elif self.method == 'id':
-            self.kwargs['id_above'] = page_results[-1]['id']
-        elif self.method == 'page':
-            self.kwargs['page'] += 1
+        self.kwargs['page'] += 1
 
     def _estimate(self):
         """Log the estimated total number of requests and rate-limiting delay, and show a warning if
@@ -216,6 +200,31 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             f'{self.__class__.__name__}(request_function={self.request_function.__name__}, '
             f'fetched={self.results_fetched}/{self.total_results or "unknown"})'
         )
+
+
+class IDRangePaginator(Paginator):
+    """Paginate by a range of IDs instead of standard pagination parameters
+
+    .. note::
+        Note on pagination by ID, from the iNaturalist documentation:
+
+        *The large size of the observations index prevents us from supporting the page parameter
+        when retrieving records from large result sets. If you need to retrieve large numbers of
+        records, use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead.*
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.kwargs['order_by'] = 'id'
+        self.kwargs['order'] = 'asc'
+        self.kwargs.pop('page', None)
+
+    def _update_next_page_params(self, page_results):
+        """Set params for next request, if there are more results"""
+        if self._check_exhausted(page_results):
+            self.exhausted = True
+        self.kwargs['id_above'] = page_results[-1]['id']
 
 
 class IDPaginator(Paginator):
@@ -279,8 +288,14 @@ class AutocompletePaginator(Paginator):
             self.kwargs['order_by'] = 'area'
 
 
-class JsonPaginator(Paginator):
-    """Paginator that returns raw response dicts instead of model objects"""
+if TYPE_CHECKING:
+    MixinBase = Paginator
+else:
+    MixinBase = object
+
+
+class JsonPaginatorMixin(MixinBase):
+    """Paginator mixin that returns raw response dicts instead of model objects"""
 
     def __init__(
         self,
@@ -308,6 +323,14 @@ class JsonPaginator(Paginator):
         unique_results = {result['id']: result for result in results}
         self.total_results = len(unique_results)
         return list(unique_results.values())
+
+
+class JsonPaginator(JsonPaginatorMixin, Paginator):
+    pass
+
+
+class JsonIDRangePaginator(JsonPaginatorMixin, IDRangePaginator):
+    pass
 
 
 class WrapperPaginator(Paginator):
@@ -339,4 +362,5 @@ def paginate_all(request_function: Callable, *args, method: str = 'page', **kwar
     Returns:
         Response dict containing combined results, in the same format as ``api_func``
     """
-    return JsonPaginator(request_function, *args, method=method, **kwargs).all()
+    paginator = JsonIDRangePaginator if method == 'id' else JsonPaginator
+    return paginator(request_function, *args, **kwargs).all()

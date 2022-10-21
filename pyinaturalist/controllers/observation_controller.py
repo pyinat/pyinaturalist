@@ -17,7 +17,7 @@ from pyinaturalist.models import (
     TaxonSummary,
     UserCounts,
 )
-from pyinaturalist.paginator import Paginator
+from pyinaturalist.paginator import IDRangePaginator, Paginator
 from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import (
     create_observation,
@@ -57,7 +57,7 @@ class ObservationController(BaseController):
             params = validate_multiple_choice_param(params, 'order_by', V1_OBS_ORDER_BY_PROPERTIES)
             return self.client.session.get(f'{API_V1}/observations', **params).json()
 
-        return self.client.paginate(_get_observations, Observation, method='id', **params)
+        return self.client.paginate(_get_observations, Observation, cls=IDRangePaginator, **params)
 
     # TODO: Does this need a model with utility functions, or is {datetime: count} sufficient?
     @document_controller_params(get_observation_histogram)
