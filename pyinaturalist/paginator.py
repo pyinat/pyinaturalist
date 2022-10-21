@@ -1,3 +1,4 @@
+from asyncio import AbstractEventLoop, get_running_loop
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from logging import getLogger
@@ -40,6 +41,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         method: Pagination method; either 'page' or 'id' (see note below)
         limit: Maximum number of total results to fetch
         per_page: Maximum number of results to fetch per page
+        loop: An event loop to use to run any executors used for async iteration
         kwargs: Original request parameters
 
 
@@ -60,11 +62,13 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         method: str = 'page',
         limit: int = None,
         per_page: int = None,
+        loop: AbstractEventLoop = None,
         **kwargs,
     ):
         self.kwargs = {k: v for k, v in kwargs.items() if v is not None}
         self.request_function = request_function
         self.request_args = request_args
+        self.loop = loop
         self.method = method
         self.model = model
         self.total_limit = limit
@@ -94,9 +98,10 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
 
     async def __aiter__(self) -> AsyncIterator[T]:
         """Iterate over paginated results, with non-blocking requests sent from a separate thread"""
+        loop = self.loop or get_running_loop()
         with ThreadPoolExecutor(max_workers=1) as executor:
             while not self.exhausted:
-                for result in executor.submit(self.next_page).result():
+                for result in await loop.run_in_executor(executor, self.next_page):
                     yield result
 
     def __iter__(self) -> Iterator[T]:
