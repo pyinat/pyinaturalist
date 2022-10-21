@@ -1,8 +1,10 @@
+from asyncio import AbstractEventLoop, get_running_loop
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from logging import getLogger
 from math import ceil
 from typing import (
+    TYPE_CHECKING,
     AsyncIterable,
     AsyncIterator,
     Callable,
@@ -23,6 +25,7 @@ from pyinaturalist.constants import (
     REQUESTS_PER_MINUTE,
     IntOrStr,
     JsonResponse,
+    RequestParams,
     ResponseResult,
 )
 from pyinaturalist.models import T
@@ -37,19 +40,10 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
     Args:
         request_function: API request function to paginate
         model: Model class to use for results
-        method: Pagination method; either 'page' or 'id' (see note below)
         limit: Maximum number of total results to fetch
         per_page: Maximum number of results to fetch per page
+        loop: An event loop to use to run any executors used for async iteration
         kwargs: Original request parameters
-
-
-    .. note::
-        Note on pagination by ID, from the iNaturalist documentation:
-
-        *The large size of the observations index prevents us from supporting the page parameter
-        when retrieving records from large result sets. If you need to retrieve large numbers of
-        records, use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead.*
-
     """
 
     def __init__(
@@ -57,35 +51,28 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         request_function: Callable,
         model: Type[T],
         *request_args,
-        method: str = 'page',
         limit: int = None,
         per_page: int = None,
-        **kwargs,
+        loop: AbstractEventLoop = None,
+        **request_kwargs,
     ):
-        self.kwargs = {k: v for k, v in kwargs.items() if v is not None}
         self.request_function = request_function
         self.request_args = request_args
-        self.method = method
-        self.model = model
-        self.total_limit = limit
-        self.per_page = per_page or PER_PAGE_RESULTS
+        self.request_kwargs = {k: v for k, v in request_kwargs.items() if v is not None}
+        self.request_kwargs.pop('page', None)
 
         self.exhausted = False
+        self.loop = loop
+        self.model = model
+        self.per_page = per_page or PER_PAGE_RESULTS
+        self.page = 1
         self.results_fetched = 0
+        self.total_limit = limit
         self.total_results: Optional[int] = None
-
-        # Set initial pagination params based on pagination method
-        self.kwargs.pop('page', None)
-        self.kwargs.pop('per_page', None)
-        if self.method == 'id':
-            self.kwargs['order_by'] = 'id'
-            self.kwargs['order'] = 'asc'
-        elif self.method == 'page':
-            self.kwargs['page'] = 1
 
         if request_function:
             log_kwargs = {
-                k: v for k, v in self.kwargs.items() if k not in ['session', 'access_token']
+                k: v for k, v in self.request_kwargs.items() if k not in ['session', 'access_token']
             }
             logger.debug(
                 f'Prepared paginated request: {self.request_function.__name__}'
@@ -94,9 +81,10 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
 
     async def __aiter__(self) -> AsyncIterator[T]:
         """Iterate over paginated results, with non-blocking requests sent from a separate thread"""
+        loop = self.loop or get_running_loop()
         with ThreadPoolExecutor(max_workers=1) as executor:
             while not self.exhausted:
-                for result in executor.submit(self.next_page).result():
+                for result in await loop.run_in_executor(executor, self.next_page):
                     yield result
 
     def __iter__(self) -> Iterator[T]:
@@ -104,6 +92,10 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         while not self.exhausted:
             for result in self.next_page():
                 yield result
+
+    async def async_all(self) -> List[T]:  # Better name TBD?
+        """Get all results in a single list (non-blocking)"""
+        return [result async for result in self]
 
     def all(self) -> List[T]:
         """Get all results in a single list"""
@@ -127,7 +119,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             Either the total number of results, if the endpoint provides pagination info, or ``-1``
         """
         if self.total_results is None:
-            kwargs = {**self.kwargs, 'per_page': 0}
+            kwargs = {**self.request_kwargs, 'per_page': 0}
             response = self.request_function(*self.request_args, **kwargs)
             if isinstance(response, Response):
                 response = response.json()
@@ -148,7 +140,11 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             self.per_page = self.total_limit - self.results_fetched
 
         # Fetch results; handle response object or dict
-        response = self.request_function(*self.request_args, **self.kwargs, per_page=self.per_page)
+        response = self.request_function(
+            *self.request_args,
+            **self.request_kwargs,
+            **self._get_pagination_kwargs(),
+        )
         if isinstance(response, Response):
             response = response.json()
         results = response.get('results', response)
@@ -156,38 +152,42 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         # Note: For id-based pagination, only the first page's 'total_results' is accurate
         if self.total_results is None:
             self.total_results = response.get('total_results', len(results))
+        self.results_fetched += len(results)
 
         # If this is the first of multiple requests, log the estimated time and number of requests
-        self.results_fetched += len(results)
-        self._update_next_page_params(results)
-        if self.results_fetched == len(results) and not self.exhausted:
-            self._estimate()
+        if not self._check_exhausted(results):
+            if self.page == 1:
+                self._estimate()
+            self.page += 1
 
         return results
 
-    def _check_exhausted(self, page_results: List = None):
-        return (
-            (self.total_limit and self.results_fetched >= self.total_limit)
-            or (self.total_results and self.results_fetched >= self.total_results)
-            or (self.per_page and page_results is not None and len(page_results) < self.per_page)
+    # The following two methods may be overridden by subclasses for different pagination methods
+    def _get_pagination_kwargs(self) -> RequestParams:
+        """Get any extra request parameters needed for pagination"""
+        return {'page': self.page, 'per_page': self.per_page}
+
+    def _check_exhausted(self, page_results: List = None) -> bool:
+        """Check all conditions that indicate no more results are available.
+        (relevant conditions and error cases vary by API endpoint)
+        """
+        n_results = len(page_results or [])
+        self.exhausted = any(
+            [
+                self.exhausted,
+                (self.total_limit and self.results_fetched >= self.total_limit),
+                (self.total_results and self.results_fetched >= self.total_results),
+                (self.per_page and n_results < self.per_page),
+                n_results == 0,
+            ]
         )
+        return self.exhausted
 
     def _deduplicate(self, results) -> List[T]:
         """Deduplicate results by ID"""
         unique_results = {result.id: result for result in results}
         self.total_results = len(unique_results)
         return list(unique_results.values())
-
-    def _update_next_page_params(self, page_results):
-        """Set params for next request, if there are more results. Also check page size, in case
-        total_results is off due to race condition, outdated index, etc.
-        """
-        if self._check_exhausted(page_results):
-            self.exhausted = True
-        elif self.method == 'id':
-            self.kwargs['id_above'] = page_results[-1]['id']
-        elif self.method == 'page':
-            self.kwargs['page'] += 1
 
     def _estimate(self):
         """Log the estimated total number of requests and rate-limiting delay, and show a warning if
@@ -213,6 +213,38 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         )
 
 
+class IDRangePaginator(Paginator):
+    """Paginate by a range of IDs instead of standard pagination parameters
+
+    .. note::
+        Note on pagination by ID, from the iNaturalist documentation:
+
+        *The large size of the observations index prevents us from supporting the page parameter
+        when retrieving records from large result sets. If you need to retrieve large numbers of
+        records, use the ``per_page`` and ``id_above`` or ``id_below`` parameters instead.*
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.id_above: Optional[int] = None
+
+    def _get_pagination_kwargs(self):
+        return {
+            'id_above': self.id_above,
+            'per_page': self.per_page,
+            'order_by': 'id',
+            'order': 'asc',
+        }
+
+    def _next_page(self) -> List[ResponseResult]:
+        # Update params for next request, if there are more results
+        results = super()._next_page()
+        if not self.exhausted:
+            self.id_above = results[-1]['id']
+        return results
+
+
 class IDPaginator(Paginator):
     """Paginator for ID-based endpoints that only accept a limited number of IDs per request"""
 
@@ -221,7 +253,7 @@ class IDPaginator(Paginator):
         if ids_per_request == 1:
             self.id_batches = deque(ids or [])
         else:
-            self.id_batches = deque(list(chunkify(ids, ids_per_request)))  # type: ignore
+            self.id_batches = deque(list(_chunkify(ids, ids_per_request)))  # type: ignore
         self.total_results = len(ids)  # type: ignore
 
     def _next_page(self) -> List[ResponseResult]:
@@ -232,11 +264,21 @@ class IDPaginator(Paginator):
             self.exhausted = True
             return []
 
-        response = self.request_function(next_ids, *self.request_args, **self.kwargs)
+        response = self.request_function(next_ids, *self.request_args, **self.request_kwargs)
         if isinstance(response, Response):
             response = response.json()
-        self.results_fetched += 1
-        return response['results'] if 'results' in response else [response]
+
+        results = response['results'] if 'results' in response else [response]
+        self.page += 1
+        self.results_fetched += len(results)
+        return results
+
+
+def _chunkify(iterable: Iterable, max_size: int) -> Iterator[List]:
+    """Split an iterable into chunks of a max size"""
+    iterable = list(iterable)
+    for index in range(0, len(iterable), max_size):
+        yield iterable[index : index + max_size]
 
 
 class AutocompletePaginator(Paginator):
@@ -254,28 +296,36 @@ class AutocompletePaginator(Paginator):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.kwargs.pop('page', None)
-        self.kwargs.pop('order_by', None)
+        self.request_kwargs.pop('order_by', None)
 
     def all(self) -> List[T]:
         """Get all results in a single de-duplicated list"""
         return self._deduplicate(list(self))
 
-    def _update_next_page_params(self, page_results):
-        """After the first request, update the order_by param. After the second request, we're done."""
-        if (
-            self._check_exhausted()
-            or (self.per_page and self.results_fetched > self.per_page)
-            or (self.per_page and len(page_results) < self.per_page)
-            or len(page_results) == 0
-        ):
-            self.exhausted = True
-        else:
-            self.kwargs['order_by'] = 'area'
+    def _check_exhausted(self, page_results: List = None):
+        """Also check for the odd case in which we get more results than requested"""
+        self.exhausted = any(
+            [
+                super()._check_exhausted(page_results),
+                (self.per_page and self.results_fetched > self.per_page),
+            ]
+        )
+
+    def _get_pagination_kwargs(self):
+        kwargs = super()._get_pagination_kwargs()
+        if not self.exhausted and self.page >= 1:
+            kwargs['order_by'] = 'area'
+        return kwargs
 
 
-class JsonPaginator(Paginator):
-    """Paginator that returns raw response dicts instead of model objects"""
+if TYPE_CHECKING:
+    MixinBase = Paginator
+else:
+    MixinBase = object
+
+
+class JsonPaginatorMixin(MixinBase):
+    """Paginator mixin that returns raw response dicts instead of model objects"""
 
     def __init__(
         self,
@@ -305,6 +355,24 @@ class JsonPaginator(Paginator):
         return list(unique_results.values())
 
 
+class JsonPaginator(JsonPaginatorMixin, Paginator):
+    pass
+
+
+class JsonIDRangePaginator(JsonPaginatorMixin, IDRangePaginator):
+    pass
+
+
+def paginate_all(request_function: Callable, *args, method: str = 'page', **kwargs) -> JsonResponse:
+    """Get all pages of a multi-page request. Explicit pagination parameters will be overridden.
+
+    Returns:
+        Response dict containing combined results, in the same format as ``api_func``
+    """
+    paginator = JsonIDRangePaginator if method == 'id' else JsonPaginator
+    return paginator(request_function, *args, **kwargs).all()
+
+
 class WrapperPaginator(Paginator):
     """Paginator class that wraps results that have already been fetched."""
 
@@ -319,19 +387,3 @@ class WrapperPaginator(Paginator):
     def next_page(self):
         self.exhausted = True
         return self.results
-
-
-def chunkify(iterable: Iterable, max_size: int) -> Iterator[List]:
-    """Split an iterable into chunks of a max size"""
-    iterable = list(iterable)
-    for index in range(0, len(iterable), max_size):
-        yield iterable[index : index + max_size]
-
-
-def paginate_all(request_function: Callable, *args, method: str = 'page', **kwargs) -> JsonResponse:
-    """Get all pages of a multi-page request. Explicit pagination parameters will be overridden.
-
-    Returns:
-        Response dict containing combined results, in the same format as ``api_func``
-    """
-    return JsonPaginator(request_function, *args, method=method, **kwargs).all()

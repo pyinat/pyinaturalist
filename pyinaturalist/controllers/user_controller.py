@@ -30,9 +30,10 @@ class UserController(BaseController):
         Args:
             user_ids: One or more project IDs
         """
-        return IDPaginator(get_user_by_id, User, ids=user_ids, **params)
+        return self.client.paginate(get_user_by_id, User, cls=IDPaginator, ids=user_ids, **params)
 
+    # TODO: Wrap in paginator?
     @document_controller_params(get_users_autocomplete)
     def autocomplete(self, **params) -> List[User]:
-        response = get_users_autocomplete(**params)
+        response = self.client.request(get_users_autocomplete, **params)
         return User.from_json_list(response)
