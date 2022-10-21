@@ -52,12 +52,12 @@ class ObservationController(BaseController):
 
     @document_controller_params(get_observations)
     def search(self, **params) -> Paginator[Observation]:
-        params = validate_multiple_choice_param(params, 'order_by', V1_OBS_ORDER_BY_PROPERTIES)
-        params = self.client.add_client_settings(get_observations, params)
-        # self.client.session.get(f'{API_V1}/observations', **params).json()
-        return Paginator(
-            self.client.session.get, Observation, f'{API_V1}/observations', method='id', **params
-        )
+        # Using a simplified version of v1.get_observations() to avoid duplicate conversions
+        def _get_observations(**params):
+            params = validate_multiple_choice_param(params, 'order_by', V1_OBS_ORDER_BY_PROPERTIES)
+            return self.client.session.get(f'{API_V1}/observations', **params).json()
+
+        return self.client.paginate(_get_observations, Observation, method='id', **params)
 
     # TODO: Does this need a model with utility functions, or is {datetime: count} sufficient?
     @document_controller_params(get_observation_histogram)
