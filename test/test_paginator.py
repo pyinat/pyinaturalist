@@ -24,9 +24,10 @@ def test_iter(requests_mock):
         ],
     )
 
-    # 4 Pages could be returned, but only 3 should be requested
+    # Only 3 pages should be requested
     paginator = Paginator(get_observations, Observation, id=[57754375, 57707611], per_page=1)
     observations = list(paginator)
+    assert paginator.page == 3
     assert len(observations) == 3
 
 
@@ -42,6 +43,7 @@ def test_iter__with_limit(requests_mock):
     paginator = Paginator(get_observations, Observation, id=[57754375, 57707611], limit=1)
     observations = list(paginator)
     assert len(observations) == 1
+    assert paginator.page == 1
 
 
 @pytest.mark.asyncio
@@ -62,27 +64,6 @@ async def test_async_iter(requests_mock):
         page='all',
     )
     observations = [obs async for obs in paginator]
-    assert len(observations) == 2
-
-
-@pytest.mark.asyncio
-async def test_async_all(requests_mock):
-    requests_mock.get(
-        f'{API_V1}/observations',
-        [
-            {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
-        ],
-    )
-
-    paginator = Paginator(
-        get_observations,
-        Observation,
-        id=[57754375, 57707611],
-        per_page=1,
-        page='all',
-    )
-    observations = await paginator.async_all()
     assert len(observations) == 2
 
 
@@ -109,6 +90,27 @@ async def test_async_iter__custom_loop(mock_get_running_loop, requests_mock):
     observations = [obs async for obs in paginator]
     assert len(observations) == 2
     mock_get_running_loop.run_in_executor.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_async_all(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/observations',
+        [
+            {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
+        ],
+    )
+
+    paginator = Paginator(
+        get_observations,
+        Observation,
+        id=[57754375, 57707611],
+        per_page=1,
+        page='all',
+    )
+    observations = await paginator.async_all()
+    assert len(observations) == 2
 
 
 def test_count(requests_mock):
