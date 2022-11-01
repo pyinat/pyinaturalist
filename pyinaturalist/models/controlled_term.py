@@ -155,7 +155,9 @@ class ControlledTermCount(BaseModel):
     value = LazyProperty(ControlledTermValue.from_json, type=ControlledTermValue)
 
     @classmethod
-    def from_json(cls, value: JsonResponse, user_id: int = None, **kwargs) -> 'ControlledTermCount':
+    def from_json(
+        cls, value: JsonResponse, user_id: Optional[int] = None, **kwargs
+    ) -> 'ControlledTermCount':
         """Rename some response fields before initializing"""
         value['histogram'] = value.pop('month_of_year', None)
         value['term'] = value.pop('controlled_attribute', None)

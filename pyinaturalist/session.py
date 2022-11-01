@@ -3,7 +3,7 @@ import threading
 from json import JSONDecodeError
 from logging import getLogger
 from os import getenv
-from typing import Dict, Type
+from typing import Dict, Optional, Type
 from unittest.mock import Mock
 
 from requests import PreparedRequest, Request, Response, Session
@@ -77,8 +77,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         self,
         cache_file: FileOrPath = CACHE_FILE,
         cache_control: bool = True,
-        expire_after: ExpirationTime = None,
-        urls_expire_after: ExpirationPatterns = None,
+        expire_after: Optional[ExpirationTime] = None,
+        urls_expire_after: Optional[ExpirationPatterns] = None,
         per_second: int = REQUESTS_PER_SECOND,
         per_minute: int = REQUESTS_PER_MINUTE,
         per_day: float = REQUESTS_PER_DAY,
@@ -87,7 +87,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         backoff_factor: float = RETRY_BACKOFF,
         max_retries: int = REQUEST_RETRIES,
         timeout: int = REQUEST_TIMEOUT,
-        user_agent: str = None,
+        user_agent: Optional[str] = None,
         **kwargs,
     ):
         """Get a Session object, optionally with custom settings for caching and rate-limiting.
@@ -159,12 +159,12 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         self,
         method: str,
         url: str,
-        access_token: str = None,
-        files: FileOrPath = None,
-        headers: Dict = None,
-        ids: MultiInt = None,
-        json: Dict = None,
-        params: RequestParams = None,
+        access_token: Optional[str] = None,
+        files: Optional[FileOrPath] = None,
+        headers: Optional[Dict] = None,
+        ids: Optional[MultiInt] = None,
+        json: Optional[Dict] = None,
+        params: Optional[RequestParams] = None,
         allow_str_ids: bool = False,
         **kwargs,
     ) -> PreparedRequest:
@@ -199,20 +199,20 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         self,
         method: str,
         url: str,
-        headers: Dict = None,
-        json: Dict = None,
-        access_token: str = None,
+        headers: Optional[Dict] = None,
+        json: Optional[Dict] = None,
+        access_token: Optional[str] = None,
         allow_redirects: bool = False,
         allow_str_ids: bool = False,
         dry_run: bool = False,
-        expire_after: ExpirationTime = None,
-        files: FileOrPath = None,
-        ids: MultiInt = None,
+        expire_after: Optional[ExpirationTime] = None,
+        files: Optional[FileOrPath] = None,
+        ids: Optional[MultiInt] = None,
         only_if_cached: bool = False,
         raise_for_status: bool = True,
         refresh: bool = False,
         stream: bool = False,
-        timeout: int = None,
+        timeout: Optional[int] = None,
         verify: bool = True,
         **params: RequestParams,
     ) -> Response:
@@ -274,10 +274,10 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
     def send(  # type: ignore  # Adds kwargs not present in Session.send()
         self,
         request: PreparedRequest,
-        expire_after: ExpirationTime = None,
+        expire_after: Optional[ExpirationTime] = None,
         refresh: bool = False,
-        retries: Retry = None,
-        timeout: int = None,
+        retries: Optional[Retry] = None,
+        timeout: Optional[int] = None,
         **kwargs,
     ) -> Response:
         """Send a request with caching, rate-limiting, and retries
@@ -310,7 +310,11 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         return response
 
     def _validate_json(
-        self, request: PreparedRequest, response: Response, retries: Retry = None, **kwargs
+        self,
+        request: PreparedRequest,
+        response: Response,
+        retries: Optional[Retry] = None,
+        **kwargs,
     ) -> Response:
         """Occasionally, the API may return invalid (truncated) JSON, requiring a retry. This method
         checks for this condition, treats it as a request error, and applies existing retry settings
@@ -342,25 +346,25 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             return response
 
 
-def delete(url: str, session: ClientSession = None, **kwargs) -> Response:
+def delete(url: str, session: Optional[ClientSession] = None, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.delete` with additional options specific to iNat API requests"""
     session = session or get_local_session()
     return session.request('DELETE', url, **kwargs)
 
 
-def get(url: str, session: ClientSession = None, **kwargs) -> Response:
+def get(url: str, session: Optional[ClientSession] = None, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.get` with additional options specific to iNat API requests"""
     session = session or get_local_session()
     return session.request('GET', url, **kwargs)
 
 
-def post(url: str, session: ClientSession = None, **kwargs) -> Response:
+def post(url: str, session: Optional[ClientSession] = None, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.post` with additional options specific to iNat API requests"""
     session = session or get_local_session()
     return session.request('POST', url, **kwargs)
 
 
-def put(url: str, session: ClientSession = None, **kwargs) -> Response:
+def put(url: str, session: Optional[ClientSession] = None, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.put` with additional options specific to iNat API requests"""
     session = session or get_local_session()
     return session.request('PUT', url, **kwargs)

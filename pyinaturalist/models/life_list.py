@@ -1,5 +1,5 @@
 from itertools import groupby
-from typing import List
+from typing import List, Optional
 
 from pyinaturalist.constants import JsonResponse, TableRow
 from pyinaturalist.models import (
@@ -49,7 +49,7 @@ class LifeList(BaseModelCollection):
     user_id: int = field(default=None)
 
     @classmethod
-    def from_json(cls, value: JsonResponse, user_id: int = None, **kwargs) -> 'LifeList':
+    def from_json(cls, value: JsonResponse, user_id: Optional[int] = None, **kwargs) -> 'LifeList':
         count_without_taxon = value.get('count_without_taxon', 0)
         if 'results' in value:
             value = value['results']

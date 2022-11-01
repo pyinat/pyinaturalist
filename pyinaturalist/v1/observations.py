@@ -1,5 +1,6 @@
 from copy import deepcopy
 from logging import getLogger
+from typing import Optional
 
 from pyinaturalist.constants import (
     API_V1,
@@ -31,7 +32,9 @@ logger = getLogger(__name__)
 
 
 @document_common_args
-def get_observation(observation_id: int, access_token: str = None, **params) -> JsonResponse:
+def get_observation(
+    observation_id: int, access_token: Optional[str] = None, **params
+) -> JsonResponse:
     """Get details about a single observation by ID
 
     .. rubric:: Notes
@@ -294,7 +297,7 @@ def get_observation_popular_field_values(**params) -> JsonResponse:
     return response_json
 
 
-def get_observation_taxonomy(user_id: IntOrStr = None, **params) -> JsonResponse:
+def get_observation_taxonomy(user_id: Optional[IntOrStr] = None, **params) -> JsonResponse:
     """Get observation counts for all taxa in a full taxonomic tree. In the web UI, these are used
     for life lists.
 
@@ -442,9 +445,9 @@ def update_observation(observation_id: int, **params) -> ListResponse:
 @document_common_args
 def upload(
     observation_id: int,
-    photos: MultiFile = None,
-    sounds: MultiFile = None,
-    photo_ids: MultiIntOrStr = None,
+    photos: Optional[MultiFile] = None,
+    sounds: Optional[MultiFile] = None,
+    photo_ids: Optional[MultiIntOrStr] = None,
     **params,
 ) -> ListResponse:
     """Upload one or more local photo and/or sound files, and add them to an existing observation.
@@ -517,7 +520,7 @@ def upload(
 
 
 @document_request_params(docs._observation_id, docs._access_token)
-def delete_observation(observation_id: int, access_token: str = None, **params):
+def delete_observation(observation_id: int, access_token: Optional[str] = None, **params):
     """Delete an observation
 
     .. rubric:: Notes

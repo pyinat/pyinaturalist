@@ -1,5 +1,5 @@
 from string import capwords
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from attr import fields_dict
 
@@ -262,7 +262,9 @@ class TaxonCount(Taxon):
     count: int = field(default=0, doc='Number of observations of this taxon')
 
     @classmethod
-    def from_json(cls, value: JsonResponse, user_id: int = None, **kwargs) -> 'TaxonCount':
+    def from_json(
+        cls, value: JsonResponse, user_id: Optional[int] = None, **kwargs
+    ) -> 'TaxonCount':
         """Flatten out count + taxon fields into a single-level dict before initializing"""
         if 'results' in value:
             value = value['results']
