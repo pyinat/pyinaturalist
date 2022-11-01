@@ -52,7 +52,7 @@ class Observation(BaseModel):
         factory=list, doc='Details on users who have favorited the observation'
     )
     geoprivacy: str = field(default=None, options=GEOPRIVACY_LEVELS, doc='Location privacy level')
-    identifications_count: int = field(default=None, doc='Total number of identifications')
+    identifications_count: int = field(default=0, doc='Total number of identifications')
     identifications_most_agree: bool = field(
         default=None, doc='Indicates if most identifications agree with the community ID'
     )
