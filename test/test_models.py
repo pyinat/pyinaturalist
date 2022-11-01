@@ -565,6 +565,17 @@ def test_taxon__empty():
 
 
 def test_taxon__str():
+    taxon_0 = Taxon(
+        id=137338523,
+        name='Trachelipus rathkii',
+        preferred_common_name='rathke’s woodlouse',
+        rank='species',
+    )
+    assert (
+        str(taxon_0)
+        == 'Taxon(id=137338523, full_name=Species: Trachelipus rathkii (Rathke’s Woodlouse))'
+    )
+
     taxon_1 = Taxon(id=3, name='Aves', preferred_common_name='birb', rank='class')
     assert str(taxon_1) == 'Taxon(id=3, full_name=Class: Aves (Birb))'
 

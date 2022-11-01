@@ -1,3 +1,4 @@
+from string import capwords
 from typing import Dict, List
 
 from attr import fields_dict
@@ -189,7 +190,7 @@ class Taxon(BaseModel):
             return self.name
 
         common_name = (
-            f' ({self.preferred_common_name.title()})' if self.preferred_common_name else ''
+            f' ({capwords(self.preferred_common_name)})' if self.preferred_common_name else ''
         )
         return f'{self.rank.title()}: {self.name}{common_name}'
 
