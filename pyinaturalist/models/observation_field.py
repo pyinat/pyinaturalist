@@ -1,8 +1,9 @@
 from datetime import date, datetime
+from logging import getLogger
 from typing import List, Union
 
 from pyinaturalist.constants import TableRow
-from pyinaturalist.converters import safe_split, try_int_or_float
+from pyinaturalist.converters import safe_split, try_date, try_datetime, try_int_or_float
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
@@ -13,11 +14,12 @@ from pyinaturalist.models import (
     field,
 )
 
-# Mappings from observation field value datatypes to python datatypes
+logger = getLogger(__name__)
+# Mappings from observation field value datatypes to python types/conversion functions
 OFV_DATATYPES = {
     'dna': str,
-    'date': date,
-    'datetime': datetime,
+    'date': try_date,
+    'datetime': try_datetime,
     'numeric': try_int_or_float,
     'taxon': int,
     'text': str,
@@ -89,8 +91,9 @@ class ObservationFieldValue(BaseModel):
             converter = OFV_DATATYPES[self.datatype]
             try:
                 self.value = converter(self.value)
-            except ValueError:
-                None
+            except (TypeError, ValueError) as e:
+                logger.debug(f'Failed to convert {self.name}="{self.value}" to {converter}: {e}')
+                self.value = None
 
     @property
     def _row(self) -> TableRow:
