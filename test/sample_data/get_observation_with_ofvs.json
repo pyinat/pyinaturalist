@@ -303,6 +303,26 @@
                     }
                 },
                 {
+
+                        "id": 20529451,
+                        "datatype": "date",
+                        "field_id": 6508,
+                        "name": "Date controlled",
+                        "user_id": 2589539,
+                        "uuid": "17e1290a-7710-4ad7-ae1b-c8e1ecb7957b",
+                        "value": "2022-11-9"
+                },
+                {
+
+                        "id": 20529451,
+                        "datatype": "datetime",
+                        "field_id": 6508,
+                        "name": "Date/time controlled",
+                        "user_id": 2589539,
+                        "uuid": "17e1290a-7710-4ad7-ae1b-c8e1ecb7957b",
+                        "value": "2022-11-9 11:20:42"
+                },
+                {
                     "field_id": 3857,
                     "datatype": "numeric",
                     "user_id": 2115051,

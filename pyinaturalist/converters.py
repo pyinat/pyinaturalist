@@ -276,7 +276,7 @@ def format_license(value: str) -> Optional[str]:
 
 
 def try_datetime(timestamp: Any, **kwargs) -> Optional[datetime]:
-    """Parse a timestamp string into a datetime, if valid; return ``None`` otherwise"""
+    """Parse a date/time string into a datetime, if valid; return ``None`` otherwise"""
     if isinstance(timestamp, datetime):
         return timestamp
     if not timestamp or not str(timestamp).strip():
@@ -290,6 +290,12 @@ def try_datetime(timestamp: Any, **kwargs) -> Optional[datetime]:
     except (AttributeError, TypeError, ValueError) as e:
         logger.debug(f'Could not parse timestamp: {timestamp}: "{str(e)}"')
         return None
+
+
+def try_date(timestamp: Any, **kwargs) -> Optional[date]:
+    """Parse a date string into a date, if valid; return ``None`` otherwise"""
+    dt = try_datetime(timestamp, **kwargs)
+    return dt.date() if dt else None
 
 
 def try_float(value: Any) -> Optional[float]:
