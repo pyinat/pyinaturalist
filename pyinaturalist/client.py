@@ -3,7 +3,7 @@
 from asyncio import AbstractEventLoop
 from inspect import ismethod
 from logging import getLogger
-from typing import Any, Callable, Dict, Type
+from typing import Any, Callable, Dict, Optional, Type
 
 from requests import Session
 
@@ -100,11 +100,11 @@ class iNatClient:
 
     def __init__(
         self,
-        creds: Dict[str, str] = None,
-        default_params: Dict[str, Any] = None,
+        creds: Optional[Dict[str, str]] = None,
+        default_params: Optional[Dict[str, Any]] = None,
         dry_run: bool = False,
-        loop: AbstractEventLoop = None,
-        session: Session = None,
+        loop: Optional[AbstractEventLoop] = None,
+        session: Optional[Session] = None,
         **kwargs,
     ):
         self.creds = creds or {}
@@ -127,7 +127,7 @@ class iNatClient:
         self.users = UserController(self)  #: Interface for user requests
 
     def add_client_settings(
-        self, request_function, kwargs: RequestParams = None, auth: bool = False
+        self, request_function, kwargs: Optional[RequestParams] = None, auth: bool = False
     ) -> RequestParams:
         """Add any applicable client settings to request parameters before sending a request.
         Explicit keyword arguments will override any client settings.

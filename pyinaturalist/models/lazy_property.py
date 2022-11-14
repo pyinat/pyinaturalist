@@ -1,6 +1,6 @@
 from functools import update_wrapper
 from inspect import signature
-from typing import Callable, Dict, List, Type
+from typing import Callable, Dict, List, Optional, Type
 
 from attr import Attribute, Factory
 
@@ -58,8 +58,8 @@ class LazyProperty(property):
     def __init__(
         self,
         converter: Callable,
-        name: str = None,
-        doc: str = None,
+        name: Optional[str] = None,
+        doc: Optional[str] = None,
         type: Type = BaseModel,
         **converter_kwargs,
     ):

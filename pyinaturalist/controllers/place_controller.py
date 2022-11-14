@@ -24,7 +24,7 @@ class PlaceController(BaseController):
         return self.client.paginate(get_places_by_id, Place, place_id=place_ids, **params)
 
     @document_controller_params(get_places_autocomplete)
-    def autocomplete(self, q: str = None, **params) -> Paginator[Place]:
+    def autocomplete(self, q: Optional[str] = None, **params) -> Paginator[Place]:
         return self.client.paginate(
             get_places_autocomplete,
             Place,

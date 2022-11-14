@@ -51,9 +51,9 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         request_function: Callable,
         model: Type[T],
         *request_args,
-        limit: int = None,
-        per_page: int = None,
-        loop: AbstractEventLoop = None,
+        limit: Optional[int] = None,
+        per_page: Optional[int] = None,
+        loop: Optional[AbstractEventLoop] = None,
         **request_kwargs,
     ):
         self.request_function = request_function
@@ -70,7 +70,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         self.total_limit = limit
         self.total_results: Optional[int] = None
 
-        if request_function:
+        if request_function is not None:
             log_kwargs = {
                 k: v for k, v in self.request_kwargs.items() if k not in ['session', 'access_token']
             }
@@ -167,7 +167,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         """Get any extra request parameters needed for pagination"""
         return {'page': self.page, 'per_page': self.per_page}
 
-    def _check_exhausted(self, page_results: List = None) -> bool:
+    def _check_exhausted(self, page_results: Optional[List] = None) -> bool:
         """Check all conditions that indicate no more results are available.
         (relevant conditions and error cases vary by API endpoint)
         """
@@ -248,7 +248,9 @@ class IDRangePaginator(Paginator):
 class IDPaginator(Paginator):
     """Paginator for ID-based endpoints that only accept a limited number of IDs per request"""
 
-    def __init__(self, *args, ids: Iterable[IntOrStr] = None, ids_per_request: int = 1, **kwargs):
+    def __init__(
+        self, *args, ids: Optional[Iterable[IntOrStr]] = None, ids_per_request: int = 1, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         if ids_per_request == 1:
             self.id_batches = deque(ids or [])
@@ -302,7 +304,7 @@ class AutocompletePaginator(Paginator):
         """Get all results in a single de-duplicated list"""
         return self._deduplicate(list(self))
 
-    def _check_exhausted(self, page_results: List = None):
+    def _check_exhausted(self, page_results: Optional[List] = None):
         """Also check for the odd case in which we get more results than requested"""
         self.exhausted = any(
             [

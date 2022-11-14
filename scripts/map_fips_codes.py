@@ -52,7 +52,7 @@ def load_search_results() -> Optional[ResponseDict]:
         return {int(k): v for k, v in json.load(f).items()}
 
 
-def search_counties(counties: FIPSDict, fips_codes: List[int] = None) -> ResponseDict:
+def search_counties(counties: FIPSDict, fips_codes: Optional[List[int]] = None) -> ResponseDict:
     """Search iNat for matching counties"""
     responses: ResponseDict = {}
     fips_codes = fips_codes or list(counties.keys())

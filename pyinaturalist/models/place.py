@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 from pyinaturalist.constants import (
     INAT_BASE_URL,
@@ -53,7 +53,7 @@ class Place(BaseModel):
     slug: str = field(default=None, doc='Place URL slug')
 
     @classmethod
-    def from_json(cls, value: JsonResponse, category: str = None, **kwargs) -> 'Place':
+    def from_json(cls, value: JsonResponse, category: Optional[str] = None, **kwargs) -> 'Place':
         value.setdefault('category', category)
         return super(Place, cls).from_json(value)
 
