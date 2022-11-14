@@ -1,4 +1,5 @@
 from functools import wraps
+from typing import Optional
 
 from pyinaturalist.constants import API_V1, JsonResponse, MultiInt
 from pyinaturalist.converters import convert_all_coordinates, convert_all_place_coordinates
@@ -84,7 +85,7 @@ def get_places_nearby(
 
 
 @document_request_params(docs._search_query, docs._pagination)
-def get_places_autocomplete(q: str = None, **params) -> JsonResponse:
+def get_places_autocomplete(q: Optional[str] = None, **params) -> JsonResponse:
     """Given a query string, get places with names starting with the search term
 
     .. rubric:: Notes

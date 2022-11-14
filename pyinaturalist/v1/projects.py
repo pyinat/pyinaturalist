@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import Optional
 
 from pyinaturalist.constants import (
     API_V1,
@@ -66,7 +67,7 @@ def get_projects(**params) -> JsonResponse:
 
 def get_projects_by_id(
     project_id: MultiIntOrStr,
-    rule_details: bool = None,
+    rule_details: Optional[bool] = None,
     force_refresh: bool = False,
     **params,
 ) -> JsonResponse:
@@ -115,7 +116,7 @@ def get_projects_by_id(
 
 @document_request_params(docs._project_observation_params)
 def add_project_observation(
-    project_id: int, observation_id: int, access_token: str = None, **params
+    project_id: int, observation_id: int, access_token: Optional[str] = None, **params
 ) -> JsonResponse:
     """Add an observation to a project
 
@@ -176,7 +177,7 @@ def add_project_users(project_id: IntOrStr, user_ids: MultiInt, **params) -> Jso
 # TODO: This may not yet be working as intended
 @document_request_params(docs._project_observation_params)
 def delete_project_observation(
-    project_id: int, observation_id: int, access_token: str = None, **params
+    project_id: int, observation_id: int, access_token: Optional[str] = None, **params
 ):
     """Remove an observation from a project
 

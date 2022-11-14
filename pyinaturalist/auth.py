@@ -14,10 +14,10 @@ logger = getLogger(__name__)
 
 
 def get_access_token(
-    username: str = None,
-    password: str = None,
-    app_id: str = None,
-    app_secret: str = None,
+    username: Optional[str] = None,
+    password: Optional[str] = None,
+    app_id: Optional[str] = None,
+    app_secret: Optional[str] = None,
     jwt: bool = True,
     refresh: bool = False,
 ) -> str:

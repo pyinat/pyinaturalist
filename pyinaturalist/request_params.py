@@ -97,7 +97,7 @@ def convert_bool_params(params: RequestParams) -> RequestParams:
     return params
 
 
-def convert_url_ids(url: str, ids: MultiInt = None, allow_str_ids: bool = False) -> str:
+def convert_url_ids(url: str, ids: Optional[MultiInt] = None, allow_str_ids: bool = False) -> str:
     """If one or more resources are requested by ID, validate and update the request URL accordingly"""
     if ids:
         str_ids = str(convert_csv_list(ids)) if allow_str_ids else validate_ids(ids)

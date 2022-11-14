@@ -1,9 +1,11 @@
+from typing import Optional
+
 from pyinaturalist.constants import API_V1, JsonResponse
 from pyinaturalist.exceptions import TaxonNotFound
 from pyinaturalist.session import get
 
 
-def get_controlled_terms(taxon_id: int = None, **params) -> JsonResponse:
+def get_controlled_terms(taxon_id: Optional[int] = None, **params) -> JsonResponse:
     """List controlled terms and their possible values
 
     .. rubric:: Notes

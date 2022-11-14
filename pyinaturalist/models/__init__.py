@@ -23,7 +23,9 @@ define_model: Callable = define(auto_attribs=False, field_transformer=add_lazy_a
 define_model_collection: Callable = define(auto_attribs=False, order=False, slots=False)
 
 
-def field(doc: str = '', options: Iterable = None, metadata: Dict = None, **kwargs):
+def field(
+    doc: str = '', options: Optional[Iterable] = None, metadata: Optional[Dict] = None, **kwargs
+):
     """A field with extra metadata for documentation and options"""
     metadata = metadata or {}
     metadata['doc'] = doc
@@ -37,7 +39,7 @@ def is_in(options: Iterable):
     return validators.in_(list(options) + [None])
 
 
-def coordinate_pair(doc: str = None, **kwargs):
+def coordinate_pair(doc: Optional[str] = None, **kwargs):
     """Field containing a pair of coordiantes"""
     return field(
         default=None,

@@ -1,7 +1,7 @@
 """Utilities for copying and modifying docstrings with type annotations"""
 import re
 from inspect import cleandoc
-from typing import Callable, Dict, Iterable, List, get_type_hints
+from typing import Callable, Dict, Iterable, List, Optional, get_type_hints
 
 from pyinaturalist.constants import TemplateFunction
 
@@ -15,11 +15,14 @@ class ApiDocstring:
     Assumes Google-style docstrings.
     """
 
-    def __init__(self, docstring: str = None):
+    def __init__(self, docstring: Optional[str] = None):
         self.sections = self._split_sections(docstring or '')
 
     def extend(
-        self, docstring: str, include_sections: List[str] = None, exclude_args: Iterable[str] = None
+        self,
+        docstring: str,
+        include_sections: Optional[List[str]] = None,
+        exclude_args: Optional[Iterable[str]] = None,
     ):
         """Extend with contents from another docstring
 
@@ -45,7 +48,7 @@ class ApiDocstring:
 
     # Note: Currently this only applies to single-line arg docs; no need for multi-line (yet)
     @staticmethod
-    def _exclude_args(args_section: str, exclude_args: Iterable[str] = None) -> str:
+    def _exclude_args(args_section: str, exclude_args: Optional[Iterable[str]] = None) -> str:
         if not exclude_args:
             return args_section
 
@@ -106,8 +109,8 @@ def copy_annotations(
 def copy_docstrings(
     target_function: Callable,
     template_functions: List[TemplateFunction],
-    include_sections: List[str] = None,
-    exclude_args: Iterable[str] = None,
+    include_sections: Optional[List[str]] = None,
+    exclude_args: Optional[Iterable[str]] = None,
 ) -> Callable:
     """Copy docstrings from one or more template functions to a target function.
     Assumes Google-style docstrings.

@@ -5,7 +5,7 @@ from datetime import datetime
 from logging import getLogger
 from os.path import expanduser
 from pathlib import Path
-from typing import Dict, Generic, List, Type, TypeVar
+from typing import Dict, Generic, List, Optional, Type, TypeVar
 
 from attr import Factory, asdict, define, field, fields_dict
 
@@ -86,7 +86,7 @@ class BaseModel:
         """Get the subset of attribute names to show in the model's string representation"""
         raise NotImplementedError
 
-    def to_dict(self, keys: List[str] = None, recurse: bool = True) -> JsonResponse:
+    def to_dict(self, keys: Optional[List[str]] = None, recurse: bool = True) -> JsonResponse:
         """Convert this object back to dict format
 
         Args:

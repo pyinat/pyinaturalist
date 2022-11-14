@@ -20,9 +20,9 @@ logger = getLogger(__name__)
 def copy_doc_signature(
     *template_functions: TemplateFunction,
     add_common_args: bool = False,
-    include_sections: Iterable[str] = None,
+    include_sections: Optional[Iterable[str]] = None,
     include_return_annotation: bool = True,
-    exclude_args: Iterable[str] = None,
+    exclude_args: Optional[Iterable[str]] = None,
 ) -> Callable:
     """Document a function with docstrings, function signatures, and type annotations from
     one or more template functions.
@@ -117,7 +117,7 @@ def extend_init_signature(*template_functions: Callable) -> Callable:
 def copy_signatures(
     target_function: Callable,
     template_functions: List[TemplateFunction],
-    exclude_args: Iterable[str] = None,
+    exclude_args: Optional[Iterable[str]] = None,
 ) -> Callable:
     """A decorator that copies function signatures from one or more template functions to a
     target function.

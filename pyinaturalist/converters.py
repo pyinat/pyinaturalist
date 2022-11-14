@@ -193,7 +193,7 @@ def strip_empty_values(values: Dict) -> Dict:
 # -------------------
 
 
-def ensure_file_obj(value: AnyFile, session: Session = None) -> IO:
+def ensure_file_obj(value: AnyFile, session: Optional[Session] = None) -> IO:
     """Load data into a file-like object, if it isn't already. Accepts local file paths and URLs."""
     # Load from URL
     if isinstance(value, str) and URL_PATTERN.match(value):
