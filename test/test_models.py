@@ -9,7 +9,7 @@
 * Formatting in the model's __str__ method
 """
 from copy import deepcopy
-from datetime import datetime
+from datetime import date, datetime
 
 # flake8: noqa: F405
 import pytest
@@ -368,15 +368,6 @@ def test_observation_field__str():
     )
 
 
-# TODO: Test with a datetime observation field value
-# def test_observation_field_value__datetime():
-#     ofv = OFV.from_json(j_ofv_3_datetime)
-#     assert ofv.datatype == 'datetime'
-#     assert ofv.value == datetime(2022, 2,2)
-#     assert ofv.taxon is None
-#     assert isinstance(ofv.user, User) and ofv.user.id == 2115051
-
-
 def test_observation_field_value__numeric():
     ofv = OFV.from_json(j_ofv_1_numeric)
     assert ofv.datatype == 'numeric'
@@ -392,8 +383,22 @@ def test_observation_field_value__taxon():
     assert isinstance(ofv.taxon, Taxon) and ofv.taxon.id == 119900
 
 
+def test_observation_field_value__date():
+    ofv = OFV.from_json(j_ofv_3_date)
+    assert ofv.datatype == 'date'
+    assert ofv.value == date(2022, 11, 9)
+    assert ofv.taxon is None
+
+
+def test_observation_field_value__datetime():
+    ofv = OFV.from_json(j_ofv_4_datetime)
+    assert ofv.datatype == 'datetime'
+    assert ofv.value == datetime(2022, 11, 9, 11, 20, 42)
+    assert ofv.taxon is None
+
+
 def test_observation_field_value__converter_error():
-    ofv = OFV(datatype='numeric', value='one')
+    ofv = OFV(datatype='taxon', value='birb')
     assert ofv.value is None
 
 
