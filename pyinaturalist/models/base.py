@@ -35,7 +35,7 @@ class BaseModel:
     """Base class for data models"""
 
     id: int = field(default=None, converter=try_int, metadata={'doc': 'Unique record ID'})
-    _nested: bool = field(default=False, repr=False, init=False)
+    __is_nested: bool = field(default=False, repr=False, init=False)
     temp_attrs: List[str] = []
 
     @classmethod
@@ -77,6 +77,22 @@ class BaseModel:
         return [cls.from_json(item, **kwargs) for item in ensure_list(value)]
 
     @property
+    def _is_nested(self) -> bool:
+        """Check if this object is nested within another object, and reset flag. Used for condensed
+        output of nested model objects. This flag is temporarily set and later checked/reset by
+        ``BaseModel.__rich_repr__``
+
+        This is a somewhat messy compromise to allow all of the following to work:
+
+        * Print only condensed output when printed as a nested object
+        * Print full output when not printed as a nested object
+        * Do this while working within rich's rendering method (for pretty syntax highlighting)
+        """
+        val = self.__is_nested
+        self.__is_nested = False
+        return val
+
+    @property
     def _row(self) -> TableRow:
         """Get values and headers to display as a row in a table"""
         raise NotImplementedError
@@ -84,7 +100,7 @@ class BaseModel:
     @property
     def _str_attrs(self) -> List[str]:
         """Get the subset of attribute names to show in the model's string representation"""
-        raise NotImplementedError
+        return [getattr(a, 'name', '') for a in self.__attrs_attrs__]
 
     def to_dict(self, keys: Optional[List[str]] = None, recurse: bool = True) -> JsonResponse:
         """Convert this object back to dict format
@@ -128,8 +144,8 @@ class BaseModel:
         """
         from pyinaturalist.models import get_lazy_properties
 
-        # If this is a nested object, show only a minimal representation
-        if self._nested:
+        # If this is a nested object, show a condensed representation
+        if self._is_nested:
             for a in self._str_attrs:
                 value = getattr(self, a)
                 if isinstance(value, datetime):
@@ -147,9 +163,19 @@ class BaseModel:
             value = str(value) if isinstance(value, datetime) else value
             yield a.name, value, default
 
+        # Set temporary flag for condensed output (see _is_nested property for details)
+        def set_nested(prop_value):
+            if isinstance(prop_value, list):
+                for v in prop_value:
+                    v.__is_nested = True
+            elif prop_value:
+                prop_value.__is_nested = True
+
         # Handle LazyProperties
         for name, prop in get_lazy_properties(type(self)).items():
-            yield name, prop.__get__(self, type(self))
+            prop_value = prop.__get__(self, type(self))
+            set_nested(prop_value)
+            yield name, prop_value
 
     def __str__(self):
         """Make a string representation based on a minimal set of attributes defined on each model,
