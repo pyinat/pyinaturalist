@@ -15,6 +15,7 @@
 
 ### Other Changes
 * Fix `ObservationFieldValue` conversions for `date` and `datetime` fields
+* Fix printing `Annotation` objects with `rich`
 * Optionally use `ultrajson` instead of stdlib `json`, if installed
 * Add `loop` argument to iNatClient and Paginator classes to allow passing an async event loop to be used for async iteration
 * Add `Paginator.async_all()` method (async, non-blocking version of `.all()`)

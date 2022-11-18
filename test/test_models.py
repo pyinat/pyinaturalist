@@ -100,6 +100,18 @@ def test_to_dict__specific_keys():
     assert obs_dict['taxon']['id'] == j_observation_1['taxon']['id']
 
 
+@define
+class TestModel(BaseModel):
+    key: str = field(default=None)
+
+
+def test_default_rich_repr():
+    """If no __rich_repr__ or _str_attrs is defined, fall back to printing all attrs fields"""
+    obj = TestModel(key='value')
+    print_attrs = [a[0] for a in obj.__rich_repr__()]
+    assert print_attrs == ['id', 'key']
+
+
 # Controlled Terms
 # --------------------
 

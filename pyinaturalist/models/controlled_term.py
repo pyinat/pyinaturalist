@@ -81,6 +81,10 @@ class Annotation(BaseModel):
             'User': self.user.login,
         }
 
+    def __rich_repr__(self):
+        yield 'term', self.term_label
+        yield 'value', self.value_label
+
     def __str__(self) -> str:
         """Show term/value label if available, otherwise just IDs"""
         return f'{self.__class__.__name__}(term={self.term_label}, value={self.value_label})'

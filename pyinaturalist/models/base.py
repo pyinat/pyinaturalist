@@ -84,7 +84,7 @@ class BaseModel:
     @property
     def _str_attrs(self) -> List[str]:
         """Get the subset of attribute names to show in the model's string representation"""
-        raise NotImplementedError
+        return [getattr(a, 'name', '') for a in self.__attrs_attrs__]
 
     def to_dict(self, keys: Optional[List[str]] = None, recurse: bool = True) -> JsonResponse:
         """Convert this object back to dict format
@@ -130,12 +130,15 @@ class BaseModel:
 
         # If this is a nested object, show only a minimal representation
         if self._nested:
+            # try:
             for a in self._str_attrs:
                 value = getattr(self, a)
                 if isinstance(value, datetime):
                     value = value.strftime(DATETIME_SHORT_FORMAT)
                 yield a, value, None
             return
+            # except NotImplementedError:
+            #     return str(self)
 
         # Handle regular public attributes
         public_attrs = [
