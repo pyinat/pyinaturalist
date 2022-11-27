@@ -6,10 +6,12 @@ from dateutil.tz import tzutc
 from pyinaturalist.client import iNatClient
 from pyinaturalist.constants import API_V1
 from pyinaturalist.models import (
+    Annotation,
     ConservationStatus,
     LifeList,
     ListedTaxon,
     Observation,
+    ObservationFieldValue,
     Place,
     TaxonCounts,
     TaxonSummary,
@@ -19,10 +21,10 @@ from test.sample_data import *
 
 
 def test_from_id(requests_mock):
-    observation_id = 57754375
+    observation_id = 16227955
     requests_mock.get(
-        f'{API_V1}/observations',
-        json=SAMPLE_DATA['get_observations_node_page1'],
+        f'{API_V1}/observations/16227955',
+        json=SAMPLE_DATA['get_observations_by_id'],
         status_code=200,
     )
     result = iNatClient().observations(observation_id)
@@ -32,9 +34,9 @@ def test_from_id(requests_mock):
 
 
 def test_from_id__not_found(requests_mock):
-    observation_id = 57754375
+    observation_id = 16227955
     requests_mock.get(
-        f'{API_V1}/observations',
+        f'{API_V1}/observations/16227955',
         json={'results': [], 'total_results': 0},
         status_code=200,
     )
@@ -42,27 +44,26 @@ def test_from_id__not_found(requests_mock):
 
 
 def test_from_ids(requests_mock):
-    observation_id = 57754375
+    observation_id = 16227955
+    obs = SAMPLE_DATA['get_observations_by_id']['results'][0]
     requests_mock.get(
-        f'{API_V1}/observations',
-        [
-            {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
-        ],
+        f'{API_V1}/observations/16227955',
+        json={'results': [obs, obs], 'total_results': 2},
+        status_code=200,
     )
-    results = iNatClient().observations.from_ids(observation_id, per_page=1).all()
+    results = iNatClient().observations.from_ids(observation_id).all()
 
     assert len(results) == 2 and isinstance(results[0], Observation)
     assert results[0].id == observation_id
 
 
 def test_from_ids__limit(requests_mock):
-    observation_id = 57754375
+    observation_id = 16227955
     requests_mock.get(
-        f'{API_V1}/observations',
+        f'{API_V1}/observations/16227955',
         [
-            {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_by_id'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_by_id'], 'status_code': 200},
         ],
     )
     results = iNatClient().observations.from_ids(observation_id).limit(1)
@@ -87,6 +88,34 @@ def test_search(requests_mock):
     assert results[0].id == 57754375
     assert results[0].taxon.id == 48662
     assert results[0].created_at == datetime(2020, 8, 27, 18, 0, 51, tzinfo=tzutc())
+
+
+def test_search__with_ofvs(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/observations',
+        json=SAMPLE_DATA['get_observation_with_ofvs'],
+        status_code=200,
+    )
+    results = iNatClient().observations.search().all()
+
+    ofv = results[0].ofvs[0]
+    assert isinstance(ofv, ObservationFieldValue)
+    assert ofv.datatype == 'taxon'
+    assert ofv.value == 119900
+
+
+def test_search__with_annotations(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/observations',
+        json=SAMPLE_DATA['get_observation_with_ofvs'],
+        status_code=200,
+    )
+    results = iNatClient().observations.search().all()
+    annotation = results[0].annotations[0]
+
+    assert isinstance(annotation, Annotation)
+    assert annotation.controlled_attribute.label == 'Life Stage'
+    assert annotation.controlled_value.label == 'Adult'
 
 
 def test_histogram(requests_mock):

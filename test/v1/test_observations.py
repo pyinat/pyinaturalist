@@ -20,6 +20,7 @@ from pyinaturalist.v1 import (
     get_observation_taxon_summary,
     get_observation_taxonomy,
     get_observations,
+    get_observations_by_id,
     update_observation,
     upload,
 )
@@ -94,6 +95,37 @@ def test_get_observations__all_pages(requests_mock):
 
     observations = get_observations(id=[57754375, 57707611], per_page=1, page='all')
     assert len(observations['results']) == 2
+
+
+def test_get_observations_by_id(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/observations/493595',
+        json=SAMPLE_DATA['get_observations_by_id'],
+        status_code=200,
+    )
+
+    observations = get_observations_by_id(493595)
+    first_result = observations['results'][0]
+
+    assert observations['total_results'] == len(observations['results']) == 1
+    assert first_result['created_at'] == datetime(
+        2018, 9, 5, 14, 31, 8, tzinfo=tzoffset(None, 7200)
+    )
+    assert first_result['observed_on'] == datetime(2018, 9, 5, 14, 6, tzinfo=tzoffset(None, 7200))
+    assert first_result['taxon']['id'] == 493595
+    assert first_result['annotations'][0]['controlled_attribute']['id'] == 1
+
+
+def test_get_observations_by_id__multiple(requests_mock):
+    obs = SAMPLE_DATA['get_observations_by_id']['results'][0]
+    requests_mock.get(
+        f'{API_V1}/observations/493595,12345',
+        json={'results': [obs, obs], 'total_results': 2},
+        status_code=200,
+    )
+
+    observations = get_observations_by_id([493595, 12345])
+    assert observations['total_results'] == len(observations['results']) == 2
 
 
 def test_get_observation__non_existent(requests_mock):

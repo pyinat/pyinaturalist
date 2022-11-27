@@ -2,6 +2,18 @@
 
 ## 0.18.0 (Unreleased)
 
+### New Endpoints
+* Added new **Observation** endpoint:
+  * `get_observations_by_id()`
+    * Replaces `get_observation`
+    * Accepts multiple IDs
+    * Uses a different endpoint (`GET /observations/{id}` instead of `GET /observations?id={id}`)`)
+    * returns full term and value details for annotations
+
+### Deprecated Endpoints
+* `get_observation()` is now deprecated, and will be removed in a future release
+  * Please use `get_observations()` or `get_observations_by_id()` instead
+
 ### Models
 * Add `Observation.default_photo` property
 * Use taxon icon as placeholder for `Observation.default_photo` if observation has no photos
@@ -178,8 +190,11 @@ The following changes apply to `upload()`, `create_observation()`, and `update_o
 * Updated all requests to correctly convert `datetime` objects to strings
 * Moved API functions into separate modules by API version and resource type.
     * All can still be imported via `from pyinaturalist import *`
-    * Added aliases for backwards-compatibility, so imports from `pyinaturalist.rest_api` and
-      `pyinaturalist.node_api` will still work, but these are deprecated and will be removed in a future release
+    * Added aliases for backwards-compatibility, so imports from `pyinaturalist.rest_api` and `pyinaturalist.node_api` will still work
+
+### Deprecated Endpoints
+* Deprecated `pyinaturalist.rest_api` module (moved to `pyinaturalist.v0` subpackage)
+* Deprecated `pyinaturalist.node_api` module (moved to `pyinaturalist.v1` subpackage)
 * Deprecated `get_geojson_observations()` (moved to join other observation conversion tools in `pyinaturalist-convert`)
 
 ### Models
@@ -253,11 +268,14 @@ Model features:
   * `node_api.get_taxa()`
   * `rest_api.get_observations()`
   * `rest_api.get_observation_fields()`
-* The following methods are now deprecated. They are still functional, but will raise a `DeprecationWarning`:
-  * `node_api.get_all_observations()`
-  * `rest_api.get_all_observation_fields()`
 * Removed `node_api.get_all_observation_species_counts()`, since this was only added recently
 * Updated `rest_api.get_observation_fields()` to return a dict with `'results'` for consistency with other endpoints
+
+### Deprecated Endpoints
+The following methods are now deprecated. They are still functional, but will raise a
+  `DeprecationWarning`, and will be removed in a future release:
+* `node_api.get_all_observations()`
+* `rest_api.get_all_observation_fields()`
 
 ### Other Changes
 * Added response formatting functions to `pyinaturalist.formatters`

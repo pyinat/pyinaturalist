@@ -8,7 +8,7 @@ from pyinaturalist.constants import (
     ListResponse,
 )
 from pyinaturalist.controllers import BaseController
-from pyinaturalist.docs import document_controller_params
+from pyinaturalist.docs import document_controller_description, document_controller_params
 from pyinaturalist.models import (
     ControlledTermCounts,
     LifeList,
@@ -46,9 +46,9 @@ class ObservationController(BaseController):
         """Get a single observation by ID"""
         return self.from_ids(observation_id, **kwargs).one()
 
+    @document_controller_description(get_observations_by_id)
     def from_ids(self, *observation_ids: int, **params) -> Paginator[Observation]:
-        """Get observations by ID
-
+        """
         Args:
             observation_ids: One or more observation IDs
         """

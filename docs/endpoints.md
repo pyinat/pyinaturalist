@@ -31,8 +31,8 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | POST   | /observation_photos                | {py:func}`.upload`
 | POST   | /observation_sounds                | {py:func}`.upload`
 | DELETE | /observations/{id}                 | {py:func}`~pyinaturalist.v1.observations.delete_observation`
-| GET    | /observations/{id}                 | {py:func}`.get_observation`
-| PUT    | /observations/{id}                 |{py:func}`~pyinaturalist.v1.observations.update_observation`
+| GET    | /observations/{id}                 | {py:func}`.get_observations_by_id`
+| PUT    | /observations/{id}                 | {py:func}`~pyinaturalist.v1.observations.update_observation`
 | GET    | /observations/{id}/taxon_summary   | {py:func}`.get_observation_taxon_summary`
 | GET    | /observations                      | {py:func}`~pyinaturalist.v1.observations.get_observations`
 | POST   | /observations                      | {py:func}`~pyinaturalist.v1.observations.create_observation`
