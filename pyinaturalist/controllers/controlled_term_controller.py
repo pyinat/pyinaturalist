@@ -18,7 +18,9 @@ class ControlledTermController(BaseController):
     @document_controller_params(get_controlled_terms)
     def all(self, **params) -> List[ControlledTerm]:
         response = get_controlled_terms(**params)
-        return ControlledTerm.from_json_list(response['results'])
+        all_terms = ControlledTerm.from_json_list(response['results'])
+        self._term_lookup = {term.id: term for term in all_terms}
+        return all_terms
 
     @document_controller_params(get_controlled_terms_for_taxon)
     def for_taxon(self, taxon_id: int, **params) -> List[ControlledTerm]:
@@ -26,13 +28,14 @@ class ControlledTermController(BaseController):
         return ControlledTerm.from_json_list(response['results'])
 
     def lookup(self, annotations: List[Annotation]) -> List[Annotation]:
-        """Look up and add complete controlled term info to the specified annotations
+        """Fill in missing information for the specified annotations. If only term and value IDs are
+        present, this will look up, cache, and add complete controlled term details.
 
         Args:
             annotations: Observation annotations
 
         Returns:
-            Annotation objects with ``term`` and ``value`` populated
+            Annotation objects with ``controlled_attribute`` and ``controlled_value`` populated
         """
         if not self._term_lookup:
             self._term_lookup = {term.id: term for term in self.all()}
@@ -40,6 +43,6 @@ class ControlledTermController(BaseController):
         for annotation in annotations:
             term = self._term_lookup.get(annotation.controlled_attribute_id)
             if term:
-                annotation.term = term
-                annotation.value = term.get_value_by_id(annotation.controlled_value_id)
+                annotation.controlled_attribute = term
+                annotation.controlled_value = term.get_value_by_id(annotation.controlled_value_id)
         return annotations

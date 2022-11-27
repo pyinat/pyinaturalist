@@ -15,81 +15,6 @@ from pyinaturalist.models import (
 )
 
 
-@define(auto_attribs=False, init=False, field_transformer=add_lazy_attrs)
-class Annotation(BaseModel):
-    """:fa:`tag` An annotation, meaning a **controlled term value** applied by a **user** to an **observation**.
-    Based on the schema of annotations from
-    `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
-    """
-
-    controlled_attribute_id: int = field(default=None)
-    controlled_value_id: int = field(default=None)
-    user_id: int = field(default=None)
-    uuid: str = field(default=None)
-    vote_score: int = field(default=None)
-    votes: List = field(factory=list)
-    user: property = LazyProperty(User.from_json, type=User, doc='User who added the annotation')
-
-    # Manually loaded attributes
-    term: Optional['ControlledTerm'] = field(default=None)
-    value: Optional['ControlledTermValue'] = field(default=None)
-
-    # Attributes that will only be used during init and then omitted
-    temp_attrs = ['term_label', 'value_label']
-
-    def __init__(self, **kwargs):
-        # Allow passing term_label and value_label as shorthand for creating ControlledTerm + Value
-        term_label = kwargs.pop('term_label', None)
-        value_label = kwargs.pop('value_label', None)
-        self.__attrs_init__(**kwargs)
-        if term_label:
-            self.term_label = term_label
-        if value_label:
-            self.value_label = value_label
-
-    @property
-    def term_label(self) -> str:
-        """Convenience property for getting/setting the term label"""
-        return self.term.label if self.term else str(self.controlled_attribute_id)
-
-    @term_label.setter
-    def term_label(self, label: str):
-        if not self.term:
-            self.term = ControlledTerm(id=self.controlled_attribute_id)
-        self.term.label = label
-
-    @property
-    def value_label(self) -> str:
-        """Convenience property for getting/setting the value label"""
-        return self.value.label if self.value else str(self.controlled_value_id)
-
-    @value_label.setter
-    def value_label(self, label: str):
-        if not self.value:
-            self.value = ControlledTermValue(id=self.controlled_value_id)
-        self.value.label = label
-
-    # Unused attributes
-    # concatenated_attr_val: str = field(default=None)
-
-    @property
-    def _row(self) -> TableRow:
-        return {
-            'ID': self.controlled_attribute_id,
-            'Value': self.controlled_value_id,
-            'Votes': self.vote_score,
-            'User': self.user.login,
-        }
-
-    def __rich_repr__(self):
-        yield 'term', self.term_label
-        yield 'value', self.value_label
-
-    def __str__(self) -> str:
-        """Show term/value label if available, otherwise just IDs"""
-        return f'{self.__class__.__name__}(term={self.term_label}, value={self.value_label})'
-
-
 @define_model
 class ControlledTermValue(BaseModel):
     """:fa:`tag` A controlled term **value**, based on the schema of
@@ -147,6 +72,90 @@ class ControlledTerm(BaseModel):
     @property
     def _str_attrs(self) -> List[str]:
         return ['id', 'label', 'value_labels']
+
+
+@define(auto_attribs=False, init=False, field_transformer=add_lazy_attrs)
+class Annotation(BaseModel):
+    """:fa:`tag` An annotation, meaning a **controlled term value** applied by a **user** to an **observation**.
+    Based on the schema of annotations from
+    `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
+    """
+
+    controlled_attribute_id: int = field(default=None)
+    controlled_value_id: int = field(default=None)
+    user_id: int = field(default=None)
+    uuid: str = field(default=None)
+    vote_score: int = field(default=None)
+    votes: List = field(factory=list)
+    user: property = LazyProperty(User.from_json, type=User, doc='User who added the annotation')
+
+    controlled_attribute: property = LazyProperty(
+        ControlledTerm.from_json, type=User, doc='Term definition details'
+    )
+    controlled_value: property = LazyProperty(
+        ControlledTermValue.from_json, type=User, doc='Annotation value details'
+    )
+
+    # Attributes that will only be used during init and then omitted
+    temp_attrs = ['term_label', 'value_label']
+
+    def __init__(self, **kwargs):
+        # Allow passing term_label and value_label as shorthand for creating ControlledTerm + Value
+        term_label = kwargs.pop('term_label', None)
+        value_label = kwargs.pop('value_label', None)
+        self.__attrs_init__(**kwargs)
+        if term_label:
+            self.term_label = term_label
+        if value_label:
+            self.value_label = value_label
+
+    @property
+    def term_label(self) -> str:
+        """Convenience property for getting/setting the term label"""
+        return (
+            self.controlled_attribute.label
+            if self.controlled_attribute
+            else str(self.controlled_attribute_id)
+        )
+
+    @term_label.setter
+    def term_label(self, label: str):
+        if not self.controlled_attribute:
+            self.controlled_attribute = ControlledTerm(id=self.controlled_attribute_id)
+        self.controlled_attribute.label = label
+
+    @property
+    def value_label(self) -> str:
+        """Convenience property for getting/setting the value label"""
+        return (
+            self.controlled_value.label if self.controlled_value else str(self.controlled_value_id)
+        )
+
+    @value_label.setter
+    def value_label(self, label: str):
+        if not self.controlled_value:
+            self.controlled_value = ControlledTermValue(id=self.controlled_value_id)
+        self.controlled_value.label = label
+
+    # Unused attributes
+    # concatenated_attr_val: str = field(default=None)
+
+    @property
+    def _row(self) -> TableRow:
+        return {
+            'ID': self.controlled_attribute_id,
+            'Value': self.controlled_value_id,
+            'Votes': self.vote_score,
+            'User': self.user.login,
+        }
+
+    def __rich_repr__(self):
+        yield 'term', self.term_label
+        yield 'value', self.value_label
+
+    def __str__(self) -> str:
+        """Show term/value label if available, otherwise just IDs"""
+        return f'{self.__class__.__name__}(term={self.term_label}, value={self.value_label})'
 
 
 @define_model
