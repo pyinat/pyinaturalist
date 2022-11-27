@@ -34,74 +34,6 @@ from pyinaturalist.session import delete, get, post, put
 logger = getLogger(__name__)
 
 
-@document_common_args
-def get_observation(
-    observation_id: int, access_token: Optional[str] = None, **params
-) -> ResponseResult:
-    """Get details about a single observation by ID
-
-    .. rubric:: Notes
-
-    * :fas:`triangle-exclamation` Deprecated; use :func:`get_observations`
-      or :func:`get_observations_by_id` instead
-    * :fas:`lock-opens` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
-    * API reference: :v1:`GET /observations/{id} <Observations/get_observations_id>`
-
-    Example:
-        >>> response = get_observation(16227955)
-
-    Args:
-        observation_id: Get the observation with this ID. Only a single value is allowed.
-        access_token: An access token, as returned by :py:func:`.get_access_token()`
-
-    Returns:
-        A dict with details on the observation
-
-    Raises:
-        :py:exc:`.ObservationNotFound` If an invalid observation is specified
-    """
-
-    response = get_observations(id=observation_id, access_token=access_token, **params)
-    if response['results']:
-        return convert_observation_timestamps(response['results'][0])
-    raise ObservationNotFound()
-
-
-@document_common_args
-def get_observations_by_id(
-    observation_id: MultiInt, access_token: Optional[str] = None, **params
-) -> JsonResponse:
-    """Get one or more observations by ID
-
-    .. rubric:: Notes
-
-    * :fas:`lock-open` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
-    * API reference: :v1:`GET /observations/{id} <Observations/get_observations_id>`
-
-    Example:
-        >>> response = get_observations_by_id(16227955)
-        >>> response = get_observations_by_id([16227955, 16227956])
-
-        .. admonition:: Example Response
-            :class: toggle
-
-            .. literalinclude:: ../sample_data/get_observations_by_id.py
-
-    Args:
-        observation_id: Get an observation with this ID. Multiple IDs are allowed.
-        access_token: An access token, as returned by :py:func:`.get_access_token()`
-
-    Returns:
-        Response dict containing observation records
-    """
-    observations = get(
-        f'{API_V1}/observations', ids=observation_id, access_token=access_token, **params
-    ).json()
-    observations['results'] = convert_all_coordinates(observations['results'])
-    observations['results'] = convert_all_timestamps(observations['results'])
-    return observations
-
-
 @document_request_params(
     *docs._get_observations, docs._pagination, docs._only_id, docs._access_token
 )
@@ -148,6 +80,44 @@ def get_observations(**params) -> JsonResponse:
     else:
         observations = get(f'{API_V1}/observations', **params).json()
 
+    observations['results'] = convert_all_coordinates(observations['results'])
+    observations['results'] = convert_all_timestamps(observations['results'])
+    return observations
+
+
+@document_common_args
+def get_observations_by_id(
+    observation_id: MultiInt, access_token: Optional[str] = None, **params
+) -> JsonResponse:
+    """Get one or more observations by ID
+
+    .. rubric:: Notes
+
+    * :fas:`lock-open` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
+    * API reference: :v1:`GET /observations/{id} <Observations/get_observations_id>`
+    * This endpoint returns more complete annotation details compared to
+      :py:func:`~pyinaturalist.v1.observations.get_observations`.
+      See :py:class:`.Annotation` for details.
+
+    Example:
+        >>> response = get_observations_by_id(16227955)
+        >>> response = get_observations_by_id([16227955, 16227956])
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observations_by_id.py
+
+    Args:
+        observation_id: Get an observation with this ID. Multiple IDs are allowed.
+        access_token: An access token, as returned by :py:func:`.get_access_token()`
+
+    Returns:
+        Response dict containing observation records
+    """
+    observations = get(
+        f'{API_V1}/observations', ids=observation_id, access_token=access_token, **params
+    ).json()
     observations['results'] = convert_all_coordinates(observations['results'])
     observations['results'] = convert_all_timestamps(observations['results'])
     return observations
@@ -581,3 +551,36 @@ def delete_observation(observation_id: int, access_token: Optional[str] = None, 
     if response.status_code == 404:
         raise ObservationNotFound
     response.raise_for_status()
+
+
+@document_common_args
+def get_observation(
+    observation_id: int, access_token: Optional[str] = None, **params
+) -> ResponseResult:
+    """Get details about a single observation by ID
+
+    .. rubric:: Notes
+
+    * :fas:`triangle-exclamation` Deprecated; use :func:`get_observations`
+      or :func:`get_observations_by_id` instead
+    * :fas:`lock-opens` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
+    * API reference: :v1:`GET /observations/{id} <Observations/get_observations_id>`
+
+    Example:
+        >>> response = get_observation(16227955)
+
+    Args:
+        observation_id: Get the observation with this ID. Only a single value is allowed.
+        access_token: An access token, as returned by :py:func:`.get_access_token()`
+
+    Returns:
+        A dict with details on the observation
+
+    Raises:
+        :py:exc:`.ObservationNotFound` If an invalid observation is specified
+    """
+
+    response = get_observations(id=observation_id, access_token=access_token, **params)
+    if response['results']:
+        return convert_observation_timestamps(response['results'][0])
+    raise ObservationNotFound()
