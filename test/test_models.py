@@ -127,16 +127,28 @@ def test_annotation__empty():
     assert annotation.user is None
 
 
-def test_annotation__str():
+def test_annotation__init_from_labels():
+    annotation = Annotation(term='Life Stage', value='Adult')
+    assert annotation.controlled_attribute.label == 'Life Stage'
+    assert annotation.controlled_value.label == 'Adult'
+
+
+def test_annotation__label_setters():
+    annotation = Annotation(controlled_attribute={'id': 1}, controlled_value={'id': 2})
+    annotation.term = 'Life Stage'
+    annotation.value = 'Adult'
+    assert annotation.controlled_attribute.label == 'Life Stage'
+    assert annotation.controlled_value.label == 'Adult'
+
+
+def test_annotation__str_with_labels():
     annotation = Annotation.from_json(j_annotation_1)
+    assert str(annotation) == 'Annotation(term=Life Stage, value=Adult)'
+
+
+def test_annotation__str_without_labels():
+    annotation = Annotation(controlled_attribute_id=1, controlled_value_id=2)
     assert str(annotation) == 'Annotation(term=1, value=2)'
-
-
-def test_annotation_with_labels():
-    annotation = Annotation(term_label='term', value_label='value')
-    assert annotation.term.label == 'term'
-    assert annotation.value.label == 'value'
-    assert str(annotation) == 'Annotation(term=term, value=value)'
 
 
 def test_controlled_term__converters():
@@ -180,6 +192,18 @@ def test_controlled_term__value():
     assert (
         str(controlled_term_value) == 'ControlledTermValue(id=21, label=No Evidence of Flowering)'
     )
+
+
+def test_controlled_term_counts():
+    controlled_term_counts = ControlledTermCounts.from_json(
+        SAMPLE_DATA['get_observation_popular_field_values']
+    )
+    count_1 = controlled_term_counts[0]
+    assert isinstance(count_1, ControlledTermCount)
+    assert isinstance(count_1.controlled_attribute, ControlledTerm)
+    assert isinstance(count_1.controlled_value, ControlledTermValue)
+    assert count_1.term == 'Life Stage'
+    assert count_1.value == 'Adult'
 
 
 # Comments

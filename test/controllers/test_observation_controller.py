@@ -156,8 +156,10 @@ def test_popular_fields(requests_mock):
     results = client.observations.popular_fields(species_name='Danaus plexippus', place_id=24)
     assert results[0].count == 231
     assert results[0].histogram[10] == 29
-    assert results[0].term.id == 1
-    assert results[0].value.label == 'Adult'
+    assert results[0].controlled_attribute.id == 1
+    assert results[0].controlled_value.id == 2
+    assert results[0].controlled_attribute.label == results[0].term == 'Life Stage'
+    assert results[0].controlled_value.label == results[0].value == 'Adult'
 
 
 def test_species_counts(requests_mock):

@@ -46,6 +46,7 @@ j_taxon_summary_1_conserved = SAMPLE_DATA['get_observation_taxon_summary_conserv
 j_taxon_summary_2_listed = SAMPLE_DATA['get_observation_taxon_summary_listed']
 
 j_annotation_1 = j_observation_3_ofvs['annotations'][0]
+j_annotation_2 = j_observation_3_ofvs['annotations'][1]
 j_comments = j_observation_2['comments']
 j_comment_1 = j_comments[0]
 j_comment_2 = j_comments[1]
