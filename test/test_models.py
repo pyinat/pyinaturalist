@@ -194,6 +194,18 @@ def test_controlled_term__value():
     )
 
 
+def test_controlled_term_counts():
+    controlled_term_counts = ControlledTermCounts.from_json(
+        SAMPLE_DATA['get_observation_popular_field_values']
+    )
+    count_1 = controlled_term_counts[0]
+    assert isinstance(count_1, ControlledTermCount)
+    assert isinstance(count_1.controlled_attribute, ControlledTerm)
+    assert isinstance(count_1.controlled_value, ControlledTermValue)
+    assert count_1.term == 'Life Stage'
+    assert count_1.value == 'Adult'
+
+
 # Comments
 # --------------------
 

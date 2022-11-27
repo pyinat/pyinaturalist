@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Dict, List, Optional
 
 from attr import define
@@ -169,38 +170,37 @@ class ControlledTermCount(BaseModel):
 
     count: int = field(default=0, doc='')
     histogram: Dict[int, int] = field(factory=dict)
-    term = LazyProperty(ControlledTerm.from_json, type=ControlledTerm)
-    value = LazyProperty(ControlledTermValue.from_json, type=ControlledTermValue)
+    controlled_attribute = LazyProperty(ControlledTerm.from_json, type=ControlledTerm)
+    controlled_value = LazyProperty(ControlledTermValue.from_json, type=ControlledTermValue)
 
     @classmethod
     def from_json(
         cls, value: JsonResponse, user_id: Optional[int] = None, **kwargs
     ) -> 'ControlledTermCount':
         """Rename some response fields before initializing"""
+        value = deepcopy(value)
         value['histogram'] = value.pop('month_of_year', None)
-        value['term'] = value.pop('controlled_attribute', None)
-        value['value'] = value.pop('controlled_value', None)
         return super(ControlledTermCount, cls).from_json(value)
 
     @property
-    def term_label(self) -> str:
-        return self.term.label
+    def term(self) -> str:
+        return self.controlled_attribute.label
 
     @property
-    def value_label(self) -> str:
-        return self.value.label
+    def value(self) -> str:
+        return self.controlled_value.label
 
     @property
     def _row(self) -> TableRow:
         return {
-            'Term': self.term.label,
-            'Value': self.value.label,
+            'Term': self.term,
+            'Value': self.value,
             'Count': self.count,
         }
 
     @property
     def _str_attrs(self) -> List[str]:
-        return ['term_label', 'value_label', 'count']
+        return ['term', 'value', 'count']
 
 
 @define_model_collection
