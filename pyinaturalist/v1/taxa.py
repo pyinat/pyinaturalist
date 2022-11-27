@@ -66,7 +66,7 @@ def get_taxa_by_id(taxon_id: MultiInt, **params) -> JsonResponse:
             .. literalinclude:: ../sample_data/get_taxa_by_id.py
 
     Args:
-        taxon_id: Get taxa with this ID. Multiple values are allowed.
+        taxon_id: Get taxon with this ID. Multiple values are allowed.
 
     Returns:
         Response dict containing taxon records

@@ -1,3 +1,4 @@
+# TODO: pprint examples are out of date
 from copy import deepcopy
 from logging import getLogger
 from typing import Optional
@@ -10,7 +11,9 @@ from pyinaturalist.constants import (
     JsonResponse,
     ListResponse,
     MultiFile,
+    MultiInt,
     MultiIntOrStr,
+    ResponseResult,
 )
 from pyinaturalist.converters import (
     convert_all_coordinates,
@@ -34,23 +37,18 @@ logger = getLogger(__name__)
 @document_common_args
 def get_observation(
     observation_id: int, access_token: Optional[str] = None, **params
-) -> JsonResponse:
+) -> ResponseResult:
     """Get details about a single observation by ID
 
     .. rubric:: Notes
 
+    * :fas:`triangle-exclamation` Deprecated; use :func:`get_observations`
+      or :func:`get_observations_by_id` instead
     * :fas:`lock-opens` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
     * API reference: :v1:`GET /observations/{id} <Observations/get_observations_id>`
 
     Example:
         >>> response = get_observation(16227955)
-        >>> pprint(response)
-        [16227955] [493595] Species: Lixus bardanae observed on 2018-09-05 14:06:00+01:00 by niconoe at 54 rue des Badauds
-
-        .. admonition:: Example Response
-            :class: toggle
-
-            .. literalinclude:: ../sample_data/get_observation.py
 
     Args:
         observation_id: Get the observation with this ID. Only a single value is allowed.
@@ -67,6 +65,92 @@ def get_observation(
     if response['results']:
         return convert_observation_timestamps(response['results'][0])
     raise ObservationNotFound()
+
+
+@document_common_args
+def get_observations_by_id(
+    observation_id: MultiInt, access_token: Optional[str] = None, **params
+) -> JsonResponse:
+    """Get one or more observations by ID
+
+    .. rubric:: Notes
+
+    * :fas:`lock-open` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
+    * API reference: :v1:`GET /observations/{id} <Observations/get_observations_id>`
+
+    Example:
+        >>> response = get_observations_by_id(16227955)
+        >>> response = get_observations_by_id([16227955, 16227956])
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observations_by_id.py
+
+    Args:
+        observation_id: Get an observation with this ID. Multiple IDs are allowed.
+        access_token: An access token, as returned by :py:func:`.get_access_token()`
+
+    Returns:
+        Response dict containing observation records
+    """
+    observations = get(
+        f'{API_V1}/observations', ids=observation_id, access_token=access_token, **params
+    ).json()
+    observations['results'] = convert_all_coordinates(observations['results'])
+    observations['results'] = convert_all_timestamps(observations['results'])
+    return observations
+
+
+@document_request_params(
+    *docs._get_observations, docs._pagination, docs._only_id, docs._access_token
+)
+def get_observations(**params) -> JsonResponse:
+    """Search observations
+
+    .. rubric:: Notes
+
+    * :fas:`lock-open` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
+    * API reference: :v1:`GET /observations <Observations/get_observations>`
+
+    Examples:
+
+        Get observations of Monarch butterflies with photos + public location info,
+        on a specific date in the provice of Saskatchewan, CA (place ID 7953):
+
+        >>> response = get_observations(
+        >>>     taxon_name='Danaus plexippus',
+        >>>     created_on='2020-08-27',
+        >>>     photos=True,
+        >>>     geo=True,
+        >>>     geoprivacy='open',
+        >>>     place_id=7953,
+        >>> )
+
+        Get basic info for observations in response:
+
+        >>> pprint(response)
+        '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK'
+        '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK'
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observations_node.py
+
+    Returns:
+        Response dict containing observation records
+    """
+    params = validate_multiple_choice_param(params, 'order_by', V1_OBS_ORDER_BY_PROPERTIES)
+
+    if params.get('page') == 'all':
+        observations = paginate_all(get, f'{API_V1}/observations', method='id', **params)
+    else:
+        observations = get(f'{API_V1}/observations', **params).json()
+
+    observations['results'] = convert_all_coordinates(observations['results'])
+    observations['results'] = convert_all_timestamps(observations['results'])
+    return observations
 
 
 @document_request_params(*docs._get_observations, docs._observation_histogram)
@@ -119,57 +203,6 @@ def get_observation_histogram(**params) -> HistogramResponse:
     """
     response = get(f'{API_V1}/observations/histogram', **params)
     return convert_observation_histogram(response.json())
-
-
-@document_request_params(
-    *docs._get_observations, docs._pagination, docs._only_id, docs._access_token
-)
-def get_observations(**params) -> JsonResponse:
-    """Search observations
-
-    .. rubric:: Notes
-
-    * :fas:`lock-open` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
-    * API reference: :v1:`GET /observations <Observations/get_observations>`
-
-    Examples:
-
-        Get observations of Monarch butterflies with photos + public location info,
-        on a specific date in the provice of Saskatchewan, CA (place ID 7953):
-
-        >>> response = get_observations(
-        >>>     taxon_name='Danaus plexippus',
-        >>>     created_on='2020-08-27',
-        >>>     photos=True,
-        >>>     geo=True,
-        >>>     geoprivacy='open',
-        >>>     place_id=7953,
-        >>> )
-
-        Get basic info for observations in response:
-
-        >>> pprint(response)
-        '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK'
-        '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK'
-
-        .. admonition:: Example Response
-            :class: toggle
-
-            .. literalinclude:: ../sample_data/get_observations_node.py
-
-    Returns:
-        Response dict containing observation records
-    """
-    params = validate_multiple_choice_param(params, 'order_by', V1_OBS_ORDER_BY_PROPERTIES)
-
-    if params.get('page') == 'all':
-        observations = paginate_all(get, f'{API_V1}/observations', method='id', **params)
-    else:
-        observations = get(f'{API_V1}/observations', **params).json()
-
-    observations['results'] = convert_all_coordinates(observations['results'])
-    observations['results'] = convert_all_timestamps(observations['results'])
-    return observations
 
 
 @document_request_params(*docs._get_observations, docs._pagination)

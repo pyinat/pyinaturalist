@@ -17,7 +17,7 @@ from pyinaturalist.models import (
     TaxonSummary,
     UserCounts,
 )
-from pyinaturalist.paginator import IDRangePaginator, Paginator
+from pyinaturalist.paginator import IDPaginator, IDRangePaginator, Paginator
 from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import (
     create_observation,
@@ -30,25 +30,36 @@ from pyinaturalist.v1 import (
     get_observation_taxon_summary,
     get_observation_taxonomy,
     get_observations,
+    get_observations_by_id,
     update_observation,
     upload,
 )
+
+# TODO: Just a guess; test maximum allowed IDs per request
+IDS_PER_REQUEST = 30
 
 
 class ObservationController(BaseController):
     """:fa:`binoculars` Controller for Observation requests"""
 
-    def __call__(self, observation_id, **kwargs) -> Optional[Observation]:
+    def __call__(self, observation_id: int, **kwargs) -> Optional[Observation]:
         """Get a single observation by ID"""
         return self.from_ids(observation_id, **kwargs).one()
 
-    def from_ids(self, *observation_ids, **params) -> Paginator[Observation]:
+    def from_ids(self, *observation_ids: int, **params) -> Paginator[Observation]:
         """Get observations by ID
 
         Args:
             observation_ids: One or more observation IDs
         """
-        return self.client.paginate(get_observations, Observation, id=observation_ids, **params)
+        return self.client.paginate(
+            get_observations_by_id,
+            Observation,
+            cls=IDPaginator,
+            ids=observation_ids,
+            ids_per_request=IDS_PER_REQUEST,
+            **params,
+        )
 
     @document_controller_params(get_observations)
     def search(self, **params) -> Paginator[Observation]:
