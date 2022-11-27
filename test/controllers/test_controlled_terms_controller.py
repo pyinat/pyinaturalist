@@ -45,5 +45,5 @@ def test_lookup(requests_mock):
     client = iNatClient()
     obs = client.observations.search().one()
     obs.annotations = client.controlled_terms.lookup(obs.annotations)
-    assert obs.annotations[0].term.label == 'Life Stage'
-    assert obs.annotations[0].value.label == 'Adult'
+    assert obs.annotations[0].controlled_attribute.label == 'Life Stage'
+    assert obs.annotations[0].controlled_value.label == 'Adult'

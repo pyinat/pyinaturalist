@@ -127,16 +127,16 @@ def test_annotation__empty():
     assert annotation.user is None
 
 
-def test_annotation__str():
+def test_annotation__str_with_labels():
     annotation = Annotation.from_json(j_annotation_1)
+    assert annotation.controlled_attribute.label == 'Life Stage'
+    assert annotation.controlled_value.label == 'Adult'
+    assert str(annotation) == 'Annotation(term=Life Stage, value=Adult)'
+
+
+def test_annotation__str_without_labels():
+    annotation = Annotation(controlled_attribute_id=1, controlled_value_id=2)
     assert str(annotation) == 'Annotation(term=1, value=2)'
-
-
-def test_annotation_with_labels():
-    annotation = Annotation(term_label='term', value_label='value')
-    assert annotation.term.label == 'term'
-    assert annotation.value.label == 'value'
-    assert str(annotation) == 'Annotation(term=term, value=value)'
 
 
 def test_controlled_term__converters():

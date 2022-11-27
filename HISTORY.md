@@ -6,6 +6,7 @@
 * Add `Observation.default_photo` property
 * Use taxon icon as placeholder for `Observation.default_photo` if observation has no photos
 * Add `Annotation.term_label` and `value_label` properties and init arguments to initialize with term and value labels
+* Update `Annotation` model to include controlled term and value details from updated `GET /observations/{id}` response format
 
 ### Sessions
 * Fix JWT caching
