@@ -15,7 +15,7 @@ from test.sample_data import *
 # Lists of JSON records that can be formatted into tables
 TABULAR_RESPONSES = [
     j_comments,
-    [j_annotation_1, j_annotation_2],
+    [j_annotation_1],
     [j_controlled_term_1, j_controlled_term_2],
     [j_identification_1, j_identification_2],
     [j_observation_1, j_observation_2],

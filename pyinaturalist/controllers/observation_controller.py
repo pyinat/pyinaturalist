@@ -39,8 +39,6 @@ from pyinaturalist.v1 import (
 # TODO: Just a guess; test maximum allowed IDs per request
 IDS_PER_REQUEST = 30
 
-AnnotationCallback = Callable[[List[Annotation]], List[Annotation]]
-
 
 class ObservationController(BaseController):
     """:fa:`binoculars` Controller for Observation requests"""
@@ -66,8 +64,6 @@ class ObservationController(BaseController):
 
     @document_controller_params(get_observations)
     def search(self, **params) -> Paginator[Observation]:
-        fetch_annotations = params.pop('fetch_annotations', False)
-
         # Use a simplified version of v1.get_observations() to avoid running coord conversions twice
         def _get_observations(**params):
             params = validate_multiple_choice_param(params, 'order_by', V1_OBS_ORDER_BY_PROPERTIES)
@@ -77,7 +73,7 @@ class ObservationController(BaseController):
             _get_observations,
             Observation,
             cls=ObservationPaginator,
-            annotation_callback=self.client.controlled_terms.lookup if fetch_annotations else None,
+            annotation_callback=self.client.controlled_terms.lookup,
             **params,
         )
 
@@ -160,7 +156,7 @@ class ObservationPaginator(IDRangePaginator):
     def __init__(
         self,
         *args,
-        annotation_callback: Optional[AnnotationCallback] = None,
+        annotation_callback: Callable[[List[Annotation]], List[Annotation]],
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
@@ -168,9 +164,7 @@ class ObservationPaginator(IDRangePaginator):
 
     def next_page(self) -> List[Observation]:
         observations = super().next_page()
-
-        if self.annotation_callback:
-            for obs in observations:
-                obs.annotations = self.annotation_callback(obs.annotations)
-
+        # Used cached controlled_terms lookup to fill in missing annotation details
+        for obs in observations:
+            obs.annotations = self.annotation_callback(obs.annotations)
         return observations
