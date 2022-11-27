@@ -21,6 +21,7 @@ from pyinaturalist.v1.observations import (
     get_observation_taxon_summary,
     get_observation_taxonomy,
     get_observations,
+    get_observations_by_id,
     update_observation,
     upload,
 )

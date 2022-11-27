@@ -12,11 +12,11 @@ IDS_PER_REQUEST = 30
 class TaxonController(BaseController):
     """:fa:`dove` Controller for Taxon requests"""
 
-    def __call__(self, taxon_id, **kwargs) -> Optional[Taxon]:
+    def __call__(self, taxon_id: int, **kwargs) -> Optional[Taxon]:
         """Get a single taxon by ID"""
         return self.from_ids(taxon_id, **kwargs).one()
 
-    def from_ids(self, *taxon_ids, **params) -> Paginator[Taxon]:
+    def from_ids(self, *taxon_ids: int, **params) -> Paginator[Taxon]:
         """Get taxa by ID
 
         Args:

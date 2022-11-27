@@ -10,6 +10,7 @@ from pyinaturalist.docs.signatures import (
     copy_doc_signature,
     copy_signatures,
     document_common_args,
+    document_controller_description,
     document_controller_params,
     document_request_params,
     extend_init_signature,

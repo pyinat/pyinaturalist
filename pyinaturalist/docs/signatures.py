@@ -20,6 +20,7 @@ logger = getLogger(__name__)
 def copy_doc_signature(
     *template_functions: TemplateFunction,
     add_common_args: bool = False,
+    description_only: bool = False,
     include_sections: Optional[Iterable[str]] = None,
     include_return_annotation: bool = True,
     exclude_args: Optional[Iterable[str]] = None,
@@ -57,18 +58,23 @@ def copy_doc_signature(
         template_functions: Template functions containing docstrings and params to apply to the
             wrapped function
         add_common_args: Add additional keyword arguments common to most functions
+        description_only: Only add the function description
         include_sections: Docstring sections to include; if not specified, all sections will be included
         include_return_annotation: Copy the return type annotation from the template function(s)
         exclude_args: Arguments to exclude from the new docstring
     """
     if add_common_args:
         template_functions += (_dry_run, _session)
+    if description_only:
+        include_sections = ['Description']
 
     def wrapper(func):
         try:
-            func = copy_annotations(func, template_functions, include_return_annotation)
+            if not description_only:
+                func = copy_annotations(func, template_functions, include_return_annotation)
             func = copy_docstrings(func, template_functions, include_sections, exclude_args)
-            func = copy_signatures(func, template_functions, exclude_args)
+            if not description_only:
+                func = copy_signatures(func, template_functions, exclude_args)
         # If for any reason one of these steps fail, just log the error and return the original function
         except Exception:
             logger.exception(f'Failed to modify {func.__name__}')
@@ -77,13 +83,19 @@ def copy_doc_signature(
     return wrapper
 
 
-# Aliases specifically for basic request functions and controller functions, respectively
+# Alias specifically for basic request functions
 document_request_params = partial(copy_doc_signature, add_common_args=True)
+
+# Aliases specifically for controller functions
 document_controller_params = partial(
     copy_doc_signature,
     include_sections=['Description', 'Args'],
     include_return_annotation=False,
     exclude_args=CONTROLLER_EXCLUDE_PARAMS,
+)
+document_controller_description = partial(
+    copy_doc_signature,
+    description_only=True,
 )
 
 

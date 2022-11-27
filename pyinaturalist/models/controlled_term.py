@@ -79,12 +79,19 @@ class ControlledTerm(BaseModel):
 class Annotation(BaseModel):
     """:fa:`tag` An annotation, meaning a **controlled term value** applied by a **user** to an **observation**.
     Based on the schema of annotations from
-    `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
+    :v1:`GET /observations <Observations/get_observations>` and
+    :v1:`GET /observations/{id} <Observations/get_observations_id>`.
 
-    For convenience, an Annotation object may also be initializeed from labels only::
+    For convenience, an Annotation object may also be initialized from labels only::
 
         >>> Annotation(term='Life Stage', value='Adult')
 
+    **Note:** Different annotation information is returned from different API endpoints:
+
+    * ``GET /observations`` (used by :py:func:`~pyinaturalist.v1.observations.get_observations` and :py:meth:`.ObservationController.search`)
+      returns annotations with term and value IDs only.
+    * ``GET /observations/{id}`` (used by :py:func:`.get_observations_by_id()` and :py:meth:`.ObservationController.from_ids`)
+      returns full annotations details, including labels.
     """
 
     controlled_attribute_id: int = field(default=None)

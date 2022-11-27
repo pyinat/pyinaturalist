@@ -14,7 +14,7 @@ warn(DeprecationWarning(msg))
 
 
 def get_all_observation_fields(**params) -> ListResponse:
-    """Deprecated; use ``get_observation_fields(page='all')`` instead"""
+    """:fas:`triangle-exclamation` Deprecated; use ``get_observation_fields(page='all')`` instead"""
     msg = "get_all_observation_fields() is deprecated; please use get_observation_fields(page='all') instead"
     warn(DeprecationWarning(msg))
     return paginate_all(get_observation_fields, method='page', **params)['results']
