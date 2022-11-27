@@ -79,6 +79,11 @@ class Annotation(BaseModel):
     """:fa:`tag` An annotation, meaning a **controlled term value** applied by a **user** to an **observation**.
     Based on the schema of annotations from
     `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_.
+
+    For convenience, an Annotation object may also be initializeed from labels only::
+
+        >>> Annotation(term='Life Stage', value='Adult')
+
     """
 
     controlled_attribute_id: int = field(default=None)
@@ -97,42 +102,42 @@ class Annotation(BaseModel):
     )
 
     # Attributes that will only be used during init and then omitted
-    temp_attrs = ['term_label', 'value_label']
+    temp_attrs = ['term', 'value']
 
     def __init__(self, **kwargs):
-        # Allow passing term_label and value_label as shorthand for creating ControlledTerm + Value
-        term_label = kwargs.pop('term_label', None)
-        value_label = kwargs.pop('value_label', None)
+        # Allow passing 'term' and 'value' as shorthand for creating ControlledTerm + Value
+        term = kwargs.pop('term', None)
+        value = kwargs.pop('value', None)
         self.__attrs_init__(**kwargs)
-        if term_label:
-            self.term_label = term_label
-        if value_label:
-            self.value_label = value_label
+        if term:
+            self.term = term
+        if value:
+            self.value = value
 
     @property
-    def term_label(self) -> str:
-        """Convenience property for getting/setting the term label"""
+    def term(self) -> str:
+        """Convenience property for getting/setting the controlled term label"""
         return (
             self.controlled_attribute.label
             if self.controlled_attribute
             else str(self.controlled_attribute_id)
         )
 
-    @term_label.setter
-    def term_label(self, label: str):
+    @term.setter
+    def term(self, label: str):
         if not self.controlled_attribute:
             self.controlled_attribute = ControlledTerm(id=self.controlled_attribute_id)
         self.controlled_attribute.label = label
 
     @property
-    def value_label(self) -> str:
-        """Convenience property for getting/setting the value label"""
+    def value(self) -> str:
+        """Convenience property for getting/setting the controlled value label"""
         return (
             self.controlled_value.label if self.controlled_value else str(self.controlled_value_id)
         )
 
-    @value_label.setter
-    def value_label(self, label: str):
+    @value.setter
+    def value(self, label: str):
         if not self.controlled_value:
             self.controlled_value = ControlledTermValue(id=self.controlled_value_id)
         self.controlled_value.label = label
@@ -150,12 +155,12 @@ class Annotation(BaseModel):
         }
 
     def __rich_repr__(self):
-        yield 'term', self.term_label
-        yield 'value', self.value_label
+        yield 'term', self.term
+        yield 'value', self.value
 
     def __str__(self) -> str:
         """Show term/value label if available, otherwise just IDs"""
-        return f'{self.__class__.__name__}(term={self.term_label}, value={self.value_label})'
+        return f'{self.__class__.__name__}(term={self.term}, value={self.value})'
 
 
 @define_model
