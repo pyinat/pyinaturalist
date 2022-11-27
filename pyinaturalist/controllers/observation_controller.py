@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Callable, List, Optional
 
 from pyinaturalist.constants import (
     API_V1,
@@ -17,6 +17,7 @@ from pyinaturalist.models import (
     TaxonSummary,
     UserCounts,
 )
+from pyinaturalist.models.controlled_term import Annotation
 from pyinaturalist.paginator import IDPaginator, IDRangePaginator, Paginator
 from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import (
@@ -37,6 +38,8 @@ from pyinaturalist.v1 import (
 
 # TODO: Just a guess; test maximum allowed IDs per request
 IDS_PER_REQUEST = 30
+
+AnnotationCallback = Callable[[List[Annotation]], List[Annotation]]
 
 
 class ObservationController(BaseController):
@@ -63,12 +66,20 @@ class ObservationController(BaseController):
 
     @document_controller_params(get_observations)
     def search(self, **params) -> Paginator[Observation]:
-        # Using a simplified version of v1.get_observations() to avoid duplicate conversions
+        fetch_annotations = params.pop('fetch_annotations', False)
+
+        # Use a simplified version of v1.get_observations() to avoid running coord conversions twice
         def _get_observations(**params):
             params = validate_multiple_choice_param(params, 'order_by', V1_OBS_ORDER_BY_PROPERTIES)
             return self.client.session.get(f'{API_V1}/observations', **params).json()
 
-        return self.client.paginate(_get_observations, Observation, cls=IDRangePaginator, **params)
+        return self.client.paginate(
+            _get_observations,
+            Observation,
+            cls=ObservationPaginator,
+            annotation_callback=self.client.controlled_terms.lookup if fetch_annotations else None,
+            **params,
+        )
 
     # TODO: Does this need a model with utility functions, or is {datetime: count} sufficient?
     @document_controller_params(get_observation_histogram)
@@ -136,3 +147,30 @@ class ObservationController(BaseController):
     @document_controller_params(upload)
     def upload(self, **params) -> ListResponse:
         return self.client.request(upload, auth=True, **params)
+
+
+class ObservationPaginator(IDRangePaginator):
+    """Paginate through observation results by a range of IDs instead of standard pagination
+    arameters
+
+    This also optionally fills in missing annotation information for each observation, using results
+    from ``GET /controlled_terms``.
+    """
+
+    def __init__(
+        self,
+        *args,
+        annotation_callback: Optional[AnnotationCallback] = None,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        self.annotation_callback = annotation_callback
+
+    def next_page(self) -> List[Observation]:
+        observations = super().next_page()
+
+        if self.annotation_callback:
+            for obs in observations:
+                obs.annotations = self.annotation_callback(obs.annotations)
+
+        return observations
