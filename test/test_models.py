@@ -118,7 +118,7 @@ def test_default_rich_repr():
 
 def test_annotation__converters():
     annotation = Annotation.from_json(j_annotation_1)
-    assert isinstance(annotation.user, User) and annotation.user.id == 2115051
+    assert isinstance(annotation.user, User) and annotation.user.id == 886482
 
 
 def test_annotation__empty():

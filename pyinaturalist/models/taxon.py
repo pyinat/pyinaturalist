@@ -19,6 +19,7 @@ from pyinaturalist.models import (
     BaseModelCollection,
     ConservationStatus,
     EstablishmentMeans,
+    IconPhoto,
     LazyProperty,
     ListedTaxon,
     Photo,
@@ -27,7 +28,6 @@ from pyinaturalist.models import (
     define_model_collection,
     field,
 )
-from pyinaturalist.models.photo import IconPhoto
 
 
 @define_model
