@@ -96,6 +96,11 @@ def test_search__with_ofvs(requests_mock):
         json=SAMPLE_DATA['get_observation_with_ofvs'],
         status_code=200,
     )
+    requests_mock.get(
+        f'{API_V1}/controlled_terms',
+        json={'results': [], 'total_results': 0},
+        status_code=200,
+    )
     results = iNatClient().observations.search().all()
 
     ofv = results[0].ofvs[0]
@@ -108,6 +113,11 @@ def test_search__with_annotations(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations',
         json=SAMPLE_DATA['get_observation_with_ofvs'],
+        status_code=200,
+    )
+    requests_mock.get(
+        f'{API_V1}/controlled_terms',
+        json=SAMPLE_DATA['get_controlled_terms'],
         status_code=200,
     )
     results = iNatClient().observations.search().all()

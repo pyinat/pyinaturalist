@@ -5,8 +5,6 @@ from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import Annotation, ControlledTerm
 from pyinaturalist.v1 import get_controlled_terms, get_controlled_terms_for_taxon
 
-IDS_PER_REQUEST = 30
-
 
 class ControlledTermController(BaseController):
     """:fa:`tag` Controller for ControlledTerm and Annotation requests"""
@@ -15,12 +13,17 @@ class ControlledTermController(BaseController):
         super().__init__(*args, **kwargs)
         self._term_lookup: Dict[int, ControlledTerm] = {}
 
+    @property
+    def term_lookup(self) -> Dict[int, ControlledTerm]:
+        """Get a lookup table of controlled term IDs to term objects"""
+        if not self._term_lookup:
+            self._term_lookup = {term.id: term for term in self.all()}
+        return self._term_lookup
+
     @document_controller_params(get_controlled_terms)
     def all(self, **params) -> List[ControlledTerm]:
         response = get_controlled_terms(**params)
-        all_terms = ControlledTerm.from_json_list(response['results'])
-        self._term_lookup = {term.id: term for term in all_terms}
-        return all_terms
+        return ControlledTerm.from_json_list(response['results'])
 
     @document_controller_params(get_controlled_terms_for_taxon)
     def for_taxon(self, taxon_id: int, **params) -> List[ControlledTerm]:
@@ -37,11 +40,8 @@ class ControlledTermController(BaseController):
         Returns:
             Annotation objects with ``controlled_attribute`` and ``controlled_value`` populated
         """
-        if not self._term_lookup:
-            self._term_lookup = {term.id: term for term in self.all()}
-
-        for annotation in annotations:
-            term = self._term_lookup.get(annotation.controlled_attribute_id)
+        for annotation in annotations or []:
+            term = self.term_lookup.get(annotation.controlled_attribute_id)
             if term:
                 annotation.controlled_attribute = term
                 annotation.controlled_value = term.get_value_by_id(annotation.controlled_value_id)
