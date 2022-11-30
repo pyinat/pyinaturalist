@@ -1,15 +1,21 @@
 """Session class and related functions for preparing and sending API requests"""
+import json
 import threading
 from json import JSONDecodeError
 from logging import getLogger
 from os import getenv
 from typing import Dict, Optional, Type
-from unittest.mock import Mock
 
 from requests import PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
 from requests.utils import default_user_agent
-from requests_cache import CacheMixin, ExpirationPatterns, ExpirationTime
+from requests_cache import (
+    AnyRequest,
+    CachedResponse,
+    CacheMixin,
+    ExpirationPatterns,
+    ExpirationTime,
+)
 from requests_ratelimiter import (
     AbstractBucket,
     BucketFullException,
@@ -47,10 +53,6 @@ from pyinaturalist.request_params import (
     preprocess_request_body,
     preprocess_request_params,
 )
-
-# Mock response content to return in dry-run mode
-MOCK_RESPONSE = Mock(spec=Response)
-MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0, 'access_token': ''}
 
 # Rate limiter specific to forced refresh request
 REFRESH_LIMITER = Limiter(
@@ -167,7 +169,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         params: Optional[RequestParams] = None,
         allow_str_ids: bool = False,
         **kwargs,
-    ) -> PreparedRequest:
+    ) -> Request:
         """Translate pyinaturalist-specific options into standard request arguments"""
         # Prepare request params and URL
         params = preprocess_request_params(params)
@@ -184,7 +186,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             files = {'file': ensure_file_obj(files, self)}  # type: ignore
 
         # Convert into a PreparedRequest
-        request = Request(
+        return Request(
             method=method,
             url=url,
             files=files,
@@ -193,7 +195,6 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             params=params,
             **kwargs,
         )
-        return super().prepare_request(request)
 
     def request(  # type: ignore
         self,
@@ -228,10 +229,14 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             expire_after: How long to keep cached API requests
             files: File object, path, or URL to upload
             ids: One or more integer IDs used as REST resource(s) to request
+            only_if_cached: Only return a response if it is cached
+            raise_for_status: Raise an exception if the response status is not 2xx
             refresh: Skip reading from the cache and always fetch a fresh response
+            stream: Stream the response content
             timeout: Time (in seconds) to wait for a response from the server; if exceeded, a
                 :py:exc:`requests.exceptions.Timeout` will be raised.
-            params: All other keyword arguments will be used as request parameters
+            verify: Verify SSL certificates
+            params: All other keyword arguments will be interpreted as request parameters
 
         Returns:
             API response
@@ -247,24 +252,18 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             json=json,
             params=params,
         )
-        logger.info(format_request(request, dry_run))
 
-        # Make a mock request, if specified
-        if dry_run or is_dry_run_enabled(method):
-            return MOCK_RESPONSE
-
-        # Otherwise, send the request
         response = self.send(
             request,
-            timeout=timeout,
+            dry_run=dry_run,
             expire_after=expire_after,
             only_if_cached=only_if_cached,
             refresh=refresh,
+            timeout=timeout,
             allow_redirects=allow_redirects,
             stream=stream,
             verify=verify,
         )
-        logger.debug(format_response(response))
 
         # Raise an exception if the request failed (after retries are exceeded)
         if raise_for_status:
@@ -273,7 +272,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
 
     def send(  # type: ignore  # Adds kwargs not present in Session.send()
         self,
-        request: PreparedRequest,
+        request: AnyRequest,
+        dry_run: bool = False,
         expire_after: Optional[ExpirationTime] = None,
         refresh: bool = False,
         retries: Optional[Retry] = None,
@@ -284,6 +284,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
 
         Args:
             request: Prepared request to send
+            dry_run: Just log the request instead of sending a real request
             expire_after: How long to keep cached API requests
             refresh: Skip reading from the cache and always fetch a fresh response
             timeout: Maximum number of seconds to wait for a response from the server
@@ -291,6 +292,15 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         **Note:** :py:meth:`requests.Session.send` accepts separate timeout values for connect and
         read timeouts. The ``timeout`` argument will be used as the read timeout.
         """
+        if not isinstance(request, PreparedRequest):
+            request = super().prepare_request(request)
+        logger.info(format_request(request, dry_run))
+
+        # Make a mock request, if specified
+        if dry_run or is_dry_run_enabled(request.method):
+            return get_mock_response(request)
+
+        # Otherwise, send the request
         read_timeout = timeout or self.timeout
         response = super().send(
             request,
@@ -307,6 +317,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             timeout=timeout,
             **kwargs,
         )
+
+        logger.debug(format_response(response))
         return response
 
     def _validate_json(
@@ -418,6 +430,19 @@ def get_refresh_params(endpoint) -> Dict:
             v += 1
 
     return {'refresh': True, 'v': v} if v > 0 else {'refresh': True}
+
+
+def get_mock_response(request: PreparedRequest) -> CachedResponse:
+    """Get mock response content to return in dry-run mode"""
+    json_content = {'results': [], 'total_results': 0, 'access_token': ''}
+    mock_response = CachedResponse(
+        headers={'Cache-Control': 'no-store'},
+        request=request,
+        status_code=200,
+        reason='DRY_RUN',
+        content=json.dumps(json_content).encode(),
+    )
+    return mock_response
 
 
 def is_dry_run_enabled(method: str) -> bool:
