@@ -16,6 +16,7 @@ import pytest
 from dateutil.tz import tzoffset, tzutc
 
 from pyinaturalist.constants import (
+    API_V1,
     ICONIC_TAXA,
     INAT_BASE_URL,
     PHOTO_BASE_URL,
@@ -758,9 +759,16 @@ def test_taxon__taxonomy():
     }
 
 
-# TODO
-def test_taxon__update_from_full_record():
-    pass
+def test_taxon__update_from_full_record(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/taxa/343248',
+        json=load_sample_data('get_taxa_by_id.json'),
+        status_code=200,
+    )
+    taxon = Taxon(id=343248)
+    taxon.load_full_record()
+    assert taxon.name == 'Nicrophorus vespilloides'
+    assert len(taxon.ancestors) == 12
 
 
 def test_taxon_count__copy():

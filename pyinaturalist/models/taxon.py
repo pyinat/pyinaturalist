@@ -223,7 +223,7 @@ class Taxon(BaseModel):
         """Info URL on iNaturalist.org"""
         return f'{INAT_BASE_URL}/taxa/{self.id}'
 
-    # TODO: Probably remove this
+    # TODO: Experimental; not sure if I want to have API calls in model classes
     @classmethod
     def from_id(cls, id: int) -> 'Taxon':
         """Lookup and create a new Taxon object by ID"""
@@ -236,7 +236,9 @@ class Taxon(BaseModel):
         """Update this Taxon with full taxon info, including ancestors + children"""
         t = Taxon.from_id(self.id)
         for key in fields_dict(Taxon).keys():
-            key = key.lstrip('_')  # Use getters/setters for LazyProperty instead of temp attrs
+            # Use getters/setters for LazyProperty instead of temp attrs (cls.foo vs cls._foo)
+            if hasattr(key, key.lstrip('_')):
+                key = key.lstrip('_')
             setattr(self, key, getattr(t, key))
 
     @property
