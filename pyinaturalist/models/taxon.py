@@ -235,7 +235,8 @@ class Taxon(BaseModel):
     def load_full_record(self):
         """Update this Taxon with full taxon info, including ancestors + children"""
         t = Taxon.from_id(self.id)
-        for key in fields_dict(Taxon).keys():
+        copy_keys = set(fields_dict(Taxon).keys()) - {'matched_term'}
+        for key in copy_keys:
             # Use getters/setters for LazyProperty instead of temp attrs (cls.foo vs cls._foo)
             if hasattr(key, key.lstrip('_')):
                 key = key.lstrip('_')
