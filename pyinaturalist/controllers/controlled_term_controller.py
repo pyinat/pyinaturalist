@@ -41,8 +41,8 @@ class ControlledTermController(BaseController):
             Annotation objects with ``controlled_attribute`` and ``controlled_value`` populated
         """
         for annotation in annotations or []:
-            term = self.term_lookup.get(annotation.controlled_attribute_id)
+            term = self.term_lookup.get(annotation.controlled_attribute.id)
             if term:
                 annotation.controlled_attribute = term
-                annotation.controlled_value = term.get_value_by_id(annotation.controlled_value_id)
+                annotation.controlled_value = term.get_value_by_id(annotation.controlled_value.id)
         return annotations

@@ -128,6 +128,12 @@ def test_annotation__empty():
     assert annotation.user is None
 
 
+def test_annotation__init_from_ids():
+    annotation = Annotation(controlled_attribute_id=1, controlled_value_id=2)
+    assert annotation.controlled_attribute.id == 1
+    assert annotation.controlled_value.id == 2
+
+
 def test_annotation__init_from_labels():
     annotation = Annotation(term='Life Stage', value='Adult')
     assert annotation.controlled_attribute.label == 'Life Stage'
