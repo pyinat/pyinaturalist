@@ -62,7 +62,7 @@ sphinxcontrib-apidoc        = {optional=true, version="^0.3"}
 coverage                    = ">=6.3"
 nox                         = "^2022.1.7"
 nox-poetry                  = "^1.0.0"
-pre-commit                  = "^2.19"
+pre-commit                  = "^2.21"
 pretty-errors               = "^1.2.23"
 pytest                      = "^7.0"
 pytest-asyncio              = "^0.20.1"
