@@ -102,13 +102,13 @@ def test_to_dict__specific_keys():
 
 
 @define
-class TestModel(BaseModel):
+class ExampleModel(BaseModel):
     key: str = field(default=None)
 
 
 def test_default_rich_repr():
     """If no __rich_repr__ or _str_attrs is defined, fall back to printing all attrs fields"""
-    obj = TestModel(key='value')
+    obj = ExampleModel(key='value')
     print_attrs = [a[0] for a in obj.__rich_repr__()]
     assert print_attrs == ['id', 'key']
 
@@ -126,6 +126,12 @@ def test_annotation__empty():
     annotation = Annotation()
     assert annotation.votes == []
     assert annotation.user is None
+
+
+def test_annotation__init_from_ids():
+    annotation = Annotation(controlled_attribute_id=1, controlled_value_id=2)
+    assert annotation.controlled_attribute.id == 1
+    assert annotation.controlled_value.id == 2
 
 
 def test_annotation__init_from_labels():
