@@ -19,6 +19,7 @@
 * Use taxon icon as placeholder for `Observation.default_photo` if observation has no photos
 * Update `Annotation` model to include controlled term and value details from updated `GET /observations/{id}` response format
 * Add `Annotation.term` and `value` properties and init arguments for simpler initialization from term and value labels
+* Remove redundant `Annotation.controlled_attribute_id` and `controlled_value_id` attributes (These can still be used as init arguments)
 
 ### Sessions
 * Fix JWT caching

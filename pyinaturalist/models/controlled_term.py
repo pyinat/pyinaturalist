@@ -82,9 +82,19 @@ class Annotation(BaseModel):
     :v1:`GET /observations <Observations/get_observations>` and
     :v1:`GET /observations/{id} <Observations/get_observations_id>`.
 
-    For convenience, an Annotation object may also be initialized from labels only::
+    For convenience, an Annotation object may be initialized from labels::
 
         >>> Annotation(term='Life Stage', value='Adult')
+
+    Or from IDs::
+
+        >>> Annotation(controlled_attribute_id=1, controlled_value_id=2)
+
+    Or from objects::
+
+        >>> Annotation(
+        ...     controlled_attribute=ControlledTerm(id=1, label='Life Stage'),
+        ...     controlled_value_id=ControlledTermValue(id=2, label='Adult'),
 
     **Note:** Different annotation information is returned from different API endpoints:
 
@@ -94,8 +104,6 @@ class Annotation(BaseModel):
       returns full annotations details, including labels.
     """
 
-    controlled_attribute_id: int = field(default=None)
-    controlled_value_id: int = field(default=None)
     user_id: int = field(default=None)
     uuid: str = field(default=None)
     vote_score: int = field(default=None)
@@ -109,55 +117,56 @@ class Annotation(BaseModel):
         ControlledTermValue.from_json, type=User, doc='Annotation value details'
     )
 
+    # Unused attributes
+    # controlled_attribute_id: int = field(default=None)
+    # controlled_value_id: int = field(default=None)
+    # concatenated_attr_val: str = field(default=None)
+
     # Attributes that will only be used during init and then omitted
-    temp_attrs = ['term', 'value']
+    temp_attrs = ['controlled_attribute_id', 'controlled_value_id', 'term', 'value']
 
     def __init__(self, **kwargs):
-        # Allow passing 'term' and 'value' as shorthand for creating ControlledTerm + Value
+        # Allow passing term/value IDs only (as in observation API results)
+        controlled_attribute_id = kwargs.pop('controlled_attribute_id', None)
+        controlled_value_id = kwargs.pop('controlled_value_id', None)
+
+        # Allow passing term/value labels only
         term = kwargs.pop('term', None)
         value = kwargs.pop('value', None)
+
         self.__attrs_init__(**kwargs)
-        if term:
-            self.term = term
-        if value:
-            self.value = value
+
+        # Populate term/value objects from IDs and/or labels, if needed
+        self.controlled_attribute = self.controlled_attribute or ControlledTerm()
+        self.controlled_attribute.id = controlled_attribute_id or self.controlled_attribute.id
+        self.controlled_attribute.label = self.controlled_attribute.label or term
+        self.controlled_value = self.controlled_value or ControlledTermValue()
+        self.controlled_value.id = controlled_value_id or self.controlled_value.id
+        self.controlled_value.label = self.controlled_value.label or value
 
     @property
     def term(self) -> str:
         """Convenience property for getting/setting the controlled term label"""
-        return (
-            self.controlled_attribute.label
-            if self.controlled_attribute
-            else str(self.controlled_attribute_id)
-        )
+        return self.controlled_attribute.label or str(self.controlled_attribute.id)
 
     @term.setter
     def term(self, label: str):
-        if not self.controlled_attribute:
-            self.controlled_attribute = ControlledTerm(id=self.controlled_attribute_id)
         self.controlled_attribute.label = label
 
     @property
     def value(self) -> str:
         """Convenience property for getting/setting the controlled value label"""
-        return (
-            self.controlled_value.label if self.controlled_value else str(self.controlled_value_id)
-        )
+        return self.controlled_value.label or str(self.controlled_value.id)
 
     @value.setter
     def value(self, label: str):
-        if not self.controlled_value:
-            self.controlled_value = ControlledTermValue(id=self.controlled_value_id)
         self.controlled_value.label = label
-
-    # Unused attributes
-    # concatenated_attr_val: str = field(default=None)
 
     @property
     def _row(self) -> TableRow:
         return {
-            'ID': self.controlled_attribute_id,
-            'Value': self.controlled_value_id,
+            'ID': self.controlled_attribute.id,
+            'Value': self.controlled_value.id,
             'Votes': self.vote_score,
             'User': self.user.login,
         }
