@@ -5,6 +5,8 @@ Pytest will also automatically pick up any fixtures defined here.
 import json
 import os
 import re
+import warnings
+from contextlib import contextmanager
 from inspect import Parameter, getmembers, isfunction, signature
 from os.path import join
 from unittest.mock import MagicMock, patch
@@ -107,3 +109,11 @@ def load_sample_data(filename):
             return json.load(fh)
         else:
             return fh.read()
+
+
+@contextmanager
+def ignore_deprecation():
+    """Temporarily silence deprecation warnings"""
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', category=DeprecationWarning)
+        yield
