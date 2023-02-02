@@ -1,5 +1,6 @@
 from string import capwords
 from typing import Dict, List, Optional
+from warnings import warn
 
 from attr import fields_dict
 
@@ -229,11 +230,15 @@ class Taxon(BaseModel):
         """Lookup and create a new Taxon object by ID"""
         from pyinaturalist.v1 import get_taxa_by_id
 
+        warn(DeprecationWarning('This method is deprecated; please use iNatClient.taxa() instead'))
         r = get_taxa_by_id(id)
         return cls.from_json(r['results'][0])
 
     def load_full_record(self):
         """Update this Taxon with full taxon info, including ancestors + children"""
+        msg = 'This method is deprecated; please use iNatClient.taxa.full_record() instead'
+        warn(DeprecationWarning(msg))
+
         t = Taxon.from_id(self.id)
         copy_keys = set(fields_dict(Taxon).keys()) - {'matched_term'}
         for key in copy_keys:
