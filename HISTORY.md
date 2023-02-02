@@ -10,6 +10,12 @@
     * Uses a different endpoint (`GET /observations/{id}` instead of `GET /observations?id={id}`)`)
     * returns full term and value details for annotations
 
+### Modified Endpoints
+* Add some undocumented request params to `get_taxa_by_id()`:
+  * `locale`
+  * `preferred_place_id`
+  * `all_names`
+
 ### Deprecated Endpoints
 * `get_observation()` is now deprecated, and will be removed in a future release
   * Please use `get_observations()` or `get_observations_by_id()` instead
