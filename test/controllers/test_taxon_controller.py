@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from pyinaturalist.client import iNatClient
 from pyinaturalist.constants import API_V1
 from pyinaturalist.models import Taxon
@@ -52,3 +54,26 @@ def test_search(requests_mock):
     results = iNatClient().taxa.search(q='vespi', rank=['genus', 'subgenus', 'species']).all()
     assert len(results) == 30 and isinstance(results[0], Taxon)
     assert results[0].id == 70118
+
+
+def test_taxon__load_full_record(requests_mock):
+    full_taxon = deepcopy(SAMPLE_DATA['get_taxa_by_id'])
+    full_taxon['results'][0]['conservation_status'] = {'authority': 'IUCN', 'status': 'LC'}
+    requests_mock.get(
+        f'{API_V1}/taxa/343248',
+        json=full_taxon,
+        status_code=200,
+    )
+    taxon = Taxon(
+        id=343248,
+        matched_term='nicroph',
+        names=[{'name': 'Nicrophorus vespilloides'}],
+    )
+    taxon = iNatClient().taxa.full_record(taxon)
+
+    assert taxon.name == 'Nicrophorus vespilloides'
+    # matched_term (from autocomplete) and names (from all_names) should not be overwritten
+    assert taxon.matched_term == 'nicroph'
+    assert taxon.names[0]['name'] == 'Nicrophorus vespilloides'
+    assert taxon.conservation_status.authority == 'IUCN'
+    assert len(taxon.ancestors) == 12

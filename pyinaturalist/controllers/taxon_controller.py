@@ -1,5 +1,7 @@
 from typing import Optional
 
+from attr import fields_dict
+
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import Taxon
@@ -38,3 +40,23 @@ class TaxonController(BaseController):
     @document_controller_params(get_taxa)
     def search(self, **params) -> Paginator[Taxon]:
         return self.client.paginate(get_taxa, Taxon, **params)
+
+    def full_record(self, taxon: Taxon, **params) -> Taxon:
+        """Update a partial Taxon record with full taxonomy info, including ancestors + children
+
+        Args:
+            taxon: A partial Taxon record
+
+        Returns:
+            The same Taxon record, updated with full taxonomy info
+        """
+        # Don't overwrite these keys if set by a previous API call
+        preserve_keys = {'listed_taxa', 'matched_term', 'names'}
+
+        full_taxon = self.from_ids(taxon.id, **params).one()
+        for key in set(fields_dict(Taxon).keys()) - preserve_keys:
+            # Use getters/setters for LazyProperty instead of temp attrs (cls.foo vs cls._foo)
+            if hasattr(key, key.lstrip('_')):
+                key = key.lstrip('_')
+            setattr(taxon, key, getattr(full_taxon, key))
+        return taxon
