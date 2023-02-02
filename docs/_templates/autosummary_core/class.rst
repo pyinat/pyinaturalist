@@ -14,7 +14,7 @@
    :show-inheritance:
 
    {% block attributes_summary %}
-   {% if attributes %}
+   {% if attributes and 'models' in module and objname != 'LazyProperty' %}
    .. rubric:: Attributes
 
    .. csv-table::
