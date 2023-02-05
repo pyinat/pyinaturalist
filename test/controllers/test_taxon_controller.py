@@ -56,7 +56,7 @@ def test_search(requests_mock):
     assert results[0].id == 70118
 
 
-def test_taxon__load_full_record(requests_mock):
+def test_taxon__populate(requests_mock):
     full_taxon = deepcopy(SAMPLE_DATA['get_taxa_by_id'])
     full_taxon['results'][0]['conservation_status'] = {'authority': 'IUCN', 'status': 'LC'}
     requests_mock.get(
@@ -69,7 +69,7 @@ def test_taxon__load_full_record(requests_mock):
         matched_term='nicroph',
         names=[{'name': 'Nicrophorus vespilloides'}],
     )
-    taxon = iNatClient().taxa.full_record(taxon)
+    taxon = iNatClient().taxa.populate(taxon)
 
     assert taxon.name == 'Nicrophorus vespilloides'
     # matched_term (from autocomplete) and names (from all_names) should not be overwritten

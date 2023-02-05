@@ -41,7 +41,7 @@ class TaxonController(BaseController):
     def search(self, **params) -> Paginator[Taxon]:
         return self.client.paginate(get_taxa, Taxon, **params)
 
-    def full_record(self, taxon: Taxon, **params) -> Taxon:
+    def populate(self, taxon: Taxon, **params) -> Taxon:
         """Update a partial Taxon record with full taxonomy info, including ancestors + children
 
         Args:
