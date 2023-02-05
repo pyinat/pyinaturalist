@@ -11,6 +11,8 @@ from pyinaturalist.request_params import (
     convert_observation_field_params,
     convert_pagination_params,
     get_interval_ranges,
+    normalize_rank,
+    normalize_rank_params,
     preprocess_request_body,
     preprocess_request_params,
     strip_empty_values,
@@ -185,6 +187,30 @@ def test_preprocess_request_params(mock_bool, mock_datetime, mock_list, mock_str
 def test_preprocess_request_body(mock_bool, mock_list, mock_datetime, mock_strip):
     preprocess_request_body({'id': 1})
     assert all([mock_bool.called, mock_datetime.called, not mock_list.called, mock_strip.called])
+
+
+def test_normalize_rank():
+    # Exact rank
+    assert normalize_rank('species') == 'species'
+    # Hyphenated or capitalized
+    assert normalize_rank('Sub-Species') == 'subspecies'
+    # Alias
+    assert normalize_rank('spp') == 'species'
+    # Prefix
+    assert normalize_rank('fam') == 'family'
+    # Ambiguous prefixes and other invalid ranks will be returned as-is; will be validated later
+    assert normalize_rank('sub') == 'sub'
+    assert normalize_rank('myrank') == 'myrank'
+
+
+def test_normalize_rank_params():
+    params = {'rank': ['sub-species', 'Genus'], 'lrank': 'subsp', 'observation_rank': 'family'}
+    expected = {
+        'rank': ['subspecies', 'genus'],
+        'lrank': 'subspecies',
+        'observation_rank': 'family',
+    }
+    assert normalize_rank_params(params) == expected
 
 
 def test_validate_multiple_choice_param():
