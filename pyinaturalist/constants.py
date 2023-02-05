@@ -146,7 +146,7 @@ RANK_LEVELS = {
     'unranked': 90,  # Invented to make parent check work (this is null in the db)
     'stateofmatter': 100,
 }
-RANKS = list(RANK_LEVELS.keys())
+RANKS = list(RANK_LEVELS.keys())[:-2]
 
 # Simplified subset of ranks that are useful for display
 COMMON_RANKS = [
@@ -162,7 +162,7 @@ COMMON_RANKS = [
     'kingdom',
 ]
 
-# Additional equivalents that iNat accepts
+# Additional equivalents that iNat accepts; see request_params.normalize_rank() for more variations
 RANK_EQUIVALENTS = {
     'division': 'phylum',
     'gen': 'genus',
