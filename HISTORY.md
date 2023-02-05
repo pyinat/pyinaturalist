@@ -34,6 +34,7 @@
 * Add `urls_expire_after` option to `ClientSession` to update default cache expiration URL patterns
 
 ### Other Changes
+* All API functions that accept taxonomic rank parameters (`rank`, `lrank`, `observation_hrank`,etc.) now accept all rank variations that iNaturalist accepts (`var`, `spp` `sub-species`, etc.)
 * Fix `ObservationFieldValue` conversions for `date` and `datetime` fields
 * Fix printing `Annotation` objects with `rich`
 * Optionally use `ultrajson` instead of stdlib `json`, if installed
