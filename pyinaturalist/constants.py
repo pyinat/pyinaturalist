@@ -69,7 +69,21 @@ RATELIMIT_FILE = join(DATA_DIR, 'api_ratelimit.db')
 OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
 
 # IUCN Conservation status codes; for more info, see: https://www.iucnredlist.org
-CONSERVATION_STATUSES = ['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX', 'S2B']
+CONSERVATION_STATUSES = ['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX']
+
+
+# https://www.iucnredlist.org
+IUCN_STATUS_CODES = {
+    'NE': 'not evaluated',
+    'DD': 'data deficient',
+    'LC': 'least concern',
+    'NT': 'near threatened',
+    'VU': 'vulnerable',
+    'EN': 'endangered',
+    'CR': 'critically endangered',
+    'EW': 'extinct in the wild',
+    'EX': 'extinct',
+}
 
 # Taxon ID and name of main taxa 'categories' that can be filtered on
 ICONIC_TAXA = {
