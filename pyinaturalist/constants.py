@@ -106,35 +106,47 @@ ICONIC_EMOJI = {
 }
 ROOT_TAXON_ID = 48460
 
-# Taxonomic ranks that can be filtered on
-RANKS = [
-    'form',
-    'variety',
-    'subspecies',
-    'hybrid',
-    'species',
-    'genushybrid',
-    'subgenus',
-    'genus',
-    'subtribe',
-    'tribe',
-    'supertribe',
-    'subfamily',
-    'family',
-    'epifamily',
-    'superfamily',
-    'infraorder',
-    'suborder',
-    'order',
-    'superorder',
-    'infraclass',
-    'subclass',
-    'class',
-    'superclass',
-    'subphylum',
-    'phylum',
-    'kingdom',
-]
+# Taxonomic ranks that can be filtered on, and numeric values for comparison
+# Source: https://github.com/inaturalist/inaturalist/blob/main/app/models/taxon.rb
+RANK_LEVELS = {
+    'infrahybrid': 5,
+    'form': 5,
+    'variety': 5,
+    'subspecies': 5,
+    'hybrid': 10,
+    'species': 10,
+    'complex': 11,
+    'subsection': 12,
+    'section': 13,
+    'subgenus': 15,
+    'genushybrid': 20,
+    'genus': 20,
+    'subtribe': 24,
+    'tribe': 25,
+    'supertribe': 26,
+    'subfamily': 27,
+    'family': 30,
+    'epifamily': 32,
+    'superfamily': 33,
+    'zoosubsection': 33.5,
+    'zoosection': 34,
+    'parvorder': 34.5,
+    'infraorder': 35,
+    'suborder': 37,
+    'order': 40,
+    'superorder': 43,
+    'subterclass': 44,
+    'infraclass': 45,
+    'subclass': 47,
+    'class': 50,
+    'superclass': 53,
+    'subphylum': 57,
+    'phylum': 60,
+    'kingdom': 70,
+    'unranked': 90,  # Invented to make parent check work (this is null in the db)
+    'stateofmatter': 100,
+}
+RANKS = list(RANK_LEVELS.keys())
 
 # Simplified subset of ranks that are useful for display
 COMMON_RANKS = [
@@ -149,6 +161,20 @@ COMMON_RANKS = [
     'phylum',
     'kingdom',
 ]
+
+# Additional equivalents that iNat accepts
+RANK_EQUIVALENTS = {
+    'division': 'phylum',
+    'gen': 'genus',
+    'sp': 'species',
+    'spp': 'species',
+    'infraspecies': 'subspecies',
+    'ssp': 'subspecies',
+    'subsp': 'subspecies',
+    'trinomial': 'subspecies',
+    'var': 'variety',
+}
+
 
 # Options for multiple choice parameters (non-endpoint-specific)
 CC_LICENSES = ['CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0']
@@ -177,6 +203,7 @@ V1_OBS_ORDER_BY_PROPERTIES = ['created_at', 'id', 'observed_on', 'species_guess'
 PROJECT_ORDER_BY_PROPERTIES = ['created', 'distance', 'featured', 'recent_posts', 'updated']
 
 # Multiple-choice request parameters, with keys mapped to their possible choices (non-endpoint-specific)
+# TODO: python 3.11 supports Literal[*list] syntax, which would be useful here
 MULTIPLE_CHOICE_PARAMS = {
     'box': INBOXES,
     'category': ID_CATEGORIES,
