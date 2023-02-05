@@ -8,7 +8,7 @@ from pyinaturalist.v1 import get_taxa, get_taxa_autocomplete, get_taxa_by_id, ge
 from test.conftest import load_sample_data
 
 CLASS_AND_HIGHER = ['class', 'superclass', 'subphylum', 'phylum', 'kingdom']
-SPECIES_AND_LOWER = ['form', 'variety', 'subspecies', 'hybrid', 'species']
+SPECIES_AND_LOWER = ['infrahybrid', 'form', 'variety', 'subspecies', 'hybrid', 'species']
 CLASS_THOUGH_PHYLUM = ['class', 'superclass', 'subphylum', 'phylum']
 
 

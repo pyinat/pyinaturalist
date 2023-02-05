@@ -5,6 +5,7 @@ them into standard API request parameters, along with client-side request valida
 Also see :py:mod:`pyinaturalist.converters` for type conversion utilities not specific to request
 params.
 """
+import re
 from datetime import date, datetime, timedelta
 from inspect import signature
 from logging import getLogger
@@ -17,6 +18,7 @@ from pyinaturalist.constants import *  # noqa: F401, F403  # Imports for backwar
 from pyinaturalist.constants import (
     DATETIME_PARAMS,
     MULTIPLE_CHOICE_PARAMS,
+    RANK_EQUIVALENTS,
     RANKS,
     DateOrStr,
     DateRange,
@@ -52,6 +54,17 @@ INTERVALS: Dict[str, Union[timedelta, relativedelta]] = {
     'year': relativedelta(years=1),
 }
 
+RANK_PARAMS = [
+    'rank',
+    'lrank',
+    'hrank',
+    'min_rank',
+    'max_rank',
+    'observation_rank',
+    'observation_lrank',
+    'observation_hrank',
+]
+
 MULTIPLE_CHOICE_ERROR_MSG = (
     'Parameter "{}" must have one of the following values: {}\n\tValue provided: {}'
 )
@@ -78,6 +91,7 @@ def preprocess_request_params(
     if not params:
         return {}
 
+    params = normalize_rank_params(params)
     params = validate_multiple_choice_params(params)
     params = convert_pagination_params(params)
     params = convert_bool_params(params)
@@ -175,8 +189,9 @@ def convert_rank_range(params: RequestParams) -> RequestParams:
     """If min and/or max rank is specified in params, translate into a list of ranks"""
 
     def _get_rank_index(rank: str) -> int:
+        rank = normalize_rank(rank)
         if rank not in RANKS:
-            raise ValueError('Invalid rank')
+            raise ValueError(f'Invalid rank: {rank}')
         return RANKS.index(rank)
 
     min_rank, max_rank = params.pop('min_rank', None), params.pop('max_rank', None)
@@ -185,6 +200,31 @@ def convert_rank_range(params: RequestParams) -> RequestParams:
         min_rank_index = _get_rank_index(min_rank) if min_rank else 0
         max_rank_index = _get_rank_index(max_rank) + 1 if max_rank else len(RANKS)
         params['rank'] = RANKS[min_rank_index:max_rank_index]
+    return params
+
+
+def normalize_rank(rank: str) -> str:
+    """Normalize and validate a taxonomic rank, alias, or abbreviation"""
+    rank = re.sub(r'[-_\.\s]', '', rank).lower()
+
+    # Check if it's an alias/equivalent rank that iNaturalist accepts
+    if rank in RANK_EQUIVALENTS:
+        rank = RANK_EQUIVALENTS[rank]
+    # Check if it's a unique prefix of a rank
+    elif rank not in RANKS:
+        matching_ranks = [r for r in RANKS if r.startswith(rank)]
+        rank = matching_ranks[0] if len(matching_ranks) == 1 else rank
+
+    return rank
+
+
+def normalize_rank_params(params: RequestParams) -> RequestParams:
+    """Normalize any taxonomic ranks in request params"""
+    for k in RANK_PARAMS:
+        if isinstance(params.get(k), (tuple, list)):
+            params[k] = [normalize_rank(r) for r in params[k]]
+        elif params.get(k):
+            params[k] = normalize_rank(params[k])
     return params
 
 
