@@ -51,6 +51,7 @@ NATURESERVE_STATUS_CODES = {
     '4': 'apparently secure',
     '5': 'secure',
 }
+NATURESERVE_PATTERN = re.compile(r'\D+([\dXH])(?:\D+([\dXH]))?')
 
 # https://www.dof.gob.mx/normasOficiales/4254/semarnat/semarnat.htm
 NORMA_OFICIAL_059_STATUS_CODES = {
@@ -73,6 +74,13 @@ GENERIC_STATUS_CODES = {
     'LC': 'least concern',
     'SC': 'special concern',
     'C': 'candidate',
+}
+
+ALL_STATUS_CODES = {
+    **IUCN_STATUSES_BY_CODE,
+    **NATURESERVE_STATUS_CODES,
+    **NORMA_OFICIAL_059_STATUS_CODES,
+    **GENERIC_STATUS_CODES,
 }
 
 
@@ -225,19 +233,24 @@ def translate_status_code(
     status = str(status or '').upper()
     authority = (authority or '').lower()
 
-    if not status and iucn_id in IUCN_STATUSES_BY_ID:
-        return IUCN_STATUSES_BY_ID[iucn_id]
-    if authority == 'iucn':
+    # Check status codes by authority
+    if authority.startswith('iucn'):
         return IUCN_STATUSES_BY_CODE[status]
     elif authority == 'natureserve':
         return translate_natureserve_code(status)
     elif authority.startswith('norma'):
         return NORMA_OFICIAL_059_STATUS_CODES[status]
-    elif status in GENERIC_STATUS_CODES:
-        return GENERIC_STATUS_CODES[status]
+    # For other authorities, check both generic and authority-specific status codes
+    elif status in ALL_STATUS_CODES:
+        return ALL_STATUS_CODES[status]
+    elif iucn_id in IUCN_STATUSES_BY_ID:
+        return IUCN_STATUSES_BY_ID[iucn_id]
+    # Some other authorities use NaturServe format status codes
+    elif NATURESERVE_PATTERN.match(status):
+        return translate_natureserve_code(status)
     else:
         raise ValueError(
-            f'Could not parse conservation status code: {status} From authority: {authority}'
+            f'Could not parse conservation status code: {status} from authority: {authority}'
         )
 
 
@@ -249,7 +262,7 @@ def translate_natureserve_code(status: str) -> str:
     if status in NATURESERVE_STATUS_CODES:
         return NATURESERVE_STATUS_CODES[status]
 
-    match = re.match(r'\D+([\dXH])(?:\D+([\dXH]))?', status)
+    match = NATURESERVE_PATTERN.match(status)
     if not match:
         raise ValueError(f'Could not parse NatureServe status code: {status}')
 
