@@ -1,5 +1,6 @@
 # flake8: noqa: F405
 import re
+from copy import deepcopy
 from io import StringIO
 
 import pytest
@@ -12,13 +13,16 @@ from pyinaturalist.constants import API_V0
 from pyinaturalist.formatters import *
 from test.sample_data import *
 
+j_observation_no_taxon = deepcopy(j_observation_1)
+del j_observation_no_taxon['taxon']
+
 # Lists of JSON records that can be formatted into tables
 TABULAR_RESPONSES = [
     j_comments,
     [j_annotation_1],
     [j_controlled_term_1, j_controlled_term_2],
     [j_identification_1, j_identification_2],
-    [j_observation_1, j_observation_2],
+    [j_observation_1, j_observation_2, j_observation_no_taxon],
     j_obs_species_counts,
     j_life_list,
     [j_listed_taxon_1, j_listed_taxon_2_partial],
