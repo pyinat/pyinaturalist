@@ -128,9 +128,10 @@ def test_default_rich_repr():
         # NatureServe
         ('X', None, 'NatureServe', 'extinct'),
         ('2', None, 'NatureServe', 'imperiled'),
+        ('G2', None, 'NatureServe', 'imperiled'),
         ('S2', None, 'NatureServe', 'imperiled'),
         ('S2S3', None, 'NatureServe', 'imperiled'),
-        ('S2S4', None, 'NatureServe', 'vulnerable'),
+        ('N2N4', None, 'NatureServe', 'vulnerable'),
         # Other authority using NatureServe format
         ('S3S4B', None, 'Vermont Fish & Wildlife', 'vulnerable'),
         # Norma Oficial
@@ -140,10 +141,19 @@ def test_default_rich_repr():
         ('E', None, None, 'endangered'),
         ('LC', None, None, 'least concern'),
         ('sc', None, None, 'special concern'),
+        # Unknown
+        ('ASDF', None, None, 'placeholder status'),
+        ('ASDF', None, 'NatureServe', 'placeholder status'),
+        ('S2S9', None, 'NatureServe', 'placeholder status'),
     ],
 )
 def test_conservation_status__derived_status_name(status, iucn_id, authority, expected_name):
-    cs = ConservationStatus(status=status, iucn=iucn_id, authority=authority)
+    cs = ConservationStatus(
+        status=status,
+        status_name='placeholder status',
+        iucn=iucn_id,
+        authority=authority,
+    )
     assert cs.status_name == expected_name
 
 
@@ -168,10 +178,10 @@ def test_conservation_status__original_status_name():
     cs_json['status_name'] = 'replace_me'
     cs = ConservationStatus.from_json(cs_json)
     assert cs.status_name == 'imperiled'
-    assert cs.original_status_name == 'replace_me'
+    assert cs._original_status_name == 'replace_me'
 
 
-def test_conservation_status__properties():
+def test_conservation_status__id_wrapper_properties():
     cs = ConservationStatus(place_id=1, user_id=2, updater_id=3)
     assert cs.place.id == cs.place_id == 1
     assert cs.user.id == cs.user_id == 2

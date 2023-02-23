@@ -1,5 +1,6 @@
 """Models for additional taxon conservation statuses"""
 import re
+from logging import getLogger
 from typing import List, Optional, Union
 
 from attr import define
@@ -17,6 +18,8 @@ from pyinaturalist.models import (
     field,
     upper,
 )
+
+logger = getLogger(__name__)
 
 
 @define
@@ -103,7 +106,8 @@ class ConservationStatus(BaseModel):
     iucn: int = field(default=None, doc='IUCN ID, if applicable')
     source_id: int = field(default=None)
     status: str = field(default=None, converter=upper, doc='Short code for conservation status')
-    original_status_name: str = field(default=None, repr=False, doc='Status name from API results')
+    _derived_status_name: str = field(default=None, repr=False)
+    _original_status_name: str = field(default=None, repr=False)
     taxon_id: int = field(default=None, doc='Taxon ID')
     updated_at: DateTime = datetime_field(doc='Date and time the record was last updated')
     url: str = field(default=None, doc='Link to data source with more details')
@@ -132,7 +136,7 @@ class ConservationStatus(BaseModel):
     ):
         self.__attrs_init__(**kwargs)  # type: ignore
         if status_name:
-            self.original_status_name = status_name
+            self._original_status_name = status_name
         if place_id:
             self.place_id = place_id
         if updater_id:
@@ -145,12 +149,19 @@ class ConservationStatus(BaseModel):
         """Full name of conservation status.
 
         Note: ``status_name`` from API results can give inconsistent results, so this is derived
-        from the status code and authority instead. See ``original_status_name`` for the original
+        from the status code and authority instead. See ``_original_status_name`` for the original
         value.
         """
-        return translate_status_code(
-            status=self.status, iucn_id=self.iucn, authority=self.authority
-        )
+        if not self._derived_status_name:
+            try:
+                self._derived_status_name = translate_status_code(
+                    status=self.status, iucn_id=self.iucn, authority=self.authority
+                )
+            # If it can't be translated, just use the original value
+            except (KeyError, ValueError) as e:
+                logger.warning(e)
+                self._derived_status_name = self._original_status_name or ''
+        return self._derived_status_name
 
     @property
     def display_name(self) -> str:
@@ -280,9 +291,3 @@ def translate_natureserve_code(status: str) -> str:
         raise ValueError(f'Could not parse NatureServe level range: {status}')
 
     return NATURESERVE_STATUS_CODES[str(level)]
-
-
-assert translate_natureserve_code('S2') == 'imperiled'
-assert translate_natureserve_code('G2') == 'imperiled'
-assert translate_natureserve_code('S2S3B') == 'imperiled'
-assert translate_natureserve_code('N2N4') == 'vulnerable'
