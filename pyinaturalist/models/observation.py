@@ -1,8 +1,6 @@
 from datetime import datetime
 from typing import Any, Dict, List
 
-from attr import define
-
 from pyinaturalist.constants import (
     ALL_LICENSES,
     GEOPRIVACY_LEVELS,
@@ -26,17 +24,17 @@ from pyinaturalist.models import (
     ProjectObservation,
     Taxon,
     User,
-    add_lazy_attrs,
     coordinate_pair,
     datetime_field,
     datetime_now_field,
     define_model_collection,
+    define_model_custom_init,
     field,
     upper,
 )
 
 
-@define(auto_attribs=False, init=False, field_transformer=add_lazy_attrs)
+@define_model_custom_init
 class Observation(BaseModel):
     """:fa:`binoculars` An observation, based the schema of
     :v1:`GET /observations <Observations/get_observations>`

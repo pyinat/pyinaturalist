@@ -670,7 +670,10 @@ def test_taxon__conservation_status():
     assert isinstance(cs, ConservationStatus)
     assert cs.authority == 'NatureServe'
     assert cs.status_name == 'imperiled'
-    assert str(cs) == 'ConservationStatus(status_name=imperiled, status=S2B, authority=NatureServe)'
+    assert (
+        str(cs)
+        == 'ConservationStatus(status_name=imperiled, status=S2B, place=None, authority=NatureServe)'
+    )
 
 
 def test_taxon__conservation_status_aliases():
@@ -686,9 +689,16 @@ def test_taxon__conservation_status_aliases():
 def test_taxon__conservation_statuses():
     css = Taxon.from_json(j_taxon_6_cs_statuses).conservation_statuses[0]
     assert isinstance(css, ConservationStatus)
-    assert css.status == "EN"
+    assert css.status == 'EN'
     assert isinstance(css.updater, User) and css.user.id == 383144
     assert isinstance(css.user, User) and css.user.id == 383144
+
+
+def test_conservation_status_properties():
+    cs = ConservationStatus(place_id=1, user_id=2, updater_id=3)
+    assert cs.place.id == cs.place_id == 1
+    assert cs.user.id == cs.user_id == 2
+    assert cs.updater.id == cs.updater_id == 3
 
 
 def test_taxon__establishment_means():
@@ -710,6 +720,11 @@ def test_taxon__listed_taxa():
         'ListedTaxon(id=5577060, taxon_id=70118, place=Place(id=1, location=(0, 0), '
         'name=United States), establishment_means=native, observations_count=0)'
     )
+
+
+def test_listed_taxon_from_list_id():
+    lt = ListedTaxon(list_id=299)
+    assert lt.list.id == 299
 
 
 def test_taxon__properties():

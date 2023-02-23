@@ -8,6 +8,7 @@ from pyinaturalist.models import (
     Place,
     User,
     datetime_field,
+    define_model_custom_init,
     define_model,
     field,
 )
@@ -52,7 +53,7 @@ class Checklist(BaseModel):
     title: str = field(default=None)
 
 
-@define_model
+@define_model_custom_init
 class ListedTaxon(EstablishmentMeans):
     """:fa:`dove` :fa:`list` A taxon with additional stats associated with a list
     (aka `"original life list" <https://www.inaturalist.org/blog/43337-upcoming-changes-to-lists>`_),
@@ -89,21 +90,25 @@ class ListedTaxon(EstablishmentMeans):
     )
     user: User = field(default=None, converter=User.from_json, doc='User that created the record')
 
-    def __attrs_post_init__(self):
-        if not self.list.id:
-            self.list.id = self.list_id
+    # Attributes that will only be used during init and then omitted
+    temp_attrs = ['list_id']
 
-    # @property
-    # def list_id(self) -> Optional[int]:
-    #     return self.list.id if self.list else None
-
-    # @list_id.setter
-    # def list_id(self, value: int):
-    #     if not self.list:
-    #         self.list = Checklist()
-    #     self.list.id = value
+    def __init__(self, list_id: str = None, **kwargs):
+        self.__attrs_init__(**kwargs)
+        if list_id:
+            self.list_id = list_id
 
     # Wrapper properties to handle some more inconsistencies between similar endpoints
+    @property
+    def list_id(self) -> Optional[int]:
+        return self.list.id if self.list else None
+
+    @list_id.setter
+    def list_id(self, value: int):
+        if not self.list:
+            self.list = Checklist()
+        self.list.id = value
+
     @property
     def place_id(self) -> Optional[int]:
         return self.place.id if self.place else None

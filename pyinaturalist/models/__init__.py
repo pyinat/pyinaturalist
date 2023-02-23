@@ -20,6 +20,9 @@ from pyinaturalist.models.lazy_property import LazyProperty, add_lazy_attrs, get
 
 # Attrs class decorators with the most commonly used options
 define_model: Callable = define(auto_attribs=False, field_transformer=add_lazy_attrs)
+define_model_custom_init: Callable = define(
+    auto_attribs=False, init=False, field_transformer=add_lazy_attrs
+)
 define_model_collection: Callable = define(auto_attribs=False, order=False, slots=False)
 
 
