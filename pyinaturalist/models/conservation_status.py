@@ -8,11 +8,12 @@ from pyinaturalist.constants import DateTime
 from pyinaturalist.models import (
     BaseModel,
     LazyProperty,
-    Place,
     ListedTaxon,
+    Place,
     User,
     datetime_field,
     define_model,
+    define_model_custom_init,
     field,
     upper,
 )
@@ -76,7 +77,7 @@ GENERIC_STATUS_CODES = {
 }
 
 
-@define_model
+@define_model_custom_init
 class ConservationStatus(BaseModel):
     """:fa:`exclamation-triangle` The conservation status of a taxon in a given location, based on the schema of:
 
@@ -111,12 +112,30 @@ class ConservationStatus(BaseModel):
     # iucn_status: str = field(default=None)
     # iucn_status_code: str = field(default=None)
 
+    # Attributes that will only be used during init and then omitted
+    temp_attrs = ['list_id', 'updater_id', 'user_id']
+
+    def __init__(
+        self,
+        place_id: Optional[int] = None,
+        updater_id: Optional[int] = None,
+        user_id: Optional[int] = None,
+        **kwargs,
+    ):
+        self.__attrs_init__(**kwargs)  # type: ignore
+        if place_id:
+            self.place_id = place_id
+        if updater_id:
+            self.updater_id = updater_id
+        if user_id:
+            self.user_id = user_id
+
     @property
     def full_name(self) -> str:
         """Get a full returns the name, code, and place in a format like
         _'imperiled (S2S3B) in Nova Scotia, CA'_
         """
-        return f'{self.status_name} ({self.status}) in {self.place.name}'
+        return f'{self.status_name} ({self.status}) in {self.place.display_name}'
 
     # Wrapper properties to handle inconsistencies between obs, taxa, and taxon_summary endpoints
     @property
