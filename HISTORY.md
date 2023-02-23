@@ -21,6 +21,9 @@
   * Please use `get_observations()` or `get_observations_by_id()` instead
 
 ### Models
+* Add full mapping of conservation status codes for IUCN, NatureServe, Norma Oficial Mexicana, and other generic codes
+* Translate `ConservationStatus.status_name` based on status code and authority for more consistent results
+* Add `ConservationStatus.display_name` property
 * Add `Observation.default_photo` property
 * Use taxon icon as placeholder for `Observation.default_photo` if observation has no photos
 * Update `Annotation` model to include controlled term and value details from updated `GET /observations/{id}` response format

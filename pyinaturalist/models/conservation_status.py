@@ -1,6 +1,6 @@
 """Models for additional taxon conservation statuses"""
 import re
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from attr import define
 
@@ -41,7 +41,6 @@ IUCN_STATUSES = [
 IUCN_STATUSES_BY_CODE = {s.code: s.description for s in IUCN_STATUSES}
 IUCN_STATUSES_BY_ID = {s.id: s.description for s in IUCN_STATUSES}
 
-# Levels may be in ranges, and prefixed with a regional level, e.g. S2S3
 # https://www.natureserve.org/nsexplorer/about-the-data/statuses/conservation-status-categories
 NATURESERVE_STATUS_CODES = {
     'X': 'extinct',
@@ -96,7 +95,7 @@ class ConservationStatus(BaseModel):
     iucn: int = field(default=None, doc='IUCN ID, if applicable')
     source_id: int = field(default=None)
     status: str = field(default=None, converter=upper, doc='Short code for conservation status')
-    status_name: str = field(default=None, doc='Full name of conservation status')
+    original_status_name: str = field(default=None, repr=False, doc='Status name from API results')
     taxon_id: int = field(default=None, doc='Taxon ID')
     updated_at: DateTime = datetime_field(doc='Date and time the record was last updated')
     url: str = field(default=None, doc='Link to data source with more details')
@@ -113,16 +112,19 @@ class ConservationStatus(BaseModel):
     # iucn_status_code: str = field(default=None)
 
     # Attributes that will only be used during init and then omitted
-    temp_attrs = ['list_id', 'updater_id', 'user_id']
+    temp_attrs = ['status_name', 'place_id', 'updater_id', 'user_id']
 
     def __init__(
         self,
+        status_name: Optional[str] = None,
         place_id: Optional[int] = None,
         updater_id: Optional[int] = None,
         user_id: Optional[int] = None,
         **kwargs,
     ):
         self.__attrs_init__(**kwargs)  # type: ignore
+        if status_name:
+            self.original_status_name = status_name
         if place_id:
             self.place_id = place_id
         if updater_id:
@@ -131,11 +133,24 @@ class ConservationStatus(BaseModel):
             self.user_id = user_id
 
     @property
-    def full_name(self) -> str:
-        """Get a full returns the name, code, and place in a format like
+    def status_name(self) -> str:
+        """Full name of conservation status.
+
+        Note: ``status_name`` from API results can give inconsistent results, so this is derived
+        from the status code and authority instead. See ``original_status_name`` for the original
+        value.
+        """
+        return translate_status_code(
+            status=self.status, iucn_id=self.iucn, authority=self.authority
+        )
+
+    @property
+    def display_name(self) -> str:
+        """Get conservation status name, code, and place in a format like:
         _'imperiled (S2S3B) in Nova Scotia, CA'_
         """
-        return f'{self.status_name} ({self.status}) in {self.place.display_name}'
+        place_str = f' in {self.place_name}' if self.place_name else ''
+        return f'{self.status_name} ({self.status}){place_str}'
 
     # Wrapper properties to handle inconsistencies between obs, taxa, and taxon_summary endpoints
     @property
@@ -144,7 +159,9 @@ class ConservationStatus(BaseModel):
 
     @place_id.setter
     def place_id(self, value: int):
-        self.place = Place(id=value)
+        if not self.place:
+            self.place = Place()
+        self.place.id = value
 
     @property
     def updater_id(self) -> Optional[int]:
@@ -152,7 +169,9 @@ class ConservationStatus(BaseModel):
 
     @updater_id.setter
     def updater_id(self, value: int):
-        self.updater = User(id=value)
+        if not self.updater:
+            self.updater = User()
+        self.updater.id = value
 
     @property
     def user_id(self) -> Optional[int]:
@@ -160,11 +179,17 @@ class ConservationStatus(BaseModel):
 
     @user_id.setter
     def user_id(self, value: int):
-        self.user = User(id=value)
+        if not self.user:
+            self.user = User()
+        self.user.id = value
+
+    @property
+    def place_name(self) -> Optional[str]:
+        return (self.place.display_name or self.place.name) if self.place else None
 
     @property
     def _str_attrs(self) -> List[str]:
-        return ['status_name', 'status', 'place', 'authority']
+        return ['status_name', 'status', 'authority', 'place_name']
 
 
 @define_model
@@ -191,21 +216,25 @@ class TaxonSummary(BaseModel):
         return ['conservation_status', 'listed_taxon']
 
 
-def translate_status_code(status: str, iucn_id: int = -1, authority: str = '') -> str:
+def translate_status_code(
+    status: Union[str, int, None] = None,
+    iucn_id: Optional[int] = None,
+    authority: Optional[str] = None,
+) -> str:
     """Translate a conservation status code from a given authority into a descriptive name"""
-    status = status.upper()
-    authority = authority.lower()
+    status = str(status or '').upper()
+    authority = (authority or '').lower()
 
+    if not status and iucn_id in IUCN_STATUSES_BY_ID:
+        return IUCN_STATUSES_BY_ID[iucn_id]
     if authority == 'iucn':
         return IUCN_STATUSES_BY_CODE[status]
     elif authority == 'natureserve':
         return translate_natureserve_code(status)
-    elif authority == 'norma_oficial_059':
+    elif authority.startswith('norma'):
         return NORMA_OFICIAL_059_STATUS_CODES[status]
     elif status in GENERIC_STATUS_CODES:
         return GENERIC_STATUS_CODES[status]
-    elif iucn_id in IUCN_STATUSES_BY_ID:
-        return IUCN_STATUSES_BY_ID[iucn_id]
     else:
         raise ValueError(
             f'Could not parse conservation status code: {status} From authority: {authority}'
@@ -213,7 +242,10 @@ def translate_status_code(status: str, iucn_id: int = -1, authority: str = '') -
 
 
 def translate_natureserve_code(status: str) -> str:
-    """Translate a NatureServe status code to a status name, including level ranges"""
+    """Translate a NatureServe status code to a status name.
+
+    Note: Status levels may be in ranges, and prefixed with a regional level, e.g. S2S3
+    """
     if status in NATURESERVE_STATUS_CODES:
         return NATURESERVE_STATUS_CODES[status]
 
@@ -232,8 +264,6 @@ def translate_natureserve_code(status: str) -> str:
     elif levels[1] - levels[0] == 1:
         level = levels[0]
     else:
-        print(levels)
-        print(levels[1] - levels[0])
         raise ValueError(f'Could not parse NatureServe level range: {status}')
 
     return NATURESERVE_STATUS_CODES[str(level)]

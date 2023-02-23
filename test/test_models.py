@@ -113,6 +113,78 @@ def test_default_rich_repr():
     assert print_attrs == ['id', 'key']
 
 
+# Conservation Statuses
+# --------------------
+
+
+@pytest.mark.parametrize(
+    'status, iucn_id, authority, expected_name',
+    [
+        # IUCN
+        (None, 0, 'IUCN', 'not evaluated'),
+        ('LC', None, 'IUCN', 'least concern'),
+        ('vu', None, 'iucn', 'vulnerable'),
+        # NatureServe
+        ('X', None, 'NatureServe', 'extinct'),
+        ('2', None, 'NatureServe', 'imperiled'),
+        ('S2', None, 'NatureServe', 'imperiled'),
+        ('S2S3', None, 'NatureServe', 'imperiled'),
+        ('S2S4', None, 'NatureServe', 'vulnerable'),
+        # Norma Oficial
+        ('A', None, 'norma_oficial_059', 'amenazada'),
+        ('PR', None, 'Norma', 'sujeta a protección especial'),
+        # Generic
+        ('E', None, None, 'endangered'),
+        ('LC', None, None, 'least concern'),
+        ('sc', None, None, 'special concern'),
+    ],
+)
+def test_conservation_status__derived_status_name(status, iucn_id, authority, expected_name):
+    cs = ConservationStatus(status=status, iucn=iucn_id, authority=authority)
+    assert cs.status_name == expected_name
+
+
+def test_conservation_status__display_name():
+    cs = ConservationStatus(
+        status='S2S3B',
+        iucn=2,
+        authority='NatureServe',
+        place=Place(name='Nova Scotia', display_name='Nova Scotia, CA'),
+    )
+    assert cs.display_name == 'imperiled (S2S3B) in Nova Scotia, CA'
+
+    cs.place.display_name = None
+    assert cs.display_name == 'imperiled (S2S3B) in Nova Scotia'
+
+    cs.place = None
+    assert cs.display_name == 'imperiled (S2S3B)'
+
+
+def test_conservation_status__original_status_name():
+    cs_json = deepcopy(j_conservation_status)
+    cs_json['status_name'] = 'replace_me'
+    cs = ConservationStatus.from_json(cs_json)
+    assert cs.status_name == 'imperiled'
+    assert cs.original_status_name == 'replace_me'
+
+
+def test_conservation_status__properties():
+    cs = ConservationStatus(place_id=1, user_id=2, updater_id=3)
+    assert cs.place.id == cs.place_id == 1
+    assert cs.user.id == cs.user_id == 2
+    assert cs.updater.id == cs.updater_id == 3
+
+
+def test_conservation_status__str():
+    cs_json = deepcopy(j_conservation_status)
+    cs_json['place'] = {'name': 'Test Location'}
+    cs = ConservationStatus.from_json(cs_json)
+    assert str(cs) == (
+        'ConservationStatus(status_name=imperiled, status=S2B, authority=NatureServe, '
+        'place_name=Test Location)'
+    )
+
+
 # Controlled Terms
 # --------------------
 
@@ -668,12 +740,7 @@ def test_taxon__autocomplete():
 def test_taxon__conservation_status():
     cs = Taxon.from_json(j_taxon_5_cs_status).conservation_status
     assert isinstance(cs, ConservationStatus)
-    assert cs.authority == 'NatureServe'
     assert cs.status_name == 'imperiled'
-    assert (
-        str(cs)
-        == 'ConservationStatus(status_name=imperiled, status=S2B, place=None, authority=NatureServe)'
-    )
 
 
 def test_taxon__conservation_status_aliases():
@@ -692,13 +759,6 @@ def test_taxon__conservation_statuses():
     assert css.status == 'EN'
     assert isinstance(css.updater, User) and css.user.id == 383144
     assert isinstance(css.user, User) and css.user.id == 383144
-
-
-def test_conservation_status_properties():
-    cs = ConservationStatus(place_id=1, user_id=2, updater_id=3)
-    assert cs.place.id == cs.place_id == 1
-    assert cs.user.id == cs.user_id == 2
-    assert cs.updater.id == cs.updater_id == 3
 
 
 def test_taxon__establishment_means():
