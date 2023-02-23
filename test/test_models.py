@@ -120,16 +120,19 @@ def test_default_rich_repr():
 @pytest.mark.parametrize(
     'status, iucn_id, authority, expected_name',
     [
-        # IUCN
-        (None, 0, 'IUCN', 'not evaluated'),
+        # IUCN Red List
         ('LC', None, 'IUCN', 'least concern'),
         ('vu', None, 'iucn', 'vulnerable'),
+        # IUCN ID only
+        (None, 0, None, 'not evaluated'),
         # NatureServe
         ('X', None, 'NatureServe', 'extinct'),
         ('2', None, 'NatureServe', 'imperiled'),
         ('S2', None, 'NatureServe', 'imperiled'),
         ('S2S3', None, 'NatureServe', 'imperiled'),
         ('S2S4', None, 'NatureServe', 'vulnerable'),
+        # Other authority using NatureServe format
+        ('S3S4B', None, 'Vermont Fish & Wildlife', 'vulnerable'),
         # Norma Oficial
         ('A', None, 'norma_oficial_059', 'amenazada'),
         ('PR', None, 'Norma', 'sujeta a protección especial'),
