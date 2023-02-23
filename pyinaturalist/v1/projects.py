@@ -162,16 +162,22 @@ def add_project_users(project_id: IntOrStr, user_ids: MultiInt, **params) -> Jso
     Returns:
         The updated project record
     """
-    rules = _get_project_rules(project_id)
-    existing_user_ids = [rule['operand_id'] for rule in rules if rule['operand_type'] == 'User']
+    existing_rules = _get_project_rules(project_id)
+    existing_user_ids = [
+        rule['operand_id'] for rule in existing_rules if rule['operand_type'] == 'User'
+    ]
+    new_rules = []
+
+    # Minimize payload by sending only new rules
     for user_id in ensure_list(user_ids):
         if user_id not in existing_user_ids:
-            rules.append(
+            new_rules.append(
                 {'operand_id': user_id, 'operand_type': 'User', 'operator': 'observed_by_user?'}
             )
         else:
             logger.warning(f'User {user_id} is already in project rules for {project_id}')
-    return update_project(project_id, project_observation_rules_attributes=rules, **params)
+
+    return update_project(project_id, project_observation_rules_attributes=new_rules, **params)
 
 
 # TODO: This may not yet be working as intended
