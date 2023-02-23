@@ -223,8 +223,8 @@ class Observation(BaseModel):
     def _row(self) -> TableRow:
         return {
             'ID': self.id,
-            'Taxon ID': self.taxon.id,
-            'Taxon': self.taxon.full_name,
+            'Taxon ID': self.taxon.id if self.taxon else None,
+            'Taxon': self.taxon.full_name if self.taxon else None,
             'Observed on': self.observed_on,
             'User': self.user.login,
             'Location': self.place_guess or self.location,

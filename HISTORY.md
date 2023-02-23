@@ -28,15 +28,18 @@
 * Remove redundant `Annotation.controlled_attribute_id` and `controlled_value_id` attributes (These can still be used as init arguments)
 
 ### Sessions
-* Fix JWT caching
 * Add `cache_control` option to `ClientSession` to disable using Cache-Control headers for cache
   expiration (enabled by default)
 * Add `urls_expire_after` option to `ClientSession` to update default cache expiration URL patterns
 
-### Other Changes
-* All API functions that accept taxonomic rank parameters (`rank`, `lrank`, `observation_hrank`,etc.) now accept all rank variations that iNaturalist accepts (`var`, `spp` `sub-species`, etc.)
+### Bugfixes
+* Fix JWT caching
 * Fix `ObservationFieldValue` conversions for `date` and `datetime` fields
 * Fix printing `Annotation` objects with `rich`
+* Fix printing `Observation` tables when taxon is missing
+
+### Other Changes
+* All API functions that accept taxonomic rank parameters (`rank`, `lrank`, `observation_hrank`,etc.) now accept all rank variations that iNaturalist accepts (`var`, `spp` `sub-species`, etc.)
 * Optionally use `ultrajson` instead of stdlib `json`, if installed
 * Add `loop` argument to iNatClient and Paginator classes to allow passing an async event loop to be used for async iteration
 * Add `Paginator.async_all()` method (async, non-blocking version of `.all()`)
