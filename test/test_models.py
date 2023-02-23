@@ -722,9 +722,17 @@ def test_taxon__listed_taxa():
     )
 
 
-def test_listed_taxon_from_list_id():
-    lt = ListedTaxon(list_id=299)
+def test_listed_taxon__id_wrapper_properties():
+    lt = ListedTaxon(list_id=299, place_id=1, user_id=2, updater_id=3)
+    assert lt.list.id == lt.list_id == 299
+    assert lt.place.id == lt.place_id == 1
+    assert lt.user.id == lt.user_id == 2
+    assert lt.updater.id == lt.updater_id == 3
+
+    # Init with both list ID and object
+    lt = ListedTaxon(list_id=299, list=Checklist(title='test checklist'))
     assert lt.list.id == 299
+    assert lt.list.title == 'test checklist'
 
 
 def test_taxon__properties():

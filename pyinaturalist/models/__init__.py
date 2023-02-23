@@ -73,7 +73,7 @@ def upper(value) -> Optional[str]:
 from pyinaturalist.models.photo import IconPhoto, Photo
 from pyinaturalist.models.place import Place
 from pyinaturalist.models.user import User, UserCount, UserCounts
-from pyinaturalist.models.taxon_meta import EstablishmentMeans, ListedTaxon
+from pyinaturalist.models.checklist import Checklist, EstablishmentMeans, ListedTaxon
 from pyinaturalist.models.conservation_status import ConservationStatus, TaxonSummary
 from pyinaturalist.models.taxon import Taxon, TaxonCount, TaxonCounts
 from pyinaturalist.models.controlled_term import (

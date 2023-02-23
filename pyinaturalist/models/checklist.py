@@ -1,4 +1,4 @@
-"""Models for additional endpoint-specific metadata associated with a taxon"""
+"""Models for taxon checklists (aka "original life lists")"""
 from typing import List, Optional
 
 from pyinaturalist.constants import ESTABLISTMENT_MEANS, DateTime, TableRow
@@ -8,8 +8,8 @@ from pyinaturalist.models import (
     Place,
     User,
     datetime_field,
-    define_model_custom_init,
     define_model,
+    define_model_custom_init,
     field,
 )
 
@@ -68,7 +68,6 @@ class ListedTaxon(EstablishmentMeans):
     description: str = field(default=None, doc='Listed taxon description')
     first_observation_id: int = field(default=None, doc='Oldest recent observation ID in the list')
     last_observation_id: int = field(default=None, doc='Most recent observation ID in the list')
-    list_id: int = field(default=None, repr=False)
     manually_added: bool = field(
         default=None, doc='Indicates if the taxon was manually added to the list'
     )
@@ -91,12 +90,26 @@ class ListedTaxon(EstablishmentMeans):
     user: User = field(default=None, converter=User.from_json, doc='User that created the record')
 
     # Attributes that will only be used during init and then omitted
-    temp_attrs = ['list_id']
+    temp_attrs = ['list_id', 'place_id', 'updater_id', 'user_id']
 
-    def __init__(self, list_id: str = None, **kwargs):
-        self.__attrs_init__(**kwargs)
+    def __init__(
+        self,
+        list_id: Optional[int] = None,
+        place_id: Optional[int] = None,
+        updater_id: Optional[int] = None,
+        user_id: Optional[int] = None,
+        **kwargs,
+    ):
+        self.__attrs_init__(**kwargs)  # type: ignore
+        self.list = self.list or Checklist()
         if list_id:
             self.list_id = list_id
+        if place_id:
+            self.place_id = place_id
+        if updater_id:
+            self.updater_id = updater_id
+        if user_id:
+            self.user_id = user_id
 
     # Wrapper properties to handle some more inconsistencies between similar endpoints
     @property
@@ -105,8 +118,6 @@ class ListedTaxon(EstablishmentMeans):
 
     @list_id.setter
     def list_id(self, value: int):
-        if not self.list:
-            self.list = Checklist()
         self.list.id = value
 
     @property
