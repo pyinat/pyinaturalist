@@ -77,6 +77,19 @@ def test_add_project_users(mock_put, requests_mock):
     assert rules[-1]['operand_id'] == 9999
 
 
+@patch('pyinaturalist.v1.projects.put')
+def test_add_project_users__no_updates(mock_put, requests_mock):
+    requests_mock.get(
+        f'{API_V1}/projects/1234',
+        json=SAMPLE_DATA['get_projects'],
+        status_code=200,
+    )
+
+    # User 5678 is already in the project; no updates should be made
+    add_project_users(1234, [5678])
+    mock_put.assert_not_called()
+
+
 def test_delete_project_observation(requests_mock):
     requests_mock.delete(
         f'{API_V1}/projects/1234/remove',
@@ -99,8 +112,21 @@ def test_delete_project_users(mock_put, requests_mock):
 
     project_params = mock_put.call_args[1]['json']['project']
     rules = project_params['project_observation_rules_attributes']
-    assert rules[0]['operand_id'] == 1234 and not rules[0].get('_destroy')
-    assert rules[1]['operand_id'] == 5678 and rules[1]['_destroy'] is True
+    assert len(rules) == 1
+    assert rules[0]['operand_id'] == 5678 and rules[0]['_destroy'] is True
+
+
+@patch('pyinaturalist.v1.projects.put')
+def test_delete_project_users__no_updates(mock_put, requests_mock):
+    requests_mock.get(
+        f'{API_V1}/projects/1234',
+        json=SAMPLE_DATA['get_projects'],
+        status_code=200,
+    )
+
+    # User 404 is not in the project; no updates should be made
+    delete_project_users(1234, [404])
+    mock_put.assert_not_called()
 
 
 @patch('pyinaturalist.v1.projects.put')
