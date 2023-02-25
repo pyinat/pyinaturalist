@@ -33,7 +33,7 @@
 * Add `urls_expire_after` option to `ClientSession` to update default cache expiration URL patterns
 
 ### Bugfixes
-* Fix error `413: Payload too large` when using `add_project_users()` with a project with a large number of rules
+* Fix error `413: Payload too large` when using `add_project_users()` or `delete_project_users()` with a project with a large number of rules
 * Fix JWT caching
 * Fix `ObservationFieldValue` conversions for `date` and `datetime` fields
 * Fix printing `Annotation` objects with `rich`

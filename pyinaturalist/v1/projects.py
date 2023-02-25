@@ -162,7 +162,8 @@ def add_project_users(project_id: IntOrStr, user_ids: MultiInt, **params) -> Jso
     Returns:
         The updated project record
     """
-    existing_rules = _get_project_rules(project_id)
+    project = get_projects_by_id(project_id, force_refresh=True)['results'][0]
+    existing_rules = project.get('project_observation_rules', [])
     existing_user_ids = [
         rule['operand_id'] for rule in existing_rules if rule['operand_type'] == 'User'
     ]
@@ -176,6 +177,10 @@ def add_project_users(project_id: IntOrStr, user_ids: MultiInt, **params) -> Jso
             )
         else:
             logger.warning(f'User {user_id} is already in project rules for {project_id}')
+
+    if not new_rules:
+        logger.info('No project rules to update')
+        return project
 
     return update_project(project_id, project_observation_rules_attributes=new_rules, **params)
 
@@ -229,14 +234,25 @@ def delete_project_users(project_id: IntOrStr, user_ids: MultiInt, **params) -> 
         The updated project record
     """
     # Get and modify existing rules
-    rules = _get_project_rules(project_id)
+
+    project = get_projects_by_id(project_id, force_refresh=True)['results'][0]
+    existing_rules = project.get('project_observation_rules', [])
+    delete_rules = []
     str_user_ids = [str(user_id) for user_id in ensure_list(user_ids)]
-    for rule in rules:
+
+    for rule in existing_rules:
         if rule['operand_type'] == 'User' and str(rule['operand_id']) in str_user_ids:
             rule['_destroy'] = True
+            delete_rules.append(rule)
+
+    if not delete_rules:
+        logger.info('No project rules to update')
+        return project
 
     # Update project and validate results
-    project = update_project(project_id, project_observation_rules_attributes=rules, **params)
+    project = update_project(
+        project_id, project_observation_rules_attributes=delete_rules, **params
+    )
     _validate_removed_users(project, user_ids)
     return project
 
@@ -285,13 +301,6 @@ def update_project(project_id: IntOrStr, **params) -> JsonResponse:
         **kwargs,
     )
     return response.json()
-
-
-def _get_project_rules(project_id):
-    """Get the current rules for a project"""
-    response = get_projects_by_id(project_id, force_refresh=True)
-    project = response['results'][0]
-    return project.get('project_observation_rules', [])
 
 
 def _validate_removed_users(project: JsonResponse, user_ids: MultiInt):
