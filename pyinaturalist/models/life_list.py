@@ -1,3 +1,4 @@
+"""Models for user life lists"""
 from itertools import groupby
 from typing import List, Optional
 

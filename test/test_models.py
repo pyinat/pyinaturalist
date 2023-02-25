@@ -113,6 +113,91 @@ def test_default_rich_repr():
     assert print_attrs == ['id', 'key']
 
 
+# Conservation Statuses
+# --------------------
+
+
+@pytest.mark.parametrize(
+    'status, iucn_id, authority, expected_name',
+    [
+        # IUCN Red List
+        ('LC', None, 'IUCN', 'least concern'),
+        ('vu', None, 'iucn', 'vulnerable'),
+        # IUCN ID only
+        (None, 0, None, 'not evaluated'),
+        # NatureServe
+        ('X', None, 'NatureServe', 'extinct'),
+        ('2', None, 'NatureServe', 'imperiled'),
+        ('G2', None, 'NatureServe', 'imperiled'),
+        ('S2', None, 'NatureServe', 'imperiled'),
+        ('S2S3', None, 'NatureServe', 'imperiled'),
+        ('N2N4', None, 'NatureServe', 'vulnerable'),
+        # Other authority using NatureServe format
+        ('S3S4B', None, 'Vermont Fish & Wildlife', 'vulnerable'),
+        # Norma Oficial
+        ('A', None, 'norma_oficial_059', 'amenazada'),
+        ('PR', None, 'Norma', 'sujeta a protección especial'),
+        # Generic
+        ('E', None, None, 'endangered'),
+        ('LC', None, None, 'least concern'),
+        ('sc', None, None, 'special concern'),
+        # Unknown
+        ('ASDF', None, None, 'placeholder status'),
+        ('ASDF', None, 'NatureServe', 'placeholder status'),
+        ('S2S9', None, 'NatureServe', 'placeholder status'),
+    ],
+)
+def test_conservation_status__derived_status_name(status, iucn_id, authority, expected_name):
+    cs = ConservationStatus(
+        status=status,
+        status_name='placeholder status',
+        iucn=iucn_id,
+        authority=authority,
+    )
+    assert cs.status_name == expected_name
+
+
+def test_conservation_status__display_name():
+    cs = ConservationStatus(
+        status='S2S3B',
+        iucn=2,
+        authority='NatureServe',
+        place=Place(name='Nova Scotia', display_name='Nova Scotia, CA'),
+    )
+    assert cs.display_name == 'imperiled (S2S3B) in Nova Scotia, CA'
+
+    cs.place.display_name = None
+    assert cs.display_name == 'imperiled (S2S3B) in Nova Scotia'
+
+    cs.place = None
+    assert cs.display_name == 'imperiled (S2S3B)'
+
+
+def test_conservation_status__original_status_name():
+    cs_json = deepcopy(j_conservation_status)
+    cs_json['status_name'] = 'replace_me'
+    cs = ConservationStatus.from_json(cs_json)
+    assert cs.status_name == 'imperiled'
+    assert cs._original_status_name == 'replace_me'
+
+
+def test_conservation_status__id_wrapper_properties():
+    cs = ConservationStatus(place_id=1, user_id=2, updater_id=3)
+    assert cs.place.id == cs.place_id == 1
+    assert cs.user.id == cs.user_id == 2
+    assert cs.updater.id == cs.updater_id == 3
+
+
+def test_conservation_status__str():
+    cs_json = deepcopy(j_conservation_status)
+    cs_json['place'] = {'name': 'Test Location'}
+    cs = ConservationStatus.from_json(cs_json)
+    assert str(cs) == (
+        'ConservationStatus(status_name=imperiled, status=S2B, authority=NatureServe, '
+        'place_name=Test Location)'
+    )
+
+
 # Controlled Terms
 # --------------------
 
@@ -668,9 +753,7 @@ def test_taxon__autocomplete():
 def test_taxon__conservation_status():
     cs = Taxon.from_json(j_taxon_5_cs_status).conservation_status
     assert isinstance(cs, ConservationStatus)
-    assert cs.authority == 'NatureServe'
     assert cs.status_name == 'imperiled'
-    assert str(cs) == 'ConservationStatus(status_name=imperiled, status=S2B, authority=NatureServe)'
 
 
 def test_taxon__conservation_status_aliases():
@@ -686,7 +769,7 @@ def test_taxon__conservation_status_aliases():
 def test_taxon__conservation_statuses():
     css = Taxon.from_json(j_taxon_6_cs_statuses).conservation_statuses[0]
     assert isinstance(css, ConservationStatus)
-    assert css.status == "EN"
+    assert css.status == 'EN'
     assert isinstance(css.updater, User) and css.user.id == 383144
     assert isinstance(css.user, User) and css.user.id == 383144
 
@@ -710,6 +793,19 @@ def test_taxon__listed_taxa():
         'ListedTaxon(id=5577060, taxon_id=70118, place=Place(id=1, location=(0, 0), '
         'name=United States), establishment_means=native, observations_count=0)'
     )
+
+
+def test_listed_taxon__id_wrapper_properties():
+    lt = ListedTaxon(list_id=299, place_id=1, user_id=2, updater_id=3)
+    assert lt.list.id == lt.list_id == 299
+    assert lt.place.id == lt.place_id == 1
+    assert lt.user.id == lt.user_id == 2
+    assert lt.updater.id == lt.updater_id == 3
+
+    # Init with both list ID and object
+    lt = ListedTaxon(list_id=299, list=Checklist(title='test checklist'))
+    assert lt.list.id == 299
+    assert lt.list.title == 'test checklist'
 
 
 def test_taxon__properties():

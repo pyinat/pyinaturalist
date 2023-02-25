@@ -20,6 +20,9 @@ from pyinaturalist.models.lazy_property import LazyProperty, add_lazy_attrs, get
 
 # Attrs class decorators with the most commonly used options
 define_model: Callable = define(auto_attribs=False, field_transformer=add_lazy_attrs)
+define_model_custom_init: Callable = define(
+    auto_attribs=False, init=False, field_transformer=add_lazy_attrs
+)
 define_model_collection: Callable = define(auto_attribs=False, order=False, slots=False)
 
 
@@ -70,12 +73,8 @@ def upper(value) -> Optional[str]:
 from pyinaturalist.models.photo import IconPhoto, Photo
 from pyinaturalist.models.place import Place
 from pyinaturalist.models.user import User, UserCount, UserCounts
-from pyinaturalist.models.taxon_meta import (
-    ConservationStatus,
-    EstablishmentMeans,
-    ListedTaxon,
-    TaxonSummary,
-)
+from pyinaturalist.models.checklist import Checklist, EstablishmentMeans, ListedTaxon
+from pyinaturalist.models.conservation_status import ConservationStatus, TaxonSummary
 from pyinaturalist.models.taxon import Taxon, TaxonCount, TaxonCounts
 from pyinaturalist.models.controlled_term import (
     Annotation,

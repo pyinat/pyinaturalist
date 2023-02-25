@@ -68,9 +68,6 @@ RATELIMIT_FILE = join(DATA_DIR, 'api_ratelimit.db')
 # Response formats supported by v0 GET /observations endpoint
 OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
 
-# IUCN Conservation status codes; for more info, see: https://www.iucnredlist.org
-CONSERVATION_STATUSES = ['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX', 'S2B']
-
 # Taxon ID and name of main taxa 'categories' that can be filtered on
 ICONIC_TAXA = {
     0: 'Unknown',
@@ -180,6 +177,7 @@ RANK_EQUIVALENTS = {
 CC_LICENSES = ['CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0']
 ALL_LICENSES = CC_LICENSES + ['ALL RIGHTS RESERVED']
 COMMUNITY_ID_STATUSES = ['most_agree', 'most_disagree', 'some_agree']
+CONSERVATION_STATUSES = ['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX']
 ESTABLISTMENT_MEANS = ['introduced', 'native', 'endemic']
 EXTRA_PROPERTIES = ['fields', 'identifications', 'projects']
 GEOPRIVACY_LEVELS = ['obscured', 'obscured_private', 'open', 'private']
