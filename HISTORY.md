@@ -1,13 +1,13 @@
 # History
 
-## 0.18.0 (Unreleased)
+## 0.18.0 (2023-02-27)
 
 ### New Endpoints
 * Added new **Observation** endpoint:
   * `get_observations_by_id()`
     * Replaces `get_observation`
     * Accepts multiple IDs
-    * Uses a different endpoint (`GET /observations/{id}` instead of `GET /observations?id={id}`)`)
+    * Uses a different endpoint (`GET /observations/{id}` instead of `GET /observations?id={id}`)
     * returns full term and value details for annotations
 
 ### Modified Endpoints

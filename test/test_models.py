@@ -173,6 +173,16 @@ def test_conservation_status__display_name():
     assert cs.display_name == 'imperiled (S2S3B)'
 
 
+def test_conservation_status__display_name_duplication():
+    """Simplify a redundant display name like "extinct (EXTINCT)" """
+    cs = ConservationStatus(
+        status='extinct',
+        status_name='extinct',
+        iucn=70,
+    )
+    assert cs.display_name == 'extinct'
+
+
 def test_conservation_status__original_status_name():
     cs_json = deepcopy(j_conservation_status)
     cs_json['status_name'] = 'replace_me'
