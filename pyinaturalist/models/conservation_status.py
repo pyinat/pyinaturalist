@@ -168,8 +168,10 @@ class ConservationStatus(BaseModel):
         """Get conservation status name, code, and place in a format like:
         _'imperiled (S2S3B) in Nova Scotia, CA'_
         """
+        # Avoid dusplication when the status name and code are the same (e.g., 'extinct (EXTINCT)')
+        status_code_str = f' ({self.status})' if self.status_name != self.status.lower() else ''
         place_str = f' in {self.place_name}' if self.place_name else ''
-        return f'{self.status_name} ({self.status}){place_str}'
+        return f'{self.status_name}{status_code_str}{place_str}'
 
     # Wrapper properties to handle inconsistencies between obs, taxa, and taxon_summary endpoints
     @property
