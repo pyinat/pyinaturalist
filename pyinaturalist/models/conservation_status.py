@@ -66,6 +66,7 @@ NORMA_OFICIAL_059_STATUS_CODES = {
 
 # Generic status codes not associated with a specific authority
 GENERIC_STATUS_CODES = {
+    'CE': 'critically endangered',
     'SE': 'endangered',
     'FE': 'endangered',
     'LE': 'endangered',
