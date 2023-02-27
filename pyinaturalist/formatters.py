@@ -216,8 +216,7 @@ def format_response(response: Response) -> str:
 
     def _expires_str():
         if response.expires:
-            expires_delta = response.expires - datetime.utcnow()
-            expires_delta -= timedelta(microseconds=expires_delta.microseconds)
+            expires_delta = timedelta(seconds=response.expires_delta)
             return f'expires in {expires_delta}'
         else:
             return 'never expires'
