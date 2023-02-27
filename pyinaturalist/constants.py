@@ -49,14 +49,12 @@ EXAMPLES_DIR = join(PROJECT_DIR, 'examples')
 SAMPLE_DATA_DIR = join(PROJECT_DIR, 'test', 'sample_data')
 
 # Cache settings
-TOKEN_EXPIRATION = timedelta(hours=1)
-JWT_EXPIRATION = timedelta(days=1)
 CACHE_EXPIRATION = {
     'api.inaturalist.org/*autocomplete': timedelta(days=30),
     'api.inaturalist.org/v*/controlled_terms*': timedelta(days=7),
     'api.inaturalist.org/v*/places*': timedelta(days=7),
     'api.inaturalist.org/v*/taxa*': timedelta(days=7),
-    'www.inaturalist.org/users/api_token': JWT_EXPIRATION,
+    'www.inaturalist.org/users/api_token': timedelta(days=1),
     f'{PHOTO_CC_BASE_URL}/*': -1,
     f'{PHOTO_BASE_URL}/*': -1,
     f'{ICONIC_TAXA_BASE_URL}/*': -1,

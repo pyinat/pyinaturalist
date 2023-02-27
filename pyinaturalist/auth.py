@@ -6,7 +6,7 @@ from keyring import get_password, set_password
 from keyring.errors import KeyringError
 from requests import Response
 
-from pyinaturalist.constants import API_V0, JWT_EXPIRATION, KEYRING_KEY
+from pyinaturalist.constants import API_V0, KEYRING_KEY
 from pyinaturalist.exceptions import AuthenticationError
 from pyinaturalist.session import ClientSession, get_local_session
 
@@ -149,7 +149,6 @@ def _get_jwt(
     return session.get(
         f'{API_V0}/users/api_token',
         headers={'Authorization': f'Bearer {access_token}'},
-        expire_after=JWT_EXPIRATION,  # type: ignore
         only_if_cached=only_if_cached,  # If True, will return a 504 if not cached
-        raise_for_status=False,
+        raise_for_status=False,  # type: ignore
     )
