@@ -49,7 +49,7 @@ ujson                       = {optional=true, version="^5.4.0"}
 furo                        = {optional=true, version="^2022.9"}
 ipython                     = {optional=true, version="^7.25.0"}
 linkify-it-py               = {optional=true, version="^1.0.1"}
-myst-parser                 = {optional=true, version="^0.18"}
+myst-parser                 = {optional=true, version=">=0.18,<0.20"}
 nbsphinx                    = {optional=true, version="^0.8"}
 sphinx                      = {optional=true, version="^5.2"}
 sphinx-automodapi           = {optional=true, version="^0.14"}
