@@ -43,4 +43,4 @@ from pyinaturalist.v1.taxa import (
     get_taxa_by_id,
     get_taxa_map_layers,
 )
-from pyinaturalist.v1.users import get_user_by_id, get_users_autocomplete
+from pyinaturalist.v1.users import get_current_user, get_user_by_id, get_users_autocomplete

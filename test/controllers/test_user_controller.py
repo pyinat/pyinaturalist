@@ -1,3 +1,7 @@
+from datetime import datetime
+
+from dateutil.tz import tzutc
+
 from pyinaturalist.client import iNatClient
 from pyinaturalist.constants import API_V1
 from pyinaturalist.models import User
@@ -43,3 +47,16 @@ def test_autocomplete(requests_mock):
     results = iNatClient().users.autocomplete(q='nico')
     assert len(results) == 3 and isinstance(results[0], User)
     assert results[0].id == 886482
+
+
+def test_me(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/users/me',
+        json=SAMPLE_DATA['get_users_autocomplete'],
+        status_code=200,
+    )
+
+    user = iNatClient().users.me()
+    assert user.id == 886482
+    assert user.login == 'niconoe'
+    assert user.created_at == datetime(2018, 4, 23, 17, 11, 14, tzinfo=tzutc())
