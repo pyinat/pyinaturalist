@@ -96,7 +96,7 @@ def test_add_observation(get_access_token, requests_mock):
         status_code=200,
     )
     observation_ids = 5678, 9012
-    iNatClient().projects.add_observations(1234, *observation_ids)
+    iNatClient().projects.add_observations(1234, observation_ids)
     get_access_token.assert_called()
 
 

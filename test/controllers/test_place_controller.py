@@ -21,7 +21,7 @@ def test_from_ids(requests_mock):
         json={'results': [j_place_1, j_place_2], 'total_results': 2},
         status_code=200,
     )
-    results = iNatClient().places.from_ids(89191, 67591).all()
+    results = iNatClient().places.from_ids([89191, 67591]).all()
     place = results[0]
 
     assert len(results) == 2 and isinstance(place, Place)

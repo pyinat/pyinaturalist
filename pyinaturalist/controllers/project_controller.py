@@ -1,7 +1,8 @@
 from typing import Optional
 
-from pyinaturalist.constants import IntOrStr, ListResponse
+from pyinaturalist.constants import IntOrStr, ListResponse, MultiInt, MultiIntOrStr
 from pyinaturalist.controllers import BaseController
+from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import Project
 from pyinaturalist.paginator import Paginator
@@ -22,7 +23,7 @@ class ProjectController(BaseController):
         """Get a single project by ID"""
         return self.from_ids(project_id, **kwargs).one()
 
-    def from_ids(self, *project_ids: IntOrStr, **params) -> Paginator[Project]:
+    def from_ids(self, project_ids: MultiIntOrStr, **params) -> Paginator[Project]:
         """Get projects by ID
 
         Args:
@@ -34,7 +35,9 @@ class ProjectController(BaseController):
     def search(self, **params) -> Paginator[Project]:
         return self.client.paginate(get_projects, Project, **params)
 
-    def add_observations(self, project_id: int, *observation_ids: int, **params) -> ListResponse:
+    def add_observations(
+        self, project_id: int, observation_ids: MultiInt, **params
+    ) -> ListResponse:
         """Add an observation to a project
 
         Args:
@@ -42,7 +45,7 @@ class ProjectController(BaseController):
             observation_ids: One or more observation IDs to add
         """
         responses = []
-        for observation_id in observation_ids:
+        for observation_id in ensure_list(observation_ids):
             response = self.client.request(
                 add_project_observation,
                 project_id=project_id,
@@ -55,15 +58,17 @@ class ProjectController(BaseController):
 
     @document_controller_params(update_project)
     def update(self, project_id: IntOrStr, **params) -> Project:
-        response = self.client.request(update_project, project_id, **params)
+        response = self.client.request(update_project, project_id, auth=True, **params)
         return Project.from_json(response)
 
     @document_controller_params(add_project_users)
-    def add_users(self, project_id: IntOrStr, *user_ids: int, **params) -> Project:
-        response = self.client.request(add_project_users, project_id, user_ids, **params)
+    def add_users(self, project_id: IntOrStr, user_ids: MultiInt, **params) -> Project:
+        response = self.client.request(add_project_users, project_id, user_ids, auth=True, **params)
         return Project.from_json(response)
 
     @document_controller_params(delete_project_users)
-    def delete_users(self, project_id: IntOrStr, *user_ids: int, **params) -> Project:
-        response = self.client.request(delete_project_users, project_id, user_ids, **params)
+    def delete_users(self, project_id: IntOrStr, user_ids: MultiInt, **params) -> Project:
+        response = self.client.request(
+            delete_project_users, project_id, user_ids, auth=True, **params
+        )
         return Project.from_json(response)

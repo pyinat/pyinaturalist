@@ -2,7 +2,9 @@ from typing import Optional
 
 from attr import fields_dict
 
+from pyinaturalist.constants import MultiInt
 from pyinaturalist.controllers import BaseController
+from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import Taxon
 from pyinaturalist.paginator import IDPaginator, Paginator
@@ -18,7 +20,7 @@ class TaxonController(BaseController):
         """Get a single taxon by ID"""
         return self.from_ids(taxon_id, **kwargs).one()
 
-    def from_ids(self, *taxon_ids: int, **params) -> Paginator[Taxon]:
+    def from_ids(self, taxon_ids: MultiInt, **params) -> Paginator[Taxon]:
         """Get taxa by ID
 
         Args:
@@ -28,7 +30,7 @@ class TaxonController(BaseController):
             get_taxa_by_id,
             Taxon,
             cls=IDPaginator,
-            ids=taxon_ids,
+            ids=ensure_list(taxon_ids),
             ids_per_request=IDS_PER_REQUEST,
             **params
         )

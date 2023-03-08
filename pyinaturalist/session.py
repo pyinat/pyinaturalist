@@ -413,7 +413,7 @@ def get_refresh_params(endpoint) -> Dict:
             REFRESH_LIMITER.try_acquire(bucket)
             break
         except BucketFullException as e:
-            seconds = int(e.meta_info["remaining_time"])
+            seconds = int(e.meta_info['remaining_time'])
             logger.debug(f'{bucket} cannot be refreshed again for {seconds} seconds')
             v += 1
 
