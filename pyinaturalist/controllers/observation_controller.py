@@ -6,8 +6,10 @@ from pyinaturalist.constants import (
     HistogramResponse,
     IntOrStr,
     ListResponse,
+    MultiInt,
 )
 from pyinaturalist.controllers import BaseController
+from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import document_controller_description, document_controller_params
 from pyinaturalist.models import (
     ControlledTermCounts,
@@ -48,7 +50,7 @@ class ObservationController(BaseController):
         return self.from_ids(observation_id, **kwargs).one()
 
     @document_controller_description(get_observations_by_id)
-    def from_ids(self, *observation_ids: int, **params) -> Paginator[Observation]:
+    def from_ids(self, observation_ids: MultiInt, **params) -> Paginator[Observation]:
         """
         Args:
             observation_ids: One or more observation IDs
@@ -57,7 +59,7 @@ class ObservationController(BaseController):
             get_observations_by_id,
             Observation,
             cls=IDPaginator,
-            ids=observation_ids,
+            ids=ensure_list(observation_ids),
             ids_per_request=IDS_PER_REQUEST,
             **params,
         )
@@ -120,13 +122,13 @@ class ObservationController(BaseController):
         response = self.client.request(create_observation, auth=True, **params)
         return Observation.from_json(response)
 
-    def delete(self, *observation_ids: int, **params):
+    def delete(self, observation_ids: MultiInt, **params):
         """Delete observations
 
         Args:
             observation_ids: One or more observation IDs
         """
-        for observation_id in observation_ids:
+        for observation_id in ensure_list(observation_ids):
             self.client.request(
                 delete_observation,
                 auth=True,

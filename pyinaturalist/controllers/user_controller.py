@@ -1,7 +1,8 @@
 from typing import List, Optional
 
-from pyinaturalist.constants import IntOrStr
+from pyinaturalist.constants import MultiIntOrStr
 from pyinaturalist.controllers import BaseController
+from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import User
 from pyinaturalist.paginator import IDPaginator, Paginator
@@ -15,7 +16,7 @@ class UserController(BaseController):
         """Get a single user by ID"""
         return self.from_ids(user_id, **kwargs).one()
 
-    def from_ids(self, *user_ids: IntOrStr, **params) -> Paginator[User]:
+    def from_ids(self, user_ids: MultiIntOrStr, **params) -> Paginator[User]:
         """Get users by ID
 
         Example:
@@ -30,7 +31,9 @@ class UserController(BaseController):
         Args:
             user_ids: One or more project IDs
         """
-        return self.client.paginate(get_user_by_id, User, cls=IDPaginator, ids=user_ids, **params)
+        return self.client.paginate(
+            get_user_by_id, User, cls=IDPaginator, ids=ensure_list(user_ids), **params
+        )
 
     # TODO: Wrap in paginator?
     @document_controller_params(get_users_autocomplete)

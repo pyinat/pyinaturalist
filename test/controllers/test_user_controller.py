@@ -28,7 +28,7 @@ def test_from_ids(requests_mock):
         status_code=200,
     )
 
-    results = iNatClient().users.from_ids(1, 2).all()
+    results = iNatClient().users.from_ids([1, 2]).all()
     assert len(results) == 2 and isinstance(results[0], User)
     assert results[0].id == 1
 
