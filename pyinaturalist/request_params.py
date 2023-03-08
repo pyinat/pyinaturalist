@@ -9,7 +9,7 @@ import re
 from datetime import date, datetime, timedelta
 from inspect import signature
 from logging import getLogger
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, List, Mapping, Optional, Tuple, Union
 
 from dateutil.parser import parse as parse_date
 from dateutil.relativedelta import relativedelta
@@ -96,6 +96,7 @@ def preprocess_request_params(
     params = convert_pagination_params(params)
     params = convert_bool_params(params)
     params = convert_datetime_params(params)
+    params = convert_observation_field_filters(params)
     if convert_lists:
         params = convert_list_params(params)
     params = strip_empty_values(params)
@@ -172,6 +173,21 @@ def convert_observation_field_params(params: RequestParams) -> RequestParams:
         params['observation_field_values_attributes'] = [
             {'observation_field_id': k, 'value': v} for k, v in obs_fields.items()
         ]
+    return params
+
+
+def convert_observation_field_filters(params: RequestParams) -> RequestParams:
+    fields = params.pop('fields', None)
+    if not fields:
+        return params
+    # List of fields to filter on (any value)
+    elif isinstance(fields, (list, tuple)):
+        for field in fields:
+            params[f'field:{field}'] = ''
+    # List of fields to filter on (specific values)
+    elif isinstance(fields, Mapping):
+        for field, value in fields.items():
+            params[f'field:{field}'] = value or ''
     return params
 
 

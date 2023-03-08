@@ -65,6 +65,15 @@ def get_observations(**params) -> JsonResponse:
         '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK'
         '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK'
 
+        Search for observations with a given observation field:
+
+        >>> response = get_observations(fields=['Species count'])
+
+        Or observation field value:
+
+        >>> response = get_observations(fields={'Species count': 2})
+
+
         .. admonition:: Example Response
             :class: toggle
 

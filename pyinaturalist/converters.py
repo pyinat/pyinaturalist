@@ -185,8 +185,10 @@ def safe_split(value: Any, delimiter: str = '|') -> List[str]:
 
 
 def strip_empty_values(values: Dict) -> Dict:
-    """Remove any dict items with empty or ``None`` values."""
-    return {k: v for k, v in values.items() if v or v in [False, 0, 0.0]}
+    """Remove any dict items with empty or ``None`` values.
+    Observation field fiters are an exception (e.g. ``field:foo=``).
+    """
+    return {k: v for k, v in values.items() if v or v in [False, 0, 0.0] or k.startswith('field:')}
 
 
 # Type conversion functions for files and collections

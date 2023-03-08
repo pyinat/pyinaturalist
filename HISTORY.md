@@ -5,6 +5,15 @@
 ### New Endpoints
 * Added new **User** endpoint: `get_current_user()`
 
+### Modified Endpoints
+Add support for searching observations by observation fields, using a new `fields` param for the following functions:
+* `get_observations()`
+* `get_observation_histogram()`
+* `get_observation_identifiers()`
+* `get_observation_observers()`
+* `get_observation_popular_field_values()`
+* `get_observation_species_counts()`
+
 ## 0.18.0 (2023-02-27)
 
 ### New Endpoints
