@@ -62,7 +62,7 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | GET    | /users/{id}                        | {py:func}`.get_user_by_id`
 | GET    | /users/{id}/projects               |
 | GET    | /users/autocomplete                | {py:func}`.get_users_autocomplete`
-| GET    | /users/me                          |
+| GET    | /users/me                          | {py:func}`.get_current_user`
 
 ## v0 API
 For all available endpoints, see: <https://www.inaturalist.org/pages/api+reference>

@@ -3,15 +3,15 @@ from datetime import datetime
 from dateutil.tz import tzutc
 
 from pyinaturalist.constants import API_V1
-from pyinaturalist.v1 import get_user_by_id, get_users_autocomplete
-from test.conftest import load_sample_data
+from pyinaturalist.v1 import get_current_user, get_user_by_id, get_users_autocomplete
+from test.sample_data import SAMPLE_DATA
 
 
 def test_get_user_by_id(requests_mock):
     user_id = 1
     requests_mock.get(
         f'{API_V1}/users/{user_id}',
-        json=load_sample_data('get_user_by_id.json'),
+        json=SAMPLE_DATA['get_user_by_id'],
         status_code=200,
     )
 
@@ -24,7 +24,7 @@ def test_get_user_by_id(requests_mock):
 def test_get_users_autocomplete(requests_mock):
     requests_mock.get(
         f'{API_V1}/users/autocomplete',
-        json=load_sample_data('get_users_autocomplete.json'),
+        json=SAMPLE_DATA['get_users_autocomplete'],
         status_code=200,
     )
 
@@ -35,3 +35,16 @@ def test_get_users_autocomplete(requests_mock):
     assert first_result['id'] == 886482
     assert first_result['login'] == 'niconoe'
     assert first_result['created_at'] == datetime(2018, 4, 23, 17, 11, 14, tzinfo=tzutc())
+
+
+def test_get_current_user(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/users/me',
+        json=SAMPLE_DATA['get_users_autocomplete'],
+        status_code=200,
+    )
+
+    user = get_current_user()
+    assert user['id'] == 886482
+    assert user['login'] == 'niconoe'
+    assert user['created_at'] == datetime(2018, 4, 23, 17, 11, 14, tzinfo=tzutc())

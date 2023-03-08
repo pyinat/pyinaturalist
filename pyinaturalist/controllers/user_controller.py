@@ -6,7 +6,7 @@ from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import document_controller_params
 from pyinaturalist.models import User
 from pyinaturalist.paginator import IDPaginator, Paginator
-from pyinaturalist.v1 import get_user_by_id, get_users_autocomplete
+from pyinaturalist.v1 import get_current_user, get_user_by_id, get_users_autocomplete
 
 
 class UserController(BaseController):
@@ -40,3 +40,9 @@ class UserController(BaseController):
     def autocomplete(self, **params) -> List[User]:
         response = self.client.request(get_users_autocomplete, **params)
         return User.from_json_list(response)
+
+    @document_controller_params(get_current_user)
+    def me(self, **params) -> User:
+        response = self.client.request(get_current_user, auth=True, **params)
+        print(response)
+        return User.from_json(response)
