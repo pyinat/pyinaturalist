@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import Optional
 
 from pyinaturalist.constants import API_V1, IntOrStr, JsonResponse
 from pyinaturalist.converters import convert_all_timestamps, convert_generic_timestamps
@@ -66,3 +67,24 @@ def get_users_autocomplete(q: str, **params) -> JsonResponse:
     users = response.json()
     users['results'] = convert_all_timestamps(users['results'])
     return users
+
+
+def get_current_user(access_token: Optional[str] = None, **params) -> JsonResponse:
+    """Get your own user profile
+
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v1:`GET /users/me <Users/get_users_me>`
+
+
+    Example:
+        >>> response = get_current_user(access_token=access_token)
+        >>> pprint(response)
+        [1234]  my_username
+
+    Returns:
+        Response dict containing a single user record
+    """
+    response = get(f'{API_V1}/users/me', access_token=access_token, **params)
+    return convert_generic_timestamps(response.json()['results'][0])

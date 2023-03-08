@@ -2,6 +2,9 @@
 
 ## 0.19.0 (Unreleased)
 
+### New Endpoints
+* Added new **User** endpoint: `get_current_user()`
+
 ## 0.18.0 (2023-02-27)
 
 ### New Endpoints
