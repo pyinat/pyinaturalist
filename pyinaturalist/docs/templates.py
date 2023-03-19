@@ -10,7 +10,7 @@ common with other functions, consider using a template function.
 Note: Since the templates are applied dynamically at import time, this adds a tiny amount of overhead
 (about 20 milliseconds as of v0.14) to the import time of the library.
 """
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from pyinaturalist.constants import (
     AnyDate,
@@ -188,6 +188,7 @@ def _observation_v1(
     verifiable: Optional[bool] = None,
     not_id: Optional[MultiInt] = None,
     sound_license: Optional[MultiStr] = None,
+    fields: Optional[Union[List, Dict]] = None,
     ofv_datatype: Optional[MultiStr] = None,
     place_id: Optional[MultiInt] = None,
     project_id: Optional[MultiInt] = None,
@@ -259,6 +260,7 @@ def _observation_v1(
     project_id: Must be added to the project this ID or slug
     rank: Taxon must have this rank
     site_id: Must be affiliated with the iNaturalist network website with this ID
+    fields: Must have these observation fields (optionally with values)
     ofv_datatype: Must have an observation field value with this datatype
     sound_license: Must have at least one sound with this license
     without_taxon_id: Exclude observations of these taxa and their descendants
@@ -604,7 +606,7 @@ def _taxon_params(
 def _taxon_id_params(
     id_above: Optional[int] = None,
     id_below: Optional[int] = None,
-    only_id: Optional[int] = None,
+    only_id: Optional[bool] = None,
     parent_id: Optional[int] = None,
 ):
     """Args:
@@ -651,7 +653,7 @@ def _name(name: Optional[str] = None):
     """
 
 
-def _only_id(only_id: bool = False):
+def _only_id(only_id: Optional[bool] = None):
     """Args:
     only_id: Return only the record IDs
     """
