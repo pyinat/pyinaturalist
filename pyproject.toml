@@ -46,7 +46,7 @@ rich                        = ">=10.9"
 ujson                       = {optional=true, version="^5.4.0"}
 
 # Documentation dependencies needed for Readthedocs builds
-furo                        = {optional=true, version="^2022.9"}
+furo                        = {optional=true, version=">=2022.9,<2024.0"}
 ipython                     = {optional=true, version="^7.25.0"}
 linkify-it-py               = {optional=true, version="^1.0.1"}
 myst-parser                 = {optional=true, version="^0.19"}
