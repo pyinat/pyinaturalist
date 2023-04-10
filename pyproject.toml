@@ -34,7 +34,7 @@ packages = [
 python                      = "^3.7"
 attrs                       = ">=21.2"
 keyring                     = ">=22.3"
-platformdirs                = ">=3.0"
+platformdirs                = ">=2.6"
 python-dateutil             = ">=2.0"
 python-forge                = ">=18.6"
 requests                    = ">=2.22"
@@ -43,7 +43,7 @@ requests-ratelimiter        = ">=0.3.2"
 rich                        = ">=10.9"
 
 # Optional dependencies
-ujson                       = {optional=true, version="^5.4.0"}
+ujson                       = {optional=true, version=">5.0"}
 
 # Documentation dependencies needed for Readthedocs builds
 furo                        = {optional=true, version="^2023.3"}

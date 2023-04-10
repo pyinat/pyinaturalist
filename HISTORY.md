@@ -14,6 +14,10 @@ Add support for searching observations by observation fields, using a new `field
 * `get_observation_popular_field_values()`
 * `get_observation_species_counts()`
 
+### Models
+* Add `Sound` model for `Observation.sounds`
+* Fix initialization of `ListedTaxon.place`
+
 ## 0.18.0 (2023-02-27)
 
 ### New Endpoints
