@@ -70,7 +70,7 @@ def upper(value) -> Optional[str]:
 # Models imported in order of dependencies
 # --------------------------------------------------------
 
-from pyinaturalist.models.photo import IconPhoto, Photo
+from pyinaturalist.models.media import IconPhoto, Photo, Sound
 from pyinaturalist.models.place import Place
 from pyinaturalist.models.user import User, UserCount, UserCounts
 from pyinaturalist.models.checklist import Checklist, EstablishmentMeans, ListedTaxon

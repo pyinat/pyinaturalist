@@ -22,6 +22,7 @@ from pyinaturalist.models import (
     ObservationFieldValue,
     Photo,
     ProjectObservation,
+    Sound,
     Taxon,
     User,
     coordinate_pair,
@@ -126,7 +127,6 @@ class Observation(BaseModel):
     site_id: int = field(
         default=None, doc='Site ID for iNaturalist network members, or ``1`` for inaturalist.org'
     )
-    sounds: List[Dict] = field(factory=list, doc='Observation sound files')
     species_guess: str = field(
         default=None, doc="Taxon name from observer's initial identification"
     )
@@ -160,6 +160,9 @@ class Observation(BaseModel):
         ProjectObservation.from_json_list,
         type=List[ProjectObservation],
         doc='Details on any projects that the observation has been added to',
+    )
+    sounds: property = LazyProperty(
+        Sound.from_json_list, type=List[Sound], doc='Observation sound files'
     )
     taxon: property = LazyProperty(Taxon.from_json, type=Taxon, doc='Observation taxon')
     user: property = LazyProperty(User.from_json, type=User, doc='Observer')

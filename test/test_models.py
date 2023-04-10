@@ -689,6 +689,22 @@ def test_search__user():
     assert isinstance(search_result.record, User) and search_result.record.id == 113886
 
 
+# Sound
+# --------------------
+
+
+def test_sound__converters():
+    sound = Sound.from_json(j_sound_1)
+    assert sound.license_code == 'CC0'
+
+
+def test_sound__aliases():
+    sound = Sound.from_json(j_sound_1)
+    url = 'https://static.inaturalist.org/sounds/263113.wav?1624793769'
+    assert sound.url == sound.file_url == url
+    assert sound.mimetype == sound.file_content_type == 'audio/x-wav'
+
+
 # Taxa
 # --------------------
 

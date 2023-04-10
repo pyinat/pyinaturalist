@@ -19,13 +19,7 @@ from pyinaturalist.models import BaseModel, define_model, field
 
 
 @define_model
-class Photo(BaseModel):
-    """:fa:`camera` An observation photo, based on the schema of photos from:
-
-    * `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_
-    * `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`
-    """
-
+class BaseMedia(BaseModel):
     attribution: str = field(default=None, doc='License attribution')
     license_code: str = field(
         default=None,
@@ -33,6 +27,30 @@ class Photo(BaseModel):
         options=ALL_LICENSES,
         doc='Creative Commons license code',
     )
+
+    @property
+    def ext(self) -> str:
+        """File extension from URL"""
+        return self.url.lower().split('.')[-1].split('?')[0]  # type: ignore
+
+    @property
+    def has_cc_license(self) -> bool:
+        """Determine if this photo has a Creative Commons license"""
+        return self.license_code in CC_LICENSES
+
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'license_code', 'url']
+
+
+@define_model
+class Photo(BaseMedia):
+    """:fa:`camera` An observation photo, based on the schema of photos from:
+
+    * `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_
+    * `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`
+    """
+
     observation_id: int = field(default=None, doc='Associated observation ID')
     original_dimensions: Tuple[int, int] = field(
         converter=format_dimensions, default=(0, 0), doc='Dimensions of original image'
@@ -66,19 +84,9 @@ class Photo(BaseModel):
         return super(Photo, cls).from_json(value, **kwargs)
 
     @property
-    def ext(self) -> str:
-        """File extension from URL"""
-        return self.url.lower().split('.')[-1].split('?')[0]
-
-    @property
     def dimensions_str(self) -> str:
         """Dimensions as a string, formatted as ``{width}x{height}``"""
         return f'{self.original_dimensions[0]}x{self.original_dimensions[1]}'
-
-    @property
-    def has_cc_license(self) -> bool:
-        """Determine if this photo has a Creative Commons license"""
-        return self.license_code in CC_LICENSES
 
     @property
     def info_url(self) -> str:
@@ -147,10 +155,6 @@ class Photo(BaseModel):
             'URL': self.original_url,
         }
 
-    @property
-    def _str_attrs(self) -> List[str]:
-        return ['id', 'license_code', 'url']
-
 
 @define_model
 class IconPhoto(Photo):
@@ -179,3 +183,33 @@ class IconPhoto(Photo):
     @property
     def _str_attrs(self) -> List[str]:
         return ['iconic_taxon_name', 'url']
+
+
+@define_model
+class Sound(BaseMedia):
+    file_content_type: str = field(default=None)
+    file_url: str = field(default=None)
+    native_sound_id: str = field(default=None)
+    secret_token: str = field(default=None)
+    subtype: str = field(default=None)
+
+    # Unused attributes
+    # flags: List = field(factory=list)
+    # play_local: bool = field(default=None)
+
+    # Aliases
+    @property
+    def mimetype(self) -> str:
+        return self.file_content_type
+
+    @property
+    def url(self) -> str:
+        return self.file_url
+
+    @property
+    def _row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'License': self.license_code,
+            'URL': self.url,
+        }

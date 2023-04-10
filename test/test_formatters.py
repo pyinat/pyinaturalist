@@ -32,6 +32,7 @@ TABULAR_RESPONSES = [
     j_places_nearby,
     [j_project_1, j_project_2],
     j_search_results,
+    [j_sound_1, j_sound_1],
     [j_taxon_1, j_taxon_2_partial],
     [j_user_1, j_user_2_partial],
 ]
@@ -129,6 +130,7 @@ Observation(
         Photo(id=24355313, license_code='CC-BY', url='https://static.inaturalist.org/photos/24355313/square.jpeg?1536150659')
     ],
     project_observations=[],
+    sounds=[],
     taxon=Taxon(id=493595, full_name='Species: Lixus bardanae'),
     user=User(id=886482, login='niconoe', name='Nicolas Noé')
 )
