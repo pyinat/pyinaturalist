@@ -433,7 +433,7 @@ def test_observation__empty():
     assert obs.user is None
 
 
-def test_observation__with_ofvs():
+def test_observation__ofvs():
     obs = Observation.from_json(j_observation_3_ofvs)
     ofv = obs.ofvs[0]
     assert isinstance(ofv, ObservationFieldValue)
@@ -923,6 +923,14 @@ def test_taxon_counts__empty():
     taxon_counts = TaxonCounts()
     assert taxon_counts.data == []
     assert taxon_counts.id_map == {}
+
+
+def test_taxon_summary():
+    ts = TaxonSummary.from_json(j_taxon_summary_2_listed)
+    assert ts.listed_taxon.taxon_id == 47219
+    assert ts.listed_taxon.place.id == 144952
+    assert ts.listed_taxon.place.display_name.startswith('HRM District 13')
+    assert ts.listed_taxon.place.place_type_name == 'Constituency'
 
 
 # Users

@@ -16,6 +16,7 @@ Add support for searching observations by observation fields, using a new `field
 
 ### Models
 * Add `Sound` model for `Observation.sounds`
+* Fix initialization of `ListedTaxon.place`
 
 ## 0.18.0 (2023-02-27)
 

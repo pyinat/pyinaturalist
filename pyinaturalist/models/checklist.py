@@ -126,7 +126,8 @@ class ListedTaxon(EstablishmentMeans):
 
     @place_id.setter
     def place_id(self, value: int):
-        self.place = Place(id=value)
+        self.place = self.place or Place()
+        self.place.id = value
 
     @property
     def updater_id(self) -> Optional[int]:
@@ -134,7 +135,8 @@ class ListedTaxon(EstablishmentMeans):
 
     @updater_id.setter
     def updater_id(self, value: int):
-        self.updater = User(id=value)
+        self.updater = self.updater or User()
+        self.updater.id = value
 
     @property
     def user_id(self) -> Optional[int]:
@@ -142,7 +144,8 @@ class ListedTaxon(EstablishmentMeans):
 
     @user_id.setter
     def user_id(self, value: int):
-        self.user = User(id=value)
+        self.user = self.user or User()
+        self.user.id = value
 
     @property
     def _row(self) -> TableRow:
