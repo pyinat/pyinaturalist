@@ -60,7 +60,7 @@ sphinxcontrib-apidoc        = {optional=true, version="^0.3"}
 
 [tool.poetry.dev-dependencies]
 coverage                    = ">=7.2"
-nox                         = "^2022.1.7"
+nox                         = "^2023.4.22"
 nox-poetry                  = "^1.0.0"
 pre-commit                  = "^2.19"
 pretty-errors               = ">=1.2"
