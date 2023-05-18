@@ -384,7 +384,7 @@ def _create_observation(
 ):
     """Args:
     species_guess: Equivalent to the 'What did you see?' field on the observation form.
-        iNat will try to choose a single taxon based on this, but it may fail if it's ambuguous
+        iNat will try to choose a single taxon based on this, but it may fail if it's ambiguous
     taxon_id: ID of the taxon to associate with this observation
     observed_on: Alias for ``observed_on_string``; accepts :py:class:`~datetime.datetime` objects.
     observed_on_string: Date/time of the observation. Time zone will default to the user's
