@@ -18,7 +18,7 @@ def test_search(requests_mock):
     project_result = response['results'][2]
     user_result = response['results'][3]
 
-    assert all([isinstance(result['score'], float) for result in response['results']])
+    assert all(isinstance(result['score'], float) for result in response['results'])
 
     # Mainly just need to test type conversions
     assert taxon_result['type'] == 'Taxon'

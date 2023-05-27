@@ -357,7 +357,7 @@ def _validate_multiple_choice_param(
             return True
         if not isinstance(value, list):
             value = [value]
-        return all([v in choices for v in value])
+        return all(v in choices for v in value)
 
     def normalize(value):
         if not value:

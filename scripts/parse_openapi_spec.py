@@ -67,7 +67,7 @@ def process_enum_params(enum_params) -> Tuple[Dict, Dict]:
     constant_enum_params = {name: options for (path, name, options) in enum_params}
 
     def has_multiple_enums(name, options):
-        return any([n == name and o != options for (p, n, o) in enum_params])
+        return any(n == name and o != options for (p, n, o) in enum_params)
 
     def get_all_enums(name):
         """Get all enums with the given parameter name, along with their parent endpoint paths"""

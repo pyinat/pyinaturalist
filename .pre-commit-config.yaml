@@ -31,7 +31,7 @@ repos:
       - id: xenon
         args: [--max-average=A, --max-modules=C, --max-absolute=C]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.2.0
+    rev: v1.3.0
     hooks:
       - id: mypy
         additional_dependencies: [attrs, types-python-dateutil, types-requests, types-ujson]

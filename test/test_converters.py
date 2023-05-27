@@ -87,16 +87,16 @@ def test_format_histogram__datetime_keys():
     response = load_sample_data('get_observation_histogram_month.json')
     histogram = convert_observation_histogram(response)
     assert histogram[datetime(2020, 1, 1, 0, 0)] == 272
-    assert all([isinstance(k, datetime) for k in histogram.keys()])
-    assert all([isinstance(v, int) for v in histogram.values()])
+    assert all(isinstance(k, datetime) for k in histogram.keys())
+    assert all(isinstance(v, int) for v in histogram.values())
 
 
 def test_format_histogram__int_keys():
     response = load_sample_data('get_observation_histogram_month_of_year.json')
     histogram = convert_observation_histogram(response)
     assert histogram[1] == 272
-    assert all([isinstance(k, int) for k in histogram.keys()])
-    assert all([isinstance(v, int) for v in histogram.values()])
+    assert all(isinstance(k, int) for k in histogram.keys())
+    assert all(isinstance(v, int) for v in histogram.values())
 
 
 @pytest.mark.parametrize(
