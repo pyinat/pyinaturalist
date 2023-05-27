@@ -188,7 +188,7 @@ def _observation_v1(
     verifiable: Optional[bool] = None,
     not_id: Optional[MultiInt] = None,
     sound_license: Optional[MultiStr] = None,
-    fields: Optional[Union[List, Dict]] = None,
+    observation_fields: Optional[Union[List, Dict]] = None,
     ofv_datatype: Optional[MultiStr] = None,
     place_id: Optional[MultiInt] = None,
     project_id: Optional[MultiInt] = None,
@@ -260,7 +260,7 @@ def _observation_v1(
     project_id: Must be added to the project this ID or slug
     rank: Taxon must have this rank
     site_id: Must be affiliated with the iNaturalist network website with this ID
-    fields: Must have these observation fields (optionally with values)
+    observation_fields: Must have these observation fields (optionally with values)
     ofv_datatype: Must have an observation field value with this datatype
     sound_license: Must have at least one sound with this license
     without_taxon_id: Exclude observations of these taxa and their descendants
@@ -333,7 +333,7 @@ def _observation_v0(
     on: Filter by date string
     extra: Retrieve additional information.
         **'projects'** returns info about the projects the observations have been added to,
-        **'fields'** returns observation field values,
+        **'observation_fields'** returns observation field values,
         **'observation_photos'** returns information about the photos' relationship with the
         observation, like their order.
     response_format: A supported response format to return
