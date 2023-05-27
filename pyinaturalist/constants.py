@@ -196,6 +196,15 @@ SOURCES = ['places', 'projects', 'taxa', 'users']
 # Endpoint-specific options for multiple choice parameters
 V0_OBS_ORDER_BY_PROPERTIES = ['date_added', 'observed_on']
 V1_OBS_ORDER_BY_PROPERTIES = ['created_at', 'id', 'observed_on', 'species_guess', 'votes']
+V2_OBS_ORDER_BY_PROPERTIES = [
+    'created_at',
+    'id',
+    'observed_on',
+    'species_guess',
+    'updated_at',
+    'votes',
+    'random',
+]
 PROJECT_ORDER_BY_PROPERTIES = ['created', 'distance', 'featured', 'recent_posts', 'updated']
 
 # Multiple-choice request parameters, with keys mapped to their possible choices (non-endpoint-specific)
