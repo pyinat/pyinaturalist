@@ -13,7 +13,6 @@ logger = getLogger(__name__)
 
 
 # TODO: Send GET request with RISON if it fits in URL character limit?
-# TODO: Update Observation model for differences in v2 response
 # TODO: Code reuse, cleanup, etc.
 @document_request_params(
     *docs._get_observations, docs._pagination, docs._only_id, docs._access_token

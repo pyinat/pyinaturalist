@@ -41,15 +41,20 @@ class Observation(BaseModel):
     :v1:`GET /observations <Observations/get_observations>`
     """
 
+    application: Dict = field(factory=dict, doc='Application that created the observation')
     created_at: datetime = datetime_now_field(doc='Date and time the observation was created')
     captive: bool = field(
         default=None, doc='Indicates if the organism is non-wild (captive or cultivated)'
     )
     community_taxon_id: int = field(default=None, doc='The current community identification taxon')
+    context_geoprivacy: str = field(default=None)
+    context_taxon_geoprivacy: str = field(default=None)
+    context_user_geoprivacy: str = field(default=None)
     description: str = field(default=None, doc='Observation description')
     faves: List[Dict] = field(
         factory=list, doc='Details on users who have favorited the observation'
     )
+    flags: List[Dict] = field(factory=list)
     geoprivacy: str = field(default=None, options=GEOPRIVACY_LEVELS, doc='Location privacy level')
     identifications_count: int = field(default=0, doc='Total number of identifications')
     identifications_most_agree: bool = field(
@@ -131,10 +136,14 @@ class Observation(BaseModel):
         default=None, doc="Taxon name from observer's initial identification"
     )
     tags: List[str] = field(factory=list, doc='Arbitrary user tags added to the observation')
+    taxon_geoprivacy: str = field(default=None)
     updated_at: DateTime = datetime_field(doc='Date and time the observation was last updated')
     uri: str = field(default=None, doc='Link to observation details page')
     uuid: str = field(
         default=None, doc='Universally unique ID; generally preferred over ``id`` where possible'
+    )
+    viewer_trusted_by_observer: bool = field(
+        default=None, doc='Observer trusts the authenticated user with access to hidden coordinates'
     )
     votes: List[Dict] = field(factory=list, doc='Votes on data quality assessment metrics')
 
@@ -173,15 +182,16 @@ class Observation(BaseModel):
     # created_at_details: Dict = field(factory=dict)
     # created_time_zone: str = field(default=None)
     # faves_count: int = field(default=None)
-    # flags: List = field(factory=list)
     # geojson: Dict = field(factory=dict)
     # id_please: bool = field(default=None)
     # map_scale: int = field(default=None)
     # non_owner_ids: List = field(factory=list)
+    # non_traditional_projects: property = LazyProperty(Project.from_json_list, type=List[Project])
     # observed_on_details: Dict = field(factory=dict)
     # observed_on_string: str = field(default=None)
     # observation_photos: List[Photo] = field(converter=Photo.from_dict_list, factory=list)
     # observed_time_zone: str = field(default=None)
+    # private_geojson: Dict = field(factory=dict)
     # spam: bool = field(default=None)
     # time_observed_at: DateTime = datetime_attr
     # time_zone_offset: str = field(default=None)
