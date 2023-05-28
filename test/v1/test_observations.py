@@ -1,15 +1,15 @@
 # flake8: noqa: F405
 from datetime import datetime
 from io import BytesIO
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 from dateutil.tz import tzoffset, tzutc
-from requests import Request, Response, Session
+from requests import PreparedRequest
 
 from pyinaturalist.constants import API_V1
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.session import ClientSession
+from pyinaturalist.session import ClientSession, get_mock_response
 from pyinaturalist.v1 import (
     create_observation,
     delete_observation,
@@ -28,12 +28,7 @@ from pyinaturalist.v1 import (
 )
 from test.sample_data import SAMPLE_DATA, j_taxon_summary_1_conserved, j_taxon_summary_2_listed
 
-MOCK_RESPONSE = Mock(spec=Response)
-MOCK_RESPONSE.status_code = 200
-MOCK_RESPONSE.reason = 'OK'
-MOCK_RESPONSE.headers = {}
-MOCK_RESPONSE.request = Request()
-MOCK_RESPONSE.json.return_value = {'results': [], 'total_results': 0, 'access_token': ''}
+MOCK_RESPONSE = get_mock_response(PreparedRequest())
 
 
 def test_get_observation(requests_mock):
@@ -108,16 +103,16 @@ def test_get_observations__all_pages(requests_mock):
 
 @patch.object(ClientSession, 'send', return_value=MOCK_RESPONSE)
 def test_get_observations__by_obs_field(mock_send):
-    get_observations(taxon_id=3, fields=['Species count'])
+    get_observations(fields=['Species count'])
     request = mock_send.call_args[0][0]
-    assert request.url == f'{API_V1}/observations?taxon_id=3&field%3ASpecies+count='
+    assert request.params == {'field:Species count': ''}
 
 
 @patch.object(ClientSession, 'send', return_value=MOCK_RESPONSE)
 def test_get_observations__by_obs_field_values(mock_send):
-    get_observations(taxon_id=3, fields={'Species count': 2})
+    get_observations(fields={'Species count': 2})
     request = mock_send.call_args[0][0]
-    assert request.url == f'{API_V1}/observations?taxon_id=3&field%3ASpecies+count=2'
+    assert request.params == {'field:Species count': 2}
 
 
 def test_get_observations_by_id(requests_mock):
