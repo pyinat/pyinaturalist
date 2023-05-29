@@ -1,7 +1,7 @@
 from copy import deepcopy
 from logging import getLogger
 
-from pyinaturalist.constants import API_V2, V2_OBS_ORDER_BY_PROPERTIES, JsonResponse
+from pyinaturalist.constants import API_V2, V2_OBS_ORDER_BY_PROPERTIES, JsonResponse, RequestParams
 from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
@@ -24,7 +24,9 @@ def get_observations(**params) -> JsonResponse:
 
     * :fas:`lock-open` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
     * API reference: :v2:`GET /observations <Observations/get_observations>`
-    * **Provisional:** This is for testing purposes only, and will change in future releases
+    * See `iNaturalist API v2 documentation <https://api.inaturalist.org/v2/docs>`_ for details on
+      selecting return fields using ``fields`` parameter
+    * :fa:`exclamation-triangle` **Provisional:** This is for testing purposes only, and will change in future releases
 
     Examples:
 
@@ -48,6 +50,10 @@ def get_observations(**params) -> JsonResponse:
         '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK'
         '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK'
 
+        Return all response fields _except_ identifications:
+
+        >>> response = get_observations(id=14150125, except_fields=['identifications'])
+
         Search for observations with a given observation field:
 
         >>> response = get_observations(observation_fields=['Species count'])
@@ -56,10 +62,15 @@ def get_observations(**params) -> JsonResponse:
 
         >>> response = get_observations(observation_fields={'Species count': 2})
 
-        .. admonition:: Example Response
+        .. admonition:: Example Response (default/minimal)
             :class: toggle
 
-            .. literalinclude:: ../sample_data/get_observations_node.py
+            .. literalinclude:: ../sample_data/get_observations_v2_minimal.py
+
+        .. admonition:: Example Response (all fields)
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_observations_v2_full.py
 
     Returns:
         Response dict containing observation records
@@ -73,37 +84,49 @@ def get_observations(**params) -> JsonResponse:
         for k in except_fields:
             params['fields'].pop(k, None)
 
-    # If no field selections are specified, use GET method
+    # If no field selections are specified (or all fields), use GET method
     if not params.get('fields') or params.get('fields') == 'all':
-        if params.get('page') == 'all':
-            observations = paginate_all(get, f'{API_V2}/observations', method='id', **params)
-        else:
-            observations = get(f'{API_V2}/observations', **params).json()
+        observations = _get_observations(params)
 
     # If field selections are specified, use POST method and put fields in request body
     else:
-        headers = {'X-HTTP-Method-Override': 'GET'}
-        fields = {'fields': params.pop('fields')}
-        if params.get('page') == 'all':
-            observations = paginate_all(
-                post,
-                f'{API_V2}/observations',
-                method='id',
-                headers=headers,
-                json=fields,
-                **params,
-            )
-        else:
-            observations = post(
-                f'{API_V2}/observations',
-                headers=headers,
-                json=fields,
-                **params,
-            ).json()
+        observations = _get_post_observations(params)
 
     observations['results'] = convert_all_coordinates(observations['results'])
     observations['results'] = convert_all_timestamps(observations['results'])
     return observations
+
+
+def _get_observations(params: RequestParams) -> JsonResponse:
+    if params.get('page') == 'all':
+        return paginate_all(get, f'{API_V2}/observations', method='id', **params)
+    else:
+        return get(f'{API_V2}/observations', **params).json()
+
+
+def _get_post_observations(params: RequestParams) -> JsonResponse:
+    """Use POST method to get observations with selection of return fields.
+    This allows for more complex requests that may exceed the max length of a GET URL.
+    """
+    headers = {'X-HTTP-Method-Override': 'GET'}
+    fields = {'fields': params.pop('fields')}
+
+    if params.get('page') == 'all':
+        return paginate_all(
+            post,
+            f'{API_V2}/observations',
+            method='id',
+            headers=headers,
+            json=fields,
+            **params,
+        )
+    else:
+        return post(
+            f'{API_V2}/observations',
+            headers=headers,
+            json=fields,
+            **params,
+        ).json()
 
 
 # The full `fields` value to request all observation details
