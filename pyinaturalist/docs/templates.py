@@ -340,6 +340,17 @@ def _observation_v0(
     """
 
 
+# Observation params that are only in the v2 API
+def _observation_v2(
+    fields: Optional[Union[List[str], Dict[str, Any]]] = None,
+    except_fields: Optional[List[str]] = None,
+):
+    """Args:
+    fields: Data fields to return in the response
+    except_fields: Data fields to exclude from the response (and include all others)
+    """
+
+
 def _observation_histogram(
     date_field: str = 'observed',
     interval: str = 'month_of_year',
