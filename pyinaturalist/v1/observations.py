@@ -67,11 +67,11 @@ def get_observations(**params) -> JsonResponse:
 
         Search for observations with a given observation field:
 
-        >>> response = get_observations(fields=['Species count'])
+        >>> response = get_observations(observation_fields=['Species count'])
 
         Or observation field value:
 
-        >>> response = get_observations(fields={'Species count': 2})
+        >>> response = get_observations(observation_fields={'Species count': 2})
 
 
         .. admonition:: Example Response

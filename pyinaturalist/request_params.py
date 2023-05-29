@@ -177,7 +177,8 @@ def convert_observation_field_params(params: RequestParams) -> RequestParams:
 
 
 def convert_observation_field_filters(params: RequestParams) -> RequestParams:
-    fields = params.pop('fields', None)
+    """Convert observation field filters from simplified format to full request params"""
+    fields = params.pop('observation_fields', None)
     if not fields:
         return params
     # List of fields to filter on (any value)
