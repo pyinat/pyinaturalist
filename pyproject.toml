@@ -2,7 +2,7 @@
 name = "pyinaturalist"
 version = "0.19.0"
 description = "iNaturalist API client for python"
-authors = ["Nicolas Noé <nicolas@niconoe.eu>", "Jordan Cook <Jordan.Cook@pioneer.com>"]
+authors = ["Jordan Cook <jordan.cook.git@proton.me>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/pyinat/pyinaturalist"
