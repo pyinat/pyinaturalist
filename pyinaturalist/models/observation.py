@@ -259,7 +259,9 @@ class Observation(BaseModel):
     @property
     def ident_taxon_ids(self) -> List[int]:
         """Get all taxon IDs (including ancestors) from identifications"""
-        ident_taxa = [ident.taxon for ident in self.identifications if ident.taxon]
+        ident_taxa = [
+            ident.taxon for ident in self.identifications if ident.taxon and ident.current
+        ]
         ident_ids = chain.from_iterable([t.ancestor_ids + [t.id] for t in ident_taxa])
         return list(set(ident_ids))
 

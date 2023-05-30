@@ -488,6 +488,28 @@ def test_observation__ident_taxon_ids():
     ]
 
 
+def test_observation__ident_taxon_ids__current_only():
+    obs = Observation.from_json(j_observation_2)
+    obs.identifications[1].current = False
+    obs.identifications[1].taxon.id = 123456
+    assert obs.ident_taxon_ids == [
+        1,
+        372739,
+        48663,
+        48460,
+        47120,
+        47922,
+        184884,
+        47157,
+        47158,
+        522900,
+        47224,
+        134169,
+        48662,
+        61244,
+    ]
+
+
 def test_observation__ccumulative_ids__all_agree():
     obs = Observation.from_json(j_observation_2)
     assert obs.cumulative_ids == (2, 2)
