@@ -206,9 +206,11 @@ class Observation(BaseModel):
         observed_on = kwargs.pop('time_observed_at', None)
         if not isinstance(kwargs['observed_on'], datetime) and observed_on:
             kwargs['observed_on'] = observed_on
+
         # Set default URL based on observation ID
         if not kwargs.get('uri'):
             kwargs['uri'] = f'{INAT_BASE_URL}/observations/{kwargs.get("id", "")}'
+
         # Set identifications_count if missing
         if kwargs.get('identifications') and not kwargs.get('identifications_count'):
             kwargs['identifications_count'] = len(kwargs['identifications'])
@@ -216,9 +218,14 @@ class Observation(BaseModel):
 
     @classmethod
     def from_id(cls, id: int):
-        """Lookup and create a new Observation object from an ID"""
+        """**[Deprecated]** Lookup and create a new Observation object from an ID"""
         from pyinaturalist.v1 import get_observation
 
+        warn(
+            DeprecationWarning(
+                'This method is deprecated; please use iNatClient.observations() instead'
+            )
+        )
         json = get_observation(id)
         return cls.from_json(json)
 
