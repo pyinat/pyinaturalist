@@ -1,5 +1,7 @@
 from datetime import datetime
-from typing import Any, Dict, List
+from itertools import chain
+from typing import Any, Dict, List, Tuple
+from warnings import warn
 
 from pyinaturalist.constants import (
     ALL_LICENSES,
@@ -204,9 +206,11 @@ class Observation(BaseModel):
         observed_on = kwargs.pop('time_observed_at', None)
         if not isinstance(kwargs['observed_on'], datetime) and observed_on:
             kwargs['observed_on'] = observed_on
+
         # Set default URL based on observation ID
         if not kwargs.get('uri'):
             kwargs['uri'] = f'{INAT_BASE_URL}/observations/{kwargs.get("id", "")}'
+
         # Set identifications_count if missing
         if kwargs.get('identifications') and not kwargs.get('identifications_count'):
             kwargs['identifications_count'] = len(kwargs['identifications'])
@@ -214,11 +218,40 @@ class Observation(BaseModel):
 
     @classmethod
     def from_id(cls, id: int):
-        """Lookup and create a new Observation object from an ID"""
+        """**[Deprecated]** Lookup and create a new Observation object from an ID"""
         from pyinaturalist.v1 import get_observation
 
+        warn(
+            DeprecationWarning(
+                'This method is deprecated; please use iNatClient.observations() instead'
+            )
+        )
         json = get_observation(id)
         return cls.from_json(json)
+
+    @property
+    def cumulative_ids(self) -> Tuple[int, int]:
+        """Calculate the cumulative community ID score (agreements/total), as shown on the observation UI
+
+        Returns:
+            ``(agreements, total)``
+        """
+        idents_count = 0
+        idents_agree = 0
+        ident_taxon_ids = self.ident_taxon_ids
+
+        for ident in filter(lambda i: i.current, self.identifications):
+            user_taxon_ids = ident.taxon.ancestor_ids + [ident.taxon.id]
+            if self.community_taxon_id in user_taxon_ids:
+                # Count towards total & agree:
+                if ident.taxon.id in ident_taxon_ids:
+                    idents_count += 1
+                    idents_agree += 1
+            else:
+                # Maverick counts against:
+                idents_count += 1
+
+        return (idents_agree, idents_count)
 
     @property
     def default_photo(self) -> Photo:
@@ -229,6 +262,15 @@ class Observation(BaseModel):
             return self.taxon.icon
         else:
             return IconPhoto.from_iconic_taxon('unknown')
+
+    @property
+    def ident_taxon_ids(self) -> List[int]:
+        """Get all taxon IDs (including ancestors) from identifications"""
+        ident_taxa = [
+            ident.taxon for ident in self.identifications if ident.taxon and ident.current
+        ]
+        ident_ids = chain.from_iterable([t.ancestor_ids + [t.id] for t in ident_taxa])
+        return list(set(ident_ids))
 
     @property
     def _row(self) -> TableRow:
