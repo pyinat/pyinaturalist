@@ -1,4 +1,5 @@
 from datetime import datetime
+from itertools import chain
 from typing import Any, Dict, List
 
 from pyinaturalist.constants import (
@@ -229,6 +230,13 @@ class Observation(BaseModel):
             return self.taxon.icon
         else:
             return IconPhoto.from_iconic_taxon('unknown')
+
+    @property
+    def ident_taxon_ids(self) -> List[int]:
+        """Get all taxon IDs (including ancestors) from identifications"""
+        ident_taxa = [ident.taxon for ident in self.identifications if ident.taxon]
+        ident_ids = chain.from_iterable([t.ancestor_ids + [t.id] for t in ident_taxa])
+        return list(set(ident_ids))
 
     @property
     def _row(self) -> TableRow:

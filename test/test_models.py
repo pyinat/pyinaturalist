@@ -468,6 +468,26 @@ def test_observation__missing_default_photo_and_taxon():
     assert obs.default_photo.original_url.endswith('unknown-200px.png')
 
 
+def test_observation__ident_taxon_ids():
+    obs = Observation.from_json(j_observation_2)
+    assert obs.ident_taxon_ids == [
+        1,
+        372739,
+        48663,
+        48460,
+        47120,
+        47922,
+        184884,
+        47157,
+        47158,
+        522900,
+        47224,
+        134169,
+        48662,
+        61244,
+    ]
+
+
 def test_observations():
     obs_list = Observations.from_json_list(
         [j_observation_1, j_observation_1, j_observation_2, j_observation_3_ofvs]

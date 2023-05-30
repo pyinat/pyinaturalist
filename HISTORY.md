@@ -15,6 +15,7 @@ Add support for searching observations by observation fields, using a new `obser
 * `get_observation_species_counts()`
 
 ### Models
+* Add `Observation.ident_taxon_ids` dynamic property to get all identification taxon IDs (with ancestors)
 * Add `Sound` model for `Observation.sounds`
 * Fix initialization of `ListedTaxon.place`
 
