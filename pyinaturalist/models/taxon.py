@@ -224,10 +224,9 @@ class Taxon(BaseModel):
         """Info URL on iNaturalist.org"""
         return f'{INAT_BASE_URL}/taxa/{self.id}'
 
-    # TODO: Experimental; not sure if I want to have API calls in model classes
     @classmethod
     def from_id(cls, id: int) -> 'Taxon':
-        """Lookup and create a new Taxon object by ID"""
+        """**[Deprecated]** Lookup and create a new Taxon object by ID"""
         from pyinaturalist.v1 import get_taxa_by_id
 
         warn(DeprecationWarning('This method is deprecated; please use iNatClient.taxa() instead'))
