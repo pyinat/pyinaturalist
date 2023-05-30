@@ -14,7 +14,7 @@ from sphinx_autodoc_typehints import format_annotation
 from pyinaturalist.constants import DOCS_DIR
 from pyinaturalist.models import LazyProperty, get_lazy_properties
 
-IGNORE_PROPERTIES = ['row']
+IGNORE_PROPERTIES = ['_row', '_str_attrs']
 MODEL_DOC_DIR = join(DOCS_DIR, 'models')
 
 
