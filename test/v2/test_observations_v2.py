@@ -1,6 +1,7 @@
 import json
 from unittest.mock import patch
 
+import pytest
 from requests import PreparedRequest
 
 from pyinaturalist.constants import API_V2
@@ -102,3 +103,8 @@ def test_get_observations__by_obs_field_values(mock_send):
     get_observations(taxon_id=3, observation_fields={'Species count': 2})
     request = mock_send.call_args[0][0]
     assert request.params == {'taxon_id': 3, 'field:Species count': 2}
+
+
+def test_get_observations__invalid_fields():
+    with pytest.raises(ValueError):
+        get_observations(taxon_id=3, fields=['taxon'], except_fields=['identifications'])

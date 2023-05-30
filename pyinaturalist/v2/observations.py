@@ -80,16 +80,19 @@ def get_observations(**params) -> JsonResponse:
         Response dict containing observation records
     """
     params = validate_multiple_choice_param(params, 'order_by', V2_OBS_ORDER_BY_PROPERTIES)
+    except_fields = params.pop('except_fields', None)
+
+    if params.get('fields') and except_fields:
+        raise ValueError('Cannot use both fields and except_fields')
 
     # Request all fields except those specified
-    except_fields = params.pop('except_fields', None)
     if except_fields:
         params['fields'] = deepcopy(ALL_OBS_FIELDS)
         for k in except_fields:
             params['fields'].pop(k, None)
 
     # If no field selections are specified (or all fields), use GET method
-    if not params.get('fields') or params.get('fields') == 'all':
+    if params.get('fields') in ['all', None]:
         observations = _get_observations(params)
 
     # If field selections are specified, use POST method and put fields in request body
