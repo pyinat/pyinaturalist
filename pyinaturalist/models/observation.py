@@ -1,6 +1,7 @@
 from datetime import datetime
 from itertools import chain
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
+from warnings import warn
 
 from pyinaturalist.constants import (
     ALL_LICENSES,
@@ -220,6 +221,30 @@ class Observation(BaseModel):
 
         json = get_observation(id)
         return cls.from_json(json)
+
+    @property
+    def cumulative_ids(self) -> Tuple[int, int]:
+        """Calculate the cumulative community ID score (agreements/total), as shown on the observation UI
+
+        Returns:
+            ``(agreements, total)``
+        """
+        idents_count = 0
+        idents_agree = 0
+        ident_taxon_ids = self.ident_taxon_ids
+
+        for ident in filter(lambda i: i.current, self.identifications):
+            user_taxon_ids = ident.taxon.ancestor_ids + [ident.taxon.id]
+            if self.community_taxon_id in user_taxon_ids:
+                # Count towards total & agree:
+                if ident.taxon.id in ident_taxon_ids:
+                    idents_count += 1
+                    idents_agree += 1
+            else:
+                # Maverick counts against:
+                idents_count += 1
+
+        return (idents_agree, idents_count)
 
     @property
     def default_photo(self) -> Photo:

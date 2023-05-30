@@ -488,6 +488,37 @@ def test_observation__ident_taxon_ids():
     ]
 
 
+def test_observation__ccumulative_ids__all_agree():
+    obs = Observation.from_json(j_observation_2)
+    assert obs.cumulative_ids == (2, 2)
+
+
+def test_observation__cumulative_ids__most_agree():
+    obs = Observation.from_json(j_observation_2)
+
+    # Add a dissenting ID from a different family
+    tiger_swallowtail = Taxon(
+        id=60551,
+        ancestor_ids=[
+            48460,
+            1,
+            47120,
+            372739,
+            47158,
+            184884,
+            47157,
+            47224,
+            47223,
+            49973,
+            207785,
+            47225,
+            545186,
+        ],
+    )
+    obs.identifications.append(Identification(taxon=tiger_swallowtail, current=True))
+    assert obs.cumulative_ids == (2, 3)
+
+
 def test_observations():
     obs_list = Observations.from_json_list(
         [j_observation_1, j_observation_1, j_observation_2, j_observation_3_ofvs]
