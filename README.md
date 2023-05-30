@@ -49,10 +49,10 @@ Many of the most relevant API endpoints are supported, including:
 * 💬 Messages
 * 👀 Observations (multiple formats)
 * 📷 Observation photos + sounds
-* 📊 Observation observers, identifiers, histograms, life lists, and species counts
+* 📊 Observation histograms, observers, identifiers, life lists, and species counts
 * 📍 Places
 * 👥 Projects
-* 🐦Species
+* 🐦 Species
 * 👤 Users
 
 ## Quickstart
@@ -155,7 +155,7 @@ new_observation_id = response[0]['id']
 We can then [update the observation](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.v1.observations.html#pyinaturalist.v1.observations.update_observation) information, photos, or sounds:
 ```python
 update_observation(
-    17932425,
+    new_observation_id,
     access_token=token,
     description='updated description !',
     photos='~/observations/wasp_nest.jpg',
