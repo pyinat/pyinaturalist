@@ -113,7 +113,7 @@ def test_default_rich_repr():
     """If no __rich_repr__ or _str_attrs is defined, fall back to printing all attrs fields"""
     obj = ExampleModel(key='value')
     print_attrs = [a[0] for a in obj.__rich_repr__()]
-    assert print_attrs == ['id', 'key']
+    assert print_attrs == ['id', 'uuid', 'key']
 
 
 # Conservation Statuses

@@ -1,6 +1,12 @@
+import json
+from unittest.mock import patch
+
+from requests import Response
+
 from pyinaturalist.client import iNatClient
-from pyinaturalist.constants import API_V1
-from test.sample_data import SAMPLE_DATA
+from pyinaturalist.constants import API_V1, API_V2
+from pyinaturalist.models.controlled_term import Annotation
+from test.sample_data import SAMPLE_DATA, j_annotation_1
 
 
 def test_all(requests_mock):
@@ -47,3 +53,32 @@ def test_lookup(requests_mock):
     obs.annotations = client.controlled_terms.lookup(obs.annotations)
     assert obs.annotations[0].controlled_attribute.label == 'Life Stage'
     assert obs.annotations[0].controlled_value.label == 'Adult'
+
+
+@patch('pyinaturalist.controllers.controlled_term_controller.post')
+def test_create(mock_post):
+    response = Response()
+    response._content = json.dumps({'results': [j_annotation_1]}).encode()
+    mock_post.return_value = response
+
+    client = iNatClient()
+    result = client.controlled_terms.create(
+        controlled_attribute_id=12,
+        controlled_value_id=13,
+        resource_id=164609837,
+    )
+    assert isinstance(result, Annotation)
+
+    request_params = mock_post.call_args[1]
+    assert request_params['controlled_attribute_id'] == 12
+    assert request_params['controlled_value_id'] == 13
+    assert request_params['resource_id'] == 164609837
+    assert request_params['resource_type'] == 'Observation'
+
+
+@patch('pyinaturalist.controllers.controlled_term_controller.delete')
+def test_delete(mock_delete):
+    uuid = 'aad8ce8d-ed0a-4099-b21b-b03b9f51cad9'
+    client = iNatClient()
+    client.controlled_terms.delete(uuid)
+    mock_delete.assert_called_with(f'{API_V2}/annotations/{uuid}')
