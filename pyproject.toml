@@ -48,7 +48,7 @@ ujson                       = {optional=true, version=">5.0"}
 # Documentation dependencies needed for Readthedocs builds
 furo                        = {optional=true, version="^2023.3"}
 ipython                     = {optional=true, version="^7.25.0"}
-linkify-it-py               = {optional=true, version="^1.0.1"}
+linkify-it-py               = {optional=true, version=">=1.0.1,<3.0.0"}
 myst-parser                 = {optional=true, version="^1.0"}
 nbsphinx                    = {optional=true, version="^0.9"}
 sphinx                      = {optional=true, version="^5.2"}
