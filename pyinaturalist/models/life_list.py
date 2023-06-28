@@ -82,8 +82,13 @@ class LifeList(BaseModelCollection):
 
 
 def make_tree(taxa: List[Taxon]):
-    """Organize a list of taxa into a taxonomic tree. Must contain at least one taxon with
-    'Life' (taxon ID 48460) as its parent.
+    """Organize a list of taxa into a taxonomic tree.
+
+    'Life' (taxon ID 48460) must be present in the list, or an empty tree
+    will be returned.
+    Each taxon must be able to ultimately link back to 'Life' by traversing
+    backwards to it via parent_id linkages of taxa also present in the list.
+    Any that can't won't be included in the tree.
 
     Returns:
         :py:class:`rich.tree.Tree`
@@ -91,22 +96,37 @@ def make_tree(taxa: List[Taxon]):
 
     from rich.tree import Tree
 
-    taxa_by_parent_id = _sort_groupby(taxa, key=lambda x: x.parent_id or -1)
+    taxa_by_parent_id = _sort_groupby(
+        taxa,
+        group_by=lambda x: x.parent_id or -1,
+        sort_by=lambda x: x.full_name,
+    )
 
     def make_child_tree(node, taxon):
         """Add a taxon and its children to the specified tree node.
         Base case: leaf taxon (with no children)
         Recursive case: non-leaf taxon (with children)
         """
-        node = node.add(taxon.full_name)
-        for child in taxa_by_parent_id.get(taxon.id, []):
-            node.add(make_child_tree(node, child))
-        return node
+        taxon_children = taxa_by_parent_id.get(taxon.id, [])
+        if not taxon_children:
+            return
+        for child_taxon in taxon_children:
+            branch = node.add(child_taxon.full_name)
+            branch._taxon = child_taxon
+            make_child_tree(branch, child_taxon)
 
-    tree_root = {'id': 48460, 'name': 'Life', 'rank': 'State of matter'}
-    return make_child_tree(Tree('life list', expanded=False), Taxon.from_json(tree_root))
+    tree = Tree('life list', expanded=True)
+    root_taxa = taxa_by_parent_id.get(-1, [])
+    root_taxon = next((taxon for taxon in root_taxa if taxon.id == 48460), None)
+    if root_taxon:
+        make_child_tree(tree, root_taxon)
+
+    return tree
 
 
-def _sort_groupby(values, key):
-    """Apply sorting then grouping using the same key"""
-    return {k: list(group) for k, group in groupby(sorted(values, key=key), key=key)}
+def _sort_groupby(values, group_by, sort_by):
+    """Apply sorting then grouping by group key, then reorder within group by sort key."""
+    return {
+        k: sorted(group, key=sort_by)
+        for k, group in groupby(sorted(values, key=group_by), key=group_by)
+    }
