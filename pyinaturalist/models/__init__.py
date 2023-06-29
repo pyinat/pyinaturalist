@@ -84,7 +84,7 @@ from pyinaturalist.models.controlled_term import (
     ControlledTermValue,
 )
 from pyinaturalist.models.identification import Comment, Identification
-from pyinaturalist.models.life_list import LifeList, LifeListTaxon
+from pyinaturalist.models.life_list import LifeList
 from pyinaturalist.models.message import Message
 from pyinaturalist.models.observation_field import ObservationField, ObservationFieldValue
 from pyinaturalist.models.project import (

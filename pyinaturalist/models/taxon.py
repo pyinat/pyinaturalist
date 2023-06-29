@@ -8,6 +8,7 @@ from pyinaturalist.constants import (
     ICONIC_EMOJI,
     ICONIC_TAXA,
     INAT_BASE_URL,
+    RANK_LEVELS,
     RANKS,
     DateTime,
     JsonResponse,
@@ -205,6 +206,11 @@ class Taxon(BaseModel):
         return str(self.icon.thumbnail_url)
 
     @property
+    def indent_level(self) -> int:
+        """Indentation level corresponding to this item's rank level"""
+        return int(((RANK_LEVELS['kingdom'] - self.rank_level) / 5)) + 1
+
+    @property
     def gbif_url(self) -> str:
         """URL for the GBIF info page for this taxon"""
         return f'https://www.gbif.org/species/{self.gbif_id}'
@@ -267,6 +273,7 @@ class TaxonCount(Taxon):
     """
 
     count: int = field(default=0, doc='Number of observations of this taxon')
+    descendant_obs_count: int = field(default=0, doc='Number of observations, including children')
 
     @classmethod
     def from_json(
@@ -278,6 +285,9 @@ class TaxonCount(Taxon):
         if 'taxon' in value:
             value = value.copy()
             value.update(value.pop('taxon'))
+        # In life lists, 'count' is aliased as 'direct_obs_count'
+        if 'direct_obs_count' in value:
+            value['count'] = value.pop('direct_obs_count')
         return super(TaxonCount, cls).from_json(value)
 
     @property
