@@ -17,7 +17,7 @@ from pyinaturalist.models import (
 class LifeListTaxon(TaxonCount):
     """:fa:`dove` :fa:`list` A single :py:class:`.Taxon` in a user's :py:class:`.LifeList`"""
 
-    descendant_obs_count: int = field(default=0, doc='Number of observations of taxon children')
+    descendant_obs_count: int = field(default=0, doc='Number of observations, including children')
     direct_obs_count: int = field(
         default=0, doc='Number of observations of this exact taxon (excluding children)'
     )
