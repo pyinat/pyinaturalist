@@ -1,6 +1,6 @@
 """Models for user life lists"""
 from itertools import groupby
-from typing import List, Optional
+from typing import Any, Callable, Dict, Iterable, List, Optional
 
 from rich.tree import Tree
 
@@ -43,63 +43,52 @@ class LifeList(BaseModelCollection):
             return self.count_without_taxon
         return super().get_count(taxon_id, count_field=count_field)
 
-    def tree(self):
+    def tree(self) -> Taxon:
         """**Experimental**
 
         Organize this life list into a taxonomic tree
 
         Returns:
-            :py:class:`rich.tree.Tree`
+            Root taxon of the tree
         """
         return make_tree(self.data)
 
 
-def make_tree(taxa: List[Taxon]):
-    """Organize a list of taxa into a taxonomic tree.
-
-    'Life' (taxon ID 48460) must be present in the list, or an empty tree
-    will be returned.
-    Each taxon must be able to ultimately link back to 'Life' by traversing
-    backwards to it via parent_id linkages of taxa also present in the list.
-    Any that can't won't be included in the tree.
+def make_tree(taxa: Iterable[Taxon], sort_key: Optional[Callable[[Taxon], Any]] = None) -> Taxon:
+    """Organize a list of taxa into a taxonomic tree. Exepects exactly one root taxon.
 
     Returns:
-        :py:class:`rich.tree.Tree`
+        Root taxon of the tree
     """
 
-    from rich.tree import Tree
+    def default_sort(taxon):
+        """Default sort key for taxon children"""
+        return taxon.rank_level, taxon.name
 
-    taxa_by_parent_id = _sort_groupby(
-        taxa,
-        group_by=lambda x: x.parent_id or -1,
-        sort_by=lambda x: x.full_name,
-    )
+    def sort_groupby(values, key):
+        """Apply sorting then grouping using the same key"""
+        return {k: list(group) for k, group in groupby(sorted(values, key=key), key=key)}
 
-    def make_child_tree(node, taxon):
-        """Add a taxon and its children to the specified tree node.
-        Base case: leaf taxon (with no children)
-        Recursive case: non-leaf taxon (with children)
-        """
-        taxon_children = taxa_by_parent_id.get(taxon.id, [])
-        if not taxon_children:
-            return
-        for child_taxon in taxon_children:
-            branch = node.add(child_taxon.full_name)
-            branch._taxon = child_taxon
-            make_child_tree(branch, child_taxon)
+    def add_descendants(taxon) -> Taxon:
+        """Recursively add taxon descendants"""
+        taxon.children = sorted(taxa_by_parent_id.get(taxon.id, []), key=sort_key)
+        for child in taxon.children:
+            add_descendants(child)
+        return taxon
 
-    tree = Tree('life list', expanded=True)
+    sort_key = sort_key if sort_key is not None else default_sort
+    taxa_by_parent_id: Dict[int, List[Taxon]] = sort_groupby(taxa, key=lambda x: x.parent_id or -1)
+
     root_taxa = taxa_by_parent_id.get(-1, [])
-    root_taxon = next((taxon for taxon in root_taxa if taxon.id == 48460), None)
-    if root_taxon:
-        make_child_tree(tree, root_taxon)
+    if len(root_taxa) != 1:
+        raise ValueError('Expected exactly one root taxon')
 
-    return tree
+    return add_descendants(root_taxa[0])
 
 
-def _sort_groupby(values, group_by, sort_by):
-    """Apply sorting then grouping by group key, then reorder within group by sort key."""
-    return {
-        k: sorted(group, key=sort_by)
-        for k, group in groupby(sorted(values, key=group_by), key=group_by)
-    }
+def to_rich_tree(taxon: Taxon) -> Tree:
+    """Convert a taxon tree to a rich tree"""
+    node = Tree(taxon.full_name)
+    for child in taxon.children:
+        node.add(to_rich_tree(child))
+    return node
