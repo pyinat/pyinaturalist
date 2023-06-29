@@ -26,7 +26,12 @@ from pyinaturalist.v1 import (
     update_observation,
     upload,
 )
-from test.sample_data import SAMPLE_DATA, j_taxon_summary_1_conserved, j_taxon_summary_2_listed
+from test.sample_data import (
+    SAMPLE_DATA,
+    j_life_list_1,
+    j_taxon_summary_1_conserved,
+    j_taxon_summary_2_listed,
+)
 
 MOCK_RESPONSE = get_mock_response(PreparedRequest())
 
@@ -254,10 +259,10 @@ def test_get_observation_species_counts__invalid_multiple_choice_params():
 def test_get_observation_taxonomy(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations/taxonomy',
-        json=SAMPLE_DATA['get_observation_taxonomy'],
+        json=j_life_list_1,
         status_code=200,
     )
-    response = get_observation_taxonomy(user_id=12345)
+    response = get_observation_taxonomy()
     first_result = response['results'][0]
 
     assert response['count_without_taxon'] == 4

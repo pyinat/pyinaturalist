@@ -334,6 +334,9 @@ class TaxonCounts(BaseModelCollection):
     data: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
 
 
+TaxonSortKey = Callable[[Taxon], Any]
+
+
 @define_model_collection
 class LifeList(BaseModelCollection):
     """:fa:`dove` :fa:`list` A user's life list, based on the schema of ``GET /observations/taxonomy``"""
@@ -363,7 +366,7 @@ class LifeList(BaseModelCollection):
             return self.count_without_taxon
         return super().get_count(taxon_id, count_field=count_field)
 
-    def tree(self) -> Taxon:
+    def tree(self, sort_key: Optional[TaxonSortKey] = None) -> Taxon:
         """**Experimental**
 
         Organize this life list into a taxonomic tree
@@ -371,7 +374,7 @@ class LifeList(BaseModelCollection):
         Returns:
             Root taxon of the tree
         """
-        return make_tree(self.data)
+        return make_tree(self.data, sort_key=sort_key)
 
 
 def _get_rank_name_idx(taxon):
@@ -380,10 +383,7 @@ def _get_rank_name_idx(taxon):
     return idx * -1, taxon.name
 
 
-def make_tree(
-    taxa: Iterable[Taxon],
-    sort_key: Optional[Callable[[Taxon], Any]] = None,
-) -> Taxon:
+def make_tree(taxa: Iterable[Taxon], sort_key: Optional[TaxonSortKey] = None) -> Taxon:
     """Organize a list of taxa into a taxonomic tree. Exepects exactly one root taxon.
 
     Returns:
@@ -415,9 +415,9 @@ def make_tree(
     return add_descendants(root_taxa[0])
 
 
-def make_rich_tree(taxon: Taxon) -> Tree:
+def make_rich_tree(taxon: Taxon, **kwargs) -> Tree:
     """Show a taxon and its descendants as a tree for console output"""
-    node = Tree(taxon.full_name)
+    node = Tree(taxon.full_name, **kwargs)
     for child in taxon.children:
         node.add(make_rich_tree(child))
     return node

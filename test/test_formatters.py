@@ -24,7 +24,7 @@ TABULAR_RESPONSES = [
     [j_identification_1, j_identification_2],
     [j_observation_1, j_observation_2, j_observation_no_taxon],
     j_obs_species_counts,
-    j_life_list,
+    j_life_list_1,
     [j_listed_taxon_1, j_listed_taxon_2_partial],
     [j_message],
     [j_photo_1, j_photo_2_partial],
