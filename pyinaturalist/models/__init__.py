@@ -82,6 +82,7 @@ from pyinaturalist.models.taxon import (
     LifeList,
     make_tree,
     make_rich_tree,
+    flatten_tree,
 )
 from pyinaturalist.models.controlled_term import (
     Annotation,

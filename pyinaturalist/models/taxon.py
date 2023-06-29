@@ -1,4 +1,4 @@
-from itertools import groupby
+from itertools import chain, groupby
 from string import capwords
 from typing import Any, Callable, Dict, Iterable, List, Optional
 from warnings import warn
@@ -421,3 +421,8 @@ def make_rich_tree(taxon: Taxon) -> Tree:
     for child in taxon.children:
         node.add(make_rich_tree(child))
     return node
+
+
+def flatten_tree(taxon: Taxon) -> List[Taxon]:
+    """Flatten a taxon and its descendants into a list"""
+    return [taxon] + list(chain.from_iterable(flatten_tree(child) for child in taxon.children))
