@@ -392,7 +392,7 @@ def make_tree(
 
     def default_sort(taxon):
         """Default sort key for taxon children"""
-        return taxon.rank_level, taxon.name
+        return taxon.rank_level * -1, taxon.name
 
     def sort_groupby(values, key):
         """Apply sorting then grouping using the same key"""
