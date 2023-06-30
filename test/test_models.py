@@ -960,19 +960,6 @@ def test_taxon__taxonomy():
     }
 
 
-def test_taxon__load_full_record(requests_mock):
-    requests_mock.get(
-        f'{API_V1}/taxa/343248',
-        json=load_sample_data('get_taxa_by_id.json'),
-        status_code=200,
-    )
-    taxon = Taxon(id=343248, matched_term='nicroph')
-    taxon.load_full_record()
-    assert taxon.name == 'Nicrophorus vespilloides'
-    assert taxon.matched_term == 'nicroph'  # matched_term should not be overwritten if present
-    assert len(taxon.ancestors) == 12
-
-
 def test_taxon_count__copy():
     """When an IconPhoto is used in place of a missing Taxon.default_photo, and the taxon is copied
     into a TaxonCount object, the IconPhoto object should be copied as-is instead of converting

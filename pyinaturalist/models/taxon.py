@@ -1,9 +1,6 @@
 from itertools import chain, groupby
 from string import capwords
 from typing import Any, Callable, Dict, Iterable, List, Optional
-from warnings import warn
-
-from attr import fields_dict
 
 from pyinaturalist.constants import (
     ICONIC_EMOJI,
@@ -231,15 +228,6 @@ class Taxon(BaseModel):
         """Info URL on iNaturalist.org"""
         return f'{INAT_BASE_URL}/taxa/{self.id}'
 
-    @classmethod
-    def from_id(cls, id: int) -> 'Taxon':
-        """**[Deprecated]** Lookup and create a new Taxon object by ID"""
-        from pyinaturalist.v1 import get_taxa_by_id
-
-        warn(DeprecationWarning('This method is deprecated; please use iNatClient.taxa() instead'))
-        r = get_taxa_by_id(id)
-        return cls.from_json(r['results'][0])
-
     def flatten(self) -> List['Taxon']:
         """Return this taxon and all its descendants as a flat list"""
 
@@ -249,19 +237,6 @@ class Taxon(BaseModel):
             )
 
         return flatten_tree(self)
-
-    def load_full_record(self):
-        """Update this Taxon with full taxon info, including ancestors + children"""
-        msg = 'This method is deprecated; please use iNatClient.taxa.full_record() instead'
-        warn(DeprecationWarning(msg))
-
-        t = Taxon.from_id(self.id)
-        copy_keys = set(fields_dict(Taxon).keys()) - {'matched_term'}
-        for key in copy_keys:
-            # Use getters/setters for LazyProperty instead of temp attrs (cls.foo vs cls._foo)
-            if hasattr(key, key.lstrip('_')):
-                key = key.lstrip('_')
-            setattr(self, key, getattr(t, key))
 
     @property
     def _row(self) -> TableRow:
