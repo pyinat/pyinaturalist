@@ -394,6 +394,6 @@ def make_tree(taxa: Iterable[Taxon], sort_key: Optional[TaxonSortKey] = None) ->
 
     root_taxa = taxa_by_parent_id.get(-1, [])
     if len(root_taxa) != 1:
-        raise ValueError('Expected exactly one root taxon')
+        raise ValueError(f'Expected exactly one root taxon; found {len(root_taxa)}')
 
     return add_descendants(root_taxa[0])

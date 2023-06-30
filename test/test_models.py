@@ -362,8 +362,8 @@ def test_identification__str():
 def test_life_list__converters():
     life_list = LifeList.from_json(j_life_list_1)
     assert life_list.data[0] == life_list[0]
-    assert len(life_list) == 9
-    assert isinstance(life_list.data[0], TaxonCount) and life_list.data[0].id == 1
+    assert len(life_list) == 10
+    assert isinstance(life_list.data[0], TaxonCount) and life_list.data[0].id == 48460
 
 
 def test_life_list__empty():

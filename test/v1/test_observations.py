@@ -263,12 +263,12 @@ def test_get_observation_taxonomy(requests_mock):
         status_code=200,
     )
     response = get_observation_taxonomy()
-    first_result = response['results'][0]
+    animalia = response['results'][1]
 
     assert response['count_without_taxon'] == 4
-    assert first_result['id'] == 1
-    assert first_result['name'] == 'Animalia'
-    assert first_result['descendant_obs_count'] == 3023
+    assert animalia['id'] == 1
+    assert animalia['name'] == 'Animalia'
+    assert animalia['descendant_obs_count'] == 3023
 
 
 def test_get_observation_taxon_summary__with_conservation_status(requests_mock):

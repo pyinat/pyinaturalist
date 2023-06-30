@@ -47,6 +47,7 @@ from pyinaturalist.models import (
     TaxonSummary,
     User,
 )
+from pyinaturalist.models.taxon import make_tree
 from pyinaturalist.paginator import Paginator
 
 pretty.install()
@@ -155,9 +156,20 @@ def pprint(values: ResponseOrObjects):
         print(values)
 
 
-def pprint_tree(taxon: Taxon, **kwargs):
-    """Pretty-print a taxon and its descendants as a tree"""
-    print(format_tree(taxon, **kwargs))
+def pprint_tree(taxa: Union[Taxon, LifeList, List[Taxon]], **kwargs):
+    """Pretty-print a taxon and its descendants as a tree.
+
+    Args:
+        taxa: A single taxon with children, a :py:class:`.LifeList`, or a list of taxa
+    """
+    if isinstance(taxa, LifeList) or (
+        isinstance(taxa, list) and len(taxa) > 0 and isinstance(taxa[0], Taxon)
+    ):
+        taxa = make_tree(taxa)
+    elif not isinstance(taxa, Taxon):
+        raise ValueError('Invalid taxon or taxon collection')
+
+    print(format_tree(taxa, **kwargs))
 
 
 def detect_type(value: ResponseResult) -> Type[BaseModel]:

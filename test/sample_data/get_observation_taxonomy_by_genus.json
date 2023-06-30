@@ -3,6 +3,15 @@
   "size": 31,
   "results": [
     {
+      "id": 48460,
+      "name": "Life",
+      "rank": "stateofmatter",
+      "rank_level": 100,
+      "is_active": true,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
       "id": 1,
       "name": "Animalia",
       "rank": "kingdom",
@@ -59,15 +68,6 @@
       "rank_level": 33,
       "is_active": true,
       "parent_id": 326777,
-      "descendant_obs_count": 154,
-      "direct_obs_count": 0
-    },
-    {
-      "id": 48460,
-      "name": "Life",
-      "rank": "stateofmatter",
-      "rank_level": 100,
-      "is_active": true,
       "descendant_obs_count": 154,
       "direct_obs_count": 0
     },
