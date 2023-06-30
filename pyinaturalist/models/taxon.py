@@ -241,6 +241,16 @@ class Taxon(BaseModel):
         r = get_taxa_by_id(id)
         return cls.from_json(r['results'][0])
 
+    def flatten(self) -> List['Taxon']:
+        """Return this taxon and all its descendants as a flat list"""
+
+        def flatten_tree(taxon: Taxon) -> List[Taxon]:
+            return [taxon] + list(
+                chain.from_iterable(flatten_tree(child) for child in taxon.children)
+            )
+
+        return flatten_tree(self)
+
     def load_full_record(self):
         """Update this Taxon with full taxon info, including ancestors + children"""
         msg = 'This method is deprecated; please use iNatClient.taxa.full_record() instead'
@@ -421,8 +431,3 @@ def make_rich_tree(taxon: Taxon, **kwargs) -> Tree:
     for child in taxon.children:
         node.add(make_rich_tree(child))
     return node
-
-
-def flatten_tree(taxon: Taxon) -> List[Taxon]:
-    """Flatten a taxon and its descendants into a list"""
-    return [taxon] + list(chain.from_iterable(flatten_tree(child) for child in taxon.children))

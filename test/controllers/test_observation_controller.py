@@ -17,7 +17,6 @@ from pyinaturalist.models import (
     TaxonCounts,
     TaxonSummary,
     User,
-    flatten_tree,
 )
 from test.sample_data import *
 
@@ -216,8 +215,7 @@ def test_life_list_tree(requests_mock):
     assert children == ['Bombus', 'Psithyrus', 'Pyrobombus', 'Subterraneobombus', 'Thoracobombus']
 
     # Ensure total taxon count is the same
-    flat_taxa = flatten_tree(root)
-    assert len(flat_taxa) == len(life_list)
+    assert len(root.flatten()) == len(life_list)
 
 
 def test_life_list_tree__invalid(requests_mock):
