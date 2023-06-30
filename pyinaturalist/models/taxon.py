@@ -4,7 +4,6 @@ from typing import Any, Callable, Dict, Iterable, List, Optional
 from warnings import warn
 
 from attr import fields_dict
-from rich.tree import Tree
 
 from pyinaturalist.constants import (
     ICONIC_EMOJI,
@@ -423,11 +422,3 @@ def make_tree(taxa: Iterable[Taxon], sort_key: Optional[TaxonSortKey] = None) ->
         raise ValueError('Expected exactly one root taxon')
 
     return add_descendants(root_taxa[0])
-
-
-def make_rich_tree(taxon: Taxon, **kwargs) -> Tree:
-    """Show a taxon and its descendants as a tree for console output"""
-    node = Tree(taxon.full_name, **kwargs)
-    for child in taxon.children:
-        node.add(make_rich_tree(child))
-    return node

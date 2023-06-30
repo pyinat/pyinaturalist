@@ -149,6 +149,11 @@ def pprint(values: ResponseOrObjects):
         print(values)
 
 
+def pprint_tree(taxon: Taxon, **kwargs):
+    """Pretty-print a taxon and its descendants as a tree"""
+    print(format_tree(taxon, **kwargs))
+
+
 def detect_type(value: ResponseResult) -> Type[BaseModel]:
     """Attempt to determine the model class corresponding to an API result"""
     for key, cls in UNIQUE_RESPONSE_ATTRS.items():
@@ -225,6 +230,14 @@ def format_response(response: Response) -> str:
 
     cached = f'cached; {_expires_str()}' if getattr(response, 'from_cache', False) else 'not cached'
     return f'Response ({cached}):\n{response.status_code} {response.reason}{error_msg}\n{headers}'
+
+
+def format_tree(taxon: Taxon, **kwargs) -> Tree:
+    """Format a a taxon and its descendants as a tree"""
+    node = Tree(f'{taxon.rank.title()} [i]{taxon.name}[/i]', **kwargs)
+    for child in taxon.children:
+        node.add(format_tree(child))
+    return node
 
 
 def _format_headers(headers: Mapping[str, str]) -> str:

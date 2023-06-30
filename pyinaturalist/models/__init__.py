@@ -75,15 +75,7 @@ from pyinaturalist.models.place import Place
 from pyinaturalist.models.user import User, UserCount, UserCounts
 from pyinaturalist.models.checklist import Checklist, EstablishmentMeans, ListedTaxon
 from pyinaturalist.models.conservation_status import ConservationStatus, TaxonSummary
-from pyinaturalist.models.taxon import (
-    Taxon,
-    TaxonCount,
-    TaxonCounts,
-    LifeList,
-    make_tree,
-    make_rich_tree,
-    flatten_tree,
-)
+from pyinaturalist.models.taxon import Taxon, TaxonCount, TaxonCounts, LifeList, make_tree
 from pyinaturalist.models.controlled_term import (
     Annotation,
     ControlledTerm,
