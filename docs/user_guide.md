@@ -58,7 +58,6 @@ and [search URLs](https://forum.inaturalist.org/t/how-to-use-inaturalists-search
 
 For example, if you wanted to search observations by user, these three requests are equivalent:
 
-
 ::::{tab-set}
 :::{tab-item} search URL
 ```
@@ -111,11 +110,10 @@ And here is what that same observation looks like in JSON:
 ### Previewing Responses
 These responses can contain large amounts of response attributes, making it somewhat cumbersome if you
 just want to quickly preview results (for example, in a Jupyter notebook). For that purpose, the
-{py:func}`~pyinaturalist.formatters.pprint` function is included to format response data as a
+{py:func}`~pyinaturalist.formatters.pprint` function is available to format response data as a
 condensed, color-highlighted table.
 
 **Examples:**
-
 
 ::::{tab-set}
 :::{tab-item} Observations
@@ -182,7 +180,6 @@ To get all pages of results and combine them into a single response, use `page='
 Note that this replaces the `get_all_*()` functions from pyinaturalist\<=0.12.
 
 (auth)=
-
 ## Authentication
 For any endpoints that create, update, or delete data, you will need to authenticate using an
 OAuth2 access token. This requires both your iNaturalist username and password, and separate
@@ -490,7 +487,6 @@ $Env:DRY_RUN_ENABLED="true"
 ```
 :::
 ::::
-
 
 ### Dry-run only write requests
 If you would like to send real `GET` requests but mock out any requests that modify data
