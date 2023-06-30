@@ -5,7 +5,7 @@ __version__ = '0.19.0'
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.client import iNatClient
 from pyinaturalist.constants import *
-from pyinaturalist.formatters import enable_logging, format_table, pprint
+from pyinaturalist.formatters import enable_logging, format_table, pprint, pprint_tree
 from pyinaturalist.models import *
 from pyinaturalist.paginator import Paginator, IDPaginator, WrapperPaginator
 from pyinaturalist.request_params import get_interval_ranges

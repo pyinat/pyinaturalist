@@ -10,9 +10,14 @@ These functions will accept any of the following:
 import json
 from datetime import date, datetime, timedelta
 from logging import basicConfig, getLogger
-from typing import List, Mapping, Type
+from typing import List, Mapping, Type, Union
 
 from requests import PreparedRequest, Response
+from rich import pretty, print
+from rich.box import SIMPLE_HEAVY
+from rich.logging import RichHandler
+from rich.table import Column, Table
+from rich.tree import Tree
 
 from pyinaturalist.constants import DATETIME_SHORT_FORMAT, ResponseResult
 from pyinaturalist.converters import ensure_list
@@ -44,28 +49,7 @@ from pyinaturalist.models import (
 )
 from pyinaturalist.paginator import Paginator
 
-
-def enable_logging(level: str = 'INFO', external_level: str = 'WARNING'):
-    """Configure logging to standard output with prettier tracebacks, formatting, and terminal
-    colors (if supported).
-
-    If you prefer, logging can be configured with the stdlib ``logging`` module instead; this just
-    provides some convenient defaults.
-
-    Args:
-        level: Logging level to use for pyinaturalist
-        external_level: Logging level to use for other libraries
-    """
-    from rich.logging import RichHandler
-
-    basicConfig(
-        format='%(message)s',
-        datefmt='[%m-%d %H:%M:%S]',
-        handlers=[RichHandler(rich_tracebacks=True, markup=True)],
-        level=external_level,
-    )
-    getLogger('pyinaturalist').setLevel(level)
-    getLogger('pyinaturalist_convert').setLevel(level)
+pretty.install()
 
 
 # Default colors for table headers
@@ -138,6 +122,28 @@ UNIQUE_RESPONSE_ATTRS = {
 }
 
 
+def enable_logging(level: str = 'INFO', external_level: str = 'WARNING'):
+    """Configure logging to standard output with prettier tracebacks, formatting, and terminal
+    colors (if supported).
+
+    If you prefer, logging can be configured with the stdlib ``logging`` module instead; this just
+    provides some convenient defaults.
+
+    Args:
+        level: Logging level to use for pyinaturalist
+        external_level: Logging level to use for other libraries
+    """
+
+    basicConfig(
+        format='%(message)s',
+        datefmt='[%m-%d %H:%M:%S]',
+        handlers=[RichHandler(rich_tracebacks=True, markup=True)],
+        level=external_level,
+    )
+    getLogger('pyinaturalist').setLevel(level)
+    getLogger('pyinaturalist_convert').setLevel(level)
+
+
 def pprint(values: ResponseOrObjects):
     """Pretty-print any model object or list into a condensed summary.
 
@@ -178,20 +184,18 @@ def ensure_model_list(values: ResponseOrObjects) -> List[BaseModel]:
     return [cls.from_json(value) for value in values]
 
 
-def format_table(values: ResponseOrObjects):
-    """Format model objects as a table. If ``rich`` isn't installed or the model doesn't have a
-    table format defined, just return a basic list of stringified objects.
+def format_table(values: ResponseOrObjects) -> Union[Table, str]:
+    """Format model objects as a table.
+
+    If the model doesn't have a table format defined, return a basic list of stringified objects.
     """
     try:
-        from rich.box import SIMPLE_HEAVY
-        from rich.table import Column, Table
-
         if isinstance(values, Table):
             return values
 
         values = ensure_model_list(values)
         headers = {k: HEADER_COLORS.get(k, '') for k in values[0]._row.keys()}
-    except (ImportError, NotImplementedError):
+    except NotImplementedError:
         return '\n'.join([str(obj) for obj in ensure_model_list(values)])
 
     # Display any date/datetime values in short format
@@ -265,12 +269,3 @@ def _format_body(body):
         return body
     except Exception:
         return '(non-JSON request body)'
-
-
-# If rich is installed, install pretty-printer
-try:
-    from rich import pretty, print
-
-    pretty.install()
-except ImportError:
-    pass

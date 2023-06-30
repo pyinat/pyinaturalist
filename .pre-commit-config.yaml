@@ -35,3 +35,4 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [attrs, types-python-dateutil, types-requests, types-ujson]
+        exclude: ^examples/
