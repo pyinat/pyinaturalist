@@ -138,6 +138,9 @@ class Taxon(BaseModel):
     # Indicates this is a partial record (e.g. from nested Taxon.ancestors or children)
     _partial: bool = field(default=False, repr=False)
 
+    # Used for tree formatting
+    _indent_level: int = field(default=None, repr=False)
+
     # Unused attributes
     # atlas_id: int = field(default=None)
     # flag_counts: Dict[str, int] = field(factory=dict)  # {"unresolved": 1, "resolved": 2}
@@ -233,8 +236,10 @@ class Taxon(BaseModel):
 
     @property
     def indent_level(self) -> int:
-        """Indentation level corresponding to this item's rank level"""
-        return int(((RANK_LEVELS['kingdom'] - self.rank_level) / 5)) + 1
+        """Tree indentation level. This may either be manually set, or determined based on rank."""
+        if self._indent_level is None:
+            self._indent_level = int((RANK_LEVELS['kingdom'] - self.rank_level) / 5) + 1
+        return self._indent_level
 
     @property
     def gbif_url(self) -> str:
@@ -259,12 +264,12 @@ class Taxon(BaseModel):
     def flatten(self) -> List['Taxon']:
         """Return this taxon and all its descendants as a flat list"""
 
-        def flatten_tree(taxon: Taxon, ancestors=None) -> List[Taxon]:
-            taxon.ancestors = ancestors or []
+        def flatten_tree(taxon: Taxon, level: int = 0) -> List[Taxon]:
+            taxon._indent_level = level
 
             return [taxon] + list(
                 chain.from_iterable(
-                    flatten_tree(child, taxon.ancestors + [taxon]) for child in taxon.children
+                    flatten_tree(child, level=level + 1) for child in taxon.children
                 )
             )
 

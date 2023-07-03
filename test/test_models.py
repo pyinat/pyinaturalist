@@ -1102,12 +1102,36 @@ def test_make_tree__invalid():
 
 
 def test_make_tree__flattened():
-    flat_list = make_tree(Taxon.from_json_list(j_life_list_1)).flatten()
+    flat_list = make_tree(Taxon.from_json_list(j_life_list_2)).flatten()
     assert [t.id for t in flat_list] == [48460, 1, 2, 3, 573, 574, 889, 890, 980, 981]
 
     assert flat_list[0].ancestors == []
     assert [t.id for t in flat_list[5].ancestors] == [48460, 1, 2, 3, 573]
     assert [t.id for t in flat_list[9].ancestors] == [48460, 1, 2, 3, 573, 574, 980]
+
+
+def test_make_tree__flattened_filtered():
+    flat_list = make_tree(
+        Taxon.from_json_list(j_life_list_2),
+        include_ranks=['kingdom', 'phylum', 'family', 'genus', 'subgenus'],
+    ).flatten()
+    assert [t.id for t in flat_list] == [
+        48460,
+        1,
+        47120,
+        47221,
+        52775,
+        538903,
+        538893,
+        538900,
+        415027,
+        538902,
+    ]
+
+    assert flat_list[0].ancestors == []
+    assert [t.id for t in flat_list[2].ancestors] == [48460, 1]
+
+    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 4, 5, 5, 5, 5, 5]
 
 
 # Users
