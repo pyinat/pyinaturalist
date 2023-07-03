@@ -256,12 +256,19 @@ class Taxon(BaseModel):
         """Info URL on iNaturalist.org"""
         return f'{INAT_BASE_URL}/taxa/{self.id}'
 
-    def flatten(self) -> List['Taxon']:
-        """Return this taxon and all its descendants as a flat list"""
+    def flatten(self, include_ranks: Optional[List[str]] = None) -> List['Taxon']:
+        """Return this taxon and all its descendants as a flat list.
+
+        Args:
+            include_ranks: If provided, only include taxa with these ranks
+        """
 
         def flatten_tree(taxon: Taxon, ancestors=None) -> List[Taxon]:
+            # If this rank isn't included, skip to this taxon's children
+            current_level = [taxon] if not include_ranks or taxon.rank in include_ranks else []
             taxon.ancestors = ancestors or []
-            return [taxon] + list(
+
+            return current_level + list(
                 chain.from_iterable(
                     flatten_tree(child, taxon.ancestors + [taxon]) for child in taxon.children
                 )
