@@ -32,13 +32,14 @@ See {ref}`contributing` for details on setup for local development.
 :::{admonition} Python version compatibility
 :class: toggle, tip
 
-pyinaturalist currently requires **python 3.6+**. If you need to use an older version
+pyinaturalist currently requires **python 3.7+**. If you need to use an older version
 of python, here are the last compatible versions of pyinaturalist:
 
 * **python 2.7:** pyinaturalist 0.1
 * **python 3.4:** pyinaturalist 0.10
 * **python 3.5:** pyinaturalist 0.11
-* **python 3.6:** still supported, but expected to be dropped in a future release
+* **python 3.6:** pyinaturalist 0.16
+* **python 3.7:** still supported, but expected to be dropped in a future release
 :::
 
 ## Imports
