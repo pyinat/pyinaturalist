@@ -259,9 +259,12 @@ class Taxon(BaseModel):
     def flatten(self) -> List['Taxon']:
         """Return this taxon and all its descendants as a flat list"""
 
-        def flatten_tree(taxon: Taxon) -> List[Taxon]:
+        def flatten_tree(taxon: Taxon, ancestors=None) -> List[Taxon]:
+            taxon.ancestors = ancestors or []
             return [taxon] + list(
-                chain.from_iterable(flatten_tree(child) for child in taxon.children)
+                chain.from_iterable(
+                    flatten_tree(child, taxon.ancestors + [taxon]) for child in taxon.children
+                )
             )
 
         return flatten_tree(self)

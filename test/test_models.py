@@ -387,6 +387,43 @@ def test_life_list__get_count():
     assert life_list.get_count(9999999) == 0  # Unobserved taxon
 
 
+def test_life_list__tree():
+    life_list = LifeList.from_json(j_life_list_2)
+    root = life_list.tree()
+
+    # Spot check the first few levels
+    assert root.name == 'Life'
+    assert root.children[0].name == 'Animalia'
+    assert root.children[0].children[0].name == 'Arthropoda'
+
+    # Ensure correct child sort order
+    node = root
+    for _ in range(14):
+        node = node.children[0]
+    assert node.name == 'Bombus'
+
+    children = [t.name for t in node.children]
+    assert children == ['Bombus', 'Psithyrus', 'Pyrobombus', 'Subterraneobombus', 'Thoracobombus']
+
+
+def test_life_list__invalid_tree():
+    """Attempting to make a tree with no common root taxon should raise an error"""
+    life_list = LifeList.from_json([j_observation_1, j_observation_2])
+
+    with pytest.raises(ValueError):
+        life_list.tree()
+
+
+def test_life_list__flatten_tree():
+    life_list = LifeList.from_json(j_life_list_1)
+    flat_list = life_list.tree().flatten()
+    assert [t.id for t in flat_list] == [48460, 1, 2, 3, 573, 574, 889, 890, 980, 981]
+
+    assert flat_list[0].ancestors == []
+    assert [t.id for t in flat_list[5].ancestors] == [48460, 1, 2, 3, 573]
+    assert [t.id for t in flat_list[9].ancestors] == [48460, 1, 2, 3, 573, 574, 980]
+
+
 # Messages
 # --------------------
 
