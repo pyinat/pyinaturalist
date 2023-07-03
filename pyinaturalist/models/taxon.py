@@ -199,7 +199,11 @@ class Taxon(BaseModel):
         if not self.name:
             return f'{self.rank} {self.id}'
 
-        rank = f'{self.rank.title()} ' if self.rank else ''
+        rank = (
+            f'{self.rank.title()} '
+            if self.rank and self.rank_level > RANK_LEVELS['species']
+            else ''
+        )
         common_name = (
             f' ({title(self.preferred_common_name)})' if self.preferred_common_name else ''
         )

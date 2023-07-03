@@ -351,8 +351,8 @@ def test_identification__empty():
 def test_identification__str():
     identification = ID.from_json(j_identification_3)
     assert str(identification) == (
-        'Identification(id=126501311, username=samroom, taxon_name=Species: '
-        'Danaus plexippus (Monarch), created_at=Aug 27, 2020, truncated_body=)'
+        'Identification(id=126501311, username=samroom, taxon_name=Danaus plexippus (Monarch), '
+        'created_at=Aug 27, 2020, truncated_body=)'
     )
 
 
@@ -827,10 +827,7 @@ def test_taxon__str():
         preferred_common_name='rathke’s woodlouse',
         rank='species',
     )
-    assert (
-        str(taxon_5)
-        == 'Taxon(id=137338523, full_name=Species Trachelipus rathkii (Rathke’s Woodlouse))'
-    )
+    assert str(taxon_5) == 'Taxon(id=137338523, full_name=Trachelipus rathkii (Rathke’s Woodlouse))'
 
     # Hyphens and parentheses in common name
     taxon_6 = Taxon(
@@ -840,7 +837,7 @@ def test_taxon__str():
         rank='ssp',
     )
     assert str(taxon_6) == (
-        'Taxon(id=642466, full_name=Subspecies Terpsiphone paradisi ceylonensis (Indian Paradise-Flycatcher (Sri Lanka)))'
+        'Taxon(id=642466, full_name=Terpsiphone paradisi ceylonensis (Indian Paradise-Flycatcher (Sri Lanka)))'
     )
 
 
