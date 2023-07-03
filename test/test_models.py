@@ -798,28 +798,44 @@ def test_taxon__empty():
 
 
 def test_taxon__str():
-    taxon_0 = Taxon(
+    # Rank, name, and common name
+    taxon_1 = Taxon(id=3, name='Aves', preferred_common_name='birb', rank='class')
+    assert str(taxon_1) == 'Taxon(id=3, full_name=Class Aves (Birb))'
+
+    # Rank and name
+    taxon_2 = Taxon(id=3, name='Aves', rank='class')
+    assert str(taxon_2) == 'Taxon(id=3, full_name=Class Aves)'
+
+    # Name only
+    taxon_3 = Taxon(id=3, name='Aves')
+    assert str(taxon_3) == 'Taxon(id=3, full_name=Aves)'
+
+    # ID only
+    taxon_4 = Taxon(id=12345)
+    assert str(taxon_4) == 'Taxon(id=12345, full_name=12345)'
+
+    # Apostrophe in common name
+    taxon_5 = Taxon(
         id=137338523,
         name='Trachelipus rathkii',
         preferred_common_name='rathke’s woodlouse',
         rank='species',
     )
     assert (
-        str(taxon_0)
-        == 'Taxon(id=137338523, full_name=Species: Trachelipus rathkii (Rathke’s Woodlouse))'
+        str(taxon_5)
+        == 'Taxon(id=137338523, full_name=Species Trachelipus rathkii (Rathke’s Woodlouse))'
     )
 
-    taxon_1 = Taxon(id=3, name='Aves', preferred_common_name='birb', rank='class')
-    assert str(taxon_1) == 'Taxon(id=3, full_name=Class: Aves (Birb))'
-
-    taxon_2 = Taxon(id=3, name='Aves', rank='class')
-    assert str(taxon_2) == 'Taxon(id=3, full_name=Class: Aves)'
-
-    taxon_3 = Taxon(id=3, name='Aves')
-    assert str(taxon_3) == 'Taxon(id=3, full_name=Aves)'
-
-    taxon_4 = Taxon(id=0)
-    assert str(taxon_4) == 'Taxon(id=0, full_name=unknown taxon)'
+    # Hyphens and parentheses in common name
+    taxon_6 = Taxon(
+        id=642466,
+        name='Terpsiphone paradisi ceylonensis',
+        preferred_common_name='Indian paradise-flycatcher (sri lanka)',
+        rank='ssp',
+    )
+    assert str(taxon_6) == (
+        'Taxon(id=642466, full_name=Subspecies Terpsiphone paradisi ceylonensis (Indian Paradise-Flycatcher (Sri Lanka)))'
+    )
 
 
 def test_taxon__ancestors_children():

@@ -1,5 +1,5 @@
+import re
 from itertools import chain, groupby
-from string import capwords
 from typing import Any, Callable, Dict, Iterable, List, Optional
 
 from pyinaturalist.constants import (
@@ -192,18 +192,17 @@ class Taxon(BaseModel):
 
     @property
     def full_name(self) -> str:
-        """Taxon rank, scientific name, common name (if available), and emoji"""
+        """Taxon rank, scientific name, and common name (if available)"""
         if not self.name and not self.rank:
-            return 'unknown taxon'
-        elif not self.name:
-            return f'{self.rank.title()}: {self.id}'
-        elif not self.rank:
-            return self.name
+            return str(self.id)
+        if not self.name:
+            return f'{self.rank} {self.id}'
 
+        rank = f'{self.rank.title()} ' if self.rank else ''
         common_name = (
-            f' ({capwords(self.preferred_common_name)})' if self.preferred_common_name else ''
+            f' ({title(self.preferred_common_name)})' if self.preferred_common_name else ''
         )
-        return f'{self.rank.title()}: {self.name}{common_name}'
+        return f'{rank}{self.name}{common_name}'
 
     @property
     def icon(self) -> IconPhoto:
@@ -375,6 +374,15 @@ class LifeList(BaseModelCollection):
 def _sort_rank_name(taxon):
     """Get a sort key by rank (descending) and name"""
     return (taxon.rank_level or 0) * -1, taxon.name
+
+
+def title(value: str) -> str:
+    """Title case a string, with handling for apostrophes
+
+    Borrowed/modified from ``django.template.defaultfilters.title()``
+    """
+    t = re.sub("([a-z])['’]([A-Z])", lambda m: m[0].lower(), value.title())
+    return re.sub(r'\d([A-Z])', lambda m: m[0].lower(), t)
 
 
 def make_tree(taxa: Iterable[Taxon], sort_key: Optional[TaxonSortKey] = None) -> Taxon:
