@@ -6,6 +6,7 @@ from pyinaturalist.constants import (
     ICONIC_EMOJI,
     ICONIC_TAXA,
     INAT_BASE_URL,
+    RANK_EQUIVALENTS,
     RANK_LEVELS,
     RANKS,
     DateTime,
@@ -158,6 +159,15 @@ class Taxon(BaseModel):
             self.ancestor_ids = [int(x) for x in self.ancestry.split(delimiter)]
         elif self.ancestors and not self.ancestor_ids:
             self.ancestor_ids = [t.id for t in self.ancestors]
+
+        # Normalize rank names
+        self.rank = (self.rank or '').lower()
+        if self.rank in RANK_EQUIVALENTS:
+            self.rank = RANK_EQUIVALENTS[self.rank]
+
+        # If rank level is missing, look it up by name
+        if not self.rank_level and self.rank:
+            self.rank_level = RANK_LEVELS.get(self.rank)
 
     @classmethod
     def from_sorted_json_list(cls, value: JsonResponse, **kwargs) -> List['Taxon']:
@@ -363,8 +373,7 @@ class LifeList(BaseModelCollection):
 
 def _get_rank_name_idx(taxon):
     """Sort index by rank and name (ascending)"""
-    idx = RANKS.index(taxon.rank) if taxon.rank in RANKS else 0
-    return idx * -1, taxon.name
+    return (taxon.rank_level or 0) * -1, taxon.name
 
 
 def make_tree(taxa: Iterable[Taxon], sort_key: Optional[TaxonSortKey] = None) -> Taxon:

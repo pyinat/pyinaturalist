@@ -941,6 +941,12 @@ def test_taxon__no_default_photo(taxon_id):
     assert photo.url is not None
 
 
+def test_taxon__normalize_rank():
+    taxon = Taxon(rank='spp')
+    assert taxon.rank == 'species'
+    assert taxon.rank_level == 10
+
+
 def test_taxon__taxonomy():
     taxon = Taxon.from_json(j_taxon_1)
     assert taxon.taxonomy == {
