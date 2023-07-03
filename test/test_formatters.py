@@ -170,7 +170,7 @@ Stateofmatter Life
 """
 
 
-@pytest.mark.parametrize('taxa', [life_list, life_list.tree(), life_list.data])
+@pytest.mark.parametrize('taxa', [life_list, make_tree(life_list), life_list.data])
 def test_pprint_tree(taxa):
     """Test pprint_tree() with a single taxon (tree), a LifeList, and a regular list of taxa"""
 

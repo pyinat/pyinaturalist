@@ -379,20 +379,6 @@ class LifeList(BaseModelCollection):
             return self.count_without_taxon
         return super().get_count(taxon_id, count_field=count_field)
 
-    def tree(
-        self,
-        sort_key: Optional[TaxonSortKey] = None,
-        include_ranks: Optional[List[str]] = None,
-    ) -> Taxon:
-        """**Experimental**
-
-        Organize this life list into a taxonomic tree
-
-        Returns:
-            Root taxon of the tree
-        """
-        return make_tree(self.data, sort_key=sort_key, include_ranks=include_ranks)
-
 
 def _sort_rank_name(taxon):
     """Get a sort key by rank (descending) and name"""

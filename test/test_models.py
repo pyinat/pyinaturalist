@@ -388,79 +388,6 @@ def test_life_list__get_count():
     assert life_list.get_count(9999999) == 0  # Unobserved taxon
 
 
-def test_life_list__tree():
-    life_list = LifeList.from_json(j_life_list_2)
-    root = life_list.tree()
-
-    # Spot check the first few levels
-    assert root.name == 'Life'
-    assert root.children[0].name == 'Animalia'
-    assert root.children[0].children[0].name == 'Arthropoda'
-
-    # Ensure correct child sort order
-    node = root
-    for _ in range(14):
-        node = node.children[0]
-    assert node.name == 'Bombus'
-    children = [t.name for t in node.children]
-    assert children == ['Bombus', 'Psithyrus', 'Pyrobombus', 'Subterraneobombus', 'Thoracobombus']
-
-    # Ensure ancestors are updated
-    assert root.ancestors == []
-    assert [t.id for t in node.ancestors] == [
-        48460,
-        1,
-        47120,
-        372739,
-        47158,
-        184884,
-        47201,
-        124417,
-        326777,
-        47222,
-        630955,
-        47221,
-        199939,
-        538883,
-    ]
-
-
-def test_life_list__tree__filtered():
-    """Test a tree filtered by common ranks only"""
-    life_list = LifeList.from_json(j_life_list_2)
-    root = life_list.tree(include_ranks=COMMON_RANKS)
-
-    # Spot check the first few levels
-    assert root.name == 'Life'
-    assert root.children[0].name == 'Animalia'
-    assert root.children[0].children[0].children[0].name == 'Insecta'
-
-    # 6 levels down, expect a genus with 9 species
-    node = root
-    for _ in range(6):
-        node = node.children[0]
-    assert node.name == 'Bombus'
-    assert len(node.children) == 9
-
-
-def test_life_list__tree__invalid():
-    """Attempting to make a tree with no common root taxon should raise an error"""
-    life_list = LifeList.from_json([j_observation_1, j_observation_2])
-
-    with pytest.raises(ValueError):
-        life_list.tree()
-
-
-def test_life_list__tree_flattened():
-    life_list = LifeList.from_json(j_life_list_1)
-    flat_list = life_list.tree().flatten()
-    assert [t.id for t in flat_list] == [48460, 1, 2, 3, 573, 574, 889, 890, 980, 981]
-
-    assert flat_list[0].ancestors == []
-    assert [t.id for t in flat_list[5].ancestors] == [48460, 1, 2, 3, 573]
-    assert [t.id for t in flat_list[9].ancestors] == [48460, 1, 2, 3, 573, 574, 980]
-
-
 # Messages
 # --------------------
 
@@ -1108,6 +1035,79 @@ def test_taxon_summary():
     assert ts.listed_taxon.place.id == 144952
     assert ts.listed_taxon.place.display_name.startswith('HRM District 13')
     assert ts.listed_taxon.place.place_type_name == 'Constituency'
+
+
+def test_make_tree():
+    root = make_tree(LifeList.from_json(j_life_list_2))
+
+    # Spot check the first few levels
+    assert root.name == 'Life'
+    assert root.children[0].name == 'Animalia'
+    assert root.children[0].children[0].name == 'Arthropoda'
+
+    # Ensure correct child sort order
+    node = root
+    for _ in range(14):
+        node = node.children[0]
+    assert node.name == 'Bombus'
+    children = [t.name for t in node.children]
+    assert children == ['Bombus', 'Psithyrus', 'Pyrobombus', 'Subterraneobombus', 'Thoracobombus']
+
+    # Ensure ancestors are updated
+    assert root.ancestors == []
+    assert [t.id for t in node.ancestors] == [
+        48460,
+        1,
+        47120,
+        372739,
+        47158,
+        184884,
+        47201,
+        124417,
+        326777,
+        47222,
+        630955,
+        47221,
+        199939,
+        538883,
+    ]
+
+
+def test_make_tree__filtered():
+    """Test a tree filtered by common ranks only"""
+    root = make_tree(
+        Taxon.from_json_list(j_life_list_2),
+        include_ranks=COMMON_RANKS,
+    )
+
+    # Spot check the first few levels
+    assert root.name == 'Life'
+    assert root.children[0].name == 'Animalia'
+    assert root.children[0].children[0].children[0].name == 'Insecta'
+
+    # 6 levels down, expect a genus with 9 species
+    node = root
+    for _ in range(6):
+        node = node.children[0]
+    assert node.name == 'Bombus'
+    assert len(node.children) == 9
+
+
+def test_make_tree__invalid():
+    """Attempting to make a tree with no common root taxon should raise an error"""
+    taxa = Taxon.from_json_list([j_observation_1, j_observation_2])
+
+    with pytest.raises(ValueError):
+        make_tree(taxa)
+
+
+def test_make_tree__flattened():
+    flat_list = make_tree(Taxon.from_json_list(j_life_list_1)).flatten()
+    assert [t.id for t in flat_list] == [48460, 1, 2, 3, 573, 574, 889, 890, 980, 981]
+
+    assert flat_list[0].ancestors == []
+    assert [t.id for t in flat_list[5].ancestors] == [48460, 1, 2, 3, 573]
+    assert [t.id for t in flat_list[9].ancestors] == [48460, 1, 2, 3, 573, 574, 980]
 
 
 # Users
