@@ -16,7 +16,7 @@ import pytest
 from dateutil.tz import tzoffset, tzutc
 
 from pyinaturalist.constants import (
-    API_V1,
+    GBIF_TAXON_BASE_URL,
     ICONIC_TAXA,
     INAT_BASE_URL,
     PHOTO_BASE_URL,
@@ -364,7 +364,13 @@ def test_life_list__converters():
     life_list = LifeList.from_json(j_life_list_1)
     assert life_list.data[0] == life_list[0]
     assert len(life_list) == 10
+    assert life_list.count_without_taxon == 4
     assert isinstance(life_list.data[0], TaxonCount) and life_list.data[0].id == 48460
+
+    # Should work with our without extra 'results' level from response JSON
+    life_list = LifeList.from_json(j_life_list_1['results'])
+    assert len(life_list) == 10
+    assert life_list.count_without_taxon == 0
 
 
 def test_life_list__empty():
@@ -846,9 +852,15 @@ def test_taxon__ancestors_children():
     assert isinstance(child, Taxon) and child.id == 70115
 
 
-def test_taxon__ancestor_ids():
+def test_taxon__ancestor_ids_from_ancestry_str():
     taxon = Taxon(ancestry='1/70116/70118')
     assert taxon.ancestor_ids == [1, 70116, 70118]
+
+
+def test_taxon__ancestor_ids_from_ancestor_objs():
+    ids = [1, 70116, 70118]
+    taxon = Taxon(ancestors=[Taxon(id=i) for i in ids])
+    assert taxon.ancestor_ids == ids
 
 
 def test_taxon__all_names():
@@ -926,8 +938,10 @@ def test_listed_taxon__id_wrapper_properties():
 
 def test_taxon__properties():
     taxon = Taxon.from_json(j_taxon_1)
+    taxon.gbif_id = 12345
     assert taxon.url == f'{INAT_BASE_URL}/taxa/70118'
     assert taxon.child_ids == [70115, 70114, 70117, 70116]
+    assert taxon.gbif_url == f'{GBIF_TAXON_BASE_URL}/12345'
     assert isinstance(taxon.parent, Taxon) and taxon.parent.id == 53850
 
 

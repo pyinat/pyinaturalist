@@ -11,6 +11,7 @@ API_V0 = 'https://www.inaturalist.org'
 API_V1 = 'https://api.inaturalist.org/v1'
 API_V2 = 'https://api.inaturalist.org/v2'
 EXPORT_URL = 'https://www.inaturalist.org/observations/export'
+GBIF_TAXON_BASE_URL = 'https://www.gbif.org/species'
 INAT_BASE_URL = API_V0
 INAT_REPO = 'https://raw.githubusercontent.com/inaturalist/inaturalist/main'
 ICONIC_TAXA_BASE_URL = f'{INAT_REPO}/app/assets/images/iconic_taxa'

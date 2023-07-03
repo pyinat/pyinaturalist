@@ -3,6 +3,7 @@ from itertools import chain, groupby
 from typing import Any, Callable, Dict, Iterable, List, Optional
 
 from pyinaturalist.constants import (
+    GBIF_TAXON_BASE_URL,
     ICONIC_EMOJI,
     ICONIC_TAXA,
     INAT_BASE_URL,
@@ -221,7 +222,7 @@ class Taxon(BaseModel):
     @property
     def gbif_url(self) -> str:
         """URL for the GBIF info page for this taxon"""
-        return f'https://www.gbif.org/species/{self.gbif_id}'
+        return f'{GBIF_TAXON_BASE_URL}/{self.gbif_id}'
 
     @property
     def parent(self) -> 'Taxon':
@@ -278,6 +279,8 @@ Taxon.children = LazyProperty(
     partial=True,
 )
 
+TaxonSortKey = Callable[[Taxon], Any]
+
 
 @define_model
 class TaxonCount(Taxon):
@@ -293,8 +296,6 @@ class TaxonCount(Taxon):
         cls, value: JsonResponse, user_id: Optional[int] = None, **kwargs
     ) -> 'TaxonCount':
         """Flatten out count + taxon fields into a single-level dict before initializing"""
-        if 'results' in value:
-            value = value['results']
         if 'taxon' in value:
             value = value.copy()
             value.update(value.pop('taxon'))
@@ -328,9 +329,6 @@ class TaxonCounts(BaseModelCollection):
     data: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
 
 
-TaxonSortKey = Callable[[Taxon], Any]
-
-
 @define_model_collection
 class LifeList(BaseModelCollection):
     """:fa:`dove` :fa:`list` A user's life list, based on the schema of ``GET /observations/taxonomy``"""
@@ -341,7 +339,7 @@ class LifeList(BaseModelCollection):
 
     @classmethod
     def from_json(cls, value: JsonResponse, user_id: Optional[int] = None, **kwargs) -> 'LifeList':
-        count_without_taxon = value.get('count_without_taxon', 0)
+        count_without_taxon = value.get('count_without_taxon', 0) if isinstance(value, dict) else 0
         if 'results' in value:
             value = value['results']
 
@@ -381,8 +379,7 @@ def title(value: str) -> str:
 
     Borrowed/modified from ``django.template.defaultfilters.title()``
     """
-    t = re.sub("([a-z])['’]([A-Z])", lambda m: m[0].lower(), value.title())
-    return re.sub(r'\d([A-Z])', lambda m: m[0].lower(), t)
+    return re.sub("([a-z])['’]([A-Z])", lambda m: m[0].lower(), value.title())
 
 
 def make_tree(taxa: Iterable[Taxon], sort_key: Optional[TaxonSortKey] = None) -> Taxon:
