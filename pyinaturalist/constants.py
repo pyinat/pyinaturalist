@@ -103,6 +103,7 @@ ROOT_TAXON_ID = 48460
 
 # Taxonomic ranks that can be filtered on, and numeric values for comparison
 # Source: https://github.com/inaturalist/inaturalist/blob/main/app/models/taxon.rb
+UNRANKED = 90  # Used for comparing unranked taxa
 RANK_LEVELS = {
     'infrahybrid': 5,
     'form': 5,
@@ -138,7 +139,7 @@ RANK_LEVELS = {
     'subphylum': 57,
     'phylum': 60,
     'kingdom': 70,
-    'unranked': 90,  # Invented to make parent check work (this is null in the db)
+    'unranked': UNRANKED,
     'stateofmatter': 100,
 }
 RANKS = list(RANK_LEVELS.keys())[:-2]

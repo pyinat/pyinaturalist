@@ -9,6 +9,7 @@ from pyinaturalist.constants import (
     RANK_EQUIVALENTS,
     RANK_LEVELS,
     RANKS,
+    UNRANKED,
     DateTime,
     JsonResponse,
     TableRow,
@@ -145,14 +146,6 @@ class Taxon(BaseModel):
     # universal_search_rank: int = field(default=None)
 
     def __attrs_post_init__(self):
-        # Look up iconic taxon name, if only ID is provided
-        if not self.iconic_taxon_name:
-            self.iconic_taxon_name = ICONIC_TAXA.get(self.iconic_taxon_id, 'Unknown')
-
-        # If default photo is missing, use iconic taxon icon
-        if not self.default_photo:
-            self.default_photo = self.icon
-
         # If only ancestor string (or objects) are provided, split into IDs
         if self.ancestry and not self.ancestor_ids:
             delimiter = ',' if ',' in self.ancestry else '/'
@@ -160,20 +153,28 @@ class Taxon(BaseModel):
         elif self.ancestors and not self.ancestor_ids:
             self.ancestor_ids = [t.id for t in self.ancestors]
 
+        # If iconic taxon name is missing, look it up by ID
+        if not self.iconic_taxon_name:
+            self.iconic_taxon_name = ICONIC_TAXA.get(self.iconic_taxon_id, 'Unknown')
+
+        # If default photo is missing, use iconic taxon icon
+        if not self.default_photo:
+            self.default_photo = self.icon
+
         # Normalize rank names
         self.rank = (self.rank or '').lower()
         if self.rank in RANK_EQUIVALENTS:
             self.rank = RANK_EQUIVALENTS[self.rank]
 
         # If rank level is missing, look it up by name
-        if not self.rank_level and self.rank:
-            self.rank_level = RANK_LEVELS.get(self.rank)
+        if not self.rank_level:
+            self.rank_level = RANK_LEVELS.get(self.rank, UNRANKED)
 
     @classmethod
     def from_sorted_json_list(cls, value: JsonResponse, **kwargs) -> List['Taxon']:
         """Sort Taxon objects by rank then by name"""
         taxa = cls.from_json_list(value, **kwargs)
-        taxa.sort(key=_get_rank_name_idx)
+        taxa.sort(key=_sort_rank_name)
         return taxa
 
     @property
@@ -371,8 +372,8 @@ class LifeList(BaseModelCollection):
         return make_tree(self.data, sort_key=sort_key)
 
 
-def _get_rank_name_idx(taxon):
-    """Sort index by rank and name (ascending)"""
+def _sort_rank_name(taxon):
+    """Get a sort key by rank (descending) and name"""
     return (taxon.rank_level or 0) * -1, taxon.name
 
 
@@ -382,10 +383,6 @@ def make_tree(taxa: Iterable[Taxon], sort_key: Optional[TaxonSortKey] = None) ->
     Returns:
         Root taxon of the tree
     """
-
-    def default_sort(taxon):
-        """Default sort key for taxon children"""
-        return taxon.rank_level * -1, taxon.name
 
     def sort_groupby(values, key):
         """Apply sorting then grouping using the same key"""
@@ -398,7 +395,7 @@ def make_tree(taxa: Iterable[Taxon], sort_key: Optional[TaxonSortKey] = None) ->
             add_descendants(child)
         return taxon
 
-    sort_key = sort_key if sort_key is not None else default_sort
+    sort_key = sort_key if sort_key is not None else _sort_rank_name
     taxa_by_parent_id: Dict[int, List[Taxon]] = sort_groupby(taxa, key=lambda x: x.parent_id or -1)
 
     root_taxa = taxa_by_parent_id.get(-1, [])

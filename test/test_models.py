@@ -23,6 +23,7 @@ from pyinaturalist.constants import (
     PHOTO_CC_BASE_URL,
     PHOTO_INFO_BASE_URL,
     PHOTO_SIZES,
+    UNRANKED,
 )
 from pyinaturalist.models import *
 from test.conftest import sample_data_path
@@ -826,7 +827,7 @@ def test_taxon__ancestors_children():
     parent = taxon.ancestors[0]
     child = taxon.children[0]
     assert isinstance(parent, Taxon) and parent.id == 1
-    assert isinstance(child, Taxon) and child.id == 70116
+    assert isinstance(child, Taxon) and child.id == 70115
 
 
 def test_taxon__ancestor_ids():
@@ -910,7 +911,7 @@ def test_listed_taxon__id_wrapper_properties():
 def test_taxon__properties():
     taxon = Taxon.from_json(j_taxon_1)
     assert taxon.url == f'{INAT_BASE_URL}/taxa/70118'
-    assert taxon.child_ids == [70116, 70114, 70117, 70115]
+    assert taxon.child_ids == [70115, 70114, 70117, 70116]
     assert isinstance(taxon.parent, Taxon) and taxon.parent.id == 53850
 
 
@@ -944,7 +945,16 @@ def test_taxon__no_default_photo(taxon_id):
 def test_taxon__normalize_rank():
     taxon = Taxon(rank='spp')
     assert taxon.rank == 'species'
+
+
+def test_taxon__rank_level():
+    # If missing, level should be looked up by name, if available
+    taxon = Taxon(rank='species')
     assert taxon.rank_level == 10
+
+    # Otherwise, level should default to 'unranked' for comparison
+    taxon = Taxon()
+    assert taxon.rank_level == UNRANKED
 
 
 def test_taxon__taxonomy():
