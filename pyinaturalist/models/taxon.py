@@ -194,6 +194,14 @@ class Taxon(BaseModel):
     @property
     def full_name(self) -> str:
         """Taxon rank, scientific name, and common name (if available)"""
+        return self._full_name()
+
+    @property
+    def rich_full_name(self) -> str:
+        """Taxon full name, with italicized scientific name depending on rank (genus and below)"""
+        return self._full_name(markup=True)
+
+    def _full_name(self, markup: bool = False) -> str:
         if not self.name and not self.rank:
             return str(self.id)
         if not self.name:
@@ -204,10 +212,15 @@ class Taxon(BaseModel):
             if self.rank and self.rank_level > RANK_LEVELS['species']
             else ''
         )
+        name = (
+            f'[i]{self.name}[/i]'
+            if markup and self.rank_level <= RANK_LEVELS['genus']
+            else self.name
+        )
         common_name = (
             f' ({title(self.preferred_common_name)})' if self.preferred_common_name else ''
         )
-        return f'{rank}{self.name}{common_name}'
+        return f'{rank}{name}{common_name}'
 
     @property
     def icon(self) -> IconPhoto:
