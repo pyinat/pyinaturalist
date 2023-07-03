@@ -1,7 +1,6 @@
 from datetime import datetime
 from itertools import chain
 from typing import Any, Dict, List, Tuple
-from warnings import warn
 
 from pyinaturalist.constants import (
     ALL_LICENSES,
@@ -215,19 +214,6 @@ class Observation(BaseModel):
         if kwargs.get('identifications') and not kwargs.get('identifications_count'):
             kwargs['identifications_count'] = len(kwargs['identifications'])
         self.__attrs_init__(**kwargs)  # type: ignore
-
-    @classmethod
-    def from_id(cls, id: int):
-        """**[Deprecated]** Lookup and create a new Observation object from an ID"""
-        from pyinaturalist.v1 import get_observation
-
-        warn(
-            DeprecationWarning(
-                'This method is deprecated; please use iNatClient.observations() instead'
-            )
-        )
-        json = get_observation(id)
-        return cls.from_json(json)
 
     @property
     def cumulative_ids(self) -> Tuple[int, int]:

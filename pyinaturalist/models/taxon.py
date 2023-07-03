@@ -1,13 +1,12 @@
+from itertools import chain, groupby
 from string import capwords
-from typing import Dict, List, Optional
-from warnings import warn
-
-from attr import fields_dict
+from typing import Any, Callable, Dict, Iterable, List, Optional
 
 from pyinaturalist.constants import (
     ICONIC_EMOJI,
     ICONIC_TAXA,
     INAT_BASE_URL,
+    RANK_LEVELS,
     RANKS,
     DateTime,
     JsonResponse,
@@ -205,6 +204,11 @@ class Taxon(BaseModel):
         return str(self.icon.thumbnail_url)
 
     @property
+    def indent_level(self) -> int:
+        """Indentation level corresponding to this item's rank level"""
+        return int(((RANK_LEVELS['kingdom'] - self.rank_level) / 5)) + 1
+
+    @property
     def gbif_url(self) -> str:
         """URL for the GBIF info page for this taxon"""
         return f'https://www.gbif.org/species/{self.gbif_id}'
@@ -224,27 +228,15 @@ class Taxon(BaseModel):
         """Info URL on iNaturalist.org"""
         return f'{INAT_BASE_URL}/taxa/{self.id}'
 
-    @classmethod
-    def from_id(cls, id: int) -> 'Taxon':
-        """**[Deprecated]** Lookup and create a new Taxon object by ID"""
-        from pyinaturalist.v1 import get_taxa_by_id
+    def flatten(self) -> List['Taxon']:
+        """Return this taxon and all its descendants as a flat list"""
 
-        warn(DeprecationWarning('This method is deprecated; please use iNatClient.taxa() instead'))
-        r = get_taxa_by_id(id)
-        return cls.from_json(r['results'][0])
+        def flatten_tree(taxon: Taxon) -> List[Taxon]:
+            return [taxon] + list(
+                chain.from_iterable(flatten_tree(child) for child in taxon.children)
+            )
 
-    def load_full_record(self):
-        """Update this Taxon with full taxon info, including ancestors + children"""
-        msg = 'This method is deprecated; please use iNatClient.taxa.full_record() instead'
-        warn(DeprecationWarning(msg))
-
-        t = Taxon.from_id(self.id)
-        copy_keys = set(fields_dict(Taxon).keys()) - {'matched_term'}
-        for key in copy_keys:
-            # Use getters/setters for LazyProperty instead of temp attrs (cls.foo vs cls._foo)
-            if hasattr(key, key.lstrip('_')):
-                key = key.lstrip('_')
-            setattr(self, key, getattr(t, key))
+        return flatten_tree(self)
 
     @property
     def _row(self) -> TableRow:
@@ -260,6 +252,23 @@ class Taxon(BaseModel):
         return ['id', 'full_name']
 
 
+# Since these use Taxon classmethods, they must be added after Taxon is defined
+Taxon.ancestors = LazyProperty(
+    Taxon.from_sorted_json_list,
+    name='ancestors',
+    type=List[Taxon],
+    doc='Ancestor taxa, from highest rank to lowest',
+    partial=True,
+)
+Taxon.children = LazyProperty(
+    Taxon.from_sorted_json_list,
+    name='children',
+    type=List[Taxon],
+    doc='Child taxa, sorted by rank then name',
+    partial=True,
+)
+
+
 @define_model
 class TaxonCount(Taxon):
     """:fa:`dove` :fa:`list` A :py:class:`.Taxon` with an associated count, used in a
@@ -267,6 +276,7 @@ class TaxonCount(Taxon):
     """
 
     count: int = field(default=0, doc='Number of observations of this taxon')
+    descendant_obs_count: int = field(default=0, doc='Number of observations, including children')
 
     @classmethod
     def from_json(
@@ -278,6 +288,9 @@ class TaxonCount(Taxon):
         if 'taxon' in value:
             value = value.copy()
             value.update(value.pop('taxon'))
+        # In life lists, 'count' is aliased as 'direct_obs_count'
+        if 'direct_obs_count' in value:
+            value['count'] = value.pop('direct_obs_count')
         return super(TaxonCount, cls).from_json(value)
 
     @property
@@ -305,24 +318,82 @@ class TaxonCounts(BaseModelCollection):
     data: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
 
 
-# Since these use Taxon classmethods, they must be added after Taxon is defined
-Taxon.ancestors = LazyProperty(
-    Taxon.from_sorted_json_list,
-    name='ancestors',
-    type=List[Taxon],
-    doc='Ancestor taxa, from highest rank to lowest',
-    partial=True,
-)
-Taxon.children = LazyProperty(
-    Taxon.from_sorted_json_list,
-    name='children',
-    type=List[Taxon],
-    doc='Child taxa, sorted by rank then name',
-    partial=True,
-)
+TaxonSortKey = Callable[[Taxon], Any]
+
+
+@define_model_collection
+class LifeList(BaseModelCollection):
+    """:fa:`dove` :fa:`list` A user's life list, based on the schema of ``GET /observations/taxonomy``"""
+
+    data: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
+    count_without_taxon: int = field(default=0, doc='Number of observations without a taxon')
+    user_id: int = field(default=None)
+
+    @classmethod
+    def from_json(cls, value: JsonResponse, user_id: Optional[int] = None, **kwargs) -> 'LifeList':
+        count_without_taxon = value.get('count_without_taxon', 0)
+        if 'results' in value:
+            value = value['results']
+
+        life_list_json = {
+            'data': value,
+            'user_id': user_id,
+            'count_without_taxon': count_without_taxon,
+        }
+        return super(LifeList, cls).from_json(life_list_json)
+
+    def get_count(self, taxon_id: int, count_field='descendant_obs_count') -> int:
+        """Get an observation count for the specified taxon and its descendants, and handle unlisted taxa.
+        **Note:** ``-1`` can be used an alias for ``count_without_taxon``.
+        """
+        if taxon_id == -1:
+            return self.count_without_taxon
+        return super().get_count(taxon_id, count_field=count_field)
+
+    def tree(self, sort_key: Optional[TaxonSortKey] = None) -> Taxon:
+        """**Experimental**
+
+        Organize this life list into a taxonomic tree
+
+        Returns:
+            Root taxon of the tree
+        """
+        return make_tree(self.data, sort_key=sort_key)
 
 
 def _get_rank_name_idx(taxon):
     """Sort index by rank and name (ascending)"""
     idx = RANKS.index(taxon.rank) if taxon.rank in RANKS else 0
     return idx * -1, taxon.name
+
+
+def make_tree(taxa: Iterable[Taxon], sort_key: Optional[TaxonSortKey] = None) -> Taxon:
+    """Organize a list of taxa into a taxonomic tree. Exepects exactly one root taxon.
+
+    Returns:
+        Root taxon of the tree
+    """
+
+    def default_sort(taxon):
+        """Default sort key for taxon children"""
+        return taxon.rank_level * -1, taxon.name
+
+    def sort_groupby(values, key):
+        """Apply sorting then grouping using the same key"""
+        return {k: list(group) for k, group in groupby(sorted(values, key=key), key=key)}
+
+    def add_descendants(taxon) -> Taxon:
+        """Recursively add taxon descendants"""
+        taxon.children = sorted(taxa_by_parent_id.get(taxon.id, []), key=sort_key)
+        for child in taxon.children:
+            add_descendants(child)
+        return taxon
+
+    sort_key = sort_key if sort_key is not None else default_sort
+    taxa_by_parent_id: Dict[int, List[Taxon]] = sort_groupby(taxa, key=lambda x: x.parent_id or -1)
+
+    root_taxa = taxa_by_parent_id.get(-1, [])
+    if len(root_taxa) != 1:
+        raise ValueError(f'Expected exactly one root taxon; found {len(root_taxa)}')
+
+    return add_descendants(root_taxa[0])

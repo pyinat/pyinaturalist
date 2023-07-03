@@ -18,7 +18,7 @@ RESPONSES = {
     'identification': j_identification_1,
     'observation_field': j_obs_field_1,
     'observation': j_observation_1,
-    'life_list': j_life_list,
+    'life_list': j_life_list_1,
     'observation_field_value': j_ofv_1_numeric,
     'photo': j_photo_1,
     'place': j_place_1,

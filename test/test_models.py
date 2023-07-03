@@ -360,10 +360,10 @@ def test_identification__str():
 
 
 def test_life_list__converters():
-    life_list = LifeList.from_json(j_life_list)
+    life_list = LifeList.from_json(j_life_list_1)
     assert life_list.data[0] == life_list[0]
-    assert len(life_list) == 9
-    assert isinstance(life_list.data[0], LifeListTaxon) and life_list.data[0].id == 1
+    assert len(life_list) == 10
+    assert isinstance(life_list.data[0], TaxonCount) and life_list.data[0].id == 48460
 
 
 def test_life_list__empty():
@@ -373,7 +373,7 @@ def test_life_list__empty():
 
 
 def test_life_list__get_count():
-    life_list = LifeList.from_json(j_life_list)
+    life_list = LifeList.from_json(j_life_list_1)
     assert life_list.get_count(1) == 3023  # Animalia
     assert life_list.get_count(981) == 2  # Phasianus colchicus
     assert life_list.get_count(-1) == 4  # Observations with no taxon
@@ -510,7 +510,7 @@ def test_observation__ident_taxon_ids__current_only():
     ]
 
 
-def test_observation__ccumulative_ids__all_agree():
+def test_observation__cumulative_ids__all_agree():
     obs = Observation.from_json(j_observation_2)
     assert obs.cumulative_ids == (2, 2)
 
@@ -958,19 +958,6 @@ def test_taxon__taxonomy():
         'genus': 'Nicrophorus',
         'species': 'Nicrophorus vespilloides',
     }
-
-
-def test_taxon__load_full_record(requests_mock):
-    requests_mock.get(
-        f'{API_V1}/taxa/343248',
-        json=load_sample_data('get_taxa_by_id.json'),
-        status_code=200,
-    )
-    taxon = Taxon(id=343248, matched_term='nicroph')
-    taxon.load_full_record()
-    assert taxon.name == 'Nicrophorus vespilloides'
-    assert taxon.matched_term == 'nicroph'  # matched_term should not be overwritten if present
-    assert len(taxon.ancestors) == 12
 
 
 def test_taxon_count__copy():

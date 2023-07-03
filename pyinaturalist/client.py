@@ -93,7 +93,7 @@ class iNatClient:
             tokens as needed. Using a keyring instead is recommended, though.
         default_params: Default request parameters to pass to any applicable API requests
         dry_run: Just log all requests instead of sending real requests
-        loop: An event loop to use to run any executors used for async iteration
+        loop: An event loop to run any executors used for async iteration
         session: Session object to use instead of creating a new one
         kwargs: Keyword arguments for :py:class:`.ClientSession`
     """

@@ -75,7 +75,7 @@ from pyinaturalist.models.place import Place
 from pyinaturalist.models.user import User, UserCount, UserCounts
 from pyinaturalist.models.checklist import Checklist, EstablishmentMeans, ListedTaxon
 from pyinaturalist.models.conservation_status import ConservationStatus, TaxonSummary
-from pyinaturalist.models.taxon import Taxon, TaxonCount, TaxonCounts
+from pyinaturalist.models.taxon import Taxon, TaxonCount, TaxonCounts, LifeList, make_tree
 from pyinaturalist.models.controlled_term import (
     Annotation,
     ControlledTerm,
@@ -84,7 +84,6 @@ from pyinaturalist.models.controlled_term import (
     ControlledTermValue,
 )
 from pyinaturalist.models.identification import Comment, Identification
-from pyinaturalist.models.life_list import LifeList, LifeListTaxon
 from pyinaturalist.models.message import Message
 from pyinaturalist.models.observation_field import ObservationField, ObservationFieldValue
 from pyinaturalist.models.project import (

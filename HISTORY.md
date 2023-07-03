@@ -15,6 +15,9 @@ Add support for searching observations by observation fields, using a new `obser
 * `get_observation_species_counts()`
 
 ### Models
+* Add `LifeList.tree()` method to return a nested tree of taxa in a user's life list
+* Add `Taxon.flatten()` method to return a taxon and its descendants as a flat list
+* Add `pprint_tree()` function to print a taxon tree on the console
 * Add `Observation.ident_taxon_ids` dynamic property to get all identification taxon IDs (with ancestors)
 * Add `Observation.cumulative_ids` dynamic property to calculate agreements/total community identifications
 * Add `Sound` model for `Observation.sounds`

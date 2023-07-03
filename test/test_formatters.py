@@ -6,6 +6,7 @@ from io import StringIO
 import pytest
 from requests import Request
 from requests_cache import CachedResponse
+from rich import get_console, reconfigure
 from rich.console import Console
 from rich.table import Table
 
@@ -24,7 +25,7 @@ TABULAR_RESPONSES = [
     [j_identification_1, j_identification_2],
     [j_observation_1, j_observation_2, j_observation_no_taxon],
     j_obs_species_counts,
-    j_life_list,
+    j_life_list_1,
     [j_listed_taxon_1, j_listed_taxon_2_partial],
     [j_message],
     [j_photo_1, j_photo_2_partial],
@@ -139,12 +140,11 @@ Observation(
 
 def test_pretty_print():
     """Test rich.pretty with modifications, via get_model_fields()"""
-    console = Console(force_terminal=False, width=220, file=StringIO())
+    console = Console(width=220, file=StringIO())
     observation = Observation.from_json(j_observation_1)
 
     console.print(observation)
     rendered = console.file.getvalue()
-    print(rendered)
 
     # Don't check for differences in indendtation
     rendered = re.sub(' +', ' ', rendered.strip())
@@ -153,6 +153,41 @@ def test_pretty_print():
     # Emoji may not correctly render in CI
     rendered = rendered.replace(r'\U0001fab2', '🪲')
     assert rendered == expected
+
+
+life_list = LifeList.from_json(j_life_list_1)
+PRINTED_TREE = """
+Stateofmatter Life
+└── Kingdom Animalia
+    └── Phylum Chordata
+        └── Class Aves
+            └── Order Galliformes
+                └── Family Phasianidae
+                    ├── Genus Bonasa
+                    │   └── Species Bonasa umbellus
+                    └── Genus Phasianus
+                        └── Species Phasianus colchicus
+"""
+
+
+@pytest.mark.parametrize('taxa', [life_list, life_list.tree(), life_list.data])
+def test_pprint_tree(taxa):
+    """Test pprint_tree() with a single taxon (tree), a LifeList, and a regular list of taxa"""
+
+    # Capture output from default console
+    reconfigure(width=120, file=StringIO())
+    console = get_console()
+
+    pprint_tree(taxa)
+    assert console.file.getvalue() == PRINTED_TREE.lstrip()
+
+
+def test_pprint_tree__invalid():
+    with pytest.raises(ValueError):
+        pprint_tree(Observation())
+
+    with pytest.raises(ValueError):
+        pprint_tree([Observation()])
 
 
 def test_format_request():

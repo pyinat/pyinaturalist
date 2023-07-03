@@ -1,0 +1,327 @@
+{
+  "count_without_taxon": 0,
+  "size": 31,
+  "results": [
+    {
+      "id": 48460,
+      "name": "Life",
+      "rank": "stateofmatter",
+      "rank_level": 100,
+      "is_active": true,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 1,
+      "name": "Animalia",
+      "rank": "kingdom",
+      "rank_level": 70,
+      "is_active": true,
+      "parent_id": 48460,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 47120,
+      "name": "Arthropoda",
+      "rank": "phylum",
+      "rank_level": 60,
+      "is_active": true,
+      "parent_id": 1,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 47158,
+      "name": "Insecta",
+      "rank": "class",
+      "rank_level": 50,
+      "is_active": true,
+      "parent_id": 372739,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 47201,
+      "name": "Hymenoptera",
+      "rank": "order",
+      "rank_level": 40,
+      "is_active": true,
+      "parent_id": 184884,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 47221,
+      "name": "Apidae",
+      "rank": "family",
+      "rank_level": 30,
+      "is_active": true,
+      "parent_id": 630955,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 47222,
+      "name": "Apoidea",
+      "rank": "superfamily",
+      "rank_level": 33,
+      "is_active": true,
+      "parent_id": 326777,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 52774,
+      "count": 2,
+      "name": "Bombus fervidus",
+      "rank": "species",
+      "rank_level": 10,
+      "is_active": true,
+      "parent_id": 1266534,
+      "descendant_obs_count": 2,
+      "direct_obs_count": 2
+    },
+    {
+      "id": 52775,
+      "count": 4,
+      "name": "Bombus",
+      "rank": "genus",
+      "rank_level": 20,
+      "is_active": true,
+      "parent_id": 538883,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 4
+    },
+    {
+      "id": 52779,
+      "count": 14,
+      "name": "Bombus bimaculatus",
+      "rank": "species",
+      "rank_level": 10,
+      "is_active": true,
+      "parent_id": 538900,
+      "descendant_obs_count": 14,
+      "direct_obs_count": 14
+    },
+    {
+      "id": 118970,
+      "count": 45,
+      "name": "Bombus impatiens",
+      "rank": "species",
+      "rank_level": 10,
+      "is_active": true,
+      "parent_id": 538900,
+      "descendant_obs_count": 45,
+      "direct_obs_count": 45
+    },
+    {
+      "id": 121517,
+      "count": 6,
+      "name": "Bombus terricola",
+      "rank": "species",
+      "rank_level": 10,
+      "is_active": true,
+      "parent_id": 538903,
+      "descendant_obs_count": 6,
+      "direct_obs_count": 6
+    },
+    {
+      "id": 124417,
+      "name": "Apocrita",
+      "rank": "suborder",
+      "rank_level": 37,
+      "is_active": true,
+      "parent_id": 47201,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 127905,
+      "count": 51,
+      "name": "Bombus ternarius",
+      "rank": "species",
+      "rank_level": 10,
+      "is_active": true,
+      "parent_id": 538900,
+      "descendant_obs_count": 51,
+      "direct_obs_count": 51
+    },
+    {
+      "id": 128670,
+      "count": 4,
+      "name": "Bombus vagans",
+      "rank": "species",
+      "rank_level": 10,
+      "is_active": true,
+      "parent_id": 538900,
+      "descendant_obs_count": 4,
+      "direct_obs_count": 4
+    },
+    {
+      "id": 143854,
+      "count": 3,
+      "name": "Bombus borealis",
+      "rank": "species",
+      "rank_level": 10,
+      "is_active": true,
+      "parent_id": 415027,
+      "descendant_obs_count": 3,
+      "direct_obs_count": 3
+    },
+    {
+      "id": 155085,
+      "count": 2,
+      "name": "Bombus perplexus",
+      "rank": "species",
+      "rank_level": 10,
+      "is_active": true,
+      "parent_id": 538900,
+      "descendant_obs_count": 2,
+      "direct_obs_count": 2
+    },
+    {
+      "id": 184884,
+      "name": "Pterygota",
+      "rank": "subclass",
+      "rank_level": 47,
+      "is_active": true,
+      "parent_id": 47158,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 199939,
+      "name": "Apinae",
+      "rank": "subfamily",
+      "rank_level": 27,
+      "is_active": true,
+      "parent_id": 47221,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 326777,
+      "name": "Aculeata",
+      "rank": "infraorder",
+      "rank_level": 35,
+      "is_active": true,
+      "parent_id": 124417,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 372739,
+      "name": "Hexapoda",
+      "rank": "subphylum",
+      "rank_level": 57,
+      "is_active": true,
+      "parent_id": 47120,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 415027,
+      "name": "Subterraneobombus",
+      "rank": "subgenus",
+      "rank_level": 15,
+      "is_active": true,
+      "parent_id": 52775,
+      "descendant_obs_count": 3,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 538883,
+      "name": "Bombini",
+      "rank": "tribe",
+      "rank_level": 25,
+      "is_active": true,
+      "parent_id": 199939,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 538893,
+      "name": "Psithyrus",
+      "rank": "subgenus",
+      "rank_level": 15,
+      "is_active": true,
+      "parent_id": 52775,
+      "descendant_obs_count": 2,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 538900,
+      "count": 21,
+      "name": "Pyrobombus",
+      "rank": "subgenus",
+      "rank_level": 15,
+      "is_active": true,
+      "parent_id": 52775,
+      "descendant_obs_count": 137,
+      "direct_obs_count": 21
+    },
+    {
+      "id": 538902,
+      "name": "Thoracobombus",
+      "rank": "subgenus",
+      "rank_level": 15,
+      "is_active": true,
+      "parent_id": 52775,
+      "descendant_obs_count": 2,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 538903,
+      "name": "Bombus",
+      "rank": "subgenus",
+      "rank_level": 15,
+      "is_active": true,
+      "parent_id": 52775,
+      "descendant_obs_count": 6,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 541839,
+      "count": 1,
+      "name": "Bombus flavidus",
+      "rank": "species",
+      "rank_level": 10,
+      "is_active": true,
+      "parent_id": 538893,
+      "descendant_obs_count": 2,
+      "direct_obs_count": 1
+    },
+    {
+      "id": 630955,
+      "name": "Anthophila",
+      "rank": "epifamily",
+      "rank_level": 32,
+      "is_active": true,
+      "parent_id": 47222,
+      "descendant_obs_count": 154,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 1266534,
+      "name": "Bombus fervidus",
+      "rank": "complex",
+      "rank_level": 11,
+      "is_active": true,
+      "parent_id": 538902,
+      "descendant_obs_count": 2,
+      "direct_obs_count": 0
+    },
+    {
+      "id": 1355748,
+      "count": 1,
+      "name": "Bombus flavidus appalachiensis",
+      "rank": "subspecies",
+      "rank_level": 5,
+      "is_active": true,
+      "parent_id": 541839,
+      "descendant_obs_count": 1,
+      "direct_obs_count": 1
+    }
+  ]
+}
