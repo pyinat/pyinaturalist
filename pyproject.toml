@@ -37,8 +37,8 @@ keyring                     = ">=22.3"
 platformdirs                = ">=2.6"
 python-dateutil             = ">=2.0"
 python-forge                = ">=18.6"
-requests                    = ">=2.22"
-requests-cache              = ">=1.0"
+requests                    = ">=2.25"
+requests-cache              = ">=1.1"
 requests-ratelimiter        = ">=0.3.2"
 rich                        = ">=10.9"
 
@@ -48,11 +48,11 @@ ujson                       = {optional=true, version=">5.0"}
 # Documentation dependencies needed for Readthedocs builds
 furo                        = {optional=true, version="^2023.3"}
 ipython                     = {optional=true, version="^7.25.0"}
-linkify-it-py               = {optional=true, version="^1.0.1"}
+linkify-it-py               = {optional=true, version="^2.0"}
 myst-parser                 = {optional=true, version="^1.0"}
 nbsphinx                    = {optional=true, version="^0.9"}
 sphinx                      = {optional=true, version="^5.2"}
-sphinx-automodapi           = {optional=true, version="^0.14"}
+sphinx-automodapi           = {optional=true, version="^0.15"}
 sphinx-autodoc-typehints    = {optional=true, version="^1.17"}
 sphinx-copybutton           = {optional=true, version=">=0.5"}
 sphinx-design               = {optional=true, version=">=0.2.0"}
