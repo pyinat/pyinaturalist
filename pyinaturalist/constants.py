@@ -145,13 +145,10 @@ RANK_LEVELS = {
 }
 RANKS = list(RANK_LEVELS.keys())[:-2]
 
-# Simplified subset of ranks that are useful for display
+# The main 7 taxonomic ranks, used for condensed display
 COMMON_RANKS = [
-    'form',
-    'variety',
     'species',
     'genus',
-    'tribe',
     'family',
     'order',
     'class',
