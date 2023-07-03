@@ -16,6 +16,7 @@ import pytest
 from dateutil.tz import tzoffset, tzutc
 
 from pyinaturalist.constants import (
+    COMMON_RANKS,
     GBIF_TAXON_BASE_URL,
     ICONIC_TAXA,
     INAT_BASE_URL,
@@ -401,12 +402,48 @@ def test_life_list__tree():
     for _ in range(14):
         node = node.children[0]
     assert node.name == 'Bombus'
-
     children = [t.name for t in node.children]
     assert children == ['Bombus', 'Psithyrus', 'Pyrobombus', 'Subterraneobombus', 'Thoracobombus']
 
+    # Ensure ancestors are updated
+    assert root.ancestors == []
+    assert [t.id for t in node.ancestors] == [
+        48460,
+        1,
+        47120,
+        372739,
+        47158,
+        184884,
+        47201,
+        124417,
+        326777,
+        47222,
+        630955,
+        47221,
+        199939,
+        538883,
+    ]
 
-def test_life_list__invalid_tree():
+
+def test_life_list__tree__filtered():
+    """Test a tree filtered by common ranks only"""
+    life_list = LifeList.from_json(j_life_list_2)
+    root = life_list.tree(include_ranks=COMMON_RANKS)
+
+    # Spot check the first few levels
+    assert root.name == 'Life'
+    assert root.children[0].name == 'Animalia'
+    assert root.children[0].children[0].children[0].name == 'Insecta'
+
+    # 6 levels down, expect a genus with 9 species
+    node = root
+    for _ in range(6):
+        node = node.children[0]
+    assert node.name == 'Bombus'
+    assert len(node.children) == 9
+
+
+def test_life_list__tree__invalid():
     """Attempting to make a tree with no common root taxon should raise an error"""
     life_list = LifeList.from_json([j_observation_1, j_observation_2])
 
@@ -414,7 +451,7 @@ def test_life_list__invalid_tree():
         life_list.tree()
 
 
-def test_life_list__flatten_tree():
+def test_life_list__tree_flattened():
     life_list = LifeList.from_json(j_life_list_1)
     flat_list = life_list.tree().flatten()
     assert [t.id for t in flat_list] == [48460, 1, 2, 3, 573, 574, 889, 890, 980, 981]

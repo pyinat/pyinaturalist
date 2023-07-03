@@ -256,19 +256,13 @@ class Taxon(BaseModel):
         """Info URL on iNaturalist.org"""
         return f'{INAT_BASE_URL}/taxa/{self.id}'
 
-    def flatten(self, include_ranks: Optional[List[str]] = None) -> List['Taxon']:
-        """Return this taxon and all its descendants as a flat list.
-
-        Args:
-            include_ranks: If provided, only include taxa with these ranks
-        """
+    def flatten(self) -> List['Taxon']:
+        """Return this taxon and all its descendants as a flat list"""
 
         def flatten_tree(taxon: Taxon, ancestors=None) -> List[Taxon]:
-            # If this rank isn't included, skip to this taxon's children
-            current_level = [taxon] if not include_ranks or taxon.rank in include_ranks else []
             taxon.ancestors = ancestors or []
 
-            return current_level + list(
+            return [taxon] + list(
                 chain.from_iterable(
                     flatten_tree(child, taxon.ancestors + [taxon]) for child in taxon.children
                 )
@@ -385,7 +379,11 @@ class LifeList(BaseModelCollection):
             return self.count_without_taxon
         return super().get_count(taxon_id, count_field=count_field)
 
-    def tree(self, sort_key: Optional[TaxonSortKey] = None) -> Taxon:
+    def tree(
+        self,
+        sort_key: Optional[TaxonSortKey] = None,
+        include_ranks: Optional[List[str]] = None,
+    ) -> Taxon:
         """**Experimental**
 
         Organize this life list into a taxonomic tree
@@ -393,7 +391,7 @@ class LifeList(BaseModelCollection):
         Returns:
             Root taxon of the tree
         """
-        return make_tree(self.data, sort_key=sort_key)
+        return make_tree(self.data, sort_key=sort_key, include_ranks=include_ranks)
 
 
 def _sort_rank_name(taxon):
@@ -409,8 +407,16 @@ def title(value: str) -> str:
     return re.sub("([a-z])['’]([A-Z])", lambda m: m[0].lower(), value.title())
 
 
-def make_tree(taxa: Iterable[Taxon], sort_key: Optional[TaxonSortKey] = None) -> Taxon:
+def make_tree(
+    taxa: Iterable[Taxon],
+    sort_key: Optional[TaxonSortKey] = None,
+    include_ranks: Optional[List[str]] = None,
+) -> Taxon:
     """Organize a list of taxa into a taxonomic tree. Exepects exactly one root taxon.
+
+    Args:
+        sort_key: Key function for sorting childen; defaults to rank and name
+        include_ranks: If provided, only include taxa with these ranks
 
     Returns:
         Root taxon of the tree
@@ -420,11 +426,21 @@ def make_tree(taxa: Iterable[Taxon], sort_key: Optional[TaxonSortKey] = None) ->
         """Apply sorting then grouping using the same key"""
         return {k: list(group) for k, group in groupby(sorted(values, key=key), key=key)}
 
-    def add_descendants(taxon) -> Taxon:
-        """Recursively add taxon descendants"""
-        taxon.children = sorted(taxa_by_parent_id.get(taxon.id, []), key=sort_key)
-        for child in taxon.children:
-            add_descendants(child)
+    def add_descendants(taxon, ancestors=None) -> Taxon:
+        """
+        Recursively set taxon.children based on taxa_by_parent_id. If a child's rank isn't in
+        included_ranks, recursively skip it until an included rank is found.
+        Return the taxon with descendants added.
+        """
+        taxon.children = []
+        taxon.ancestors = ancestors or []
+        for child in sorted(taxa_by_parent_id.get(taxon.id, []), key=sort_key):
+            child = add_descendants(child, taxon.ancestors + [taxon])
+            if include_ranks and child.rank not in include_ranks:
+                taxon.children.extend(child.children)
+            else:
+                taxon.children.append(child)
+
         return taxon
 
     sort_key = sort_key if sort_key is not None else _sort_rank_name
