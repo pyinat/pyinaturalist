@@ -242,6 +242,10 @@ class Taxon(BaseModel):
             self._indent_level = int((RANK_LEVELS['kingdom'] - self.rank_level) / 5) + 1
         return self._indent_level
 
+    @indent_level.setter
+    def indent_level(self, value: int):
+        self._indent_level = value
+
     @property
     def gbif_url(self) -> str:
         """URL for the GBIF info page for this taxon"""
@@ -262,19 +266,25 @@ class Taxon(BaseModel):
         """Info URL on iNaturalist.org"""
         return f'{INAT_BASE_URL}/taxa/{self.id}'
 
-    def flatten(self) -> List['Taxon']:
-        """Return this taxon and all its descendants as a flat list"""
+    def flatten(self, hide_root: bool = False) -> List['Taxon']:
+        """Return this taxon and all its descendants as a flat list.
+        ``Taxon.indent_level`` is set to indicate the tree depth of each taxon.
+
+        Args:
+            hide_root: If True, exclude the current taxon from the list and from indendation level.
+        """
 
         def flatten_tree(taxon: Taxon, level: int = 0) -> List[Taxon]:
-            taxon._indent_level = level
+            taxon.indent_level = level
+            level_taxa = [taxon] if level >= 0 else []
 
-            return [taxon] + list(
+            return level_taxa + list(
                 chain.from_iterable(
                     flatten_tree(child, level=level + 1) for child in taxon.children
                 )
             )
 
-        return flatten_tree(self)
+        return flatten_tree(self, level=-1 if hide_root else 0)
 
     @property
     def _row(self) -> TableRow:
@@ -403,7 +413,7 @@ def make_tree(
 
     Args:
         sort_key: Key function for sorting childen; defaults to rank and name
-        include_ranks: If provided, only include taxa with these ranks
+        include_ranks: If provided, only include taxa with these ranks; otherwise, include all ranks
 
     Returns:
         Root taxon of the tree
