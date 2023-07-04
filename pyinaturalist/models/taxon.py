@@ -10,6 +10,7 @@ from pyinaturalist.constants import (
     RANK_EQUIVALENTS,
     RANK_LEVELS,
     RANKS,
+    ROOT_TAXON_ID,
     UNRANKED,
     DateTime,
     JsonResponse,
@@ -385,11 +386,6 @@ class LifeList(BaseModelCollection):
         return super().get_count(taxon_id, count_field=count_field)
 
 
-def _sort_rank_name(taxon):
-    """Get a sort key by rank (descending) and name"""
-    return (taxon.rank_level or 0) * -1, taxon.name
-
-
 def title(value: str) -> str:
     """Title case a string, with handling for apostrophes
 
@@ -400,8 +396,8 @@ def title(value: str) -> str:
 
 def make_tree(
     taxa: Iterable[Taxon],
-    sort_key: Optional[TaxonSortKey] = None,
     include_ranks: Optional[List[str]] = None,
+    sort_key: Optional[TaxonSortKey] = None,
 ) -> Taxon:
     """Organize a list of taxa into a taxonomic tree. Exepects exactly one root taxon.
 
@@ -412,20 +408,20 @@ def make_tree(
     Returns:
         Root taxon of the tree
     """
+    include_ranks = [r.lower() for r in include_ranks or []]
+    root = _find_root(taxa, include_ranks)
+    sort_key = sort_key if sort_key is not None else _sort_rank_name
 
-    def sort_groupby(values, key):
-        """Apply sorting then grouping using the same key"""
-        return {k: list(group) for k, group in groupby(sorted(values, key=key), key=key)}
+    # Group taxa by parent ID, including any ungrafted children added directly to root
+    taxa_by_parent: Dict[int, List[Taxon]] = _sort_groupby(taxa, key=lambda x: x.parent_id or -1)
+    if len(root.children) > len(taxa_by_parent.get(root.id, [])):
+        taxa_by_parent[root.id] = root.children
 
     def add_descendants(taxon, ancestors=None) -> Taxon:
-        """
-        Recursively set taxon.children based on taxa_by_parent_id. If a child's rank isn't in
-        included_ranks, recursively skip it until an included rank is found.
-        Return the taxon with descendants added.
-        """
+        """Recursively add children and ancestors to a taxon"""
         taxon.children = []
         taxon.ancestors = ancestors or []
-        for child in sorted(taxa_by_parent_id.get(taxon.id, []), key=sort_key):
+        for child in sorted(taxa_by_parent.get(taxon.id, []), key=sort_key):
             child = add_descendants(child, taxon.ancestors + [taxon])
             if include_ranks and child.rank not in include_ranks:
                 taxon.children.extend(child.children)
@@ -434,11 +430,44 @@ def make_tree(
 
         return taxon
 
-    sort_key = sort_key if sort_key is not None else _sort_rank_name
-    taxa_by_parent_id: Dict[int, List[Taxon]] = sort_groupby(taxa, key=lambda x: x.parent_id or -1)
+    return add_descendants(root)
 
-    root_taxa = taxa_by_parent_id.get(-1, [])
-    if len(root_taxa) != 1:
-        raise ValueError(f'Expected exactly one root taxon; found {len(root_taxa)}')
 
-    return add_descendants(root_taxa[0])
+def _find_root(taxa: Iterable[Taxon], include_ranks: Optional[List[str]] = None) -> Taxon:
+    """Find the root taxon of a list of taxa, optionally filtering by rank.
+    Handles ungrafted and multiple root taxa by adding under a new root node.
+    """
+    # Typical case: exactly one root taxon ("Life")
+    taxa_by_id = {t.id: t for t in taxa}
+    if ROOT_TAXON_ID in taxa_by_id and (not include_ranks or 'stateofmatter' in include_ranks):
+        return taxa_by_id[ROOT_TAXON_ID]
+
+    # Otherwise, find the taxa with the highest rank
+    max_rank = max(t.rank_level for t in taxa if not include_ranks or t.rank in include_ranks)
+    root_taxa = [t for t in taxa if t.rank_level == max_rank]
+
+    # Add any ungrafted taxa and deduplicate
+    ungrafted = [
+        t
+        for t in taxa
+        if t.parent_id not in taxa_by_id and (not include_ranks or t.rank in include_ranks)
+    ]
+    root_taxa = list({t.id: t for t in root_taxa + ungrafted}.values())
+
+    if len(root_taxa) == 1:
+        return root_taxa[0]
+
+    # If there are multiple branches, we need to insert a 'Life' root above them
+    root = TaxonCount(id=ROOT_TAXON_ID, name='Life', rank='stateofmatter', is_active=True)  # type: ignore
+    root.children = root_taxa
+    return root
+
+
+def _sort_groupby(values, key):
+    """Apply sorting then grouping using the same key"""
+    return {k: list(group) for k, group in groupby(sorted(values, key=key), key=key)}
+
+
+def _sort_rank_name(taxon):
+    """Get a sort key by rank (descending) and name"""
+    return (taxon.rank_level or 0) * -1, taxon.name

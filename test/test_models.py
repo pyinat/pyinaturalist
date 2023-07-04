@@ -24,6 +24,7 @@ from pyinaturalist.constants import (
     PHOTO_CC_BASE_URL,
     PHOTO_INFO_BASE_URL,
     PHOTO_SIZES,
+    ROOT_TAXON_ID,
     UNRANKED,
 )
 from pyinaturalist.models import *
@@ -971,8 +972,9 @@ def test_taxon__no_default_photo(taxon_id):
 
 
 def test_taxon__normalize_rank():
-    taxon = Taxon(rank='spp')
-    assert taxon.rank == 'species'
+    taxon_1 = Taxon(rank='spp')
+    taxon_2 = Taxon(rank='sPEciEs')
+    assert taxon_1.rank == taxon_2.rank == 'species'
 
 
 def test_taxon__rank_level():
@@ -1037,6 +1039,10 @@ def test_taxon_summary():
     assert ts.listed_taxon.place.place_type_name == 'Constituency'
 
 
+# Taxon trees
+# --------------------
+
+
 def test_make_tree():
     root = make_tree(LifeList.from_json(j_life_list_2))
 
@@ -1081,28 +1087,19 @@ def test_make_tree__filtered():
     )
 
     # Spot check the first few levels
-    assert root.name == 'Life'
-    assert root.children[0].name == 'Animalia'
-    assert root.children[0].children[0].children[0].name == 'Insecta'
+    assert root.name == 'Animalia'
+    assert root.children[0].children[0].name == 'Insecta'
 
     # 6 levels down, expect a genus with 9 species
     node = root
-    for _ in range(6):
+    for _ in range(5):
         node = node.children[0]
     assert node.name == 'Bombus'
     assert len(node.children) == 9
 
 
-def test_make_tree__invalid():
-    """Attempting to make a tree with no common root taxon should raise an error"""
-    taxa = Taxon.from_json_list([j_observation_1, j_observation_2])
-
-    with pytest.raises(ValueError):
-        make_tree(taxa)
-
-
 def test_make_tree__flattened():
-    flat_list = make_tree(Taxon.from_json_list(j_life_list_2)).flatten()
+    flat_list = make_tree(Taxon.from_json_list(j_life_list_1)).flatten()
     assert [t.id for t in flat_list] == [48460, 1, 2, 3, 573, 574, 889, 890, 980, 981]
 
     assert flat_list[0].ancestors == []
@@ -1116,7 +1113,6 @@ def test_make_tree__flattened_filtered():
         include_ranks=['kingdom', 'phylum', 'family', 'genus', 'subgenus'],
     ).flatten()
     assert [t.id for t in flat_list] == [
-        48460,
         1,
         47120,
         47221,
@@ -1129,9 +1125,41 @@ def test_make_tree__flattened_filtered():
     ]
 
     assert flat_list[0].ancestors == []
-    assert [t.id for t in flat_list[2].ancestors] == [48460, 1]
+    assert [t.id for t in flat_list[1].ancestors] == [1]
 
-    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 4, 5, 5, 5, 5, 5]
+    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 4, 4, 4, 4, 4]
+
+
+def test_make_tree__find_root():
+    """With 'Life' root node removed, the next highest rank should be used as root"""
+    taxa = Taxon.from_json_list(j_life_list_2)[1:]
+    root = make_tree(taxa)
+    assert root.id == 1
+    assert root.name == 'Animalia'
+
+
+def test_make_tree__multiple_roots():
+    """With 'Life' root node omitted by rank filter, but multiple kingdoms present, life needs to be
+    added back to get a single root node
+    """
+    fungi = Taxon(id=47170, name='Fungi', rank='kingdom', parent_id=ROOT_TAXON_ID)
+    taxa = Taxon.from_json_list(j_life_list_2) + [fungi]
+    root = make_tree(taxa, include_ranks=COMMON_RANKS)
+    assert root.id == ROOT_TAXON_ID
+    assert root.name == 'Life'
+    assert root.children[0].name == 'Animalia'
+    assert root.children[1].name == 'Fungi'
+
+
+def test_make_tree__ungrafted():
+    """Additional ungrafted taxa should also be added under the 'Life' root node, regardless of rank"""
+    monocots = Taxon(id=47163, name='Monocots', rank='class', parent_id=47125)
+    taxa = Taxon.from_json_list(j_life_list_2) + [monocots]
+    root = make_tree(taxa, include_ranks=COMMON_RANKS)
+    assert root.id == ROOT_TAXON_ID
+    assert root.name == 'Life'
+    assert root.children[0].name == 'Animalia'
+    assert root.children[1].name == 'Monocots'
 
 
 # Users
