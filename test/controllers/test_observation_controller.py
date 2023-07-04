@@ -13,7 +13,7 @@ from pyinaturalist.models import (
     Observation,
     ObservationFieldValue,
     Place,
-    TaxonCounts,
+    TaxonCount,
     TaxonSummary,
     User,
 )
@@ -239,11 +239,11 @@ def test_species_counts(requests_mock):
     client = iNatClient()
     results = client.observations.species_counts(user_id='username')
 
-    assert isinstance(results, TaxonCounts)
+    assert isinstance(results[0], TaxonCount)
     assert results[0].rank == 'species'
     assert results[0].name == 'Harmonia axyridis'
     assert results[0].id == 48484
-    assert results[0].count == results.get_count(48484) == 31
+    assert results[0].count == 31
 
 
 def test_taxon_summary__with_conservation_status(requests_mock):

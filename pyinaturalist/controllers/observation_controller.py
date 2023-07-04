@@ -15,7 +15,7 @@ from pyinaturalist.models import (
     ControlledTermCounts,
     LifeList,
     Observation,
-    TaxonCounts,
+    TaxonCount,
     TaxonSummary,
     UserCounts,
 )
@@ -123,9 +123,9 @@ class ObservationController(BaseController):
         return ControlledTermCounts.from_json(response)
 
     @document_controller_params(get_observation_species_counts)
-    def species_counts(self, **params) -> TaxonCounts:
+    def species_counts(self, **params) -> List[TaxonCount]:
         response = self.client.request(get_observation_species_counts, **params)
-        return TaxonCounts.from_json(response)
+        return TaxonCount.from_json_list(response)
 
     @document_controller_params(get_observation_taxon_summary)
     def taxon_summary(self, observation_id: int, **params) -> TaxonSummary:

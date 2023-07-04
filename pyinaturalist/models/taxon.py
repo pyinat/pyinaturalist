@@ -55,10 +55,12 @@ class Taxon(BaseModel):
     complete_species_count: int = field(
         default=None, doc='Total number of species descended from this taxon'
     )
+    count: int = field(default=0, doc='Number of observations of this taxon')
     created_at: DateTime = datetime_field(doc='Date and time the taxon was added to iNaturalist')
     current_synonymous_taxon_ids: List[int] = field(
         factory=list, doc='Taxon IDs of taxa that are accepted synonyms'
     )
+    descendant_obs_count: int = field(default=0, doc='Number of observations, including children')
     extinct: bool = field(default=None, doc='Indicates if the taxon is extinct')
     gbif_id: int = field(default=None, doc='GBIF taxon ID')
     iconic_taxon_id: int = field(
@@ -174,6 +176,18 @@ class Taxon(BaseModel):
         # If rank level is missing, look it up by name
         if not self.rank_level:
             self.rank_level = RANK_LEVELS.get(self.rank, UNRANKED)
+
+    @classmethod
+    def from_json(cls, value: JsonResponse, **kwargs) -> 'Taxon':
+        """Handle differentl structured results from species counts and life list endpoints"""
+        # Flatten out count + taxon fields into a single-level dict
+        if 'taxon' in value:
+            value = value.copy()
+            value.update(value.pop('taxon'))
+        # In life lists, 'count' is aliased as 'direct_obs_count'
+        if 'direct_obs_count' in value:
+            value['count'] = value.pop('direct_obs_count')
+        return super(Taxon, cls).from_json(value)
 
     @classmethod
     def from_sorted_json_list(cls, value: JsonResponse, **kwargs) -> List['Taxon']:
@@ -321,49 +335,24 @@ TaxonSortKey = Callable[[Taxon], Any]
 
 @define_model
 class TaxonCount(Taxon):
-    """:fa:`dove` :fa:`list` A :py:class:`.Taxon` with an associated count, used in a
-    :py:class:`.TaxonCounts` collection
+    """:fa:`dove` :fa:`list` A taxon with an associated count. This class has no differences from
+    :py:class:`.Taxon` aside from table formatting with :py:func:`.pprint`.
     """
-
-    count: int = field(default=0, doc='Number of observations of this taxon')
-    descendant_obs_count: int = field(default=0, doc='Number of observations, including children')
-
-    @classmethod
-    def from_json(
-        cls, value: JsonResponse, user_id: Optional[int] = None, **kwargs
-    ) -> 'TaxonCount':
-        """Flatten out count + taxon fields into a single-level dict before initializing"""
-        if 'taxon' in value:
-            value = value.copy()
-            value.update(value.pop('taxon'))
-        # In life lists, 'count' is aliased as 'direct_obs_count'
-        if 'direct_obs_count' in value:
-            value['count'] = value.pop('direct_obs_count')
-        return super(TaxonCount, cls).from_json(value)
 
     @property
     def _row(self) -> TableRow:
         return {
             'ID': self.id,
             'Rank': self.rank,
-            'Scientific name': f'{self.emoji} {self.name}',
+            'Scientific name': self.name,
             'Common name': self.preferred_common_name,
             'Count': self.count,
+            'Count (w/ descendants)': self.descendant_obs_count,
         }
 
     @property
     def _str_attrs(self) -> List[str]:
-        return ['id', 'full_name', 'count']
-
-
-@define_model_collection
-class TaxonCounts(BaseModelCollection):
-    """:fa:`dove` :fa:`list` A collection of taxa with an associated counts. Used with
-    :v1:`GET /observations/species_counts <Observations/get_observations_species_counts>`.
-    as well as :py:class:`.LifeList`.
-    """
-
-    data: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
+        return ['id', 'full_name', 'count', 'self.descendant_obs_count']
 
 
 @define_model_collection

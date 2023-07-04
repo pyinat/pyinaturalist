@@ -1066,17 +1066,11 @@ def test_taxon_count__copy():
     assert taxon.default_photo.medium_url == taxon_counts.default_photo.medium_url
 
 
-def test_taxon_counts__converters():
-    taxon_counts = TaxonCounts.from_json(j_obs_species_counts)
-    assert taxon_counts.data[0] == taxon_counts[0]
+def test_taxon_count__converters():
+    taxon_counts = TaxonCount.from_json_list(j_obs_species_counts)
     assert len(taxon_counts) == 9
-    assert isinstance(taxon_counts.data[0], TaxonCount) and taxon_counts.data[0].count == 31
-
-
-def test_taxon_counts__empty():
-    taxon_counts = TaxonCounts()
-    assert taxon_counts.data == []
-    assert taxon_counts.id_map == {}
+    assert isinstance(taxon_counts[0], TaxonCount)
+    assert taxon_counts[0].count == 31
 
 
 def test_taxon_summary():
