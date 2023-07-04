@@ -11,6 +11,7 @@ API_V0 = 'https://www.inaturalist.org'
 API_V1 = 'https://api.inaturalist.org/v1'
 API_V2 = 'https://api.inaturalist.org/v2'
 EXPORT_URL = 'https://www.inaturalist.org/observations/export'
+GBIF_TAXON_BASE_URL = 'https://www.gbif.org/species'
 INAT_BASE_URL = API_V0
 INAT_REPO = 'https://raw.githubusercontent.com/inaturalist/inaturalist/main'
 ICONIC_TAXA_BASE_URL = f'{INAT_REPO}/app/assets/images/iconic_taxa'
@@ -103,6 +104,7 @@ ROOT_TAXON_ID = 48460
 
 # Taxonomic ranks that can be filtered on, and numeric values for comparison
 # Source: https://github.com/inaturalist/inaturalist/blob/main/app/models/taxon.rb
+UNRANKED = 90  # Used for comparing unranked taxa
 RANK_LEVELS = {
     'infrahybrid': 5,
     'form': 5,
@@ -138,18 +140,15 @@ RANK_LEVELS = {
     'subphylum': 57,
     'phylum': 60,
     'kingdom': 70,
-    'unranked': 90,  # Invented to make parent check work (this is null in the db)
+    'unranked': UNRANKED,
     'stateofmatter': 100,
 }
 RANKS = list(RANK_LEVELS.keys())[:-2]
 
-# Simplified subset of ranks that are useful for display
+# The main 7 taxonomic ranks, used for condensed display
 COMMON_RANKS = [
-    'form',
-    'variety',
     'species',
     'genus',
-    'tribe',
     'family',
     'order',
     'class',

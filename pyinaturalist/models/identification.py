@@ -99,7 +99,7 @@ class Identification(Comment):
         return {
             'ID': self.id,
             'Taxon ID': self.taxon.id,
-            'Taxon': f'{self.taxon.emoji} {self.taxon.full_name}',
+            'Taxon': f'{self.taxon.emoji} {self.taxon.rich_full_name}',
             'User': self.user.login,
             'Category': self.category.title(),
             'From CV': self.vision,

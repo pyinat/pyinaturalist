@@ -16,13 +16,16 @@ import pytest
 from dateutil.tz import tzoffset, tzutc
 
 from pyinaturalist.constants import (
-    API_V1,
+    COMMON_RANKS,
+    GBIF_TAXON_BASE_URL,
     ICONIC_TAXA,
     INAT_BASE_URL,
     PHOTO_BASE_URL,
     PHOTO_CC_BASE_URL,
     PHOTO_INFO_BASE_URL,
     PHOTO_SIZES,
+    ROOT_TAXON_ID,
+    UNRANKED,
 )
 from pyinaturalist.models import *
 from test.conftest import sample_data_path
@@ -350,8 +353,8 @@ def test_identification__empty():
 def test_identification__str():
     identification = ID.from_json(j_identification_3)
     assert str(identification) == (
-        'Identification(id=126501311, username=samroom, taxon_name=Species: '
-        'Danaus plexippus (Monarch), created_at=Aug 27, 2020, truncated_body=)'
+        'Identification(id=126501311, username=samroom, taxon_name=Danaus plexippus (Monarch), '
+        'created_at=Aug 27, 2020, truncated_body=)'
     )
 
 
@@ -363,7 +366,13 @@ def test_life_list__converters():
     life_list = LifeList.from_json(j_life_list_1)
     assert life_list.data[0] == life_list[0]
     assert len(life_list) == 10
+    assert life_list.count_without_taxon == 4
     assert isinstance(life_list.data[0], TaxonCount) and life_list.data[0].id == 48460
+
+    # Should work with our without extra 'results' level from response JSON
+    life_list = LifeList.from_json(j_life_list_1['results'])
+    assert len(life_list) == 10
+    assert life_list.count_without_taxon == 0
 
 
 def test_life_list__empty():
@@ -797,28 +806,41 @@ def test_taxon__empty():
 
 
 def test_taxon__str():
-    taxon_0 = Taxon(
+    # Rank, name, and common name
+    taxon_1 = Taxon(id=3, name='Aves', preferred_common_name='birb', rank='class')
+    assert str(taxon_1) == 'Taxon(id=3, full_name=Class Aves (Birb))'
+
+    # Rank and name
+    taxon_2 = Taxon(id=3, name='Aves', rank='class')
+    assert str(taxon_2) == 'Taxon(id=3, full_name=Class Aves)'
+
+    # Name only
+    taxon_3 = Taxon(id=3, name='Aves')
+    assert str(taxon_3) == 'Taxon(id=3, full_name=Aves)'
+
+    # ID only
+    taxon_4 = Taxon(id=12345)
+    assert str(taxon_4) == 'Taxon(id=12345, full_name=12345)'
+
+    # Apostrophe in common name
+    taxon_5 = Taxon(
         id=137338523,
         name='Trachelipus rathkii',
         preferred_common_name='rathke’s woodlouse',
         rank='species',
     )
-    assert (
-        str(taxon_0)
-        == 'Taxon(id=137338523, full_name=Species: Trachelipus rathkii (Rathke’s Woodlouse))'
+    assert str(taxon_5) == 'Taxon(id=137338523, full_name=Trachelipus rathkii (Rathke’s Woodlouse))'
+
+    # Hyphens and parentheses in common name
+    taxon_6 = Taxon(
+        id=642466,
+        name='Terpsiphone paradisi ceylonensis',
+        preferred_common_name='Indian paradise-flycatcher (sri lanka)',
+        rank='ssp',
     )
-
-    taxon_1 = Taxon(id=3, name='Aves', preferred_common_name='birb', rank='class')
-    assert str(taxon_1) == 'Taxon(id=3, full_name=Class: Aves (Birb))'
-
-    taxon_2 = Taxon(id=3, name='Aves', rank='class')
-    assert str(taxon_2) == 'Taxon(id=3, full_name=Class: Aves)'
-
-    taxon_3 = Taxon(id=3, name='Aves')
-    assert str(taxon_3) == 'Taxon(id=3, full_name=Aves)'
-
-    taxon_4 = Taxon(id=0)
-    assert str(taxon_4) == 'Taxon(id=0, full_name=unknown taxon)'
+    assert str(taxon_6) == (
+        'Taxon(id=642466, full_name=Terpsiphone paradisi ceylonensis (Indian Paradise-Flycatcher (Sri Lanka)))'
+    )
 
 
 def test_taxon__ancestors_children():
@@ -826,12 +848,18 @@ def test_taxon__ancestors_children():
     parent = taxon.ancestors[0]
     child = taxon.children[0]
     assert isinstance(parent, Taxon) and parent.id == 1
-    assert isinstance(child, Taxon) and child.id == 70116
+    assert isinstance(child, Taxon) and child.id == 70115
 
 
-def test_taxon__ancestor_ids():
+def test_taxon__ancestor_ids_from_ancestry_str():
     taxon = Taxon(ancestry='1/70116/70118')
     assert taxon.ancestor_ids == [1, 70116, 70118]
+
+
+def test_taxon__ancestor_ids_from_ancestor_objs():
+    ids = [1, 70116, 70118]
+    taxon = Taxon(ancestors=[Taxon(id=i) for i in ids])
+    assert taxon.ancestor_ids == ids
 
 
 def test_taxon__all_names():
@@ -909,8 +937,10 @@ def test_listed_taxon__id_wrapper_properties():
 
 def test_taxon__properties():
     taxon = Taxon.from_json(j_taxon_1)
+    taxon.gbif_id = 12345
     assert taxon.url == f'{INAT_BASE_URL}/taxa/70118'
-    assert taxon.child_ids == [70116, 70114, 70117, 70115]
+    assert taxon.child_ids == [70115, 70114, 70117, 70116]
+    assert taxon.gbif_url == f'{GBIF_TAXON_BASE_URL}/12345'
     assert isinstance(taxon.parent, Taxon) and taxon.parent.id == 53850
 
 
@@ -939,6 +969,22 @@ def test_taxon__no_default_photo(taxon_id):
     assert taxon.icon_url is not None
     assert taxon.iconic_taxon_name is not None
     assert photo.url is not None
+
+
+def test_taxon__normalize_rank():
+    taxon_1 = Taxon(rank='spp')
+    taxon_2 = Taxon(rank='sPEciEs')
+    assert taxon_1.rank == taxon_2.rank == 'species'
+
+
+def test_taxon__rank_level():
+    # If missing, level should be looked up by name, if available
+    taxon = Taxon(rank='species')
+    assert taxon.rank_level == 10
+
+    # Otherwise, level should default to 'unranked' for comparison
+    taxon = Taxon()
+    assert taxon.rank_level == UNRANKED
 
 
 def test_taxon__taxonomy():
@@ -991,6 +1037,136 @@ def test_taxon_summary():
     assert ts.listed_taxon.place.id == 144952
     assert ts.listed_taxon.place.display_name.startswith('HRM District 13')
     assert ts.listed_taxon.place.place_type_name == 'Constituency'
+
+
+# Taxon trees
+# --------------------
+
+
+def test_make_tree():
+    root = make_tree(LifeList.from_json(j_life_list_2))
+
+    # Spot check the first few levels
+    assert root.name == 'Life'
+    assert root.children[0].name == 'Animalia'
+    assert root.children[0].children[0].name == 'Arthropoda'
+
+    # Ensure correct child sort order
+    node = root
+    for _ in range(14):
+        node = node.children[0]
+    assert node.name == 'Bombus'
+    children = [t.name for t in node.children]
+    assert children == ['Bombus', 'Psithyrus', 'Pyrobombus', 'Subterraneobombus', 'Thoracobombus']
+
+    # Ensure ancestors are updated
+    assert root.ancestors == []
+    assert [t.id for t in node.ancestors] == [
+        48460,
+        1,
+        47120,
+        372739,
+        47158,
+        184884,
+        47201,
+        124417,
+        326777,
+        47222,
+        630955,
+        47221,
+        199939,
+        538883,
+    ]
+
+
+def test_make_tree__filtered():
+    """Test a tree filtered by common ranks only"""
+    root = make_tree(
+        Taxon.from_json_list(j_life_list_2),
+        include_ranks=COMMON_RANKS,
+    )
+
+    # Spot check the first few levels
+    assert root.name == 'Animalia'
+    assert root.children[0].children[0].name == 'Insecta'
+
+    # 6 levels down, expect a genus with 9 species
+    node = root
+    for _ in range(5):
+        node = node.children[0]
+    assert node.name == 'Bombus'
+    assert len(node.children) == 9
+
+
+def test_make_tree__flattened():
+    flat_list = make_tree(Taxon.from_json_list(j_life_list_1)).flatten()
+    assert [t.id for t in flat_list] == [48460, 1, 2, 3, 573, 574, 889, 890, 980, 981]
+    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 4, 5, 6, 7, 6, 7]
+
+    assert flat_list[0].ancestors == []
+    assert [t.id for t in flat_list[5].ancestors] == [48460, 1, 2, 3, 573]
+    assert [t.id for t in flat_list[9].ancestors] == [48460, 1, 2, 3, 573, 574, 980]
+
+
+def test_make_tree__flattened_without_root():
+    taxa = Taxon.from_json_list(j_life_list_1)
+    flat_list = make_tree(taxa).flatten(hide_root=True)
+    assert [t.id for t in flat_list] == [1, 2, 3, 573, 574, 889, 890, 980, 981]
+    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 4, 5, 6, 5, 6]
+
+
+def test_make_tree__flattened_filtered():
+    flat_list = make_tree(
+        Taxon.from_json_list(j_life_list_2),
+        include_ranks=['kingdom', 'phylum', 'family', 'genus', 'subgenus'],
+    ).flatten()
+    assert [t.id for t in flat_list] == [
+        1,
+        47120,
+        47221,
+        52775,
+        538903,
+        538893,
+        538900,
+        415027,
+        538902,
+    ]
+    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 4, 4, 4, 4, 4]
+
+    assert flat_list[0].ancestors == []
+    assert [t.id for t in flat_list[1].ancestors] == [1]
+
+
+def test_make_tree__find_root():
+    """With 'Life' root node removed, the next highest rank should be used as root"""
+    taxa = Taxon.from_json_list(j_life_list_2)[1:]
+    root = make_tree(taxa)
+    assert root.id == 1
+    assert root.name == 'Animalia'
+
+
+def test_make_tree__multiple_roots():
+    """With 'Life' root node omitted by rank filter, but multiple kingdoms present, life needs to be
+    added back to get a single root node
+    """
+    fungi = Taxon(id=47170, name='Fungi', rank='kingdom', parent_id=ROOT_TAXON_ID)
+    taxa = Taxon.from_json_list(j_life_list_2) + [fungi]
+    root = make_tree(taxa, include_ranks=COMMON_RANKS)
+    assert root.id == ROOT_TAXON_ID
+    assert root.name == 'Life'
+    assert root.children[0].name == 'Animalia'
+    assert root.children[1].name == 'Fungi'
+
+
+def test_make_tree__ungrafted():
+    """Additional ungrafted taxa should also be added under the 'Life' root node, regardless of rank"""
+    monocots = Taxon(id=47163, name='Monocots', rank='class', parent_id=47125)
+    taxa = Taxon.from_json_list(j_life_list_2) + [monocots]
+    root = make_tree(taxa, include_ranks=COMMON_RANKS)
+    assert root.id == ROOT_TAXON_ID
+    assert root.name == 'Life'
+    assert root.children[0].name == 'Animalia'
+    assert root.children[1].name == 'Monocots'
 
 
 # Users

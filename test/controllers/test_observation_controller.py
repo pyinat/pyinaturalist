@@ -189,49 +189,6 @@ def test_life_list(requests_mock):
     assert bombus.descendant_obs_count == results.get_count(52775) == 154
 
 
-# TODO: This could be moved to model tests once tree features are finalized
-def test_life_list_tree(requests_mock):
-    requests_mock.get(
-        f'{API_V1}/observations/taxonomy',
-        json=j_life_list_2,
-        status_code=200,
-    )
-    client = iNatClient()
-    life_list = client.observations.life_list(user_id=545640, taxon_id=52775)
-
-    root = life_list.tree()
-
-    # Spot check the first few levels
-    assert root.name == 'Life'
-    assert root.children[0].name == 'Animalia'
-    assert root.children[0].children[0].name == 'Arthropoda'
-
-    # Ensure correct child sort order
-    node = root
-    for _ in range(14):
-        node = node.children[0]
-    assert node.name == 'Bombus'
-    children = [t.name for t in node.children]
-    assert children == ['Bombus', 'Psithyrus', 'Pyrobombus', 'Subterraneobombus', 'Thoracobombus']
-
-    # Ensure total taxon count is the same
-    assert len(root.flatten()) == len(life_list)
-
-
-def test_life_list_tree__invalid(requests_mock):
-    """Attempting to make a tree with no common root taxon should raise an error"""
-    requests_mock.get(
-        f'{API_V1}/observations/taxonomy',
-        json=SAMPLE_DATA['get_observations_node_page1'],
-        status_code=200,
-    )
-    client = iNatClient()
-    life_list = client.observations.life_list()
-
-    with pytest.raises(ValueError):
-        life_list.tree()
-
-
 def test_popular_fields(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations/popular_field_values',

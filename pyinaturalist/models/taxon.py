@@ -1,13 +1,17 @@
+import re
 from itertools import chain, groupby
-from string import capwords
 from typing import Any, Callable, Dict, Iterable, List, Optional
 
 from pyinaturalist.constants import (
+    GBIF_TAXON_BASE_URL,
     ICONIC_EMOJI,
     ICONIC_TAXA,
     INAT_BASE_URL,
+    RANK_EQUIVALENTS,
     RANK_LEVELS,
     RANKS,
+    ROOT_TAXON_ID,
+    UNRANKED,
     DateTime,
     JsonResponse,
     TableRow,
@@ -135,6 +139,9 @@ class Taxon(BaseModel):
     # Indicates this is a partial record (e.g. from nested Taxon.ancestors or children)
     _partial: bool = field(default=False, repr=False)
 
+    # Used for tree formatting
+    _indent_level: int = field(default=None, repr=False)
+
     # Unused attributes
     # atlas_id: int = field(default=None)
     # flag_counts: Dict[str, int] = field(factory=dict)  # {"unresolved": 1, "resolved": 2}
@@ -144,14 +151,6 @@ class Taxon(BaseModel):
     # universal_search_rank: int = field(default=None)
 
     def __attrs_post_init__(self):
-        # Look up iconic taxon name, if only ID is provided
-        if not self.iconic_taxon_name:
-            self.iconic_taxon_name = ICONIC_TAXA.get(self.iconic_taxon_id, 'Unknown')
-
-        # If default photo is missing, use iconic taxon icon
-        if not self.default_photo:
-            self.default_photo = self.icon
-
         # If only ancestor string (or objects) are provided, split into IDs
         if self.ancestry and not self.ancestor_ids:
             delimiter = ',' if ',' in self.ancestry else '/'
@@ -159,11 +158,28 @@ class Taxon(BaseModel):
         elif self.ancestors and not self.ancestor_ids:
             self.ancestor_ids = [t.id for t in self.ancestors]
 
+        # If iconic taxon name is missing, look it up by ID
+        if not self.iconic_taxon_name:
+            self.iconic_taxon_name = ICONIC_TAXA.get(self.iconic_taxon_id, 'Unknown')
+
+        # If default photo is missing, use iconic taxon icon
+        if not self.default_photo:
+            self.default_photo = self.icon
+
+        # Normalize rank names
+        self.rank = (self.rank or '').lower()
+        if self.rank in RANK_EQUIVALENTS:
+            self.rank = RANK_EQUIVALENTS[self.rank]
+
+        # If rank level is missing, look it up by name
+        if not self.rank_level:
+            self.rank_level = RANK_LEVELS.get(self.rank, UNRANKED)
+
     @classmethod
     def from_sorted_json_list(cls, value: JsonResponse, **kwargs) -> List['Taxon']:
         """Sort Taxon objects by rank then by name"""
         taxa = cls.from_json_list(value, **kwargs)
-        taxa.sort(key=_get_rank_name_idx)
+        taxa.sort(key=_sort_rank_name)
         return taxa
 
     @property
@@ -181,18 +197,34 @@ class Taxon(BaseModel):
 
     @property
     def full_name(self) -> str:
-        """Taxon rank, scientific name, common name (if available), and emoji"""
-        if not self.name and not self.rank:
-            return 'unknown taxon'
-        elif not self.name:
-            return f'{self.rank.title()}: {self.id}'
-        elif not self.rank:
-            return self.name
+        """Taxon rank, scientific name, and common name (if available)"""
+        return self._full_name()
 
-        common_name = (
-            f' ({capwords(self.preferred_common_name)})' if self.preferred_common_name else ''
+    @property
+    def rich_full_name(self) -> str:
+        """Taxon full name, with italicized scientific name depending on rank (genus and below)"""
+        return self._full_name(markup=True)
+
+    def _full_name(self, markup: bool = False) -> str:
+        if not self.name and not self.rank:
+            return str(self.id)
+        if not self.name:
+            return f'{self.rank} {self.id}'
+
+        rank = (
+            f'{self.rank.title()} '
+            if self.rank and self.rank_level > RANK_LEVELS['species']
+            else ''
         )
-        return f'{self.rank.title()}: {self.name}{common_name}'
+        name = (
+            f'[i]{self.name}[/i]'
+            if markup and self.rank_level <= RANK_LEVELS['genus']
+            else self.name
+        )
+        common_name = (
+            f' ({title(self.preferred_common_name)})' if self.preferred_common_name else ''
+        )
+        return f'{rank}{name}{common_name}'
 
     @property
     def icon(self) -> IconPhoto:
@@ -205,13 +237,19 @@ class Taxon(BaseModel):
 
     @property
     def indent_level(self) -> int:
-        """Indentation level corresponding to this item's rank level"""
-        return int(((RANK_LEVELS['kingdom'] - self.rank_level) / 5)) + 1
+        """Tree indentation level. This may either be manually set, or determined based on rank."""
+        if self._indent_level is None:
+            self._indent_level = int((RANK_LEVELS['kingdom'] - self.rank_level) / 5) + 1
+        return self._indent_level
+
+    @indent_level.setter
+    def indent_level(self, value: int):
+        self._indent_level = value
 
     @property
     def gbif_url(self) -> str:
         """URL for the GBIF info page for this taxon"""
-        return f'https://www.gbif.org/species/{self.gbif_id}'
+        return f'{GBIF_TAXON_BASE_URL}/{self.gbif_id}'
 
     @property
     def parent(self) -> 'Taxon':
@@ -228,15 +266,25 @@ class Taxon(BaseModel):
         """Info URL on iNaturalist.org"""
         return f'{INAT_BASE_URL}/taxa/{self.id}'
 
-    def flatten(self) -> List['Taxon']:
-        """Return this taxon and all its descendants as a flat list"""
+    def flatten(self, hide_root: bool = False) -> List['Taxon']:
+        """Return this taxon and all its descendants as a flat list.
+        ``Taxon.indent_level`` is set to indicate the tree depth of each taxon.
 
-        def flatten_tree(taxon: Taxon) -> List[Taxon]:
-            return [taxon] + list(
-                chain.from_iterable(flatten_tree(child) for child in taxon.children)
+        Args:
+            hide_root: If True, exclude the current taxon from the list and from indendation level.
+        """
+
+        def flatten_tree(taxon: Taxon, level: int = 0) -> List[Taxon]:
+            taxon.indent_level = level
+            level_taxa = [taxon] if level >= 0 else []
+
+            return level_taxa + list(
+                chain.from_iterable(
+                    flatten_tree(child, level=level + 1) for child in taxon.children
+                )
             )
 
-        return flatten_tree(self)
+        return flatten_tree(self, level=-1 if hide_root else 0)
 
     @property
     def _row(self) -> TableRow:
@@ -268,6 +316,8 @@ Taxon.children = LazyProperty(
     partial=True,
 )
 
+TaxonSortKey = Callable[[Taxon], Any]
+
 
 @define_model
 class TaxonCount(Taxon):
@@ -283,8 +333,6 @@ class TaxonCount(Taxon):
         cls, value: JsonResponse, user_id: Optional[int] = None, **kwargs
     ) -> 'TaxonCount':
         """Flatten out count + taxon fields into a single-level dict before initializing"""
-        if 'results' in value:
-            value = value['results']
         if 'taxon' in value:
             value = value.copy()
             value.update(value.pop('taxon'))
@@ -318,9 +366,6 @@ class TaxonCounts(BaseModelCollection):
     data: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
 
 
-TaxonSortKey = Callable[[Taxon], Any]
-
-
 @define_model_collection
 class LifeList(BaseModelCollection):
     """:fa:`dove` :fa:`list` A user's life list, based on the schema of ``GET /observations/taxonomy``"""
@@ -331,7 +376,7 @@ class LifeList(BaseModelCollection):
 
     @classmethod
     def from_json(cls, value: JsonResponse, user_id: Optional[int] = None, **kwargs) -> 'LifeList':
-        count_without_taxon = value.get('count_without_taxon', 0)
+        count_without_taxon = value.get('count_without_taxon', 0) if isinstance(value, dict) else 0
         if 'results' in value:
             value = value['results']
 
@@ -350,50 +395,89 @@ class LifeList(BaseModelCollection):
             return self.count_without_taxon
         return super().get_count(taxon_id, count_field=count_field)
 
-    def tree(self, sort_key: Optional[TaxonSortKey] = None) -> Taxon:
-        """**Experimental**
 
-        Organize this life list into a taxonomic tree
+def title(value: str) -> str:
+    """Title case a string, with handling for apostrophes
 
-        Returns:
-            Root taxon of the tree
-        """
-        return make_tree(self.data, sort_key=sort_key)
+    Borrowed/modified from ``django.template.defaultfilters.title()``
+    """
+    return re.sub("([a-z])['’]([A-Z])", lambda m: m[0].lower(), value.title())
 
 
-def _get_rank_name_idx(taxon):
-    """Sort index by rank and name (ascending)"""
-    idx = RANKS.index(taxon.rank) if taxon.rank in RANKS else 0
-    return idx * -1, taxon.name
-
-
-def make_tree(taxa: Iterable[Taxon], sort_key: Optional[TaxonSortKey] = None) -> Taxon:
+def make_tree(
+    taxa: Iterable[Taxon],
+    include_ranks: Optional[List[str]] = None,
+    sort_key: Optional[TaxonSortKey] = None,
+) -> Taxon:
     """Organize a list of taxa into a taxonomic tree. Exepects exactly one root taxon.
+
+    Args:
+        sort_key: Key function for sorting childen; defaults to rank and name
+        include_ranks: If provided, only include taxa with these ranks; otherwise, include all ranks
 
     Returns:
         Root taxon of the tree
     """
+    include_ranks = [r.lower() for r in include_ranks or []]
+    root = _find_root(taxa, include_ranks)
+    sort_key = sort_key if sort_key is not None else _sort_rank_name
 
-    def default_sort(taxon):
-        """Default sort key for taxon children"""
-        return taxon.rank_level * -1, taxon.name
+    # Group taxa by parent ID, including any ungrafted children added directly to root
+    taxa_by_parent: Dict[int, List[Taxon]] = _sort_groupby(taxa, key=lambda x: x.parent_id or -1)
+    if len(root.children) > len(taxa_by_parent.get(root.id, [])):
+        taxa_by_parent[root.id] = root.children
 
-    def sort_groupby(values, key):
-        """Apply sorting then grouping using the same key"""
-        return {k: list(group) for k, group in groupby(sorted(values, key=key), key=key)}
+    def add_descendants(taxon, ancestors=None) -> Taxon:
+        """Recursively add children and ancestors to a taxon"""
+        taxon.children = []
+        taxon.ancestors = ancestors or []
+        for child in sorted(taxa_by_parent.get(taxon.id, []), key=sort_key):
+            child = add_descendants(child, taxon.ancestors + [taxon])
+            if include_ranks and child.rank not in include_ranks:
+                taxon.children.extend(child.children)
+            else:
+                taxon.children.append(child)
 
-    def add_descendants(taxon) -> Taxon:
-        """Recursively add taxon descendants"""
-        taxon.children = sorted(taxa_by_parent_id.get(taxon.id, []), key=sort_key)
-        for child in taxon.children:
-            add_descendants(child)
         return taxon
 
-    sort_key = sort_key if sort_key is not None else default_sort
-    taxa_by_parent_id: Dict[int, List[Taxon]] = sort_groupby(taxa, key=lambda x: x.parent_id or -1)
+    return add_descendants(root)
 
-    root_taxa = taxa_by_parent_id.get(-1, [])
-    if len(root_taxa) != 1:
-        raise ValueError(f'Expected exactly one root taxon; found {len(root_taxa)}')
 
-    return add_descendants(root_taxa[0])
+def _find_root(taxa: Iterable[Taxon], include_ranks: Optional[List[str]] = None) -> Taxon:
+    """Find the root taxon of a list of taxa, optionally filtering by rank.
+    Handles ungrafted and multiple root taxa by adding under a new root node.
+    """
+    # Typical case: exactly one root taxon ("Life")
+    taxa_by_id = {t.id: t for t in taxa}
+    if ROOT_TAXON_ID in taxa_by_id and (not include_ranks or 'stateofmatter' in include_ranks):
+        return taxa_by_id[ROOT_TAXON_ID]
+
+    # Otherwise, find the taxa with the highest rank
+    max_rank = max(t.rank_level for t in taxa if not include_ranks or t.rank in include_ranks)
+    root_taxa = [t for t in taxa if t.rank_level == max_rank]
+
+    # Add any ungrafted taxa and deduplicate
+    ungrafted = [
+        t
+        for t in taxa
+        if t.parent_id not in taxa_by_id and (not include_ranks or t.rank in include_ranks)
+    ]
+    root_taxa = list({t.id: t for t in root_taxa + ungrafted}.values())
+
+    if len(root_taxa) == 1:
+        return root_taxa[0]
+
+    # If there are multiple branches, we need to insert a 'Life' root above them
+    root = TaxonCount(id=ROOT_TAXON_ID, name='Life', rank='stateofmatter', is_active=True)  # type: ignore
+    root.children = root_taxa
+    return root
+
+
+def _sort_groupby(values, key):
+    """Apply sorting then grouping using the same key"""
+    return {k: list(group) for k, group in groupby(sorted(values, key=key), key=key)}
+
+
+def _sort_rank_name(taxon):
+    """Get a sort key by rank (descending) and name"""
+    return (taxon.rank_level or 0) * -1, taxon.name

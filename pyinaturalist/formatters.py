@@ -249,8 +249,8 @@ def format_response(response: Response) -> str:
 
 
 def format_tree(taxon: Taxon, **kwargs) -> Tree:
-    """Format a a taxon and its descendants as a tree"""
-    node = Tree(f'{taxon.rank.title()} [i]{taxon.name}[/i]', **kwargs)
+    """Format a taxon and its descendants as a tree"""
+    node = Tree(f'{taxon.rich_full_name}', **kwargs)
     for child in taxon.children:
         node.add(format_tree(child))
     return node

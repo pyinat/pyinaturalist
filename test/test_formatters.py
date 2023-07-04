@@ -121,9 +121,9 @@ Observation(
         Comment(id=2071611, username='borisb', created_at='Sep 05, 2018', truncated_body='suspect L. bardanae - but sits on Solanum (non-...')
     ],
     identifications=[
-        Identification(id=34896306, username='niconoe', taxon_name='Genus: Lixus', created_at='Sep 05, 2018', truncated_body=''),
-        Identification(id=34926789, username='borisb', taxon_name='Species: Lixus bardanae', created_at='Sep 05, 2018', truncated_body=''),
-        Identification(id=36039221, username='jpreudhomme', taxon_name='Species: Lixus bardanae', created_at='Sep 22, 2018', truncated_body='')
+        Identification(id=34896306, username='niconoe', taxon_name='Genus Lixus', created_at='Sep 05, 2018', truncated_body=''),
+        Identification(id=34926789, username='borisb', taxon_name='Lixus bardanae', created_at='Sep 05, 2018', truncated_body=''),
+        Identification(id=36039221, username='jpreudhomme', taxon_name='Lixus bardanae', created_at='Sep 22, 2018', truncated_body='')
     ],
     ofvs=[],
     photos=[
@@ -132,7 +132,7 @@ Observation(
     ],
     project_observations=[],
     sounds=[],
-    taxon=Taxon(id=493595, full_name='Species: Lixus bardanae'),
+    taxon=Taxon(id=493595, full_name='Lixus bardanae'),
     user=User(id=886482, login='niconoe', name='Nicolas Noé')
 )
 """
@@ -164,13 +164,13 @@ Stateofmatter Life
             └── Order Galliformes
                 └── Family Phasianidae
                     ├── Genus Bonasa
-                    │   └── Species Bonasa umbellus
+                    │   └── Bonasa umbellus
                     └── Genus Phasianus
-                        └── Species Phasianus colchicus
+                        └── Phasianus colchicus
 """
 
 
-@pytest.mark.parametrize('taxa', [life_list, life_list.tree(), life_list.data])
+@pytest.mark.parametrize('taxa', [life_list, make_tree(life_list), life_list.data])
 def test_pprint_tree(taxa):
     """Test pprint_tree() with a single taxon (tree), a LifeList, and a regular list of taxa"""
 
