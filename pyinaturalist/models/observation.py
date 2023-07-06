@@ -29,11 +29,34 @@ from pyinaturalist.models import (
     coordinate_pair,
     datetime_field,
     datetime_now_field,
+    define_model,
     define_model_collection,
     define_model_custom_init,
     field,
     upper,
 )
+
+
+@define_model
+class QualityMetric(BaseModel):
+    """:fa:`list-check` An observation quality metric added by a user to an observation"""
+
+    agree: bool = field(default=None, doc='Indicates if the user agrees with this metric')
+    metric: str = field(default=None, doc='Quality metric name')
+    user: property = LazyProperty(User.from_json, type=User, doc='User that added the metric')
+
+    @property
+    def _row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Metric': self.metric,
+            'Agree': self.agree,
+            'User': self.user.login,
+        }
+
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'metric', 'agree', 'user']
 
 
 @define_model_custom_init
@@ -126,7 +149,6 @@ class Observation(BaseModel):
         default=None, doc='GPS accuracy in meters (not accurate if obscured)'
     )
     quality_grade: str = field(default=None, options=QUALITY_GRADES, doc='Quality grade')
-    quality_metrics: List[Dict] = field(factory=list, doc='Data quality assessment metrics')
     reviewed_by: List[int] = field(
         factory=list, doc='IDs of users who have reviewed the observation'
     )
@@ -170,6 +192,11 @@ class Observation(BaseModel):
         ProjectObservation.from_json_list,
         type=List[ProjectObservation],
         doc='Details on any projects that the observation has been added to',
+    )
+    quality_metrics: property = LazyProperty(
+        QualityMetric.from_json_list,
+        type=List[QualityMetric],
+        doc='Data quality assessment metrics',
     )
     sounds: property = LazyProperty(
         Sound.from_json_list, type=List[Sound], doc='Observation sound files'
