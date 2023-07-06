@@ -38,6 +38,19 @@ from pyinaturalist.models import (
 
 
 @define_model
+class Application(BaseModel):
+    """:fa:`display` An iNaturalist mobile or third-party application"""
+
+    icon: str = field(default=None, doc='Application icon URL')
+    name: str = field(default=None, doc='Application name')
+    url: str = field(default=None, doc='Application URL')
+
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'name', 'url']
+
+
+@define_model
 class QualityMetric(BaseModel):
     """:fa:`list-check` An observation quality metric added by a user to an observation"""
 
@@ -93,7 +106,6 @@ class Observation(BaseModel):
     :v1:`GET /observations <Observations/get_observations>`
     """
 
-    application: Dict = field(factory=dict, doc='Application that created the observation')
     created_at: datetime = datetime_now_field(doc='Date and time the observation was created')
     captive: bool = field(
         default=None, doc='Indicates if the organism is non-wild (captive or cultivated)'
@@ -197,6 +209,9 @@ class Observation(BaseModel):
     # Lazy-loaded model objects
     annotations: property = LazyProperty(
         Annotation.from_json_list, type=List[Annotation], doc='Observation annotations'
+    )
+    application: property = LazyProperty(
+        Application.from_json, type=Application, doc='Application that created the observation'
     )
     comments: property = LazyProperty(
         Comment.from_json_list, type=List[Comment], doc='Observation comments'

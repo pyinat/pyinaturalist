@@ -442,6 +442,14 @@ def test_observation__empty():
     assert obs.user is None
 
 
+def test_observation__application():
+    obs = Observation.from_json(j_observation_v2)
+    app = obs.application
+    assert isinstance(app, Application)
+    assert app.name == "iNaturalist iPhone App"
+    assert app.url.startswith("https://itunes.apple.com")
+
+
 def test_observation__ofvs():
     obs = Observation.from_json(j_observation_3_ofvs)
     ofv = obs.ofvs[0]

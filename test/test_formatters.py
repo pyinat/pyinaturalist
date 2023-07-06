@@ -118,6 +118,7 @@ Observation(
     uri='https://www.inaturalist.org/observations/16227955',
     uuid='6448d03a-7f9a-4099-86aa-ca09a7740b00',
     annotations=[],
+    application=None,
     comments=[
         Comment(id=2071896, username='borisb', created_at='Sep 05, 2018', truncated_body='I now see: Bonus species on observation! You ma...'),
         Comment(id=2071611, username='borisb', created_at='Sep 05, 2018', truncated_body='suspect L. bardanae - but sits on Solanum (non-...')
