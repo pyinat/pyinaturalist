@@ -75,7 +75,7 @@ class ObservationController(BaseController):
             _get_observations,
             Observation,
             cls=ObservationPaginator,
-            annotation_callback=self.client.controlled_terms.lookup,
+            annotation_callback=self.client.annotations.lookup,
             **params,
         )
 

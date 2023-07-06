@@ -47,6 +47,7 @@ class ControlledTerm(BaseModel):
     uri: str = field(default=None)
     uuid: str = field(default=None)
     taxon_ids: List[int] = field(factory=list)
+    excepted_taxon_ids: List[int] = field(factory=list)
     values: property = LazyProperty(
         ControlledTermValue.from_json_list,
         type=List[ControlledTermValue],

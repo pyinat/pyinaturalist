@@ -35,6 +35,7 @@ class BaseModel:
     """Base class for data models"""
 
     id: int = field(default=None, converter=try_int, metadata={'doc': 'Unique record ID'})
+    uuid: str = field(default=None, metadata={'doc': 'Unversally unique record ID'})
     __is_nested: bool = field(default=False, repr=False, init=False)
     temp_attrs: List[str] = []
 

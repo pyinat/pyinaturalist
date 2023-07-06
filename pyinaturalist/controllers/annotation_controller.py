@@ -1,12 +1,14 @@
 from typing import Dict, List
 
+from pyinaturalist.constants import API_V2, IntOrStr
 from pyinaturalist.controllers import BaseController
-from pyinaturalist.docs import document_controller_params
+from pyinaturalist.docs import document_common_args, document_controller_params
 from pyinaturalist.models import Annotation, ControlledTerm
+from pyinaturalist.session import delete, post
 from pyinaturalist.v1 import get_controlled_terms, get_controlled_terms_for_taxon
 
 
-class ControlledTermController(BaseController):
+class AnnotationController(BaseController):
     """:fa:`tag` Controller for ControlledTerm and Annotation requests"""
 
     def __init__(self, *args, **kwargs):
@@ -46,3 +48,51 @@ class ControlledTermController(BaseController):
                 annotation.controlled_attribute = term
                 annotation.controlled_value = term.get_value_by_id(annotation.controlled_value.id)
         return annotations
+
+    # TODO: Allow passing labels instead of IDs
+    @document_common_args
+    def create(
+        self,
+        controlled_attribute_id: int,
+        controlled_value_id: int,
+        resource_id: IntOrStr,
+        resource_type: str = 'Observation',
+        **params,
+    ) -> Annotation:
+        """Create a new annotation on an observation.
+
+        Args:
+            controlled_attribute_id: Annotation attribute ID
+            controlled_value_id: Annotation value ID
+            resource_id: Observation ID or UUID
+            resource_type: Resource type, if something other than an observation
+
+        Example:
+
+            Add a 'Plant phenology: Flowering' annotation to an observation:
+
+            >>> annotation = client.annotations.create(12, 13, 164609837)
+
+        Returns:
+            The newly created Annotation object
+        """
+        response = post(
+            f'{API_V2}/annotations',
+            controlled_attribute_id=controlled_attribute_id,
+            controlled_value_id=controlled_value_id,
+            resource_id=resource_id,
+            resource_type=resource_type,
+            **params,
+        )
+        return Annotation.from_json(response.json()['results'][0])
+
+    def delete(self, uuid: str, **params):
+        """Delete an annotation
+
+        Args:
+            uuid: Annotation UUID
+
+        Returns:
+            Nothing; success means the item has been deleted
+        """
+        delete(f'{API_V2}/annotations/{uuid}', **params)
