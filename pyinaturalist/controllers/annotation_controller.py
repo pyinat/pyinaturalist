@@ -8,7 +8,7 @@ from pyinaturalist.session import delete, post
 from pyinaturalist.v1 import get_controlled_terms, get_controlled_terms_for_taxon
 
 
-class ControlledTermController(BaseController):
+class AnnotationController(BaseController):
     """:fa:`tag` Controller for ControlledTerm and Annotation requests"""
 
     def __init__(self, *args, **kwargs):
@@ -71,7 +71,7 @@ class ControlledTermController(BaseController):
 
             Add a 'Plant phenology: Flowering' annotation to an observation:
 
-            >>> annotation = client.controlled_terms.create(12, 13, 164609837)
+            >>> annotation = client.annotations.create(12, 13, 164609837)
 
         Returns:
             The newly created Annotation object

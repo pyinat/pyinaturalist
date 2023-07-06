@@ -10,7 +10,7 @@ from requests import Session
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import RequestParams
 from pyinaturalist.controllers import (
-    ControlledTermController,
+    AnnotationController,
     ObservationController,
     PlaceController,
     ProjectController,
@@ -117,9 +117,7 @@ class iNatClient:
         self._token_expires = None
 
         # Controllers
-        self.controlled_terms = ControlledTermController(
-            self
-        )  #: Interface for controlled term/annotation requests
+        self.annotations = AnnotationController(self)  #: Interface for annotation requests
         self.observations = ObservationController(self)  #: Interface for observation requests
         self.places = PlaceController(self)  #: Interface for project requests
         self.projects = ProjectController(self)  #: Interface for project requests
