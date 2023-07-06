@@ -51,6 +51,24 @@ class Application(BaseModel):
 
 
 @define_model
+class Flag(BaseModel):
+    """:fa:`flag` A flag on an observation"""
+
+    comment = field(default=None, doc='Flag comment')
+    created_at: datetime = datetime_field(doc='Date and time the flag was created')
+    flag: str = field(default=None, doc='Flag type')
+    flaggable_content: str = field(default=None)
+    flaggable_id: int = field(default=None)
+    flaggable_type: str = field(default=None)
+    flaggable_user_id: int = field(default=None)
+    resolved: bool = field(default=None)
+    resolver_id: int = field(default=None)
+    resolved_at: datetime = datetime_field(doc='Date and time the flag was resolved')
+    updated_at: datetime = datetime_field(doc='Date and time the flag was last updated')
+    user: property = LazyProperty(User.from_json, type=User, doc='User that added the flag')
+
+
+@define_model
 class QualityMetric(BaseModel):
     """:fa:`list-check` An observation quality metric added by a user to an observation"""
 
@@ -115,7 +133,6 @@ class Observation(BaseModel):
     context_taxon_geoprivacy: str = field(default=None)
     context_user_geoprivacy: str = field(default=None)
     description: str = field(default=None, doc='Observation description')
-    flags: List[Dict] = field(factory=list)
     geoprivacy: str = field(default=None, options=GEOPRIVACY_LEVELS, doc='Location privacy level')
     identifications_count: int = field(default=0, doc='Total number of identifications')
     identifications_most_agree: bool = field(
@@ -219,6 +236,7 @@ class Observation(BaseModel):
     faves: property = LazyProperty(
         Fave.from_json_list, type=List[Fave], doc='Users who have favorited the observation'
     )
+    flags: property = LazyProperty(Flag.from_json_list, type=List[Flag], doc='Observation flags')
     identifications: property = LazyProperty(
         Identification.from_json_list, type=List[Identification], doc='Observation identifications'
     )

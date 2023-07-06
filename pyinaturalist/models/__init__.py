@@ -97,6 +97,7 @@ from pyinaturalist.models.observation import (
     Observations,
     Application,
     Fave,
+    Flag,
     QualityMetric,
     Vote,
 )

@@ -22,6 +22,7 @@ Add support for searching observations by observation fields, using a new `obser
 * Add `Observation.cumulative_ids` dynamic property to calculate agreements/total community identifications
 * Add `Application` model for `Observation.application` (for v2 API)
 * Add `Fave` model for `Observation.faves`
+* Add `Flag` model for `Observation.flags`
 * Add `QualityMetric` model for `Observation.quality_metrics`
 * Add `Sound` model for `Observation.sounds`
 * Add `Vote` model for `Observation.votes`

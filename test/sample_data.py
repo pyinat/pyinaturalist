@@ -99,3 +99,23 @@ j_user_1 = SAMPLE_DATA['get_user_by_id']['results'][0]
 j_user_2_partial = j_users[0]
 j_fave_1 = j_observation_6_metrics['faves'][0]
 j_vote_1 = j_observation_6_metrics['votes'][0]
+
+# I can't find a real example of a flagged observation, so here's a contrived one
+j_flag_1 = {
+    'id': 123456,
+    'comment': 'Some comment',
+    'created_at': '2021-01-01T12:00:00-07:00',
+    'flag': 'spam',
+    'resolved': False,
+    'resolver_id': None,
+    'resolved_at': None,
+    'updated_at': '2021-01-01T12:00:00-07:00',
+    'user': {
+        'id': 123456,
+        'login': 'some_user',
+    },
+    'flaggable_id': 123456,
+    'flaggable_type': 'Observation',
+    'flaggable_user_id': 123456,
+    'flaggable_content': 'Some text',
+}

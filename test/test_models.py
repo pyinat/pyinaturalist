@@ -450,6 +450,17 @@ def test_observation__application():
     assert app.url.startswith("https://itunes.apple.com")
 
 
+def test_observation__flags():
+    obs_json = deepcopy(j_observation_v2)
+    obs_json['flags'] = [j_flag_1]
+    obs = Observation.from_json(obs_json)
+    flag = obs.flags[0]
+    assert isinstance(flag, Flag)
+    assert flag.id == 123456
+    assert flag.resolved is False
+    assert flag.user.login == 'some_user'
+
+
 def test_observation__ofvs():
     obs = Observation.from_json(j_observation_3_ofvs)
     ofv = obs.ofvs[0]
