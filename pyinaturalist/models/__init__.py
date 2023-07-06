@@ -92,7 +92,15 @@ from pyinaturalist.models.project import (
     ProjectObservationField,
     ProjectUser,
 )
-from pyinaturalist.models.observation import Observation, Observations
+from pyinaturalist.models.observation import (
+    Observation,
+    Observations,
+    Application,
+    Fave,
+    Flag,
+    QualityMetric,
+    Vote,
+)
 from pyinaturalist.models.search import SearchResult
 
 

@@ -29,6 +29,7 @@ from pyinaturalist.models import (
     ControlledTerm,
     ControlledTermCount,
     ControlledTermValue,
+    Flag,
     Identification,
     LifeList,
     ListedTaxon,
@@ -39,6 +40,7 @@ from pyinaturalist.models import (
     Photo,
     Place,
     Project,
+    QualityMetric,
     ResponseOrObjects,
     SearchResult,
     Sound,
@@ -46,6 +48,7 @@ from pyinaturalist.models import (
     TaxonCount,
     TaxonSummary,
     User,
+    Vote,
 )
 from pyinaturalist.models.taxon import make_tree
 from pyinaturalist.paginator import Paginator
@@ -109,6 +112,7 @@ UNIQUE_RESPONSE_ATTRS = {
     'captive': Observation,
     'allowed_values': ObservationField,
     'field_id': ObservationFieldValue,
+    'flag': Flag,
     'original_dimensions': Photo,
     'place_type': Place,
     'standard': Place,
@@ -116,10 +120,12 @@ UNIQUE_RESPONSE_ATTRS = {
     'score': SearchResult,
     'last_observation_id': ListedTaxon,
     'listed_taxon': TaxonSummary,
+    'metric': QualityMetric,
     'native_sound_id': Sound,
     'count': TaxonCount,
     'rank': Taxon,
     'roles': User,
+    'vote_flag': Vote,
 }
 
 

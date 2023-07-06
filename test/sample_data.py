@@ -33,6 +33,8 @@ j_observation_2 = SAMPLE_DATA['get_observations_node_page1']['results'][0]
 j_observation_3_ofvs = SAMPLE_DATA['get_observation_with_ofvs']['results'][0]
 j_observation_4_sounds = SAMPLE_DATA['get_observation_with_sounds']['results'][0]
 j_observation_5_annotations = SAMPLE_DATA['get_observations_by_id']['results'][0]
+j_observation_6_metrics = SAMPLE_DATA['get_observation_with_quality_metrics']
+j_observation_v2 = SAMPLE_DATA['get_observations_v2_full']['results'][0]
 j_observation_identifiers = SAMPLE_DATA['get_observation_identifiers_node_page1']
 j_observation_observers = SAMPLE_DATA['get_observation_observers_node_page1']
 j_taxon_1 = SAMPLE_DATA['get_taxa_by_id']['results'][0]
@@ -47,6 +49,7 @@ j_taxon_summary_1_conserved = SAMPLE_DATA['get_observation_taxon_summary_conserv
 j_taxon_summary_2_listed = SAMPLE_DATA['get_observation_taxon_summary_listed']
 
 j_annotation_1 = j_observation_5_annotations['annotations'][0]
+j_application_1 = j_observation_v2['application']
 j_comments = j_observation_2['comments']
 j_comment_1 = j_comments[0]
 j_comment_2 = j_comments[1]
@@ -71,6 +74,7 @@ j_ofv_1_numeric = j_observation_3_ofvs['ofvs'][1]
 j_ofv_2_taxon = j_observation_3_ofvs['ofvs'][0]
 j_ofv_3_date = j_observation_3_ofvs['ofvs'][2]
 j_ofv_4_datetime = j_observation_3_ofvs['ofvs'][3]
+j_quality_metric_1 = j_observation_6_metrics['quality_metrics'][0]
 j_photo_1 = j_taxon_1['taxon_photos'][0]['photo']
 j_photo_2_partial = j_taxon_1['default_photo']
 j_place_1 = SAMPLE_DATA['get_places_by_id']['results'][1]
@@ -93,3 +97,25 @@ j_species_count_2 = SAMPLE_DATA['get_observation_species_counts']['results'][1]
 j_users = SAMPLE_DATA['get_users_autocomplete']['results']
 j_user_1 = SAMPLE_DATA['get_user_by_id']['results'][0]
 j_user_2_partial = j_users[0]
+j_fave_1 = j_observation_6_metrics['faves'][0]
+j_vote_1 = j_observation_6_metrics['votes'][0]
+
+# I can't find a real example of a flagged observation, so here's a contrived one
+j_flag_1 = {
+    'id': 123456,
+    'comment': 'Some comment',
+    'created_at': '2021-01-01T12:00:00-07:00',
+    'flag': 'spam',
+    'resolved': False,
+    'resolver_id': None,
+    'resolved_at': None,
+    'updated_at': '2021-01-01T12:00:00-07:00',
+    'user': {
+        'id': 123456,
+        'login': 'some_user',
+    },
+    'flaggable_id': 123456,
+    'flaggable_type': 'Observation',
+    'flaggable_user_id': 123456,
+    'flaggable_content': 'Some text',
+}

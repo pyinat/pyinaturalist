@@ -36,6 +36,8 @@ TABULAR_RESPONSES = [
     [j_sound_1, j_sound_1],
     [j_taxon_1, j_taxon_2_partial],
     [j_user_1, j_user_2_partial],
+    [j_quality_metric_1],
+    [j_vote_1],
 ]
 
 
@@ -116,10 +118,13 @@ Observation(
     uri='https://www.inaturalist.org/observations/16227955',
     uuid='6448d03a-7f9a-4099-86aa-ca09a7740b00',
     annotations=[],
+    application=None,
     comments=[
         Comment(id=2071896, username='borisb', created_at='Sep 05, 2018', truncated_body='I now see: Bonus species on observation! You ma...'),
         Comment(id=2071611, username='borisb', created_at='Sep 05, 2018', truncated_body='suspect L. bardanae - but sits on Solanum (non-...')
     ],
+    faves=[],
+    flags=[],
     identifications=[
         Identification(id=34896306, username='niconoe', taxon_name='Genus Lixus', created_at='Sep 05, 2018', truncated_body=''),
         Identification(id=34926789, username='borisb', taxon_name='Lixus bardanae', created_at='Sep 05, 2018', truncated_body=''),
@@ -131,9 +136,11 @@ Observation(
         Photo(id=24355313, license_code='CC-BY', url='https://static.inaturalist.org/photos/24355313/square.jpeg?1536150659')
     ],
     project_observations=[],
+    quality_metrics=[],
     sounds=[],
     taxon=Taxon(id=493595, full_name='Lixus bardanae'),
-    user=User(id=886482, login='niconoe', name='Nicolas Noé')
+    user=User(id=886482, login='niconoe', name='Nicolas Noé'),
+    votes=[]
 )
 """
 
