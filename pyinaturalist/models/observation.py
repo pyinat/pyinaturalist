@@ -67,6 +67,14 @@ class Flag(BaseModel):
     updated_at: datetime = datetime_field(doc='Date and time the flag was last updated')
     user: property = LazyProperty(User.from_json, type=User, doc='User that added the flag')
 
+    @property
+    def username(self) -> str:
+        return self.user.login
+
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'flag', 'resolved', 'username']
+
 
 @define_model
 class QualityMetric(BaseModel):
@@ -75,6 +83,10 @@ class QualityMetric(BaseModel):
     agree: bool = field(default=None, doc='Indicates if the user agrees with this metric')
     metric: str = field(default=None, doc='Quality metric name')
     user: property = LazyProperty(User.from_json, type=User, doc='User that added the metric')
+
+    @property
+    def username(self) -> str:
+        return self.user.login
 
     @property
     def _row(self) -> TableRow:
@@ -87,7 +99,7 @@ class QualityMetric(BaseModel):
 
     @property
     def _str_attrs(self) -> List[str]:
-        return ['id', 'metric', 'agree', 'user']
+        return ['id', 'metric', 'agree', 'username']
 
 
 @define_model
@@ -100,6 +112,10 @@ class Vote(BaseModel):
     vote_scope: str = field(default=None)
 
     @property
+    def username(self) -> str:
+        return self.user.login
+
+    @property
     def _row(self) -> TableRow:
         return {
             'ID': self.id,
@@ -109,7 +125,7 @@ class Vote(BaseModel):
 
     @property
     def _str_attrs(self) -> List[str]:
-        return ['id', 'flag', 'user']
+        return ['id', 'vote_flag', 'username']
 
 
 # Uses the same schema as votes
@@ -349,6 +365,10 @@ class Observation(BaseModel):
         return list(set(ident_ids))
 
     @property
+    def username(self) -> str:
+        return self.user.login
+
+    @property
     def _row(self) -> TableRow:
         return {
             'ID': self.id,
@@ -361,7 +381,7 @@ class Observation(BaseModel):
 
     @property
     def _str_attrs(self) -> List[str]:
-        return ['id', 'taxon', 'observed_on', 'user', 'place_guess']
+        return ['id', 'taxon', 'observed_on', 'username', 'place_guess']
 
 
 @define_model_collection

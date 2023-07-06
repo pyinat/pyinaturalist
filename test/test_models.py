@@ -446,8 +446,12 @@ def test_observation__application():
     obs = Observation.from_json(j_observation_v2)
     app = obs.application
     assert isinstance(app, Application)
-    assert app.name == "iNaturalist iPhone App"
-    assert app.url.startswith("https://itunes.apple.com")
+    assert app.name == 'iNaturalist iPhone App'
+    assert app.url.startswith('https://itunes.apple.com')
+    assert (
+        str(app)
+        == 'Application(id=3, name=iNaturalist iPhone App, url=https://itunes.apple.com/us/app/inaturalist/id421397028?mt=8)'
+    )
 
 
 def test_observation__flags():
@@ -459,6 +463,7 @@ def test_observation__flags():
     assert flag.id == 123456
     assert flag.resolved is False
     assert flag.user.login == 'some_user'
+    assert str(flag) == 'Flag(id=123456, flag=spam, resolved=False, username=some_user)'
 
 
 def test_observation__ofvs():
@@ -484,16 +489,19 @@ def test_observation__quality_metrics():
     assert metric.metric == 'wild'
     assert metric.agree is True
     assert metric.user.login == 'jkcook'
+    assert str(metric) == 'QualityMetric(id=6988064, metric=wild, agree=True, username=jkcook)'
 
     vote = obs.votes[0]
     assert isinstance(vote, Vote)
     assert vote.vote_flag is True
     assert vote.user.login == 'jkcook'
+    assert str(vote) == 'Vote(id=2115051, vote_flag=True, username=jkcook)'
 
     fave = obs.faves[0]
     assert isinstance(fave, Fave)
     assert fave.vote_flag is True
     assert fave.user.login == 'jkcook'
+    assert str(fave) == 'Fave(id=2115052, vote_flag=True, username=jkcook)'
 
 
 def test_observation__default_photo():
