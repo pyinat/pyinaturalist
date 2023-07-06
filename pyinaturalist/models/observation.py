@@ -59,6 +59,34 @@ class QualityMetric(BaseModel):
         return ['id', 'metric', 'agree', 'user']
 
 
+@define_model
+class Vote(BaseModel):
+    """:fa:`check` A vote on a data quality assessment metric"""
+
+    created_at: datetime = datetime_field(doc='Date and time the vote was created')
+    user: property = LazyProperty(User.from_json, type=User, doc='User that added the vote')
+    vote_flag: bool = field(default=None)
+    vote_scope: str = field(default=None)
+
+    @property
+    def _row(self) -> TableRow:
+        return {
+            'ID': self.id,
+            'Flag': self.vote_flag,
+            'User': self.user.login,
+        }
+
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['id', 'flag', 'user']
+
+
+# Uses the same schema as votes
+@define_model
+class Fave(Vote):
+    """:fa:`star` An observation favorited by a user"""
+
+
 @define_model_custom_init
 class Observation(BaseModel):
     """:fa:`binoculars` An observation, based the schema of
@@ -75,9 +103,6 @@ class Observation(BaseModel):
     context_taxon_geoprivacy: str = field(default=None)
     context_user_geoprivacy: str = field(default=None)
     description: str = field(default=None, doc='Observation description')
-    faves: List[Dict] = field(
-        factory=list, doc='Details on users who have favorited the observation'
-    )
     flags: List[Dict] = field(factory=list)
     geoprivacy: str = field(default=None, options=GEOPRIVACY_LEVELS, doc='Location privacy level')
     identifications_count: int = field(default=0, doc='Total number of identifications')
@@ -168,7 +193,6 @@ class Observation(BaseModel):
     viewer_trusted_by_observer: bool = field(
         default=None, doc='Observer trusts the authenticated user with access to hidden coordinates'
     )
-    votes: List[Dict] = field(factory=list, doc='Votes on data quality assessment metrics')
 
     # Lazy-loaded model objects
     annotations: property = LazyProperty(
@@ -176,6 +200,9 @@ class Observation(BaseModel):
     )
     comments: property = LazyProperty(
         Comment.from_json_list, type=List[Comment], doc='Observation comments'
+    )
+    faves: property = LazyProperty(
+        Fave.from_json_list, type=List[Fave], doc='Users who have favorited the observation'
     )
     identifications: property = LazyProperty(
         Identification.from_json_list, type=List[Identification], doc='Observation identifications'
@@ -203,6 +230,9 @@ class Observation(BaseModel):
     )
     taxon: property = LazyProperty(Taxon.from_json, type=Taxon, doc='Observation taxon')
     user: property = LazyProperty(User.from_json, type=User, doc='Observer')
+    votes: property = LazyProperty(
+        Vote.from_json_list, type=List[Vote], doc='Votes on data quality assessment metrics'
+    )
 
     # Additional attributes from API response that aren't needed; just left here for reference
     # cached_votes_total: int = field(default=None)

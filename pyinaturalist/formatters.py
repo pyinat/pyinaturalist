@@ -47,6 +47,7 @@ from pyinaturalist.models import (
     TaxonCount,
     TaxonSummary,
     User,
+    Vote,
 )
 from pyinaturalist.models.taxon import make_tree
 from pyinaturalist.paginator import Paginator
@@ -122,6 +123,7 @@ UNIQUE_RESPONSE_ATTRS = {
     'count': TaxonCount,
     'rank': Taxon,
     'roles': User,
+    'vote_flag': Vote,
 }
 
 

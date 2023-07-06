@@ -28,7 +28,6 @@ from pyinaturalist.constants import (
     UNRANKED,
 )
 from pyinaturalist.models import *
-from pyinaturalist.models.observation import QualityMetric
 from test.conftest import sample_data_path
 from test.sample_data import *
 
@@ -459,12 +458,23 @@ def test_observation__project_observations():
 
 def test_observation__quality_metrics():
     obs = Observation.from_json(j_observation_6_metrics)
+
     metric = obs.quality_metrics[0]
     assert isinstance(metric, QualityMetric)
     assert metric.id == 6988064
     assert metric.metric == 'wild'
-    assert metric.agree == True
+    assert metric.agree is True
     assert metric.user.login == 'jkcook'
+
+    vote = obs.votes[0]
+    assert isinstance(vote, Vote)
+    assert vote.vote_flag is True
+    assert vote.user.login == 'jkcook'
+
+    fave = obs.faves[0]
+    assert isinstance(fave, Fave)
+    assert fave.vote_flag is True
+    assert fave.user.login == 'jkcook'
 
 
 def test_observation__default_photo():

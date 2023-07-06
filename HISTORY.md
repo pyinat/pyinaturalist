@@ -20,8 +20,10 @@ Add support for searching observations by observation fields, using a new `obser
 * Add `Taxon.flatten()` method to return a taxon and its descendants as a flat list
 * Add `Observation.ident_taxon_ids` dynamic property to get all identification taxon IDs (with ancestors)
 * Add `Observation.cumulative_ids` dynamic property to calculate agreements/total community identifications
+* Add `Fave` model for `Observation.faves`
 * Add `QualityMetric` model for `Observation.quality_metrics`
 * Add `Sound` model for `Observation.sounds`
+* Add `Vote` model for `Observation.votes`
 * Fix initialization of `ListedTaxon.place`
 
 ## 0.18.0 (2023-02-27)

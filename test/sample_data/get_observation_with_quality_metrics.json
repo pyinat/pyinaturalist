@@ -183,7 +183,32 @@
     41.2860798165,
     -92.5431879714
   ],
-  "votes": [],
+  "faves": [
+    {
+      "id": 2115052,
+      "created_at": "2020-02-02T02:02:02+00:00",
+      "vote_flag": true,
+      "vote_scope": "?",
+      "user": {
+        "id": 2115051,
+        "login": "jkcook",
+        "name": "Jordan Cook"
+      }
+    }
+  ],
+  "votes": [
+    {
+      "id": 2115051,
+      "created_at": "2020-02-02T02:02:02+00:00",
+      "vote_flag": true,
+      "vote_scope": "?",
+      "user": {
+        "id": 2115051,
+        "login": "jkcook",
+        "name": "Jordan Cook"
+      }
+    }
+  ],
   "spam": false,
   "user": {
     "id": 593014,
@@ -1855,7 +1880,6 @@
       }
     }
   ],
-  "faves": [],
   "non_owner_ids": [
     {
       "hidden": false,
