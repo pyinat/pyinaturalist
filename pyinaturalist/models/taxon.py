@@ -431,13 +431,14 @@ def make_tree(
         """Recursively add children and ancestors to a taxon"""
         taxon.children = []
         taxon.ancestors = ancestors or []
-        for child in sorted(taxa_by_parent.get(taxon.id, []), key=sort_key):
+        for child in taxa_by_parent.get(taxon.id, []):
             child = add_descendants(child, taxon.ancestors + [taxon])
             if include_ranks and child.rank not in include_ranks:
                 taxon.children.extend(child.children)
             else:
                 taxon.children.append(child)
 
+        taxon.children = sorted(taxon.children, key=sort_key)
         return taxon
 
     return add_descendants(root)
