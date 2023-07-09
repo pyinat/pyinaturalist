@@ -90,14 +90,6 @@ def convert_histogram(result: JsonResponse, interval: str):
 # --------------------
 
 
-def convert_csv_list(obj: Any) -> str:
-    """Convert list parameters into an API-compatible (comma-delimited) string"""
-    if isinstance(obj, list) or isinstance(obj, tuple):
-        return ','.join(map(str, obj))
-    else:
-        return obj
-
-
 def convert_isoformat(value: Union[date, datetime, str]) -> str:
     """Convert a date, datetime, or timestamps to a string in ISO 8601 format.
     If it's a datetime and doesn't already have tzinfo, set it to the system's local timezone.
@@ -181,14 +173,7 @@ def convert_observation_timestamps(result: ResponseResult) -> ResponseResult:
 
 def safe_split(value: Any, delimiter: str = '|') -> List[str]:
     """Split a pipe-(or other token)-delimited string"""
-    return list(ensure_list(value, convert_csv=True, delimiter=delimiter))
-
-
-def strip_empty_values(values: Dict) -> Dict:
-    """Remove any dict items with empty or ``None`` values.
-    Observation field fiters are an exception (e.g. ``field:foo=``).
-    """
-    return {k: v for k, v in values.items() if v or v in [False, 0, 0.0] or k.startswith('field:')}
+    return list(ensure_list(value, split_str_list=True, delimiter=delimiter))
 
 
 # Type conversion functions for files and collections
@@ -214,7 +199,7 @@ def ensure_file_obj(value: AnyFile, session: Optional[Session] = None) -> IO:
 
 
 def ensure_list(
-    value: Any, convert_csv: bool = False, delimiter: str = ','
+    value: Any, split_str_list: bool = False, delimiter: str = ','
 ) -> MutableSequence[Any]:
     """Convert an object, response, or (optionally) comma-separated string into a list"""
     # Handle the occacsional stray numpy array that got lost and made its way here
@@ -228,7 +213,7 @@ def ensure_list(
     # Handle response results and comma-separated strings
     elif isinstance(value, dict) and 'results' in value:
         value = value['results']
-    elif convert_csv and isinstance(value, str) and delimiter in value:
+    elif split_str_list and isinstance(value, str) and delimiter in value:
         return [s.strip() for s in value.split(delimiter)]
 
     if isinstance(value, MutableSequence):

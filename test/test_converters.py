@@ -82,7 +82,7 @@ def test_ensure_list(input, expected_output):
     [('a,b', ',', ['a', 'b']), ('a , b', ',', ['a', 'b']), ('a|b', '|', ['a', 'b'])],
 )
 def test_ensure_list__csv(input, delimiter, expected_output):
-    assert ensure_list(input, convert_csv=True, delimiter=delimiter) == expected_output
+    assert ensure_list(input, split_str_list=True, delimiter=delimiter) == expected_output
 
 
 def test_format_histogram__datetime_keys():
