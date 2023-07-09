@@ -10,7 +10,7 @@ from pyinaturalist.constants import SAMPLE_DATA_DIR
 
 def load_sample_data(filename):
     """Load a single sample data file"""
-    with open(join(SAMPLE_DATA_DIR, filename)) as f:
+    with open(join(SAMPLE_DATA_DIR, filename, encoding='utf-8')) as f:
         return json.load(f)
 
 
@@ -19,7 +19,8 @@ def load_all_sample_data() -> Dict[str, Dict]:
     sample_data = {}
     for file_path in glob(join(SAMPLE_DATA_DIR, '*.json')):
         name = splitext(basename(file_path))[0]
-        sample_data[name] = json.load(open(file_path))
+        with open(file_path, encoding='utf-8') as f:
+            sample_data[name] = json.load(f)
     return sample_data
 
 
