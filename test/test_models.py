@@ -1143,7 +1143,20 @@ def test_make_tree__filtered():
     for _ in range(5):
         node = node.children[0]
     assert node.name == 'Bombus'
-    assert len(node.children) == 9
+
+    # We've skipped subgenus, so these should be in alphabetical order (not by subgenus then name)
+    children = [t.name for t in node.children]
+    assert children == [
+        'Bombus bimaculatus',
+        'Bombus borealis',
+        'Bombus fervidus',
+        'Bombus flavidus',
+        'Bombus impatiens',
+        'Bombus perplexus',
+        'Bombus ternarius',
+        'Bombus terricola',
+        'Bombus vagans',
+    ]
 
 
 def test_make_tree__flattened():
