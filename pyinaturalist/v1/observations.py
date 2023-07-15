@@ -7,7 +7,6 @@ from pyinaturalist.constants import (
     API_V1,
     V1_OBS_ORDER_BY_PROPERTIES,
     HistogramResponse,
-    IntOrStr,
     JsonResponse,
     ListResponse,
     MultiFile,
@@ -284,6 +283,7 @@ def get_observation_species_counts(**params) -> JsonResponse:
 @document_request_params(*docs._get_observations)
 def get_observation_popular_field_values(**params) -> JsonResponse:
     """Get controlled terms values and a monthly histogram of observations matching the search
+    criteria.
 
     .. rubric:: Notes
 
@@ -309,12 +309,15 @@ def get_observation_popular_field_values(**params) -> JsonResponse:
     return response_json
 
 
-def get_observation_taxonomy(user_id: Optional[IntOrStr] = None, **params) -> JsonResponse:
-    """Get observation counts for all taxa in a full taxonomic tree. In the web UI, these are used
-    for life lists.
+@document_request_params(*docs._get_observations)
+def get_observation_taxonomy(**params) -> JsonResponse:
+    """Get observation counts for all taxa in observations matching the search criteria.
 
-    Args:
-        user_id: iNaturalist user ID or username
+    .. rubric:: Notes
+
+    * Undocumented in API reference
+    * On iNaturalist.org, this is mainly used for dynamic life lists
+    * Results are returned in a flat list, but are ordered as they would be in a taxonomic tree
 
     Example:
         >>> response = get_observation_taxonomy(user_id='my_username')
@@ -328,10 +331,7 @@ def get_observation_taxonomy(user_id: Optional[IntOrStr] = None, **params) -> Js
     Returns:
         Response dict containing taxon records with counts
     """
-    if params.get('page') == 'all':
-        return paginate_all(get, f'{API_V1}/observations/taxonomy', user_id=user_id, **params)
-    else:
-        return get(f'{API_V1}/observations/taxonomy', user_id=user_id, **params).json()
+    return get(f'{API_V1}/observations/taxonomy', **params).json()
 
 
 @document_common_args

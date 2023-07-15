@@ -677,7 +677,7 @@ def _observation_id(observation_id: int):
     """
 
 
-def _project_id(observation_id: Optional[int] = None):
+def _project_id(project_id: Optional[int] = None):
     """Args:
     project_id: Only show users who are members of this project
     """
