@@ -10,13 +10,13 @@ from pyinaturalist.request_params import (
     convert_list_params,
     convert_observation_field_params,
     convert_pagination_params,
+    convert_url_ids,
     get_interval_ranges,
     normalize_rank,
     normalize_rank_params,
     preprocess_request_body,
     preprocess_request_params,
     strip_empty_values,
-    validate_ids,
     validate_multiple_choice_param,
     validate_multiple_choice_params,
 )
@@ -152,7 +152,7 @@ def test_strip_empty_params():
 
 
 @pytest.mark.parametrize(
-    'value, expected',
+    'value, expected_id_str',
     [
         ('1', '1'),
         (1, '1'),
@@ -161,13 +161,21 @@ def test_strip_empty_params():
         ([1e5, 2e5], '100000,200000'),
     ],
 )
-def test_validate_ids(value, expected):
-    assert validate_ids(value) == expected
+def test_convert_url_ids(value, expected_id_str):
+    base_url = 'http://example.com'
+    assert convert_url_ids(base_url, value) == f'{base_url}/{expected_id_str}'
 
 
-def test_validate_ids__invalid():
+def test_convert_url_ids__str_ids():
+    base_url = 'http://example.com'
+    ids = ['one', 'two', 'three']
+    assert convert_url_ids(base_url, ids, allow_str_ids=True) == f'{base_url}/one,two,three'
+
+
+def test_convert_url_ids__invalid():
+    ids = ['one', 'two', 'three']
     with pytest.raises(ValueError):
-        validate_ids('not a number')
+        convert_url_ids('http://example.com', ids)
 
 
 # This is just here so that tests will fail if one of the conversion steps is removed

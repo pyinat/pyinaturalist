@@ -26,12 +26,7 @@ from pyinaturalist.constants import (
     RequestParams,
     TimeInterval,
 )
-from pyinaturalist.converters import (
-    convert_csv_list,
-    convert_isoformat,
-    ensure_list,
-    strip_empty_values,
-)
+from pyinaturalist.converters import convert_isoformat, ensure_list
 
 # Common parameters that can be passed to all API functions, and notes on where they are used
 COMMON_PARAMS = [
@@ -68,6 +63,8 @@ RANK_PARAMS = [
 MULTIPLE_CHOICE_ERROR_MSG = (
     'Parameter "{}" must have one of the following values: {}\n\tValue provided: {}'
 )
+
+MAX_URL_LENGTH = 2048  # Depends on server and browser. This is is on the lower end.
 
 logger = getLogger(__name__)
 
@@ -113,11 +110,35 @@ def convert_bool_params(params: RequestParams) -> RequestParams:
 
 
 def convert_url_ids(url: str, ids: Optional[MultiInt] = None, allow_str_ids: bool = False) -> str:
-    """If one or more resources are requested by ID, validate and update the request URL accordingly"""
-    if ids:
-        str_ids = str(convert_csv_list(ids)) if allow_str_ids else validate_ids(ids)
-        url = url.rstrip('/') + '/' + str_ids
-    return url
+    """If one or more resources are requested by ID, validate and update the request URL
+    accordingly"""
+    if not ids:
+        return url
+    if not allow_str_ids:
+        ids = _validate_ids(ids)
+    return url.rstrip('/') + '/' + _join_list(ids)
+
+
+def _join_list(obj: Any) -> str:
+    """Join a list of items into an API-compatible (comma-delimited) string"""
+    if isinstance(obj, list) or isinstance(obj, tuple):
+        return ','.join(map(str, obj))
+    elif obj is None:
+        return ''
+    else:
+        return str(obj)
+
+
+def _validate_ids(ids: Any) -> List[int]:
+    """Ensure ID(s) are all valid, and convert to a comma-delimited string if there are multiple
+
+    Raises:
+        :py:exc:`ValueError` if any values are not valid integers
+    """
+    try:
+        return [int(value) for value in ensure_list(ids, split_str_list=True)]
+    except (TypeError, ValueError):
+        raise ValueError(f'Invalid ID(s): {ids}; must specify integers only')
 
 
 def convert_datetime_params(params: RequestParams) -> RequestParams:
@@ -139,7 +160,7 @@ def convert_list_params(params: RequestParams) -> RequestParams:
     """Convert any list parameters into an API-compatible (comma-delimited) string.
     Will be url-encoded by requests. For example: `['k1', 'k2', 'k3'] -> k1%2Ck2%2Ck3`
     """
-    return {k: convert_csv_list(v) for k, v in params.items()}
+    return {k: _join_list(v) for k, v in params.items()}
 
 
 def convert_observation_params(params):
@@ -285,17 +306,11 @@ def split_common_params(params: RequestParams) -> Tuple[RequestParams, RequestPa
     return params, kwargs
 
 
-def validate_ids(ids: Any) -> str:
-    """Ensure ID(s) are all valid, and convert to a comma-delimited string if there are multiple
-
-    Raises:
-        :py:exc:`ValueError` if any values are not valid integers
+def strip_empty_values(values: Dict) -> Dict:
+    """Remove any dict items with empty or ``None`` values.
+    Observation field fiters are an exception (e.g. ``field:foo=``).
     """
-    try:
-        ids = [int(value) for value in ensure_list(ids, convert_csv=True)]
-    except (TypeError, ValueError):
-        raise ValueError(f'Invalid ID(s): {ids}; must specify integers only')
-    return convert_csv_list(ids)
+    return {k: v for k, v in values.items() if v or v in [False, 0, 0.0] or k.startswith('field:')}
 
 
 def validate_multiple_choice_params(params: RequestParams) -> RequestParams:

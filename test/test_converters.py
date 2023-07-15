@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from io import BytesIO
 from tempfile import NamedTemporaryFile
@@ -44,12 +45,13 @@ def test_ensure_file_obj__obj():
 
 
 def test_ensure_file_obj__path():
-    with NamedTemporaryFile() as temp:
+    with NamedTemporaryFile(delete=False) as temp:
         temp.write(b'test content')
         temp.seek(0)
 
         file_obj = ensure_file_obj(temp.name)
         assert file_obj.read() == b'test content'
+    os.remove(temp.name)
 
 
 def test_ensure_file_obj__url():
@@ -80,7 +82,7 @@ def test_ensure_list(input, expected_output):
     [('a,b', ',', ['a', 'b']), ('a , b', ',', ['a', 'b']), ('a|b', '|', ['a', 'b'])],
 )
 def test_ensure_list__csv(input, delimiter, expected_output):
-    assert ensure_list(input, convert_csv=True, delimiter=delimiter) == expected_output
+    assert ensure_list(input, split_str_list=True, delimiter=delimiter) == expected_output
 
 
 def test_format_histogram__datetime_keys():

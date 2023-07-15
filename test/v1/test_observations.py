@@ -110,14 +110,14 @@ def test_get_observations__all_pages(requests_mock):
 def test_get_observations__by_obs_field(mock_send):
     get_observations(taxon_id=3, observation_fields=['Species count'])
     request = mock_send.call_args[0][0]
-    assert request.params == {'taxon_id': 3, 'field:Species count': ''}
+    assert request.params == {'taxon_id': '3', 'field:Species count': ''}
 
 
 @patch.object(ClientSession, 'send', return_value=MOCK_RESPONSE)
 def test_get_observations__by_obs_field_values(mock_send):
     get_observations(taxon_id=3, observation_fields={'Species count': 2})
     request = mock_send.call_args[0][0]
-    assert request.params == {'taxon_id': 3, 'field:Species count': 2}
+    assert request.params == {'taxon_id': '3', 'field:Species count': '2'}
 
 
 def test_get_observations_by_id(requests_mock):
