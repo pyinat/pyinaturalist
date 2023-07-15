@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pyinaturalist.constants import API_V1, JsonResponse, MultiInt
+from pyinaturalist.constants import API_V1, IntOrStr, JsonResponse, MultiInt
 from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
@@ -166,3 +166,34 @@ def get_taxa_map_layers(taxon_id: int, **params) -> JsonResponse:
     response = get(f'{API_V1}/taxa/{taxon_id}/map_layers', **params).json()
     response['gbif_url'] = f'https://www.gbif.org/species/{response["gbif_id"]}'
     return response
+
+
+def get_life_list_metadata(
+    user_id: IntOrStr, locale: Optional[str] = None, **params
+) -> JsonResponse:
+    """Get common names and default taxon photos for a user's life list
+
+    .. rubric:: Notes
+
+    * Undocumented in API reference
+    * On iNaturalist.org, this is used for dynamic life lists
+
+    Args:
+        user_id: iNaturalist user ID or username
+        locale: Locale preference for taxon common names
+
+    Example:
+        >>> response = get_life_list_metadata(user_id='my_username')
+
+        .. admonition:: Example Response
+            :class: toggle
+
+            .. literalinclude:: ../sample_data/get_lifelist_metadata.json
+                :language: JSON
+
+    Returns:
+        Response dict containing taxon common names and photo URLs
+    """
+    return get(
+        f'{API_V1}/taxa/lifelist_metadata', observed_by_user_id=user_id, locale=locale, **params
+    ).json()

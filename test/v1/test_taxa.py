@@ -4,8 +4,15 @@ from urllib.parse import urlencode
 import pytest
 
 from pyinaturalist.constants import API_V1
-from pyinaturalist.v1 import get_taxa, get_taxa_autocomplete, get_taxa_by_id, get_taxa_map_layers
+from pyinaturalist.v1 import (
+    get_life_list_metadata,
+    get_taxa,
+    get_taxa_autocomplete,
+    get_taxa_by_id,
+    get_taxa_map_layers,
+)
 from test.conftest import load_sample_data
+from test.sample_data import j_life_list_metadata
 
 CLASS_AND_HIGHER = ['class', 'superclass', 'subphylum', 'phylum', 'kingdom']
 SPECIES_AND_LOWER = ['infrahybrid', 'form', 'variety', 'subspecies', 'hybrid', 'species']
@@ -109,3 +116,19 @@ def test_get_taxa_map_layers(requests_mock):
     assert response['gbif_url'] == 'https://www.gbif.org/species/2820380'
     assert response['ranges'] is False
     assert response['listed_places'] is True
+
+
+def test_get_lifelist_metadata(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/taxa/lifelist_metadata',
+        json=j_life_list_metadata,
+        status_code=200,
+    )
+
+    response = get_life_list_metadata(user_id=545640)
+    t = response['results'][1]
+    assert t['name'] == 'Animalia'
+    assert t['preferred_common_name'] == 'Animals'
+    assert t['default_photo']['medium_url'].startswith(
+        'https://inaturalist-open-data.s3.amazonaws.com'
+    )
