@@ -25,6 +25,7 @@ from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import (
     create_observation,
     delete_observation,
+    get_life_list_metadata,
     get_observation_histogram,
     get_observation_identifiers,
     get_observation_observers,
@@ -89,9 +90,27 @@ class ObservationController(BaseController):
         response = self.client.request(get_observation_identifiers, **params)
         return UserCounts.from_json(response)
 
-    @document_controller_params(get_observation_taxonomy, add_common_args=False)
-    def life_list(self, user_id: IntOrStr, **params) -> LifeList:
+    @document_controller_params(get_observation_taxonomy)
+    def life_list(
+        self, user_id: Optional[IntOrStr] = None, locale: Optional[str] = None, **params
+    ) -> LifeList:
+        """Get taxa from a user's dynamic life list
+
+        Args:
+            user_id: iNaturalist user ID or username
+            locale: Locale preference for taxon common names
+        """
         response = self.client.request(get_observation_taxonomy, user_id=user_id, **params)
+
+        # Add additional metadata to a life list response; requires a user ID
+        if user_id:
+            metadata = self.client.request(
+                get_life_list_metadata, user_id=user_id, locale=locale, **params
+            )
+            meta_by_id = {item['id']: item for item in metadata['results']}
+            for taxon in response['results']:
+                taxon.update(meta_by_id.get(taxon['id'], {}))
+
         return LifeList.from_json(response)
 
     @document_controller_params(get_observation_observers)
