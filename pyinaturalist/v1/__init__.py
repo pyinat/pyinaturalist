@@ -38,6 +38,7 @@ from pyinaturalist.v1.projects import (
 )
 from pyinaturalist.v1.search import search
 from pyinaturalist.v1.taxa import (
+    get_life_list_metadata,
     get_taxa,
     get_taxa_autocomplete,
     get_taxa_by_id,

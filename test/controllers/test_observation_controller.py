@@ -176,16 +176,42 @@ def test_life_list(requests_mock):
         status_code=200,
     )
     client = iNatClient()
-    results = client.observations.life_list(user_id=545640, taxon_id=52775)
+    results = client.observations.life_list(taxon_id=52775)
 
     assert isinstance(results, LifeList)
     assert len(results) == 31
 
-    bombus = results[8]
-    assert bombus.id == 52775
-    assert bombus.name == 'Bombus'
-    assert bombus.count == 4
-    assert bombus.descendant_obs_count == results.get_count(52775) == 154
+    t = results[8]
+    assert t.id == 52775
+    assert t.name == 'Bombus'
+    assert t.count == 4
+    assert t.descendant_obs_count == results.get_count(52775) == 154
+
+
+def test_life_list__with_user_id(requests_mock):
+    """With user_id, the results should include extra metadata"""
+    requests_mock.get(
+        f'{API_V1}/observations/taxonomy',
+        json=j_life_list_1,
+        status_code=200,
+    )
+    requests_mock.get(
+        f'{API_V1}/taxa/lifelist_metadata',
+        json=j_life_list_metadata,
+        status_code=200,
+    )
+    client = iNatClient()
+    results = client.observations.life_list(user_id=545640, taxon_id=574)
+
+    assert isinstance(results, LifeList)
+    assert len(results) == 10
+
+    t = results[4]
+    assert t.id == 573
+    assert t.name == 'Galliformes'
+    assert t.preferred_common_name == 'Landfowl'
+    assert t.count == 0
+    assert t.descendant_obs_count == results.get_count(573) == 4
 
 
 def test_popular_fields(requests_mock):

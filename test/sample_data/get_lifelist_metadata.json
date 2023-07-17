@@ -1,0 +1,82 @@
+{
+  "total_results": 10,
+  "results": [
+    {
+      "name": "Life",
+      "id": 48460,
+      "default_photo": {
+        "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/196425367/medium.jpeg"
+      }
+    },
+    {
+      "name": "Animalia",
+      "id": 1,
+      "default_photo": {
+        "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80678745/medium.jpg"
+      },
+      "preferred_common_name": "Animals"
+    },
+    {
+      "name": "Chordata",
+      "id": 2,
+      "default_photo": {
+        "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/80551845/medium.jpg"
+      },
+      "preferred_common_name": "Chordates"
+    },
+    {
+      "name": "Aves",
+      "id": 3,
+      "default_photo": {
+        "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/2967053/medium.jpg"
+      },
+      "preferred_common_name": "Birds"
+    },
+    {
+      "name": "Galliformes",
+      "id": 573,
+      "default_photo": {
+        "medium_url": "https://static.inaturalist.org/photos/101730709/medium.jpeg"
+      },
+      "preferred_common_name": "Landfowl"
+    },
+    {
+      "name": "Phasianidae",
+      "id": 574,
+      "default_photo": {
+        "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/53053041/medium.jpg"
+      },
+      "preferred_common_name": "Pheasants, Grouse, and Allies"
+    },
+    {
+      "name": "Bonasa",
+      "id": 889,
+      "default_photo": {
+        "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/2871/medium.jpg"
+      }
+    },
+    {
+      "name": "Bonasa umbellus",
+      "id": 890,
+      "default_photo": {
+        "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/171717411/medium.jpeg"
+      },
+      "preferred_common_name": "Ruffed Grouse"
+    },
+    {
+      "name": "Phasianus",
+      "id": 980,
+      "default_photo": {
+        "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/4735/medium.jpg"
+      }
+    },
+    {
+      "name": "Phasianus colchicus",
+      "id": 981,
+      "default_photo": {
+        "medium_url": "https://inaturalist-open-data.s3.amazonaws.com/photos/176733796/medium.jpg"
+      },
+      "preferred_common_name": "Ring-necked Pheasant"
+    }
+  ]
+}
