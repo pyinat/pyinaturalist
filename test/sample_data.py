@@ -1,5 +1,5 @@
 "Sample responses representing different variations on all supported resource types"
-# flake8: noqa: F401, F403
+# ruff: noqa: F401, F403
 import json
 from glob import glob
 from os.path import basename, join, splitext

@@ -60,7 +60,8 @@ class ListedTaxon(EstablishmentMeans):
     based on the schema of:
 
     * ``Taxon.listed_taxa`` from :v1:`GET /taxa/{id} <Taxa/get_taxa_id>`
-    * ``TaxonSummary.listed_taxon`` from  :v1:`GET /observations/{id}/taxon_summary <Observations/get_observations_id_taxon_summary>`
+    * ``TaxonSummary.listed_taxon`` from
+      :v1:`GET /observations/{id}/taxon_summary <Observations/get_observations_id_taxon_summary>`
     """
 
     comments_count: int = field(default=0, doc='Number of comments for this listed taxon')

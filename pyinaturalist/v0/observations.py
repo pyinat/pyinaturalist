@@ -122,7 +122,8 @@ def create_observation(**params) -> ListResponse:
         JSON response containing the newly created observation(s)
 
     Raises:
-        :py:exc:`~urllib3.exceptions.HTTPError`: If the call is not successful. The exception's ``response`` attribute gives more details about the errors.
+        :py:exc:`~urllib3.exceptions.HTTPError`: If the call is not successful
+        Note: The exception's ``response`` attribute gives more details about the errors.
     """
     photos, sounds, _, params, kwargs = convert_observation_params(params)
     response = post(
@@ -180,7 +181,8 @@ def update_observation(observation_id: int, **params) -> ListResponse:
         JSON response containing the newly updated observation
 
     Raises:
-        :py:exc:`~urllib3.exceptions.HTTPError`: if the call is not successful. iNaturalist returns an error 410 if the observation doesn't exists or belongs to another user.
+        :py:exc:`~urllib3.exceptions.HTTPError`: if the call is not successful.
+        Note: iNaturalist returns an error 410 if the observation doesn't exists or belongs to another user.
     """
     photos, sounds, _, params, kwargs = convert_observation_params(params)
     response = put(

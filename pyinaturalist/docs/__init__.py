@@ -1,4 +1,4 @@
-# flake8: noqa: F401, F403
+# ruff: noqa: F401, F403
 """Utilities for generating pyinaturalist documentation, including:
 
 * Dynamic docs: Function signatures + docstrings based on API request params

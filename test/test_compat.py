@@ -1,5 +1,5 @@
 """Tests for backwards-compatible (but deprecated) imports"""
-# flake8: noqa: F401
+# ruff: noqa: F401
 
 
 from test.conftest import ignore_deprecation

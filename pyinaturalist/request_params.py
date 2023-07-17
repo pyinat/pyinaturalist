@@ -137,8 +137,8 @@ def _validate_ids(ids: Any) -> List[int]:
     """
     try:
         return [int(value) for value in ensure_list(ids, split_str_list=True)]
-    except (TypeError, ValueError):
-        raise ValueError(f'Invalid ID(s): {ids}; must specify integers only')
+    except (TypeError, ValueError) as e:
+        raise ValueError(f'Invalid ID(s): {ids}; must specify integers only') from e
 
 
 def convert_datetime_params(params: RequestParams) -> RequestParams:

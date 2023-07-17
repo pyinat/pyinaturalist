@@ -357,8 +357,8 @@ def get_observation_taxon_summary(observation_id: int, **params) -> JsonResponse
         Response dict containing taxon summary, optionally with conservation status and listed taxon
     """
     results = get(f'{API_V1}/observations/{observation_id}/taxon_summary', **params).json()
-    results['conservation_status'] == convert_generic_timestamps(results['conservation_status'])
-    results['listed_taxon'] == convert_generic_timestamps(results['listed_taxon'])
+    results['conservation_status'] = convert_generic_timestamps(results['conservation_status'])
+    results['listed_taxon'] = convert_generic_timestamps(results['listed_taxon'])
     return results
 
 

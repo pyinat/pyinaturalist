@@ -4,7 +4,7 @@ See: http://api.inaturalist.org/v1/docs/
 
 Most recent API version tested: 1.3.0
 """
-# flake8: noqa: F401, F403
+# ruff: noqa: F401, F403
 from pyinaturalist.v1.controlled_terms import get_controlled_terms, get_controlled_terms_for_taxon
 from pyinaturalist.v1.identifications import get_identifications, get_identifications_by_id
 from pyinaturalist.v1.messages import get_message_by_id, get_messages, get_unread_meassage_count

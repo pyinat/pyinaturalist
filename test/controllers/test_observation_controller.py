@@ -1,7 +1,6 @@
-# flake8: noqa: F405
+# ruff: noqa: F405
 from datetime import datetime
 
-import pytest
 from dateutil.tz import tzutc
 
 from pyinaturalist.client import iNatClient

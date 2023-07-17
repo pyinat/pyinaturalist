@@ -1,4 +1,5 @@
 """Utilities for modifying function signatures using ``python-forge``"""
+# ruff: noqa: E501
 from functools import partial
 from inspect import Parameter, ismethod, signature
 from logging import getLogger

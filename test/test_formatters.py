@@ -1,4 +1,4 @@
-# flake8: noqa: F405
+# ruff: noqa: E501, F405
 import re
 from copy import deepcopy
 from io import StringIO
@@ -65,7 +65,7 @@ def test_format_table(response):
     rendered = '\n'.join([str(line) for line in console.render_lines(table)])
 
     if isinstance(response, list):
-        assert all([_get_id(value) in rendered for value in response])
+        assert all(_get_id(value) in rendered for value in response)
 
     # for obj in response:
     #     assert all([value in rendered_table for value in obj.row.values()])
@@ -82,7 +82,7 @@ def test_pprint(response):
     console = Console(force_terminal=False, width=120)
     with console.capture() as output:
         pprint(response)
-    rendered = output.get()
+    output.get()
 
 
 PRINTED_OBSERVATION = """

@@ -1,5 +1,5 @@
 """Controller classes for :py:class:`.iNatClient`"""
-# flake8: noqa: F401
+# ruff: noqa: F401
 # isort: skip_file
 from pyinaturalist.controllers.base_controller import BaseController
 from pyinaturalist.controllers.annotation_controller import AnnotationController

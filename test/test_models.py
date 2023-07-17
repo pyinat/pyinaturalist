@@ -11,7 +11,7 @@
 from copy import deepcopy
 from datetime import date, datetime
 
-# flake8: noqa: F405
+# ruff: noqa: F405
 import pytest
 from dateutil.tz import tzoffset, tzutc
 
@@ -377,8 +377,8 @@ def test_life_list__converters():
 
 def test_life_list__empty():
     life_list = LifeList()
-    life_list.data == []
-    life_list._id_map is None
+    assert life_list.data == []
+    assert life_list._id_map is None
 
 
 def test_life_list__get_count():

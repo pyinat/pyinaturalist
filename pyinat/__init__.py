@@ -1,4 +1,4 @@
-# flake8: noqa: F401, F403
+# ruff: noqa: F401, F403
 """Namespace alias that combines modules from pyinaturalist and pyinaturalist-convert (if installed).
 This allows abreviated imports like::
 

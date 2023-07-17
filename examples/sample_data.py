@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# flake8: noqa: F401, F403
+# ruff: noqa: E402, F401, F402, F403, F405
 """Sample response data of every type to experiment with"""
 import sys
 
