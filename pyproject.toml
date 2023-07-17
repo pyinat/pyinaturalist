@@ -117,3 +117,12 @@ files = ['pyinaturalist']
 markers = [
     "enable_client_session: Enable all ClientSession features: caching, rate-limiting, etc.",
 ]
+
+[tool.ruff]
+format = 'grouped'
+line-length = 120
+select = ['B', 'C4','C90', 'E', 'F']
+ignore = ['B023', 'F403']
+exclude = [
+    'test/sample_data/'
+]

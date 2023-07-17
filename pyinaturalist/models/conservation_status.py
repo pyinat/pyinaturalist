@@ -94,7 +94,8 @@ class ConservationStatus(BaseModel):
 
     * ``Taxon.conservation_status`` from :v1:`GET /taxa <Taxa/get_taxa>`
     * ``Observation.taxon.conservation_statuses`` from :v1:`GET /observations <Observations/get_observations>`
-    * ``conservation_status`` from :v1:`GET /observation/{id}/taxon_summary <Observations/get_observations_id_taxon_summary>`
+    * ``conservation_status`` from
+      :v1:`GET /observation/{id}/taxon_summary <Observations/get_observations_id_taxon_summary>`
     """
 
     authority: str = field(default=None, doc='Data source for conservation status')

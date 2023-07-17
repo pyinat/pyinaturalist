@@ -1,5 +1,5 @@
 """Placeholder module for backwards-compatibility"""
-# flake8: noqa: F401, F403
+# ruff: noqa: F401, F403, F405
 from typing import List
 from warnings import warn
 
@@ -11,11 +11,11 @@ from pyinaturalist.v1 import get_observations
 msg = (
     'The module `pyinaturalist.node_api` is deprecated; please use `from pyinaturalist import ...`'
 )
-warn(DeprecationWarning(msg))
+warn(DeprecationWarning(msg), stacklevel=2)
 
 
 def get_all_observations(**params) -> List[JsonResponse]:
     """:fas:`triangle-exclamation` Deprecated; use ``get_observations(page='all')`` instead"""
     msg = "get_all_observations() is deprecated; please use get_observations(page='all') instead"
-    warn(DeprecationWarning(msg))
+    warn(DeprecationWarning(msg), stacklevel=2)
     return paginate_all(get_observations, method='id', **params)['results']

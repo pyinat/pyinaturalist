@@ -1,4 +1,4 @@
-# flake8: noqa: F401, F403
+# ruff: noqa: F401, F403
 # isort: skip_file
 __version__ = '0.19.0'
 

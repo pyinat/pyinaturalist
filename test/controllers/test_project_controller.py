@@ -1,4 +1,4 @@
-# flake8: noqa: F405
+# ruff: noqa: F405
 from datetime import datetime
 from unittest.mock import patch
 

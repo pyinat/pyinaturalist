@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# flake8: noqa: F401, F402, F403, F405
+# ruff: noqa: E402, F401, F402, F403, F405
 """A script used to determine unique response keys for each response type"""
 import sys
 from itertools import chain

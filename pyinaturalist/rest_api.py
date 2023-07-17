@@ -1,5 +1,5 @@
 """Placeholder module for backwards-compatibility"""
-# flake8: noqa: F401, F403
+# ruff: noqa: F401, F403, F405
 from warnings import warn
 
 from pyinaturalist.auth import get_access_token
@@ -10,13 +10,13 @@ from pyinaturalist.v0 import *
 msg = (
     'The module `pyinaturalist.rest_api` is deprecated; please use `from pyinaturalist import ...`'
 )
-warn(DeprecationWarning(msg))
+warn(DeprecationWarning(msg), stacklevel=2)
 
 
 def get_all_observation_fields(**params) -> ListResponse:
     """:fas:`triangle-exclamation` Deprecated; use ``get_observation_fields(page='all')`` instead"""
     msg = "get_all_observation_fields() is deprecated; please use get_observation_fields(page='all') instead"
-    warn(DeprecationWarning(msg))
+    warn(DeprecationWarning(msg), stacklevel=2)
     return paginate_all(get_observation_fields, method='page', **params)['results']
 
 

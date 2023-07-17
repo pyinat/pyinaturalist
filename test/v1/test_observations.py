@@ -1,4 +1,4 @@
-# flake8: noqa: F405
+# ruff: noqa: F405
 from datetime import datetime
 from io import BytesIO
 from unittest.mock import patch
@@ -62,7 +62,7 @@ def test_get_observation_histogram(requests_mock):
     )
     assert len(histogram) == 12
     assert histogram[datetime(2020, 1, 1, 0, 0)] == 272
-    assert all([isinstance(k, datetime) for k in histogram.keys()])
+    assert all(isinstance(k, datetime) for k in histogram.keys())
 
 
 def test_get_observations(requests_mock):

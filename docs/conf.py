@@ -14,7 +14,7 @@
 * Some CSS and JS adds collapsible drop-down container
 * On Readthedocs, CSS and JS is automatically added for a version dropdown
 """
-# flake8: noqa: E402
+# ruff: noqa: E402
 import sys
 from importlib.metadata import version as pkg_version
 from os import makedirs, symlink

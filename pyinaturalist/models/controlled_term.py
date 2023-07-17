@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 from copy import deepcopy
 from typing import Dict, List, Optional
 

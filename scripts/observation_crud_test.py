@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# flake8: noqa: F401
+# ruff: noqa: F401
 """A partially automated script for testing all observation CRUD endpoints,
 in absence of integration tests.
 iNat credentials must be provided via environment variables.
