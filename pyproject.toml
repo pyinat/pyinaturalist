@@ -52,7 +52,7 @@ ujson                       = {optional=true, version=">5.0"}
 
 # Documentation dependencies needed for Readthedocs builds
 furo                        = {optional=true, python=">=3.8", version="^2023.3"}
-ipython                     = {optional=true, python=">=3.8", version="^7.34"}
+ipython                     = {optional=true, python=">=3.8", version=">=7.34,<9.0"}
 linkify-it-py               = {optional=true, python=">=3.8", version="^2.0"}
 myst-parser                 = {optional=true, python=">=3.8", version=">=1.0"}
 nbsphinx                    = {optional=true, python=">=3.8", version="^0.9"}
