@@ -51,8 +51,8 @@ markdown-it-py              = [
 ujson                       = {optional=true, version=">5.0"}
 
 # Documentation dependencies needed for Readthedocs builds
-furo                        = {optional=true, python=">=3.8", version="^2023.3"}
-ipython                     = {optional=true, python=">=3.8", version="^7.34"}
+furo                        = {optional=true, python=">=3.8", version="^2023.7"}
+ipython                     = {optional=true, python=">=3.8", version="^8.12"}
 linkify-it-py               = {optional=true, python=">=3.8", version="^2.0"}
 myst-parser                 = {optional=true, python=">=3.8", version=">=1.0"}
 nbsphinx                    = {optional=true, python=">=3.8", version="^0.9"}
@@ -60,7 +60,7 @@ sphinx                      = {optional=true, python=">=3.8", version="^6.2"}
 sphinx-automodapi           = {optional=true, python=">=3.8", version="^0.15"}
 sphinx-autodoc-typehints    = {optional=true, python=">=3.8", version="1.20"}
 sphinx-copybutton           = {optional=true, python=">=3.8", version=">=0.5"}
-sphinx-design               = {optional=true, python=">=3.8", version=">=0.4"}
+sphinx-design               = {optional=true, python=">=3.8", version=">=0.5"}
 sphinxcontrib-apidoc        = {optional=true, python=">=3.8", version="^0.3"}
 
 [tool.poetry.dev-dependencies]

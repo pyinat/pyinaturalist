@@ -187,6 +187,12 @@ class IconPhoto(Photo):
 
 @define_model
 class Sound(BaseMedia):
+    """:fa:`media-playback` An observation sound, based on the schema of sounds from:
+
+    * `GET /observations <https://api.inaturalist.org/v1/docs/#!/Observations/get_observations>`_
+    * `GET /taxa <https://api.inaturalist.org/v1/docs/#!/Taxa/get_taxa>`
+    """
+
     file_content_type: str = field(default=None)
     file_url: str = field(default=None)
     native_sound_id: str = field(default=None)
