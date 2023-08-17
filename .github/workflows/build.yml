@@ -60,3 +60,8 @@ jobs:
           python-version: ${{ env.LATEST_PY_VERSION }}
       - name: Run style checks & linting
         uses: pre-commit/action@v3.0.0
+      - name: Scan dependencies for known vulnerabilities
+        uses: pypa/gh-action-pip-audit@v1.0.8
+        with:
+          vulnerability-service: osv
+          ignore-vulns: PYSEC-2022-43012  # older setuptools used by the action itself
