@@ -58,7 +58,7 @@ class TaxonController(BaseController):
         full_taxon = self.from_ids(taxon.id, **params).one()
         for key in set(fields_dict(Taxon).keys()) - preserve_keys:
             # Use getters/setters for LazyProperty instead of temp attrs (cls.foo vs cls._foo)
-            if hasattr(key, key.lstrip('_')):
+            if hasattr(taxon, key.lstrip('_')):
                 key = key.lstrip('_')
             setattr(taxon, key, getattr(full_taxon, key))
         return taxon
