@@ -388,20 +388,3 @@ def _validate_multiple_choice_param(
     if not is_valid(params.get(key), choices):
         error_msg = MULTIPLE_CHOICE_ERROR_MSG.format(key, choices, params[key])
     return params, error_msg
-
-
-def batch_ids(base_url: str, ids: Iterable[int]) -> Iterable[List[int]]:
-    """Split IDs into batches that are small enough to fit in a single URL."""
-    length_remaining = MAX_URL_LENGTH - len(base_url)
-    batch: List[int] = []
-    for id in ids:
-        length = len(str(id)) + 1
-        if length > length_remaining:
-            yield batch
-            batch = []
-            length_remaining = MAX_URL_LENGTH - len(base_url)
-        batch.append(id)
-        length_remaining -= length
-
-    if batch:
-        yield batch

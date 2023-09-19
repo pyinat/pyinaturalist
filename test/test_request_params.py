@@ -4,9 +4,7 @@ from unittest.mock import patch
 import pytest
 from dateutil.tz import gettz
 
-from pyinaturalist.constants import API_V1
 from pyinaturalist.request_params import (
-    batch_ids,
     convert_bool_params,
     convert_datetime_params,
     convert_list_params,
@@ -279,38 +277,3 @@ def test_validate_multiple_choice_params__normalization(params, expected_value):
     validated_params = validate_multiple_choice_params(params)
     value = next(iter(validated_params.values()))
     assert value == expected_value
-
-
-def test_batch_ids__generator():
-    ids = range(5000)
-    total = 0
-    for batch in batch_ids(f'{API_V1}/taxa/', ids):
-        total += len(batch)
-    assert total == 5000
-
-
-def test_batch_ids__over_batch_size():
-    ids = range(531)
-    batches = list(batch_ids(f'{API_V1}/taxa/', ids))
-    assert len(batches) == 2
-    assert len(batches[0]) == 530
-    assert len(batches[1]) == 1
-
-
-def test_batch_ids__under_batch_size():
-    ids = range(500)
-    batches = list(batch_ids(f'{API_V1}/taxa/', ids))
-    assert len(batches) == 1
-    assert len(batches[0]) == 500
-
-
-def test_batch_ids__exact_batch_size():
-    ids = range(530)
-    batches = list(batch_ids(f'{API_V1}/taxa/', ids))
-    assert len(batches) == 1
-    assert len(batches[0]) == 530
-
-
-def test_batch_ids__none():
-    batches = list(batch_ids(f'{API_V1}/taxa/', []))
-    assert len(batches) == 0
