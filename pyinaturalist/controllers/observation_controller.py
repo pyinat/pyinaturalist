@@ -39,7 +39,6 @@ from pyinaturalist.v1 import (
     upload,
 )
 
-# TODO: Just a guess; test maximum allowed IDs per request
 IDS_PER_REQUEST = 30
 
 
