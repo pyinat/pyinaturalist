@@ -22,12 +22,13 @@ jobs:
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - uses: snok/install-poetry@v1.3
         with:
+          version: '1.5.1'  # For python 3.7 compatibility
           virtualenvs-in-project: true
 
       # Cache packages per python version, and reuse until lockfile changes
@@ -54,7 +55,7 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ env.LATEST_PY_VERSION }}
