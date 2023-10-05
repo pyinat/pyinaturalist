@@ -328,5 +328,5 @@ def delete_observation(observation_id: int, **params):
         **params,
     )
     if response.status_code == 404:
-        raise ObservationNotFound
+        raise ObservationNotFound(response=response)
     response.raise_for_status()

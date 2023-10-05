@@ -558,7 +558,7 @@ def delete_observation(observation_id: int, access_token: Optional[str] = None, 
         **params,
     )
     if response.status_code == 404:
-        raise ObservationNotFound
+        raise ObservationNotFound(response=response)
     response.raise_for_status()
 
 
@@ -592,4 +592,4 @@ def get_observation(
     response = get_observations(id=observation_id, access_token=access_token, **params)
     if response['results']:
         return convert_observation_timestamps(response['results'][0])
-    raise ObservationNotFound()
+    raise ObservationNotFound(response=response)

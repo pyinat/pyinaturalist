@@ -71,5 +71,5 @@ def get_controlled_terms_for_taxon(taxon_id: int, **params) -> JsonResponse:
 
     # This endpoint returns a 422 if the specified taxon does not exist
     if response.status_code in (404, 422):
-        raise TaxonNotFound
+        raise TaxonNotFound(response=response)
     return response.json()

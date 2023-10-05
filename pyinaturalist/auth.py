@@ -89,7 +89,9 @@ def get_access_token(
         if all(payload.values()):
             logger.info('Retrieved credentials from keyring')
         else:
-            raise AuthenticationError('Not all authentication parameters were provided')
+            raise AuthenticationError(
+                'Not all authentication parameters were provided', response=response
+            )
 
     # Get OAuth access token
     response = session.post(f'{API_V0}/oauth/token', json=payload)
