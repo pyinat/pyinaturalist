@@ -158,15 +158,26 @@ ID         Taxon ID   Taxon                                                  Obs
 (data-models)=
 ## Models
 Data models ({py:mod}`pyinaturalist.models`) are included for all API response types. These allow
-working with typed python objects instead of raw JSON. These are not used by default in the API query
-functions, but you can easily use them as follows:
-```python
+working with typed python objects, which are generally easier to work with than raw JSON.
+They provide:
+* Complete type annotations and autocompletion
+* Condensed print formats for easy previewing with {py:func}`~pyinaturalist.formatters.pprint` (ideal for exploring data in Jupyter)
+* Almost no performance overhead (on the order of nanoseconds per object)
+
+To use these models with the standard API query functions, you can load JSON results
+with `<Model>.from_json()` (single object) or `<Model>.from_json_list()` (list of objects):
+```py
 >>> from pyinaturalist import Observation, get_observations
 >>> response = get_observations(user_id='my_username)
 >>> observations = Observation.from_json_list(response)
 ```
 
-In a future release, these models will be fully integrated with the API query functions.
+And they can be converted back to a JSON dict if needed:
+```py
+json_observations = [obs.to_dict() for obs in observations]
+```
+
+In a future release, these models will be fully integrated with API query functions. To preview these features, see {ref}`api-client`.
 
 ## API Recommended Practices
 See [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)

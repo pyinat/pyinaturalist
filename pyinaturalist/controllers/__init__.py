@@ -1,4 +1,6 @@
-"""Controller classes for :py:class:`.iNatClient`"""
+"""Controller classes for :py:class:`.iNatClient`. These contain all the request functions used by
+the client, grouped by resource type.
+"""
 # ruff: noqa: F401
 # isort: skip_file
 from pyinaturalist.controllers.base_controller import BaseController
