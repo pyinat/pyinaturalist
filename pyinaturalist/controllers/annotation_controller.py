@@ -9,7 +9,7 @@ from pyinaturalist.v1 import get_controlled_terms, get_controlled_terms_for_taxo
 
 
 class AnnotationController(BaseController):
-    """:fa:`tag` Controller for ControlledTerm and Annotation requests"""
+    """:fa:`tag` Controller for Annotation and ControlledTerm requests"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
