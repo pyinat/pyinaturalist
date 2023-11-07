@@ -120,8 +120,8 @@ markers = [
 ]
 
 [tool.ruff]
-format = 'grouped'
 line-length = 120
+output-format = 'grouped'
 select = ['B', 'C4','C90', 'E', 'F']
 ignore = ['B023', 'F403']
 exclude = [
