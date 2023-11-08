@@ -15,5 +15,9 @@ endpoints
 reference
 contributing
 contributors
+```
+```{toctree}
+:maxdepth: 1
+
 history
 ```
