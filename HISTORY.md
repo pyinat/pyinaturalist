@@ -4,6 +4,7 @@
 
 ### New Endpoints
 * Added new **User** endpoint: `get_current_user()`
+* Added new **Taxon** endpoint: `get_life_list_metadata()`
 
 ### Modified Endpoints
 Add support for searching observations by observation fields, using a new `observation_fields` param for the following functions:
