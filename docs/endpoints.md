@@ -59,7 +59,7 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | GET    | /taxa/{id}                         | {py:func}`.get_taxa_by_id`                                   |
 | GET    | /taxa/{id}/map_layers              | {py:func}`.get_taxa_map_layers`                              |
 | GET    | /taxa/autocomplete                 | {py:func}`.get_taxa_autocomplete`                            |
-| GET    | /taxa/lifelist_metadata            | {py:func}`.get_lifelist_metadata`                            |
+| GET    | /taxa/lifelist_metadata            | {py:func}`.get_life_list_metadata`                           |
 | GET    | /users/{id}                        | {py:func}`.get_user_by_id`                                   |
 | GET    | /users/{id}/projects               |
 | GET    | /users/autocomplete                | {py:func}`.get_users_autocomplete`                           |
