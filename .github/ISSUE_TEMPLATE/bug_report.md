@@ -20,5 +20,5 @@ _Is there an existing workaround for this issue?_
 
 ### Environment
  - OS & version: [e.g. Debian 10]
- - Python version: [e.g. `3.9`]
- - Pyinaturalist version or branch: [e.g. `0.13` or `main` branch]
+ - Python version: [e.g. `3.12`]
+ - Pyinaturalist version or branch: [e.g. `0.19` or `main` branch]

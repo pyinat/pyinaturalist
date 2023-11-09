@@ -1,6 +1,6 @@
 # pyinaturalist
 
-[![Build](https://github.com/pyinat/pyinaturalist/workflows/Build/badge.svg)](https://github.com/pyinat/pyinaturalist/actions)
+[![Build](https://github.com/pyinat/pyinaturalist/workflows/Build/badge.svg?branch=main)](https://github.com/pyinat/pyinaturalist/actions)
 [![Codecov](https://codecov.io/gh/pyinat/pyinaturalist/branch/main/graph/badge.svg)](https://codecov.io/gh/pyinat/pyinaturalist)
 [![Documentation](https://img.shields.io/readthedocs/pyinaturalist/stable)](https://pyinaturalist.readthedocs.io)
 
@@ -197,9 +197,7 @@ For more information, see:
 * [Issues](https://github.com/pyinat/pyinaturalist/issues): planned & proposed features
 
 ## Feedback
-If you have any problems, suggestions, or questions about pyinaturalist, please let us know!
-Just [create an issue](https://github.com/pyinat/pyinaturalist/issues/new/choose).
-Also, **PRs are welcome!**
+If you have any problems, suggestions, or questions about pyinaturalist, you are welcome to [create an issue](https://github.com/pyinat/pyinaturalist/issues/new/choose) or [discussion](https://github.com/orgs/pyinat/discussions). Also, **PRs are welcome!**
 
 **Note:** pyinaturalist is developed by members of the iNaturalist community, and is not endorsed by
 iNaturalist.org or the California Academy of Sciences. If you have non-python-specific questions
