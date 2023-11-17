@@ -24,8 +24,9 @@ def get_observation_fields(**params) -> JsonResponse:
         >>> from pprint import pprint
         >>> pprint({r['id']: r['name'] for r in response})
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observation_fields.py
 
@@ -75,8 +76,9 @@ def put_observation_field_values(
         ...     access_token=token,
         ... )
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/post_put_observation_field_value.json
                 :language: javascript

@@ -99,7 +99,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             cache_control: Use server-provided Cache-Control headers to set cache expiration when
                 possible (instead of ``expire_after`` or ``urls_expire_after``)
             expire_after: How long to keep cached API requests; for advanced options, see
-                `requests-cache: Expiration <https://requests-cache.readthedocs.io/en/latest/user_guide/expiration.html>`_
+                `requests-cache: Expiration <https://requests-cache.readthedocs.io/en/stable/user_guide/expiration.html>`_
             urls_expire_after Glob patterns for per-URL cache expiration; See
                 `requests-cache: URL Patterns <https://requests-cache.readthedocs.io/en/stable/user_guide/expiration.html#url-patterns>`_
             per_second: Max requests per second

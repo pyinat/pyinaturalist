@@ -31,8 +31,9 @@ def set_observation_field(
         ...     access_token=token,
         ... )
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/post_put_observation_field_value.json
                 :language: javascript

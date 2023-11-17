@@ -308,7 +308,7 @@ def split_common_params(params: RequestParams) -> Tuple[RequestParams, RequestPa
 
 def strip_empty_values(values: Dict) -> Dict:
     """Remove any dict items with empty or ``None`` values.
-    Observation field fiters are an exception (e.g. ``field:foo=``).
+    Observation field filters are an exception (e.g. ``field:foo=``).
     """
     return {k: v for k, v in values.items() if v or v in [False, 0, 0.0] or k.startswith('field:')}
 

@@ -1,5 +1,6 @@
 # TODO: "optional auth" option
 # TODO: Improve Sphinx docs generated for controller attributes
+# TODO: Use a custom template or directive to generate summary of all controller methods
 from asyncio import AbstractEventLoop
 from inspect import ismethod
 from logging import getLogger
@@ -27,66 +28,23 @@ logger = getLogger(__name__)
 
 # 'iNatClient' is nonstandard casing, but 'InatClient' just looks wrong. Deal with it, pep8.
 class iNatClient:
-    """**WIP/Experimental**
+    """API client class that provides an object-oriented interface to the iNaturalist API.
 
-    API client class that provides a higher-level interface that is easier to configure, and returns
-    :ref:`model objects <models>` instead of JSON. See :ref:`Controller classes <controllers>` for
-    request details.
+    **WIP/Experimental**
 
-    Examples:
-        **Basic usage**
+    See:
 
-        Search for observations by taxon name:
+    * Usage guide: :ref:`api-client`
+    * Query functions: :ref:`Controller classes <controllers>`
 
-        >>> from pyinaturalist import iNatClient
-        >>> client = iNatClient()
-        >>> observations = client.observations.search(taxon_name='Danaus plexippus')
+    Controllers:
 
-        Get a single observation by ID:
-
-        >>> observation = client.observations(12345)
-
-        **Authentication**
-
-        Add credentials needed for authenticated requests:
-        Note: Passing credentials via environment variables or keyring is preferred
-
-        >>> creds = {
-        ...     'username': 'my_inaturalist_username',
-        ...     'password': 'my_inaturalist_password',
-        ...     'app_id': '33f27dc63bdf27f4ca6cd95dd9dcd5df',
-        ...     'app_secret': 'bbce628be722bfe2abd5fc566ba83de4',
-        ... }
-        >>> client = iNatClient(creds=creds)
-
-        **Default request parameters:**
-
-        Add default ``locale`` and ``preferred_place_id`` request params to pass to any requests
-        that use them:
-
-        >>> default_params={'locale': 'en', 'preferred_place_id': 1}
-        >>> client = iNatClient(default_params=default_params)
-
-        **Caching, Rate-limiting, and Retries**
-
-        See :py:class:`.ClientSession` and the :ref:`user_guide` for details on these settings.
-        ``iNatClient`` will accept any arguments for ``ClientSession``, for example:
-
-        >>> client = iNatClient(per_second=50, expire_after=3600, retries=3)
-
-        Or you can provide your own custom session object:
-
-        >>> session = MyCustomSession(encabulation_factor=47.2)
-        >>> client = iNatClient(session=session)
-
-        **Updating settings**
-
-        All settings can also be modified after creating the client:
-
-        >>> client.session = ClientSession()
-        >>> client.creds['username'] = 'my_inaturalist_username'
-        >>> client.default_params['locale'] = 'es'
-        >>> client.dry_run = True
+    * :py:class:`annotations <.AnnotationController>`
+    * :py:class:`observations <.ObservationController>`
+    * :py:class:`places <.PlaceController>`
+    * :py:class:`projects <.ProjectController>`
+    * :py:class:`taxa <.TaxonController>`
+    * :py:class:`users <.UserController>`
 
     Args:
         creds: Optional arguments for :py:func:`.get_access_token`, used to get and refresh access
@@ -117,12 +75,24 @@ class iNatClient:
         self._token_expires = None
 
         # Controllers
-        self.annotations = AnnotationController(self)  #: Interface for annotation requests
-        self.observations = ObservationController(self)  #: Interface for observation requests
-        self.places = PlaceController(self)  #: Interface for project requests
-        self.projects = ProjectController(self)  #: Interface for project requests
-        self.taxa = TaxonController(self)  #: Interface for taxon requests
-        self.users = UserController(self)  #: Interface for user requests
+        self.annotations = AnnotationController(
+            self
+        )  #: Interface for :py:class:`annotation requests <.AnnotationController>`
+        self.observations = ObservationController(
+            self
+        )  #: Interface for :py:class:`observation requests <.ObservationController>`
+        self.places = PlaceController(
+            self
+        )  #: Interface for :py:class:`place requests <.PlaceController>`
+        self.projects = ProjectController(
+            self
+        )  #: Interface for :py:class:`project requests <.ProjectController>`
+        self.taxa = TaxonController(
+            self
+        )  #: Interface for :py:class:`taxon requests <.TaxonController>`
+        self.users = UserController(
+            self
+        )  #: Interface for :py:class:`user requests <.UserController>`
 
     def add_client_settings(
         self, request_function, kwargs: Optional[RequestParams] = None, auth: bool = False

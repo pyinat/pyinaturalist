@@ -73,7 +73,7 @@ class Identification(Comment):
         default=None, doc='Indicates if this identification disagrees with previous ones'
     )
     own_observation: bool = field(
-        default=None, doc='Indicates if the indentifier is also the observer'
+        default=None, doc='Indicates if the identifier is also the observer'
     )
     previous_observation_taxon_id: int = field(default=None, doc='Previous observation taxon ID')
     taxon_change: bool = field(default=None)

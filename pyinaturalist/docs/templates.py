@@ -548,7 +548,7 @@ def _project_update_params(
     prefers_rule_observed_on: Exact observation date to include
     prefers_rule_introduced: Only include observations of introduced species
     prefers_rule_native: Only include observations of native species
-    prefers_rule_members_only: Only include observations of project memebers
+    prefers_rule_members_only: Only include observations of project members
     prefers_rule_month: Only include observations from these months
     prefers_rule_photos: Only include observations with photos
     prefers_rule_sounds: Only include observations with sounds

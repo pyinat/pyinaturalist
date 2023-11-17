@@ -9,11 +9,15 @@
 ```{toctree}
 :maxdepth: 2
 
-user_guide
+user_guide/index
 examples
 endpoints
 reference
 contributing
 contributors
+```
+```{toctree}
+:maxdepth: 1
+
 history
 ```

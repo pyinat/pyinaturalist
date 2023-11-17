@@ -1,5 +1,5 @@
 """Data models that represent iNaturalist API response objects.
-See :ref:`user_guide:models` section for usage details.
+See :ref:`data-models` section for usage details.
 """
 # ruff: noqa: F401, E402
 # isort: skip_file
@@ -43,11 +43,11 @@ def is_in(options: Iterable):
 
 
 def coordinate_pair(doc: Optional[str] = None, **kwargs):
-    """Field containing a pair of coordiantes"""
+    """Field containing a pair of coordinates"""
     return field(
         default=None,
         converter=convert_lat_long,
-        doc=doc or 'Location in ``(latitude, logitude)`` decimal degrees',
+        doc=doc or 'Location in ``(latitude, longitude)`` decimal degrees',
         **kwargs,
     )
 

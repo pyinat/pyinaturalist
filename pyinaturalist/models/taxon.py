@@ -95,7 +95,7 @@ class Taxon(BaseModel):
     )
     rank_level: int = field(
         default=None,
-        doc='Number indicating rank level, for easier comparison between ranks (kingdom=higest)',
+        doc='Number indicating rank level, for easier comparison between ranks (kingdom=highest)',
     )
     reference_url: str = field(default=None, doc='Reference URL for the taxonomy source')
     ranges: bool = field(default=None, doc='Indicates if there is range data for this taxon')
@@ -271,7 +271,7 @@ class Taxon(BaseModel):
         ``Taxon.indent_level`` is set to indicate the tree depth of each taxon.
 
         Args:
-            hide_root: If True, exclude the current taxon from the list and from indendation level.
+            hide_root: If True, exclude the current taxon from the list and from indentation level.
         """
 
         def flatten_tree(taxon: Taxon, level: int = 0) -> List[Taxon]:
@@ -409,10 +409,10 @@ def make_tree(
     include_ranks: Optional[List[str]] = None,
     sort_key: Optional[TaxonSortKey] = None,
 ) -> Taxon:
-    """Organize a list of taxa into a taxonomic tree. Exepects exactly one root taxon.
+    """Organize a list of taxa into a taxonomic tree. Expects exactly one root taxon.
 
     Args:
-        sort_key: Key function for sorting childen; defaults to rank and name
+        sort_key: Key function for sorting children; defaults to rank and name
         include_ranks: If provided, only include taxa with these ranks; otherwise, include all ranks
 
     Returns:

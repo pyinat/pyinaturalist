@@ -47,7 +47,7 @@ def get_observations(**params) -> JsonResponse:
     Examples:
 
         Get observations of Monarch butterflies with photos + public location info,
-        on a specific date in the provice of Saskatchewan, CA (place ID 7953):
+        on a specific date in the province of Saskatchewan, CA (place ID 7953):
 
         >>> response = get_observations(
         >>>     taxon_name='Danaus plexippus',
@@ -72,9 +72,9 @@ def get_observations(**params) -> JsonResponse:
 
         >>> response = get_observations(observation_fields={'Species count': 2})
 
-
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observations_node.py
 
@@ -111,8 +111,9 @@ def get_observations_by_id(
         >>> response = get_observations_by_id(16227955)
         >>> response = get_observations_by_id([16227955, 16227956])
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observations_by_id.py
 
@@ -160,18 +161,21 @@ def get_observation_histogram(**params) -> HistogramResponse:
         >>>     place_id=8057,
         >>> )
 
-        .. admonition:: Example Response (observations per month of year)
-            :class: toggle
+        .. dropdown:: Example Response (observations per month of year)
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observation_histogram_month_of_year.py
 
-        .. admonition:: Example Response (observations per month)
-            :class: toggle
+        .. dropdown:: Example Response (observations per month)
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observation_histogram_month.py
 
-        .. admonition:: Example Response (observations per day)
-            :class: toggle
+        .. dropdown:: Example Response (observations per day)
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observation_histogram_day.py
 
@@ -200,8 +204,9 @@ def get_observation_identifiers(**params) -> JsonResponse:
         [691216  ] jbrown252 (James Brown)
         [3959037 ] tnsparkleberry
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observation_identifiers_ex_results.json
                 :language: JSON
@@ -234,8 +239,9 @@ def get_observation_observers(**params) -> JsonResponse:
         [5813    ] fluffberger (Fluff Berger)
 
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observation_observers_ex_results.json
                 :language: JSON
@@ -266,8 +272,9 @@ def get_observation_species_counts(**params) -> JsonResponse:
         [55727] Species: Cymbalaria muralis (Ivy-leaved toadflax): 3
         ...
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observation_species_counts.py
 
@@ -294,8 +301,9 @@ def get_observation_popular_field_values(**params) -> JsonResponse:
         ...     species_name='Danaus plexippus', place_id=24,
         ... )
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observation_popular_field_values.py
 
@@ -322,8 +330,9 @@ def get_observation_taxonomy(**params) -> JsonResponse:
     Example:
         >>> response = get_observation_taxonomy(user_id='my_username')
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observation_taxonomy.json
                 :language: JSON
@@ -348,8 +357,9 @@ def get_observation_taxon_summary(observation_id: int, **params) -> JsonResponse
     Example:
         >>> response = get_observation_taxon_summary(7849808)
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observation_taxon_summary.py
 
@@ -388,8 +398,9 @@ def create_observation(**params) -> JsonResponse:
         ...     description='Updated description!',
         ... )
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/create_observation_v1.json
                 :language: JSON
@@ -428,8 +439,9 @@ def update_observation(observation_id: int, **params) -> ListResponse:
         >>>     description='updated description!',
         >>> )
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/update_observation_result.json
                 :language: javascript
@@ -483,8 +495,9 @@ def upload(
         ...     access_token=token,
         ... )
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/upload_photos_and_sounds.json
                 :language: JSON

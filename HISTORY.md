@@ -4,6 +4,7 @@
 
 ### New Endpoints
 * Added new **User** endpoint: `get_current_user()`
+* Added new **Taxon** endpoint: `get_life_list_metadata()`
 
 ### Modified Endpoints
 Add support for searching observations by observation fields, using a new `observation_fields` param for the following functions:
@@ -15,9 +16,13 @@ Add support for searching observations by observation fields, using a new `obser
 * `get_observation_species_counts()`
 
 ### Models
+**Taxon:**
 * Add `make_tree()` function to build a tree from `Taxon` objects or a `LifeList`
 * Add `pprint_tree()` function to print a taxon tree on the console
 * Add `Taxon.flatten()` method to return a taxon and its descendants as a flat list
+* Fix initialization of `ListedTaxon.place`
+
+**Observation:**
 * Add `Observation.ident_taxon_ids` dynamic property to get all identification taxon IDs (with ancestors)
 * Add `Observation.cumulative_ids` dynamic property to calculate agreements/total community identifications
 * Add `Application` model for `Observation.application` (for v2 API)
@@ -26,7 +31,9 @@ Add support for searching observations by observation fields, using a new `obser
 * Add `QualityMetric` model for `Observation.quality_metrics`
 * Add `Sound` model for `Observation.sounds`
 * Add `Vote` model for `Observation.votes`
-* Fix initialization of `ListedTaxon.place`
+
+### Other changes
+* Added support for python 3.12
 
 ## 0.18.0 (2023-02-27)
 
@@ -71,6 +78,7 @@ Add support for searching observations by observation fields, using a new `obser
 * Fix printing `Observation` tables when taxon is missing
 
 ### Other Changes
+* Added support for python 3.11
 * All API functions that accept taxonomic rank parameters (`rank`, `lrank`, `observation_hrank`,etc.) now accept all rank variations that iNaturalist accepts (`var`, `spp` `sub-species`, etc.)
 * Optionally use `ultrajson` instead of stdlib `json`, if installed
 * Add `loop` argument to iNatClient and Paginator classes to allow passing an async event loop to be used for async iteration
@@ -144,7 +152,7 @@ Add support for searching observations by observation fields, using a new `obser
 * Added new **Message** endpoints:
   * `get_messages()`
   * `get_message_by_id()`
-  * `get_unread_meassage_count()`
+  * `get_unread_message_count()`
 
 ### Observation Media
 The following changes apply to `upload()`, `create_observation()`, and `update_observation()`:
@@ -204,7 +212,7 @@ The following changes apply to `upload()`, `create_observation()`, and `update_o
 * Updated logging to redact all credentials from logged API requests
 
 ### Other Changes
-* Increased default timeout to 10 seconds to accomodate some longer-running queries
+* Increased default timeout to 10 seconds to accommodate some longer-running queries
 * Added `get_interval_ranges()` function to help with queries over a series of date/time intervals
 * Fixed bug with `rule_details` param for `get_projects_by_id()`
 * Added more tutorial/example notebooks

@@ -17,8 +17,9 @@ def get_identifications_by_id(identification_id: MultiInt, **params) -> JsonResp
     Example:
         >>> get_identifications_by_id(155554373)
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_identifications.py
 
@@ -52,8 +53,9 @@ def get_identifications(**params) -> JsonResponse:
         [147500725] Species: 1163860 (improving) added on 2020-12-24 23:52:30+00:00 by jkcook
         ...
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_identifications.py
 

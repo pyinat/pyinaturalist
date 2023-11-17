@@ -45,7 +45,7 @@ class Place(BaseModel):
     location: Coordinates = field(
         default=None,
         converter=convert_optional_lat_long,
-        doc='Location in ``(latitude, logitude)`` decimal degrees',
+        doc='Location in ``(latitude, longitude)`` decimal degrees',
     )
     name: str = field(default=None, doc='Place name')
     place_type: int = field(default=None, doc='Place type ID')

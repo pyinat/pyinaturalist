@@ -200,7 +200,7 @@ class Observation(BaseModel):
         doc='Any user observation preferences (related to community IDs, coordinate access, etc.)',
     )
     private_location: Coordinates = coordinate_pair(
-        doc=':fa:`lock` Private location in ``(latitude, logitude)`` decimal degrees'
+        doc=':fa:`lock` Private location in ``(latitude, longitude)`` decimal degrees'
     )
     private_place_ids: List[int] = field(
         factory=list, doc=':fa:`lock` Place IDs associated with the private observation coordinates'
