@@ -66,13 +66,15 @@ def get_observations(**params) -> JsonResponse:
 
         >>> response = get_observations(observation_fields={'Species count': 2})
 
-        .. admonition:: Example Response (default/minimal)
-            :class: toggle
+        .. dropdown:: Example Response (default/minimal)
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observations_v2_minimal.py
 
-        .. admonition:: Example Response (all fields)
-            :class: toggle
+        .. dropdown:: Example Response (all fields)
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observations_v2_full.py
 

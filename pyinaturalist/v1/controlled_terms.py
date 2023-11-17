@@ -21,8 +21,9 @@ def get_controlled_terms(taxon_id: Optional[int] = None, **params) -> JsonRespon
             4: Pupa
         ...
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_controlled_terms.json
                 :language: JSON
@@ -53,8 +54,9 @@ def get_controlled_terms_for_taxon(taxon_id: int, **params) -> JsonResponse:
             4: Pupa
         ...
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_controlled_terms_for_taxon.json
                 :language: JSON

@@ -44,8 +44,7 @@ TODO: Can't generate thumbnails for Altair visualizations
     :end-line: 6
 ```
 
-:::{admonition} Example code
-:class: toggle
+:::{dropdown} Example code
 
 ```{literalinclude} ../examples/observations_to_gpx.py
 :lines: 1,8-
@@ -59,8 +58,7 @@ TODO: Can't generate thumbnails for Altair visualizations
     :end-line: 17
 ```
 
-:::{admonition} Example code
-:class: toggle
+:::{dropdown} Example code
 
 ```{literalinclude} ../examples/observation_photo_metadata.py
 :lines: 1,19-
