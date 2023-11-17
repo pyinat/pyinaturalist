@@ -35,37 +35,43 @@ def get_observations(**params) -> Union[List, str]:
 
         >>> get_observations(id=45414404, converters='atom')
 
-        .. admonition:: Example Response (atom)
-            :class: toggle
+        .. dropdown:: Example Response (atom)
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observations.atom
                 :language: xml
 
-        .. admonition:: Example Response (csv)
-            :class: toggle
+        .. dropdown:: Example Response (csv)
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observations.csv
 
-        .. admonition:: Example Response (dwc)
-            :class: toggle
+        .. dropdown:: Example Response (dwc)
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observations.dwc
                 :language: xml
 
-        .. admonition:: Example Response (json)
-            :class: toggle
+        .. dropdown:: Example Response (json)
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observations.json
                 :language: json
 
-        .. admonition:: Example Response (kml)
-            :class: toggle
+        .. dropdown:: Example Response (kml)
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observations.kml
                 :language: xml
 
-        .. admonition:: Example Response (widget)
-            :class: toggle
+        .. dropdown:: Example Response (widget)
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observations.js
                 :language: javascript
@@ -106,14 +112,16 @@ def create_observation(**params) -> ListResponse:
         >>>     observation_fields={297: 1},  # 297 is the obs. field ID for 'Number of individuals'
         >>> )
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/create_observation_result.json
                 :language: javascript
 
-        .. admonition:: Example Response (failure)
-            :class: toggle
+        .. dropdown:: Example Response (failure)
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/create_observation_fail.json
                 :language: javascript
@@ -171,8 +179,9 @@ def update_observation(observation_id: int, **params) -> ListResponse:
         >>>     description='updated description!',
         >>> )
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/update_observation_result.json
                 :language: javascript
@@ -218,8 +227,9 @@ def upload_photos(observation_id: int, photos: MultiFile, **params) -> ListRespo
         >>>     access_token=token,
         >>> )
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/post_observation_photos_list.json
                 :language: javascript
@@ -261,8 +271,9 @@ def upload_sounds(observation_id: int, sounds: MultiFile, **params) -> ListRespo
         >>> token = get_access_token()
         >>> upload_sounds(1234, '~/observations/2020_09_01_14003156.mp3', access_token=token)
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/post_observation_sounds_list.json
                 :language: javascript

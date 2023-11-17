@@ -21,8 +21,9 @@ def search(q: str, **params) -> JsonResponse:
         [Project] [9978    ] Ohio Dragonfly Survey  (Ohio Odonata Survey)
         [User   ] [113886  ] odonatanb (Gilles Belliveau)
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_search.py
 

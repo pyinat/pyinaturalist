@@ -30,8 +30,8 @@ you will need to use an access token.
 3. Pass that access token to any API request function that uses it
 
 ### Creating an Application
-:::{admonition} Why do I need to create an application?
-:class: toggle, tip
+:::{dropdown} Why do I need to create an application?
+:icon: info
 
 iNaturalist uses OAuth2, which provides several different methods (or "flows") to access the site.
 For example, on the [login page](https://www.inaturalist.org/login), you have the option of logging

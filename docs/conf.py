@@ -159,9 +159,7 @@ ogp_image = (
 html_static_path = ['_static']
 html_favicon = join('_static', 'favicon.ico')
 html_logo = join('_static', 'pyinaturalist_logo.png')
-html_js_files = ['collapsible_container.js']
 html_css_files = [
-    'collapsible_container.css',
     'colors.css',
     'table.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css',

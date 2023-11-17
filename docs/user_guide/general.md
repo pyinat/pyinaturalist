@@ -28,8 +28,8 @@ See {ref}`contributing` for details on setup for local development.
 :::
 ::::
 
-:::{admonition} Python version compatibility
-:class: toggle, tip
+:::{dropdown} Python version compatibility
+:icon: info
 
 pyinaturalist currently requires **python 3.7+**. If you need to use an older version
 of python, here are the last compatible versions of pyinaturalist:
@@ -101,8 +101,8 @@ iNaturalist.org:
 ```
 
 And here is what that same observation looks like in JSON:
-:::{admonition} Observation response JSON
-:class: toggle
+:::{dropdown} Observation response JSON
+:icon: code-square
 ```{literalinclude} ../sample_data/get_observation_2.json
 ```
 :::
