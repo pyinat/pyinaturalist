@@ -25,8 +25,9 @@ def get_taxa(**params) -> JsonResponse:
         [646195] Genus: Vespiodes
         ...
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_taxa.json
                 :language: JSON
@@ -68,8 +69,9 @@ def get_taxa_by_id(
             'wikipedia_summary': 'The Polistinae are eusocial wasps closely related to yellow jackets...',
         }
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_taxa_by_id.py
 
@@ -128,13 +130,15 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
         >>> first_result["matched_term"]
         "Zygocactus truncatus"    # ...Because it matched an older synonym for Schlumbergera
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_taxa_autocomplete.py
 
-        .. admonition:: Example Response (formatted)
-            :class: toggle
+        .. dropdown:: Example Response (formatted)
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_taxa_autocomplete_minified.py
 
@@ -154,8 +158,9 @@ def get_taxa_map_layers(taxon_id: int, **params) -> JsonResponse:
     Example:
         >>> response = get_taxa_map_layers(343248)
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_taxa_map_layers.json
                 :language: JSON
@@ -185,8 +190,9 @@ def get_life_list_metadata(
     Example:
         >>> response = get_life_list_metadata(user_id='my_username')
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_lifelist_metadata.json
                 :language: JSON

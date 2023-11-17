@@ -25,8 +25,9 @@ def get_user_by_id(user_id: IntOrStr, **params) -> JsonResponse:
         >>> pprint(response)
         [1234] my_username
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_user_by_id.py
 
@@ -55,8 +56,9 @@ def get_users_autocomplete(q: str, **params) -> JsonResponse:
         [1234] my_username
         [12345] my_username_2
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_users_autocomplete.py
 

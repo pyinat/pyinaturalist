@@ -46,8 +46,9 @@ def get_projects(**params) -> JsonResponse:
         [102925  ] Keechelus/Kachess Invasive Plants
         ...
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_projects.py
 
@@ -83,8 +84,9 @@ def get_projects_by_id(
         [8348] Tucson High Native and Invasive Species Inventory
         [6432] CBWN Invasive Plants
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_projects_by_id.py
 
@@ -129,8 +131,9 @@ def add_project_observation(
     Example:
         >>> add_project_observation(24237, 1234, access_token)
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/add_project_observation.json
                 :language: JSON

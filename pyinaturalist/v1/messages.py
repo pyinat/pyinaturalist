@@ -22,8 +22,9 @@ def get_message_by_id(message_id: MultiInt, **params) -> JsonResponse:
         >>> response = get_messages(123456)
         >>> pprint(response)
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_messages.json
 
@@ -49,8 +50,9 @@ def get_messages(**params) -> JsonResponse:
         >>> response = get_messages()
         >>> pprint(response)
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_messages.json
 

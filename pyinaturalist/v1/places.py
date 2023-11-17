@@ -22,8 +22,9 @@ def get_places_by_id(place_id: MultiInt, **params) -> JsonResponse:
         [89191] Conservation Area Riversdale
         [67591] Riversdale Beach
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_places_by_id.py
 
@@ -70,8 +71,9 @@ def get_places_nearby(
         [97393] Oceania
         ...
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_places_nearby.py
 
@@ -103,8 +105,9 @@ def get_places_autocomplete(q: Optional[str] = None, **params) -> JsonResponse:
         [166186] Irkutsk Oblast - ADD
         [163077] Irkutsk agglomeration
 
-        .. admonition:: Example Response
-            :class: toggle
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
 
             .. literalinclude:: ../sample_data/get_places_autocomplete.py
 

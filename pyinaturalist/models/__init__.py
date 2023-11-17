@@ -1,5 +1,5 @@
 """Data models that represent iNaturalist API response objects.
-See :ref:`user_guide:models` section for usage details.
+See :ref:`data-models` section for usage details.
 """
 # ruff: noqa: F401, E402
 # isort: skip_file

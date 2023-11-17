@@ -2,6 +2,16 @@
 
 Summary
 ^^^^^^^
+{#
+   TODO: Include these sections only if classes/functions exist in the current module.
+   The automodule directive currently doesn't pass enough info into the template context
+   to make this possible.
+#}
+.. rubric:: Classes
+.. automodsumm:: {{ qualname }}
+   :classes-only:
+
+.. rubric:: Functions
 .. automodsumm:: {{ qualname }}
    :functions-only:
 

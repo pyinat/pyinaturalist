@@ -66,6 +66,7 @@ extensions = [
     'sphinx_copybutton',
     'sphinx_design',
     'sphinxcontrib.apidoc',
+    'sphinxext.opengraph',
     'myst_parser',
     'nbsphinx',
 ]
@@ -92,7 +93,7 @@ extlinks = {
 # Enable automatic links to other projects' Sphinx docs
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
-    'requests': ('https://requests.readthedocs.io/en/master/', None),
+    'requests': ('https://requests.readthedocs.io/en/latest/', None),
     'requests_cache': ('https://requests-cache.readthedocs.io/en/stable/', None),
     'requests_ratelimiter': ('https://requests-ratelimiter.readthedocs.io/en/latest/', None),
     'urllib3': ('https://urllib3.readthedocs.io/en/stable/', None),
@@ -148,13 +149,17 @@ autosummary_generate_overwrite = True
 autosummary_imported_members = False
 numpydoc_show_class_members = False
 
+# OpenGraph settings
+ogp_site_url = 'https://pyinaturalist.readthedocs.io'
+ogp_image = (
+    'https://raw.githubusercontent.com/pyinat/pyinaturalist/main/docs/images/python-logo-green.png'
+)
+
 # HTML general settings
 html_static_path = ['_static']
 html_favicon = join('_static', 'favicon.ico')
 html_logo = join('_static', 'pyinaturalist_logo.png')
-html_js_files = ['collapsible_container.js']
 html_css_files = [
-    'collapsible_container.css',
     'colors.css',
     'table.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css',
@@ -190,6 +195,7 @@ def setup(app):
         * https://docs.readthedocs.io/en/stable/builds.html
         * https://github.com/sphinx-contrib/apidoc
     """
+    app.connect('config-inited', patch_sphinx_jinja_extensions)
     app.connect('builder-inited', document_models)
     app.connect('builder-inited', setup_external_files)
     app.connect('builder-inited', patch_automodapi)
@@ -209,6 +215,21 @@ def make_symlink(src, dest):
     makedirs(dirname(dest), exist_ok=True)
     if not exists(dest):
         symlink(src, dest)
+
+
+# TODO: Surely there's an easier way to do this?
+def patch_sphinx_jinja_extensions(*args):
+    """Monkey-patch Sphinx to enable Jinja extensions"""
+    from jinja2 import Environment
+    from sphinx.jinja2glue import SphinxFileSystemLoader
+
+    original_get_source = SphinxFileSystemLoader.get_source
+
+    def get_source(self, environment: Environment, template: str):
+        environment.add_extension('jinja2.ext.debug')
+        return original_get_source(self, environment, template)
+
+    SphinxFileSystemLoader.get_source = get_source
 
 
 def patch_automodapi(app):
