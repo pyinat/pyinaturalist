@@ -61,8 +61,10 @@ def get_observations(**params) -> JsonResponse:
         Get basic info for observations in response:
 
         >>> pprint(response)
-        '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK'
-        '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK'
+        ID       Taxon ID Taxon                       Observed on   User      Location
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        57707611 48662    Danaus plexippus (Monarch)  Aug 26, 2020  ingridt3  Michener Dr, Regina, SK, CA
+        57754375 48662    Danaus plexippus (Monarch)  Aug 27, 2020  samroom   Railway Ave, Wilcox, SK, CA
 
         Search for observations with a given observation field:
 
@@ -172,12 +174,14 @@ def get_observation_histogram(**params) -> HistogramResponse:
             :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observation_histogram_month.py
+                :lines: 3-
 
         .. dropdown:: Example Response (observations per day)
             :color: primary
             :icon: code-square
 
             .. literalinclude:: ../sample_data/get_observation_histogram_day.py
+                :lines: 3-
 
     Returns:
         Dict of ``{time_key: observation_count}``. Keys are ints for 'month of year' and\
@@ -254,39 +258,6 @@ def get_observation_observers(**params) -> JsonResponse:
     return response.json()
 
 
-@document_request_params(*docs._get_observations, docs._pagination)
-def get_observation_species_counts(**params) -> JsonResponse:
-    """Get all species (or other 'leaf taxa') associated with observations matching the search
-    criteria, and the count of observations they are associated with.
-    **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
-
-    .. rubric:: Notes
-
-    * API reference: :v1:`GET /observations/species_counts <Observations/get_observations_species_counts>`
-
-    Example:
-        >>> response = get_observation_species_counts(user_login='my_username', quality_grade='research')
-        >>> pprint(response)
-        [62060] Species: Palomena prasina (Green Shield Bug): 10
-        [84804] Species: Graphosoma italicum (European Striped Shield Bug): 8
-        [55727] Species: Cymbalaria muralis (Ivy-leaved toadflax): 3
-        ...
-
-        .. dropdown:: Example Response
-            :color: primary
-            :icon: code-square
-
-            .. literalinclude:: ../sample_data/get_observation_species_counts.py
-
-    Returns:
-        Response dict containing taxon records with counts
-    """
-    if params.get('page') == 'all':
-        return paginate_all(get, f'{API_V1}/observations/species_counts', **params)
-    else:
-        return get(f'{API_V1}/observations/species_counts', **params).json()
-
-
 @document_request_params(*docs._get_observations)
 def get_observation_popular_field_values(**params) -> JsonResponse:
     """Get controlled terms values and a monthly histogram of observations matching the search
@@ -315,6 +286,39 @@ def get_observation_popular_field_values(**params) -> JsonResponse:
     for r in response_json['results']:
         r['month_of_year'] = convert_histogram(r['month_of_year'], interval='month_of_year')
     return response_json
+
+
+@document_request_params(*docs._get_observations, docs._pagination)
+def get_observation_species_counts(**params) -> JsonResponse:
+    """Get all species (or other 'leaf taxa') associated with observations matching the search
+    criteria, and the count of observations they are associated with.
+
+    .. rubric:: Notes
+
+    * API reference: :v1:`GET /observations/species_counts <Observations/get_observations_species_counts>`
+    * **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
+
+    Example:
+        >>> response = get_observation_species_counts(user_login='my_username', quality_grade='research')
+        >>> pprint(response)
+        [62060] Species: Palomena prasina (Green Shield Bug): 10
+        [84804] Species: Graphosoma italicum (European Striped Shield Bug): 8
+        [55727] Species: Cymbalaria muralis (Ivy-leaved toadflax): 3
+        ...
+
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
+
+            .. literalinclude:: ../sample_data/get_observation_species_counts.py
+
+    Returns:
+        Response dict containing taxon records with counts
+    """
+    if params.get('page') == 'all':
+        return paginate_all(get, f'{API_V1}/observations/species_counts', **params)
+    else:
+        return get(f'{API_V1}/observations/species_counts', **params).json()
 
 
 @document_request_params(*docs._get_observations)
@@ -374,7 +378,7 @@ def get_observation_taxon_summary(observation_id: int, **params) -> JsonResponse
 
 @document_request_params(docs._access_token, docs._create_observation)
 def create_observation(**params) -> JsonResponse:
-    """Create or update a new observation.
+    """Create or update an observation.
 
     .. rubric:: Notes
 
