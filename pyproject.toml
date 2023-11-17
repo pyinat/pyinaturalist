@@ -55,14 +55,17 @@ ujson                       = {optional=true, version=">5.0"}
 furo                        = {optional=true, python=">=3.8", version="^2023.7"}
 ipython                     = {optional=true, python=">=3.8", version="^8.12"}
 linkify-it-py               = {optional=true, python=">=3.8", version="^2.0"}
+matplotlib                  = {optional=true, python=">=3.8", version=">=3.7"}
 myst-parser                 = {optional=true, python=">=3.8", version=">=1.0"}
 nbsphinx                    = {optional=true, python=">=3.8", version="^0.9"}
+pillow                      = {optional=true, python=">=3.8", version=">=10.1"}
 sphinx                      = {optional=true, python=">=3.8", version="^6.2"}
 sphinx-automodapi           = {optional=true, python=">=3.8", version="^0.15"}
 sphinx-autodoc-typehints    = {optional=true, python=">=3.8", version="1.20"}
 sphinx-copybutton           = {optional=true, python=">=3.8", version=">=0.5"}
 sphinx-design               = {optional=true, python=">=3.8", version=">=0.5"}
 sphinxcontrib-apidoc        = {optional=true, python=">=3.8", version="^0.3"}
+sphinxext-opengraph         = {optional=true, python=">=3.8", version=">=0.9"}
 
 [tool.poetry.dev-dependencies]
 coverage                    = ">=7.2"
@@ -79,8 +82,9 @@ sphinx-autobuild            = {python=">=3.8", version=">=2021.3"}
 
 [tool.poetry.extras]
 all = ["ujson"]
-docs = ["furo", "ipython", "linkify-it-py", "myst-parser", "nbsphinx", "sphinx", "sphinx-automodapi",
-        "sphinx-autodoc-typehints", "sphinx-copybutton", "sphinx-design", "sphinxcontrib-apidoc"]
+docs = ["furo", "ipython", "linkify-it-py", "matplotlib", "myst-parser", "nbsphinx", "pillow",
+        "sphinx", "sphinx-automodapi", "sphinx-autodoc-typehints", "sphinx-copybutton",
+        "sphinx-design", "sphinxcontrib-apidoc", "sphinxext-opengraph"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

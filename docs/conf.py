@@ -66,6 +66,7 @@ extensions = [
     'sphinx_copybutton',
     'sphinx_design',
     'sphinxcontrib.apidoc',
+    'sphinxext.opengraph',
     'myst_parser',
     'nbsphinx',
 ]
@@ -147,6 +148,12 @@ autosummary_generate = True
 autosummary_generate_overwrite = True
 autosummary_imported_members = False
 numpydoc_show_class_members = False
+
+# OpenGraph settings
+ogp_site_url = 'https://pyinaturalist.readthedocs.io'
+ogp_image = (
+    'https://raw.githubusercontent.com/pyinat/pyinaturalist/main/docs/images/python-logo-green.png'
+)
 
 # HTML general settings
 html_static_path = ['_static']
