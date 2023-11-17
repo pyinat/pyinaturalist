@@ -6,8 +6,6 @@ from inspect import ismethod
 from logging import getLogger
 from typing import Any, Callable, Dict, Optional, Type
 
-from requests import Session
-
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import RequestParams
 from pyinaturalist.controllers import (
@@ -62,7 +60,7 @@ class iNatClient:
         default_params: Optional[Dict[str, Any]] = None,
         dry_run: bool = False,
         loop: Optional[AbstractEventLoop] = None,
-        session: Optional[Session] = None,
+        session: Optional[ClientSession] = None,
         **kwargs,
     ):
         self.creds = creds or {}
@@ -94,7 +92,7 @@ class iNatClient:
             self
         )  #: Interface for :py:class:`user requests <.UserController>`
 
-    def add_client_settings(
+    def add_defaults(
         self, request_function, kwargs: Optional[RequestParams] = None, auth: bool = False
     ) -> RequestParams:
         """Add any applicable client settings to request parameters before sending a request.
@@ -133,7 +131,7 @@ class iNatClient:
             cls: Alternative Paginator class to use
             params: Original request parameters
         """
-        kwargs = self.add_client_settings(request_function, kwargs, auth)
+        kwargs = self.add_defaults(request_function, kwargs, auth)
         return cls(request_function, model, loop=self.loop, **kwargs)
 
     def request(self, request_function: Callable, *args, auth: bool = False, **kwargs):
@@ -147,5 +145,5 @@ class iNatClient:
         Returns:
             Results of ``request_function()``
         """
-        kwargs = self.add_client_settings(request_function, kwargs, auth)
+        kwargs = self.add_defaults(request_function, kwargs, auth)
         return request_function(*args, **kwargs)
