@@ -190,6 +190,7 @@ def setup(app):
         * https://docs.readthedocs.io/en/stable/builds.html
         * https://github.com/sphinx-contrib/apidoc
     """
+    app.connect('config-inited', patch_sphinx_jinja_extensions)
     app.connect('builder-inited', document_models)
     app.connect('builder-inited', setup_external_files)
     app.connect('builder-inited', patch_automodapi)
@@ -209,6 +210,21 @@ def make_symlink(src, dest):
     makedirs(dirname(dest), exist_ok=True)
     if not exists(dest):
         symlink(src, dest)
+
+
+# TODO: Surely there's an easier way to do this?
+def patch_sphinx_jinja_extensions(*args):
+    """Monkey-patch Sphinx to enable Jinja extensions"""
+    from jinja2 import Environment
+    from sphinx.jinja2glue import SphinxFileSystemLoader
+
+    original_get_source = SphinxFileSystemLoader.get_source
+
+    def get_source(self, environment: Environment, template: str):
+        environment.add_extension('jinja2.ext.debug')
+        return original_get_source(self, environment, template)
+
+    SphinxFileSystemLoader.get_source = get_source
 
 
 def patch_automodapi(app):
