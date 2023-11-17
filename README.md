@@ -128,7 +128,7 @@ token = get_access_token(
     app_secret='my_app_secret',
 )
 ```
-See [Authentication](https://pyinaturalist.readthedocs.io/en/latest/user_guide.html#authentication)
+See [Authentication](https://pyinaturalist.readthedocs.io/en/stable/user_guide.html#authentication)
 for more options including environment variables, keyrings, and password managers.
 
 Now we can [create a new observation](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.v1.observations.html#pyinaturalist.v1.observations.create_observation):
@@ -183,13 +183,13 @@ As with observations, there is a lot of information in the response, but we'll p
 ## Next Steps
 For more information, see:
 
-* [User Guide](https://pyinaturalist.readthedocs.io/en/latest/user_guide.html):
+* [User Guide](https://pyinaturalist.readthedocs.io/en/stable/user_guide.html):
   introduction and general features that apply to most endpoints
-* [Endpoint Summary](https://pyinaturalist.readthedocs.io/en/latest/endpoints.html):
+* [Endpoint Summary](https://pyinaturalist.readthedocs.io/en/stable/endpoints.html):
   a complete list of endpoints wrapped by pyinaturalist
 * [Examples](https://pyinaturalist.readthedocs.io/en/stable/examples.html):
   data visualizations and other examples of things to do with iNaturalist data
-* [Reference](https://pyinaturalist.readthedocs.io/en/latest/reference.html): Detailed API documentation
+* [Reference](https://pyinaturalist.readthedocs.io/en/stable/reference.html): Detailed API documentation
 * [Contributing Guide](https://pyinaturalist.readthedocs.io/en/stable/contributing.html):
   development details for anyone interested in contributing to pyinaturalist
 * [History](https://github.com/pyinat/pyinaturalist/blob/dev/HISTORY.md):

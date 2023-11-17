@@ -359,7 +359,7 @@ See Caching and Rate-Limiting sections below for examples.
 ## Caching
 All API requests are cached by default. These expire in 30 minutes for most endpoints, and
 1 day for some infrequently-changing data (like taxa and places). See
-[requests-cache: Expiration](https://requests-cache.readthedocs.io/en/latest/user_guide/expiration.html)
+[requests-cache: Expiration](https://requests-cache.readthedocs.io/en/stable/user_guide/expiration.html)
 for details on cache expiration behavior.
 
 You can change this behavior using {py:class}`.ClientSession`. For example, to keep cached requests for 5 days:
