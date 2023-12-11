@@ -835,6 +835,14 @@ def test_sound__aliases():
     assert sound.mimetype == sound.file_content_type == 'audio/x-wav'
 
 
+def test_sound__nested_record():
+    sound = Sound.from_json(j_sound_2_nested)
+    assert sound.uuid == '5c858ffa-696b-4bf2-beab-9f519901bd17'
+    assert sound.url.startswith('https://static.inaturalist.org/')
+    assert isinstance(sound.created_at, datetime)
+    assert isinstance(sound.updated_at, datetime)
+
+
 # Taxa
 # --------------------
 

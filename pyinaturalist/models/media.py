@@ -15,7 +15,7 @@ from pyinaturalist.constants import (
     TableRow,
 )
 from pyinaturalist.converters import format_dimensions, format_license
-from pyinaturalist.models import BaseModel, define_model, field
+from pyinaturalist.models import BaseModel, datetime_field, define_model, field
 
 
 @define_model
@@ -27,6 +27,8 @@ class BaseMedia(BaseModel):
         options=ALL_LICENSES,
         doc='Creative Commons license code',
     )
+    created_at: str = datetime_field(doc='Date the file was added to iNaturalist')
+    updated_at: str = datetime_field(doc='Date the file was last updated on iNaturalist')
 
     @property
     def ext(self) -> str:
@@ -80,7 +82,7 @@ class Photo(BaseMedia):
     def from_json(cls, value: JsonResponse, **kwargs) -> 'Photo':
         """Flatten out potentially nested photo field before initializing"""
         if 'photo' in value:
-            value = value['photo']
+            value.update(value.pop('photo'))
         return super(Photo, cls).from_json(value, **kwargs)
 
     @property
@@ -202,6 +204,13 @@ class Sound(BaseMedia):
     # Unused attributes
     # flags: List = field(factory=list)
     # play_local: bool = field(default=None)
+
+    @classmethod
+    def from_json(cls, value: JsonResponse, **kwargs) -> 'Sound':
+        """Flatten out potentially nested sound field before initializing"""
+        if 'sound' in value:
+            value.update(value.pop('sound'))
+        return super(Sound, cls).from_json(value, **kwargs)
 
     # Aliases
     @property
