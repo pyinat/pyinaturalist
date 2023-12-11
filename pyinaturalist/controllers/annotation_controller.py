@@ -1,11 +1,13 @@
+from logging import getLogger
 from typing import Dict, List
 
 from pyinaturalist.constants import API_V2, IntOrStr
 from pyinaturalist.controllers import BaseController
-from pyinaturalist.docs import document_common_args, document_controller_params
 from pyinaturalist.models import Annotation, ControlledTerm
 from pyinaturalist.session import delete, post
 from pyinaturalist.v1 import get_controlled_terms, get_controlled_terms_for_taxon
+
+logger = getLogger(__name__)
 
 
 class AnnotationController(BaseController):
@@ -22,13 +24,41 @@ class AnnotationController(BaseController):
             self._term_lookup = {term.id: term for term in self.all()}
         return self._term_lookup
 
-    @document_controller_params(get_controlled_terms)
     def all(self, **params) -> List[ControlledTerm]:
+        """List controlled terms and their possible values
+
+        .. rubric:: Notes
+
+        * API reference: :v1:`GET /controlled_terms <Controlled_Terms/get_controlled_terms>`
+
+        Example:
+            >>> terms = client.annotations
+            >>> pprint(response[0])
+            1: Life Stage
+                2: Adult
+                3: Teneral
+                4: Pupa
+            ...
+        """
         response = get_controlled_terms(**params)
         return ControlledTerm.from_json_list(response['results'])
 
-    @document_controller_params(get_controlled_terms_for_taxon)
     def for_taxon(self, taxon_id: int, **params) -> List[ControlledTerm]:
+        """List controlled terms that are valid for the specified taxon.
+
+        .. rubric:: Notes
+
+        * API reference: :v1:`GET /controlled_terms/for_taxon <Controlled_Terms/get_controlled_terms_for_taxon>`
+
+        Example:
+            >>> client.annotations.for_taxon(12345)
+
+        Args:
+            taxon_id: Taxon ID to get controlled terms for
+
+        Raises:
+            :py:exc:`.TaxonNotFound`: If an invalid ``taxon_id`` is specified
+        """
         response = get_controlled_terms_for_taxon(taxon_id, **params)
         return ControlledTerm.from_json_list(response['results'])
 
@@ -47,10 +77,12 @@ class AnnotationController(BaseController):
             if term:
                 annotation.controlled_attribute = term
                 annotation.controlled_value = term.get_value_by_id(annotation.controlled_value.id)
+            else:
+                logger.warning(
+                    f'No controlled attribute found for ID: {annotation.controlled_attribute.id}'
+                )
         return annotations
 
-    # TODO: Allow passing labels instead of IDs
-    @document_common_args
     def create(
         self,
         controlled_attribute_id: int,
@@ -68,10 +100,9 @@ class AnnotationController(BaseController):
             resource_type: Resource type, if something other than an observation
 
         Example:
+            Add a 'Plant phenology: Flowering' annotation to an observation (via IDs):
 
-            Add a 'Plant phenology: Flowering' annotation to an observation:
-
-            >>> annotation = client.annotations.create(12, 13, 164609837)
+            >>> client.annotations.create(12, 13, 164609837)
 
         Returns:
             The newly created Annotation object

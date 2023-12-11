@@ -45,7 +45,7 @@ def test_autocomplete(requests_mock):
         status_code=200,
     )
 
-    results = iNatClient().users.autocomplete(q='nico')
+    results = iNatClient().users.autocomplete(q='nico').all()
     assert len(results) == 3 and isinstance(results[0], User)
     assert results[0].id == 886482
 
