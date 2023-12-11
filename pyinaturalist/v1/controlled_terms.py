@@ -61,7 +61,7 @@ def get_controlled_terms_for_taxon(taxon_id: int, **params) -> JsonResponse:
             .. literalinclude:: ../sample_data/get_controlled_terms_for_taxon.json
                 :language: JSON
     Args:
-        taxon_id: ID of taxon to get controlled terms for
+        taxon_id: Taxon ID to get controlled terms for
 
     Returns:
         A dict containing details on controlled terms and their values

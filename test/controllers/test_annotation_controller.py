@@ -55,6 +55,21 @@ def test_lookup(requests_mock):
     assert obs.annotations[0].controlled_value.label == 'Adult'
 
 
+def test_lookup__doesnt_exist(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/controlled_terms',
+        json=SAMPLE_DATA['get_controlled_terms'],
+        status_code=200,
+    )
+
+    client = iNatClient()
+    annotations = [Annotation(controlled_attribute_id=id) for id in [12, 999]]
+    annotations = client.annotations.lookup(annotations)
+    assert len(annotations) == 2
+    assert annotations[0].term == 'Plant Phenology'
+    assert annotations[1].term == '999'  # Unable to look up; use ID as placeholder
+
+
 @patch('pyinaturalist.controllers.annotation_controller.post')
 def test_create(mock_post):
     response = Response()

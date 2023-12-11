@@ -404,7 +404,9 @@ def test_upload(requests_mock):
 @patch('pyinaturalist.v1.observations.update_observation')
 def test_upload__with_photo_ids(mock_update_observation):
     upload(1234, access_token='token', photo_ids=[5678])
-    mock_update_observation.assert_called_with(1234, access_token='token', photo_ids=[5678])
+    mock_update_observation.assert_called_with(
+        1234, access_token='token', session=None, photo_ids=[5678]
+    )
 
 
 def test_delete_observation(requests_mock):
