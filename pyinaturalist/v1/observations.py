@@ -517,6 +517,7 @@ def upload(
         Information about the uploaded file(s)
     """
     params['raise_for_status'] = False
+    session = params.pop('session', None)
     responses = []
     photos, sounds = ensure_list(photos), ensure_list(sounds)
     logger.info(f'Uploading {len(photos)} photos and {len(sounds)} sounds')
@@ -525,20 +526,27 @@ def upload(
     photo_params = deepcopy(params)
     photo_params['observation_photo[observation_id]'] = observation_id
     for photo in photos:
-        response = post(f'{API_V1}/observation_photos', files=photo, **photo_params)
+        response = post(
+            f'{API_V1}/observation_photos', files=photo, session=session, **photo_params
+        )
         responses.append(response)
 
     # Upload sounds
     sound_params = deepcopy(params)
     sound_params['observation_sound[observation_id]'] = observation_id
     for sound in sounds:
-        response = post(f'{API_V1}/observation_sounds', files=sound, **sound_params)
+        response = post(
+            f'{API_V1}/observation_sounds', files=sound, session=session, **sound_params
+        )
         responses.append(response)
 
     # Attach previously uploaded photos by ID
     if photo_ids:
         response = update_observation(
-            observation_id, photo_ids=photo_ids, access_token=params.get('access_token', None)
+            observation_id,
+            photo_ids=photo_ids,
+            session=session,
+            access_token=params.get('access_token', None),
         )
         responses.append(response)
 

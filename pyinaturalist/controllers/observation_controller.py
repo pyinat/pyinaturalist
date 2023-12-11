@@ -1,12 +1,10 @@
-# TODO: param sections are so long, they really need to be in dropdowns
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Union
 
 from pyinaturalist.constants import (
     API_V1,
     V1_OBS_ORDER_BY_PROPERTIES,
     HistogramResponse,
     IntOrStr,
-    ListResponse,
     MultiFile,
     MultiInt,
     MultiIntOrStr,
@@ -16,14 +14,16 @@ from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import copy_doc_signature
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.models import (
+    Annotation,
     ControlledTermCounts,
     LifeList,
     Observation,
+    Photo,
+    Sound,
     TaxonCounts,
     TaxonSummary,
     UserCounts,
 )
-from pyinaturalist.models.controlled_term import Annotation
 from pyinaturalist.paginator import IDPaginator, IDRangePaginator, Paginator
 from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import (
@@ -49,6 +49,9 @@ class ObservationController(BaseController):
 
     def __call__(self, observation_id: int, **params) -> Optional[Observation]:
         """Get a single observation by ID
+
+        Example:
+            >>> client.observations(16227955)
 
         Args:
             observation_ids: A single observation ID
@@ -372,7 +375,6 @@ class ObservationController(BaseController):
         response = update_observation(**params)
         return Observation.from_json(response)
 
-    # TODO: Add model for sound files, return list of model objects
     def upload(
         self,
         observation_id: int,
@@ -380,7 +382,7 @@ class ObservationController(BaseController):
         sounds: Optional[MultiFile] = None,
         photo_ids: Optional[MultiIntOrStr] = None,
         **params,
-    ) -> ListResponse:
+    ) -> List[Union[Photo, Sound]]:
         """Upload one or more local photo and/or sound files, and add them to an existing observation.
 
         You may also attach a previously uploaded photo by photo ID, e.g. if your photo contains
@@ -415,9 +417,9 @@ class ObservationController(BaseController):
             access_token: Access token for user authentication, as returned by :func:`get_access_token()`
 
         Returns:
-            Information about the uploaded file(s)
+            :py:class:`.Photo` or :py:class:`.Sound` objects for each uploaded file
         """
-        return self.client.request(
+        responses = self.client.request(
             upload,
             auth=True,
             observation_id=observation_id,
@@ -426,6 +428,13 @@ class ObservationController(BaseController):
             photo_ids=photo_ids,
             **params,
         )
+        response_objs: List[Union[Photo, Sound]] = []
+        for response in responses:
+            if 'photo' in response:
+                response_objs.append(Photo.from_json(response))
+            elif 'sound' in response:
+                response_objs.append(Sound.from_json(response))
+        return response_objs
 
 
 class ObservationPaginator(IDRangePaginator):

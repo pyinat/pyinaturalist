@@ -1,5 +1,7 @@
 # ruff: noqa: F405
 from datetime import datetime
+from io import BytesIO
+from unittest.mock import patch
 
 from dateutil.tz import tzutc
 
@@ -281,6 +283,41 @@ def test_taxon_summary__with_listed_taxon(requests_mock):
     assert 'western honey bee' in results.wikipedia_summary
 
 
+@patch('pyinaturalist.client.get_access_token', return_value='token')
+@patch('pyinaturalist.v1.observations.update_observation')
+def test_upload(mock_update_observation, mock_get_access_token, requests_mock):
+    requests_mock.post(
+        f'{API_V1}/observation_photos',
+        json=SAMPLE_DATA['post_observation_photos'],
+        status_code=200,
+    )
+    requests_mock.post(
+        f'{API_V1}/observation_sounds',
+        json=SAMPLE_DATA['post_observation_sounds'],
+        status_code=200,
+    )
+
+    client = iNatClient()
+    client._access_token = 'token'
+    media_objs = client.observations.upload(
+        1234,
+        photos=BytesIO(),
+        sounds=BytesIO(),
+        photo_ids=[5678],
+    )
+    photo, sound = media_objs
+    assert photo.id == 1234
+    assert photo.observation_id == 1234
+    assert isinstance(photo.created_at, datetime)
+
+    assert sound.id == 239936
+    assert sound.file_content_type == 'audio/mpeg'
+    assert isinstance(sound.created_at, datetime)
+
+    # Attaching existing photos to the observation uses a separate endpoint
+    assert mock_update_observation.call_args[1]['photo_ids'] == [5678]
+
+
 # TODO:
 # def test_create():
 #     client = iNatClient()
@@ -290,8 +327,3 @@ def test_taxon_summary__with_listed_taxon(requests_mock):
 # def test_delete():
 #     client = iNatClient()
 #     results = client.observations.delete()
-
-
-# def test_upload():
-#     client = iNatClient()
-#     results = client.observations.upload()
