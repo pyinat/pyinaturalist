@@ -1,4 +1,4 @@
-# ruff: noqa: E501, F405
+# ruff: noqa: E501, F403, F405
 import re
 from copy import deepcopy
 from io import StringIO

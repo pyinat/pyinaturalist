@@ -160,7 +160,7 @@ def test_request_validate_json__retry_success(requests_mock):
     # Expect valid JSON on the second attempt
     session = ClientSession(max_retries=7)
     response = session.get('http://url/maybe_valid_json', refresh=True)
-    assert response.json() == {"results": "valid response"}
+    assert response.json() == {'results': 'valid response'}
 
 
 def test_session__cache_file():

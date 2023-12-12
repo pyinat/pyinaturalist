@@ -68,7 +68,7 @@ class PlaceController(BaseController):
         swlat: float,
         swlng: float,
         name: Optional[str] = None,
-        **params
+        **params,
     ) -> Paginator[Place]:
         """Search for places near a given location
 

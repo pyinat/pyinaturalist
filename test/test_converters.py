@@ -144,7 +144,7 @@ def test_convert_observation_timestamps(
 
 @pytest.mark.parametrize(
     'input, expected_output',
-    [(None, (0, 0)), ((1, 1), (1, 1)), ({"width": 1600, "height": 1200}, (1600, 1200))],
+    [(None, (0, 0)), ((1, 1), (1, 1)), ({'width': 1600, 'height': 1200}, (1600, 1200))],
 )
 def test_format_dimensions(input, expected_output):
     assert format_dimensions(input) == expected_output
