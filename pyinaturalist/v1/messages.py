@@ -70,7 +70,7 @@ def get_messages(**params) -> JsonResponse:
     return messages
 
 
-def get_unread_meassage_count(**params) -> int:
+def get_unread_message_count(**params) -> int:
     """Get the number of unread messages in the user's inbox
 
     .. rubric:: Notes
@@ -79,7 +79,7 @@ def get_unread_meassage_count(**params) -> int:
     * API reference: :v1:`GET /messages/unread <Messages/get_messages_unread>`
 
     Example:
-        >>> get_unread_meassage_count()
+        >>> get_unread_message_count()
         12
 
     Returns:

@@ -24,7 +24,7 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | GET    | /identifications/similar_species   |
 | GET    | /messages                          | {py:func}`.get_messages`                                     |
 | GET    | /messages/{id}                     | {py:func}`.get_message_by_id`                                |
-| GET    | /messages/unread                   | {py:func}`.get_unread_meassage_count`                        |
+| GET    | /messages/unread                   | {py:func}`.get_unread_message_count`                        |
 | DELETE | /observation_field_values/{id}     | {py:func}`.delete_observation_field`                         |
 | PUT    | /observation_field_values/{id}     | {py:func}`.set_observation_field`                            |
 | POST   | /observation_field_values          | {py:func}`.set_observation_field`                            |

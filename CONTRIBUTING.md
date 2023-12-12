@@ -54,7 +54,7 @@ $ open docs/_build/html/index.html
 $ xdg-open docs/_build/html/index.html
 ```
 
-You can also use [sphinx-autobuild](https://github.com/executablebooks/sphinx-autobuild) to rebuild the docs and live reload in the browser whenver doc contents change:
+You can also use [sphinx-autobuild](https://github.com/executablebooks/sphinx-autobuild) to rebuild the docs and live reload in the browser whenever doc contents change:
 ```bash
 $ nox -e livedocs
 ```
@@ -116,6 +116,6 @@ on the `main` branch. Release steps:
   repo. It may take a couple hours after PyPI deployment for this to happen. Typically this will be
   auto-merged and built without any manual action required. Just verify that this completes successfully
   and that the new version can be installed from conda-forge with `conda install -c conda-forge pyinaturalist`.
-  - If new depedencies have been added, then those must also be added to the [conda recipe](https://github.com/conda-forge/pyinaturalist-feedstock/blob/master/recipe/meta.yaml).
+  - If new dependencies have been added, then those must also be added to the [conda recipe](https://github.com/conda-forge/pyinaturalist-feedstock/blob/master/recipe/meta.yaml).
 - A Docker build will be triggered for [pyinaturalist-notebook](https://github.com/JWCook/pyinaturalist-notebook).
-  Verfify that this successfully gets deployed to Docker Hub.
+  Verify that this successfully gets deployed to Docker Hub.

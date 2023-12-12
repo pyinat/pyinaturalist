@@ -34,7 +34,7 @@ these data easily accessible in the python programming language.
 * ➡️ **Easier requests:** Simplified request formats, easy pagination, and complete request
   parameter type annotations for better IDE integration
 * ⬅️ **Convenient responses:** Type conversions to the things you would expect in python, and an
-  optional object-oriented inteface for response data
+  optional object-oriented interface for response data
 * 🔒 **Security:** Keyring integration for secure credential storage
 * 📗 **Docs:** Example requests, responses, scripts, and Jupyter notebooks to help get you started
 * 💚 **Responsible use:** Follows the

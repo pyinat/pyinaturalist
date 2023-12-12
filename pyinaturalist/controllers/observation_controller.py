@@ -167,7 +167,7 @@ class ObservationController(BaseController):
 
 class ObservationPaginator(IDRangePaginator):
     """Paginate through observation results by a range of IDs instead of standard pagination
-    arameters
+    parameters
 
     This also optionally fills in missing annotation information for each observation, using results
     from ``GET /controlled_terms``.

@@ -35,7 +35,7 @@ def get_observations(**params) -> JsonResponse:
     Examples:
 
         Get observations of Monarch butterflies with photos + public location info,
-        on a specific date in the provice of Saskatchewan, CA (place ID 7953),
+        on a specific date in the province of Saskatchewan, CA (place ID 7953),
         and return all available fields:
 
         >>> response = get_observations(

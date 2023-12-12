@@ -3,7 +3,7 @@ from datetime import datetime
 from dateutil.tz import tzoffset
 
 from pyinaturalist.constants import API_V1
-from pyinaturalist.v1 import get_message_by_id, get_messages, get_unread_meassage_count
+from pyinaturalist.v1 import get_message_by_id, get_messages, get_unread_message_count
 from test.sample_data import SAMPLE_DATA
 
 
@@ -51,21 +51,21 @@ def test_get_messages__threads(requests_mock):
     assert message['id'] == 12345
 
 
-def test_get_unread_meassage_count(requests_mock):
+def test_get_unread_message_count(requests_mock):
     requests_mock.get(
         f'{API_V1}/messages/unread',
         json={'count': 12},
         status_code=200,
     )
 
-    assert get_unread_meassage_count() == 12
+    assert get_unread_message_count() == 12
 
 
-def test_get_unread_meassage_count__invalid(requests_mock):
+def test_get_unread_message_count__invalid(requests_mock):
     requests_mock.get(
         f'{API_V1}/messages/unread',
         json={'results': 'invalid'},
         status_code=200,
     )
 
-    assert get_unread_meassage_count() == 0
+    assert get_unread_message_count() == 0

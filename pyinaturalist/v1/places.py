@@ -128,7 +128,7 @@ class PlaceAutocompletePaginator(JsonPaginator, AutocompletePaginator):  # type:
         kwargs['per_page'] = 20
 
         @wraps(get)
-        def reqeuest_function(**request_kwargs):
+        def request_function(**request_kwargs):
             return get(f'{API_V1}/places/autocomplete', **request_kwargs)
 
-        super().__init__(reqeuest_function, **kwargs)
+        super().__init__(request_function, **kwargs)

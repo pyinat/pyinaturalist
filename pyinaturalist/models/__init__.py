@@ -43,11 +43,11 @@ def is_in(options: Iterable):
 
 
 def coordinate_pair(doc: Optional[str] = None, **kwargs):
-    """Field containing a pair of coordiantes"""
+    """Field containing a pair of coordinates"""
     return field(
         default=None,
         converter=convert_lat_long,
-        doc=doc or 'Location in ``(latitude, logitude)`` decimal degrees',
+        doc=doc or 'Location in ``(latitude, longitude)`` decimal degrees',
         **kwargs,
     )
 
