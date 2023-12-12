@@ -3,10 +3,10 @@ from datetime import datetime
 from dateutil.tz import tzoffset
 
 {
-    "total_results": 1,
-    "page": 1,
-    "per_page": 1,
-    "results": [
+    'total_results': 1,
+    'page': 1,
+    'per_page': 1,
+    'results': [
         {
             'id': 16227955,
             'annotations': [

@@ -88,7 +88,7 @@ class ProjectController(BaseController):
                 project_id=project_id,
                 observation_id=observation_id,
                 auth=True,
-                **params
+                **params,
             )
             responses.append(response)
         return responses

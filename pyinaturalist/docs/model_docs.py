@@ -44,7 +44,7 @@ def get_model_doc(cls: Type, config: Config) -> List[Tuple[str, str, str]]:
     options in the description.
     """
     # Used internally by sphinx-autodoc-typehints
-    config._annotation_globals = getattr(cls, "__globals__", {})
+    config._annotation_globals = getattr(cls, '__globals__', {})
 
     doc_rows = [
         _get_field_doc(field, config)
@@ -58,7 +58,7 @@ def get_model_doc(cls: Type, config: Config) -> List[Tuple[str, str, str]]:
         _get_lazy_property_doc(prop, config) for _, prop in get_lazy_properties(cls).items()
     ]
 
-    delattr(config, "_annotation_globals")
+    delattr(config, '_annotation_globals')
     return doc_rows
 
 

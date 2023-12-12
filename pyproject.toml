@@ -8,8 +8,17 @@ readme = "README.md"
 homepage = "https://github.com/pyinat/pyinaturalist"
 repository = "https://github.com/pyinat/pyinaturalist"
 documentation = "https://pyinaturalist.readthedocs.io"
-keywords = ["inaturalist", "biodiversity", "conservation", "citizen-science", "community-science",
-            "api", "api-client", "data-model", "requests"]
+keywords = [
+    "inaturalist",
+    "biodiversity",
+    "conservation",
+    "citizen-science",
+    "community-science",
+    "api",
+    "api-client",
+    "data-model",
+    "requests",
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -23,68 +32,78 @@ include = [
     { path = "*.yml" },
     { path = "docs", format = "sdist" },
     { path = "examples", format = "sdist" },
-    { path = "test", format = "sdist" }
+    { path = "test", format = "sdist" },
 ]
-packages = [
-    { include = "pyinaturalist" },
-    { include = "pyinat" },
-]
+packages = [{ include = "pyinaturalist" }, { include = "pyinat" }]
 
 [tool.poetry.dependencies]
-python                      = "^3.7"
-attrs                       = ">=21.2"
-keyring                     = ">=22.3"
-platformdirs                = ">=2.6"
-python-dateutil             = ">=2.0"
-python-forge                = ">=18.6"
-requests                    = ">=2.25"
-requests-cache              = ">=1.1"
-requests-ratelimiter        = ">=0.3.2"
-rich                        = ">=10.9"
+python = "^3.7"
+attrs = ">=21.2"
+keyring = ">=22.3"
+platformdirs = ">=2.6"
+python-dateutil = ">=2.0"
+python-forge = ">=18.6"
+requests = ">=2.25"
+requests-cache = ">=1.1"
+requests-ratelimiter = ">=0.3.2"
+rich = ">=10.9"
 
 # Workaround for package conflicts on python 3.7; required for rich
-markdown-it-py              = [
-                                {python="3.7", version="2.2"},
-                                {python=">=3.8", version=">=3.0"},
-                              ]
+markdown-it-py = [
+    { python = "3.7", version = "2.2" },
+    { python = ">=3.8", version = ">=3.0" },
+]
 
 # Optional dependencies
-ujson                       = {optional=true, version=">5.0"}
+ujson = { optional = true, version = ">5.0" }
 
 # Documentation dependencies needed for Readthedocs builds
-furo                        = {optional=true, python=">=3.8", version="^2023.7"}
-ipython                     = {optional=true, python=">=3.8", version="^8.12"}
-linkify-it-py               = {optional=true, python=">=3.8", version="^2.0"}
-matplotlib                  = {optional=true, python=">=3.8", version=">=3.7"}
-myst-parser                 = {optional=true, python=">=3.8", version=">=1.0"}
-nbsphinx                    = {optional=true, python=">=3.8", version="^0.9"}
-pillow                      = {optional=true, python=">=3.8", version=">=10.1"}
-sphinx                      = {optional=true, python=">=3.8", version="^6.2"}
-sphinx-automodapi           = {optional=true, python=">=3.8", version="^0.15"}
-sphinx-autodoc-typehints    = {optional=true, python=">=3.8", version="1.20"}
-sphinx-copybutton           = {optional=true, python=">=3.8", version=">=0.5"}
-sphinx-design               = {optional=true, python=">=3.8", version=">=0.5"}
-sphinxcontrib-apidoc        = {optional=true, python=">=3.8", version="^0.3"}
-sphinxext-opengraph         = {optional=true, python=">=3.8", version=">=0.9"}
+furo = { optional = true, python = ">=3.8", version = "^2023.7" }
+ipython = { optional = true, python = ">=3.8", version = "^8.12" }
+linkify-it-py = { optional = true, python = ">=3.8", version = "^2.0" }
+matplotlib = { optional = true, python = ">=3.8", version = ">=3.7" }
+myst-parser = { optional = true, python = ">=3.8", version = ">=1.0" }
+nbsphinx = { optional = true, python = ">=3.8", version = "^0.9" }
+pillow = { optional = true, python = ">=3.8", version = ">=10.1" }
+sphinx = { optional = true, python = ">=3.8", version = "^6.2" }
+sphinx-automodapi = { optional = true, python = ">=3.8", version = "^0.15" }
+sphinx-autodoc-typehints = { optional = true, python = ">=3.8", version = "1.20" }
+sphinx-copybutton = { optional = true, python = ">=3.8", version = ">=0.5" }
+sphinx-design = { optional = true, python = ">=3.8", version = ">=0.5" }
+sphinxcontrib-apidoc = { optional = true, python = ">=3.8", version = "^0.3" }
+sphinxext-opengraph = { optional = true, python = ">=3.8", version = ">=0.9" }
 
 [tool.poetry.dev-dependencies]
-coverage                    = ">=7.2"
-nox                         = "^2023.4"
-nox-poetry                  = "^1.0.0"
-pre-commit                  = "^2.19"
-pretty-errors               = ">=1.2"
-pytest                      = "^7.0"
-pytest-asyncio              = ">=0.21"
-pytest-cov                  = ">=3.0"
-pytest-xdist                = ">=2.2"
-requests-mock               = "^1.8"
-sphinx-autobuild            = {python=">=3.8", version=">=2021.3"}
+coverage = ">=7.2"
+nox = "^2023.4"
+nox-poetry = "^1.0.0"
+pre-commit = "^2.19"
+pretty-errors = ">=1.2"
+pytest = "^7.0"
+pytest-asyncio = ">=0.21"
+pytest-cov = ">=3.0"
+pytest-xdist = ">=2.2"
+requests-mock = "^1.8"
+sphinx-autobuild = { python = ">=3.8", version = ">=2021.3" }
 
 [tool.poetry.extras]
 all = ["ujson"]
-docs = ["furo", "ipython", "linkify-it-py", "matplotlib", "myst-parser", "nbsphinx", "pillow",
-        "sphinx", "sphinx-automodapi", "sphinx-autodoc-typehints", "sphinx-copybutton",
-        "sphinx-design", "sphinxcontrib-apidoc", "sphinxext-opengraph"]
+docs = [
+    "furo",
+    "ipython",
+    "linkify-it-py",
+    "matplotlib",
+    "myst-parser",
+    "nbsphinx",
+    "pillow",
+    "sphinx",
+    "sphinx-automodapi",
+    "sphinx-autodoc-typehints",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "sphinxcontrib-apidoc",
+    "sphinxext-opengraph",
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -103,10 +122,7 @@ source = ['pyinaturalist', 'pyinat']
 omit = ['pyinaturalist/docs/model_docs.py']
 
 [tool.coverage.report]
-exclude_lines = [
-    'pragma: no cover',
-    'if TYPE_CHECKING:',
-]
+exclude_lines = ['pragma: no cover', 'if TYPE_CHECKING:']
 
 [tool.isort]
 profile = 'black'
@@ -124,10 +140,20 @@ markers = [
 ]
 
 [tool.ruff]
-line-length = 120
+fix = true
+unsafe-fixes = true
+line-length = 100
 output-format = 'grouped'
-select = ['B', 'C4','C90', 'E', 'F']
-ignore = ['B023', 'F403']
-exclude = [
-    'test/sample_data/'
-]
+select = ['B', 'C4', 'C90', 'E', 'F']
+target-version = 'py37'
+exclude = ['examples/', 'test/sample_data/']
+
+[tool.ruff.format]
+quote-style = 'single'
+
+[tool.ruff.lint.isort]
+known-first-party = ['test']
+
+# Wrap lines to 100 chars, but don't error on unwrappable lines until 120 chars
+[tool.ruff.lint.pycodestyle]
+max-line-length = 120
