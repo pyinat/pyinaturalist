@@ -13,6 +13,7 @@ from pyinaturalist.controllers import (
     ObservationController,
     PlaceController,
     ProjectController,
+    SearchController,
     TaxonController,
     UserController,
 )
@@ -37,12 +38,13 @@ class iNatClient:
 
     Controllers:
 
-    * :py:class:`annotations <.AnnotationController>`
-    * :py:class:`observations <.ObservationController>`
-    * :py:class:`places <.PlaceController>`
-    * :py:class:`projects <.ProjectController>`
-    * :py:class:`taxa <.TaxonController>`
-    * :py:class:`users <.UserController>`
+    * :fa:`tag` :py:class:`annotations <.AnnotationController>`
+    * :fa:`binoculars` :py:class:`observations <.ObservationController>`
+    * :fa:`location-dot` :py:class:`places <.PlaceController>`
+    * :fa:`users` :py:class:`projects <.ProjectController>`
+    * :fa:`search` :py:class:`search <.SearchController>`
+    * :fa:`dove` :py:class:`taxa <.TaxonController>`
+    * :fa:`user` :py:class:`users <.UserController>`
 
     Args:
         creds: Optional arguments for :py:func:`.get_access_token`, used to get and refresh access
@@ -85,6 +87,9 @@ class iNatClient:
         self.projects = ProjectController(
             self
         )  #: Interface for :py:class:`project requests <.ProjectController>`
+        self.search = SearchController(
+            self
+        )  #: Unified :py:meth:`text search <.SearchController.__call__>`
         self.taxa = TaxonController(
             self
         )  #: Interface for :py:class:`taxon requests <.TaxonController>`

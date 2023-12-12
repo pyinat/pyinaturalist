@@ -10,3 +10,4 @@ from pyinaturalist.controllers.place_controller import PlaceController
 from pyinaturalist.controllers.project_controller import ProjectController
 from pyinaturalist.controllers.taxon_controller import TaxonController
 from pyinaturalist.controllers.user_controller import UserController
+from pyinaturalist.controllers.search_controller import SearchController
