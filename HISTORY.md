@@ -16,12 +16,6 @@ Add support for searching observations by observation fields, using a new `obser
 * `get_observation_species_counts()`
 
 ### Models
-**Taxon:**
-* Add `make_tree()` function to build a tree from `Taxon` objects or a `LifeList`
-* Add `pprint_tree()` function to print a taxon tree on the console
-* Add `Taxon.flatten()` method to return a taxon and its descendants as a flat list
-* Fix initialization of `ListedTaxon.place`
-
 **Observation:**
 * Add `Observation.ident_taxon_ids` dynamic property to get all identification taxon IDs (with ancestors)
 * Add `Observation.cumulative_ids` dynamic property to calculate agreements/total community identifications
@@ -31,6 +25,16 @@ Add support for searching observations by observation fields, using a new `obser
 * Add `QualityMetric` model for `Observation.quality_metrics`
 * Add `Sound` model for `Observation.sounds`
 * Add `Vote` model for `Observation.votes`
+
+**Project:**
+* Add `Project.last_post_at` datetime attribute
+* Add `Project.observation_requirements_updated_at` datetime attribute
+
+**Taxon:**
+* Add `make_tree()` function to build a tree from `Taxon` objects or a `LifeList`
+* Add `pprint_tree()` function to print a taxon tree on the console
+* Add `Taxon.flatten()` method to return a taxon and its descendants as a flat list
+* Fix initialization of `ListedTaxon.place`
 
 ### Other changes
 * Added support for python 3.12

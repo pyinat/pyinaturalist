@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from pyinaturalist.constants import (
     INAT_BASE_URL,
@@ -72,7 +72,7 @@ class ProjectUser(User):
     @classmethod
     def from_json(cls, value: JsonResponse, **kwargs) -> 'ProjectUser':
         """Flatten out nested values"""
-        user = value['user']
+        user = value.get('user', {})
         user['project_id'] = value['project_id']
         user['project_user_id'] = value['id']
         user['role'] = value['role']
@@ -99,7 +99,13 @@ class Project(BaseModel):
         default=None,
         doc='Indicates if this is an umbrella project (containing observations from other projects)',
     )
+    last_post_at: Optional[datetime] = datetime_field(
+        doc='Date and time of the last project journal post'
+    )
     location: Coordinates = coordinate_pair()
+    observation_requirements_updated_at: Optional[datetime] = datetime_field(
+        doc='Date and time of last update for observation requirements'
+    )
     place_id: int = field(default=None, doc='Project place ID')
     prefers_user_trust: bool = field(
         default=None,
