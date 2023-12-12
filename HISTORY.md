@@ -1,6 +1,9 @@
 # History
 
-## 0.19.0 (Unreleased)
+## Unreleased
+* ⚠️ Drop support for python 3.7
+
+## 0.19.0 (2023-12-12)
 
 ### New Endpoints
 * Added new **User** endpoint: `get_current_user()`
