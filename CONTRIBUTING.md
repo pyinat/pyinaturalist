@@ -74,11 +74,10 @@ This isn't needed for internal changes (tests, other docs, refactoring, etc.).
 All parameters and return values should have type annotations, which will be checked by `mypy` and
 will show up in the documentation.
 
-### Formatting, Linting, Type Checking, Etc.
+### Linting & Formatting
 Code checking and formatting tools used include:
-* [black](https://github.com/psf/black)
-* [isort](https://pycqa.github.io/isort/)
-* [flake8](https://flake8.pycqa.org/en/latest/)
+* [ruff (linter)](https://docs.astral.sh/ruff/linter)
+* [ruff (formatter)](https://docs.astral.sh/ruff/formatter)
 * [mypy](https://mypy.readthedocs.io/en/stable/getting_started.html)
 
 All of these will be run by GitHub Actions on pull requests. You can also run them locally with:

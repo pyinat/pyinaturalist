@@ -1,3 +1,4 @@
+# ruff: noqa: F403
 # TODO: Move most of these test cases to controller tests
 """Things to test for each model:
 

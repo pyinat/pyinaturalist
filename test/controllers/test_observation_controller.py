@@ -1,4 +1,4 @@
-# ruff: noqa: F405
+# ruff: noqa: F403, F405
 from datetime import datetime
 from io import BytesIO
 from unittest.mock import patch

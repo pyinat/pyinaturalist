@@ -8,8 +8,17 @@ readme = "README.md"
 homepage = "https://github.com/pyinat/pyinaturalist"
 repository = "https://github.com/pyinat/pyinaturalist"
 documentation = "https://pyinaturalist.readthedocs.io"
-keywords = ["inaturalist", "biodiversity", "conservation", "citizen-science", "community-science",
-            "api", "api-client", "data-model", "requests"]
+keywords = [
+    "inaturalist",
+    "biodiversity",
+    "conservation",
+    "citizen-science",
+    "community-science",
+    "api",
+    "api-client",
+    "data-model",
+    "requests",
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -82,9 +91,22 @@ sphinx-autobuild            = {python=">=3.8", version=">=2021.3"}
 
 [tool.poetry.extras]
 all = ["ujson"]
-docs = ["furo", "ipython", "linkify-it-py", "matplotlib", "myst-parser", "nbsphinx", "pillow",
-        "sphinx", "sphinx-automodapi", "sphinx-autodoc-typehints", "sphinx-copybutton",
-        "sphinx-design", "sphinxcontrib-apidoc", "sphinxext-opengraph"]
+docs = [
+    "furo",
+    "ipython",
+    "linkify-it-py",
+    "matplotlib",
+    "myst-parser",
+    "nbsphinx",
+    "pillow",
+    "sphinx",
+    "sphinx-automodapi",
+    "sphinx-autodoc-typehints",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "sphinxcontrib-apidoc",
+    "sphinxext-opengraph",
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -124,10 +146,20 @@ markers = [
 ]
 
 [tool.ruff]
-line-length = 120
+fix = true
+unsafe-fixes = true
+line-length = 100
 output-format = 'grouped'
-select = ['B', 'C4','C90', 'E', 'F']
-ignore = ['B023', 'F403']
-exclude = [
-    'test/sample_data/'
-]
+select = ['B', 'C4', 'C90', 'E', 'F']
+target-version = 'py37'
+exclude = ['examples/', 'test/sample_data/']
+
+[tool.ruff.format]
+quote-style = 'single'
+
+[tool.ruff.lint.isort]
+known-first-party = ['test']
+
+# Wrap lines to 100 chars, but don't error on unwrappable lines until 120 chars
+[tool.ruff.lint.pycodestyle]
+max-line-length = 120
