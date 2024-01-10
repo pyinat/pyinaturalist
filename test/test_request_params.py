@@ -86,6 +86,9 @@ def test_convert_pagination_params():
     assert params['order'] == 'descending'
     assert 'reverse' not in params
 
+    with pytest.raises(ValueError):
+        convert_pagination_params({'page': 0})
+
 
 @pytest.mark.parametrize(
     'start, end, interval',

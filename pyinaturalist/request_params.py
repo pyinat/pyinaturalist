@@ -220,6 +220,8 @@ def convert_pagination_params(params: RequestParams) -> RequestParams:
         params['per_page'] = 0
     if params.pop('reverse', False) is True:
         params['order'] = 'descending'
+    if params.get('page') is not None and params['page'] < 1:
+        raise ValueError('Page number must be a positive integer')
     return params
 
 

@@ -62,7 +62,7 @@ def create_test_obs(client: iNatClient):
 
 def update_test_obs(client, test_obs_id):
     response = client.observations.upload(test_obs_id, photos=SAMPLE_PHOTO)
-    photo_id = response[0].get('photo').get('id')
+    photo_id = response[0].id
     assert photo_id
     logger.info(f'Added photo to observation: {photo_id}')
 
