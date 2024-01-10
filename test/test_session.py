@@ -8,7 +8,7 @@ from requests import Request, Session
 from requests_ratelimiter import Limiter, RequestRate
 from urllib3.exceptions import MaxRetryError
 
-from pyinaturalist.constants import CACHE_EXPIRATION
+from pyinaturalist.constants import CACHE_EXPIRATION, REQUEST_TIMEOUT
 from pyinaturalist.session import (
     CACHE_FILE,
     ClientSession,
@@ -202,7 +202,7 @@ def test_session__send(mock_limiter, mock_requests_send):
     session = ClientSession()
     request = Request(method='GET', url='http://test.com').prepare()
     session.send(request)
-    mock_requests_send.assert_called_with(request, timeout=(5, 10))
+    mock_requests_send.assert_called_with(request, timeout=(5, REQUEST_TIMEOUT))
 
 
 @pytest.mark.enable_client_session  # For all other tests, caching is disabled. Re-enable that here.
