@@ -5,11 +5,10 @@ from unittest.mock import patch
 
 import pytest
 from dateutil.tz import tzoffset, tzutc
-from requests import PreparedRequest
 
 from pyinaturalist.constants import API_V1
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.session import ClientSession, get_mock_response
+from pyinaturalist.session import ClientSession, MockResponse
 from pyinaturalist.v1 import (
     create_observation,
     delete_observation,
@@ -32,8 +31,6 @@ from test.sample_data import (
     j_taxon_summary_1_conserved,
     j_taxon_summary_2_listed,
 )
-
-MOCK_RESPONSE = get_mock_response(PreparedRequest())
 
 
 def test_get_observation(requests_mock):
@@ -106,14 +103,14 @@ def test_get_observations__all_pages(requests_mock):
     assert len(observations['results']) == 2
 
 
-@patch.object(ClientSession, 'send', return_value=MOCK_RESPONSE)
+@patch.object(ClientSession, 'send', return_value=MockResponse())
 def test_get_observations__by_obs_field(mock_send):
     get_observations(taxon_id=3, observation_fields=['Species count'])
     request = mock_send.call_args[0][0]
     assert request.params == {'taxon_id': '3', 'field:Species count': ''}
 
 
-@patch.object(ClientSession, 'send', return_value=MOCK_RESPONSE)
+@patch.object(ClientSession, 'send', return_value=MockResponse())
 def test_get_observations__by_obs_field_values(mock_send):
     get_observations(taxon_id=3, observation_fields={'Species count': 2})
     request = mock_send.call_args[0][0]

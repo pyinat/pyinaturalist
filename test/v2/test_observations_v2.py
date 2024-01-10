@@ -2,14 +2,11 @@ import json
 from unittest.mock import patch
 
 import pytest
-from requests import PreparedRequest
 
 from pyinaturalist.constants import API_V2
-from pyinaturalist.session import ClientSession, get_mock_response
+from pyinaturalist.session import ClientSession, MockResponse
 from pyinaturalist.v2 import get_observations
 from test.sample_data import SAMPLE_DATA
-
-MOCK_RESPONSE = get_mock_response(PreparedRequest())
 
 
 def test_get_observations__minimal(requests_mock):
@@ -91,14 +88,14 @@ def test_get_observations__all_pages__post(requests_mock):
     assert len(observations['results']) == 2
 
 
-@patch.object(ClientSession, 'send', return_value=MOCK_RESPONSE)
+@patch.object(ClientSession, 'send', return_value=MockResponse())
 def test_get_observations__by_obs_field(mock_send):
     get_observations(taxon_id=3, observation_fields=['Species count'])
     request = mock_send.call_args[0][0]
     assert request.params == {'taxon_id': '3', 'field:Species count': ''}
 
 
-@patch.object(ClientSession, 'send', return_value=MOCK_RESPONSE)
+@patch.object(ClientSession, 'send', return_value=MockResponse())
 def test_get_observations__by_obs_field_values(mock_send):
     get_observations(taxon_id=3, observation_fields={'Species count': 2})
     request = mock_send.call_args[0][0]

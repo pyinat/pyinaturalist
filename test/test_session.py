@@ -12,11 +12,11 @@ from pyinaturalist.constants import CACHE_EXPIRATION
 from pyinaturalist.session import (
     CACHE_FILE,
     ClientSession,
+    MockResponse,
     clear_cache,
     delete,
     get,
     get_local_session,
-    get_mock_response,
     get_refresh_params,
     post,
     put,
@@ -105,6 +105,10 @@ def test_request_dry_run(
     else:
         assert response.reason == 'DRY_RUN'
         assert mock_send.call_count == 0
+
+        json_content = response.json()
+        assert len(json_content['results']) == json_content['total_results'] == 0
+        assert response.json()['arbitrary_key'] == ''
 
 
 @patch.object(Session, 'send')
@@ -207,7 +211,7 @@ def test_session__send__cache_settings(mock_send):
     session = ClientSession()
     with patch.object(session, 'send') as mock_cache_send:
         request = Request(method='GET', url='http://test.com').prepare()
-        mock_send.return_value = get_mock_response(request)
+        mock_send.return_value = MockResponse(request)
 
         session.send(request)
         mock_cache_send.assert_called_with(request)
