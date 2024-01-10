@@ -186,8 +186,12 @@ Credentials storage with keyring + KeePassXC
 
 ## Sessions
 If you want more control over how requests are sent, you can provide your own {py:class}`.ClientSession`
-object using the `session` argument for any API request function.
-See Caching and Rate-Limiting sections below for examples.
+object using the `session` argument for any API request function:
+```python
+>>> from pyinaturalist import ClientSession
+>>> session = ClientSession(...)
+>>> request_function(..., session=session)
+```
 
 ## Caching
 All API requests are cached by default. These expire in 30 minutes for most endpoints, and
@@ -218,6 +222,22 @@ Or as a shortcut, without a session object:
 from pyinaturalist import clear_cache
 
 clear_cache()
+```
+
+## Timeouts
+If you are seeing frequent timeouts (`TimeoutError`) due to iNat server problems or a slow internet
+connection, you can increase the timeout (default: 20 seconds):
+```python
+>>> from pyinaturalist import ClientSession
+>>> session = ClientSession(timeout=40)
+```
+
+## Retries
+Similarly, if you are seeing intermittent non-timeout errors due to server issues, you can adjust
+the number of times to retry failed requests (default: 5):
+```python
+>>> from pyinaturalist import ClientSession
+>>> session = ClientSession(retries=7)
 ```
 
 ## Rate Limiting

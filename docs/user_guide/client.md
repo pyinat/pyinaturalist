@@ -88,12 +88,12 @@ For example, a common use case for this is to add `locale` and `preferred_place_
 
 These parameters will then be automatically used for any endpoints that accept them.
 
-## Caching, Rate-limiting, and Retries
+## Caching, Rate-limiting, Timeouts, and Retries
 See :py:class:`.ClientSession` and :ref:`advanced` for details on these settings.
 
-``iNatClient`` will accept any arguments for ``ClientSession``, for example:
+`iNatClient` will accept any arguments for `ClientSession`, for example:
 ```py
->>> client = iNatClient(per_second=50, expire_after=3600, retries=3)
+>>> client = iNatClient(per_second=50, expire_after=3600, timeout=30, retries=3)
 ```
 
 Or you can provide your own session object:
