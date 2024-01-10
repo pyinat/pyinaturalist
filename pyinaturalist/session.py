@@ -1,6 +1,7 @@
 """Session class and related functions for preparing and sending API requests"""
 import json
 import threading
+from collections import defaultdict
 from json import JSONDecodeError
 from logging import getLogger
 from os import getenv
@@ -298,7 +299,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
 
         # Make a mock request, if specified
         if dry_run or is_dry_run_enabled(request.method):
-            return get_mock_response(request)
+            return MockResponse(request)
 
         # Otherwise, send the request
         read_timeout = timeout or self.timeout
@@ -432,17 +433,33 @@ def get_refresh_params(endpoint) -> Dict:
     return {'refresh': True, 'v': v} if v > 0 else {'refresh': True}
 
 
-def get_mock_response(request: PreparedRequest) -> CachedResponse:
-    """Get mock response content to return in dry-run mode"""
-    json_content = {'results': [], 'total_results': 0, 'access_token': ''}
-    mock_response = CachedResponse(
-        headers={'Cache-Control': 'no-store'},
-        request=request,
-        status_code=200,
-        reason='DRY_RUN',
-        content=json.dumps(json_content).encode(),
-    )
-    return mock_response
+class MockResponse(CachedResponse):
+    """A mock response to return in dry-run mode.
+    This behaves the same as a cached response, but with the following additions:
+
+    * Adds default response values
+    * Returns a ``defaultdict`` when calling ``json()``, to accommodate checking for arbitrary keys
+    """
+
+    def __init__(self, request: Optional[PreparedRequest] = None, **kwargs):
+        json_content = {
+            'results': [],
+            'total_results': 0,
+            'access_token': '',
+            'id': 'placeholder-id',
+        }
+        default_kwargs = {
+            'headers': {'Cache-Control': 'no-store'},
+            'request': request or PreparedRequest(),
+            'status_code': 200,
+            'reason': 'DRY_RUN',
+            'content': json.dumps(json_content).encode(),
+        }
+        default_kwargs.update(kwargs)
+        super().__init__(**default_kwargs)
+
+    def json(self, **kwargs):
+        return defaultdict(str, super().json(**kwargs))
 
 
 def is_dry_run_enabled(method: str) -> bool:
