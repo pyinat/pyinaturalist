@@ -51,7 +51,7 @@ def get_users_autocomplete(q: str, **params) -> JsonResponse:
     * Pagination is supported; default page size is 6, and max is 100.
 
     Example:
-        >>> response = get_taxa_autocomplete(q='my_userna')
+        >>> response = get_users_autocomplete(q='my_userna')
         >>> pprint(response)
         [1234] my_username
         [12345] my_username_2
