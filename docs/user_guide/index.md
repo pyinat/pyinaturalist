@@ -5,6 +5,7 @@
 :maxdepth: 2
 
 general
+authentication
 advanced
 client
 ```
