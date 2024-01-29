@@ -6,7 +6,12 @@ import pytest
 from keyring.errors import KeyringError
 from requests import HTTPError, Response
 
-from pyinaturalist.auth import get_access_token, get_keyring_credentials, set_keyring_credentials
+from pyinaturalist.auth import (
+    get_access_token,
+    get_keyring_credentials,
+    set_keyring_credentials,
+    validate_token,
+)
 from pyinaturalist.constants import API_V0
 from pyinaturalist.exceptions import AuthenticationError
 from pyinaturalist.session import ClientSession
@@ -152,6 +157,13 @@ def test_get_access_token__invalid_creds(mock_get_jwt, requests_mock):
 
     with pytest.raises(HTTPError):
         get_access_token('username', 'password', 'app_id', 'app_secret')
+
+
+@pytest.mark.parametrize('response_code', [200, 401, 403, 502])
+def test_validate_token(response_code):
+    with patch.object(ClientSession, 'send', return_value=Response()) as mock_get:
+        mock_get.return_value.status_code = response_code
+        assert validate_token('token') == (response_code == 200)
 
 
 # get_keyring_credentials

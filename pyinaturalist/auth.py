@@ -4,9 +4,9 @@ from typing import Dict, Optional
 
 from keyring import get_password, set_password
 from keyring.errors import KeyringError
-from requests import Response
+from requests import HTTPError, Response
 
-from pyinaturalist.constants import API_V0, KEYRING_KEY
+from pyinaturalist.constants import API_V0, API_V1, KEYRING_KEY
 from pyinaturalist.exceptions import AuthenticationError
 from pyinaturalist.session import ClientSession, get_local_session
 
@@ -104,6 +104,16 @@ def get_access_token(
         response.raise_for_status()
         access_token = response.json()['api_token']
     return access_token
+
+
+def validate_token(access_token: str) -> bool:
+    """Determine if an access token is valid"""
+    session = get_local_session()
+    try:
+        session.request('GET', f'{API_V1}/users/me', access_token=access_token)
+        return True
+    except HTTPError:
+        return False
 
 
 def get_keyring_credentials() -> Dict[str, Optional[str]]:

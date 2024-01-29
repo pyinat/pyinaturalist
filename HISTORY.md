@@ -4,6 +4,7 @@
 * ⚠️ Drop support for python 3.7
 * Fix `KeyError` when using `create_observation()` in dry-run mode
 * Increase default request timeout from 10 to 20 seconds
+* Add `validate_token()` function to manually check if an access token is valid
 
 ## 0.19.0 (2023-12-12)
 
