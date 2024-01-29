@@ -1,6 +1,6 @@
 from functools import update_wrapper
 from inspect import signature
-from typing import Callable, Dict, List, Optional, Type
+from typing import Any, Callable, Dict, List, Optional, Type
 
 from attr import Attribute, Factory
 
@@ -66,7 +66,7 @@ class LazyProperty(property):
         update_wrapper(self, converter)
         self.converter = converter
         self.converter_kwargs = converter_kwargs
-        self.default = None
+        self.default: Any = None
         self.type = type
         self.__doc__ = doc
         self.__set_name__(None, name)
