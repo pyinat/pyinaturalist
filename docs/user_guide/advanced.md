@@ -85,6 +85,11 @@ For example, to reduce the rate to 50 requests per minute:
 >>> get_taxa(q='warbler', locale=1, session=session)
 ```
 
+Float values also work, for example to slow it down to less than 1 request per second):
+```python
+>>> session = ClientSession(per_second=0.5)
+```
+
 ### Distributed Application Rate Limiting
 The default rate-limiting backend is thread-safe, and persistent across application restarts. If
 you have a larger application running from multiple processes, you will need an additional locking
