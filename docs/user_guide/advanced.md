@@ -16,18 +16,32 @@ Note that this replaces the `get_all_*()` functions from pyinaturalist\<=0.12.
 (auth)=
 ## Authentication
 For any endpoints that create, update, or delete data, you will need to authenticate using an
-OAuth2 access token. This requires both your iNaturalist username and password, and separate
-"application" credentials.
+access token. There are two main ways to get one: manually via a browser, or programatically, using
+your iNaturalist credentials plus separate application credentials. These tokens are typically valid
+for 24 hours, after which you will need to get a new one.
+
+You can then pass the access token to any API request function that uses it via the
+`access_token` argument. For example:
+```py
+from pyinaturalist import create_observation
+
+create_observation(
+  ...,
+  access_token='my_access_token',
+)
+```
 
 :::{note} Read-only requests generally don't require authentication; however, if you want to access
-private data visible only to your user (for example, obscured or private coordinates),
-you will need to use an access token.
+private data visible only to your user (for example, obscured or private coordinates), you will need
+to use an access token.
 :::
 
-**Summary:**
-1. Create an iNaturalist application
-2. Use {py:func}`.get_access_token` with your user + application credentials to get an access token
-3. Pass that access token to any API request function that uses it
+### Manual Authentication
+You can get an access token from a browser by logging in to inaturalist.org and going to
+https://www.inaturalist.org/users/api_token.
+
+This has the advantage of not needing to create an iNaturalist application (see section below), but
+has the disadvantage of requiring you to manually copy and paste the token.
 
 ### Creating an Application
 :::{dropdown} Why do I need to create an application?
