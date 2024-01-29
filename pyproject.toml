@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "pyinaturalist"
-version = "0.19.0"
+version = "0.20.0"
 description = "iNaturalist API client for python"
-authors = ["Jordan Cook <jordan.cook.git@proton.me>"]
+authors = ["Jordan Cook"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/pyinat/pyinaturalist"
@@ -40,7 +40,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python                      = "^3.7"
+python                      = "^3.8"
 attrs                       = ">=21.2"
 keyring                     = ">=22.3"
 platformdirs                = ">=2.6"
@@ -51,30 +51,24 @@ requests-cache              = ">=1.1"
 requests-ratelimiter        = ">=0.3.2"
 rich                        = ">=10.9"
 
-# Workaround for package conflicts on python 3.7; required for rich
-markdown-it-py              = [
-                                {python="3.7", version="2.2"},
-                                {python=">=3.8", version=">=3.0"},
-                              ]
-
 # Optional dependencies
 ujson                       = {optional=true, version=">5.0"}
 
 # Documentation dependencies needed for Readthedocs builds
-furo                        = {optional=true, python=">=3.8", version="^2023.7"}
-ipython                     = {optional=true, python=">=3.8", version="^8.12"}
-linkify-it-py               = {optional=true, python=">=3.8", version="^2.0"}
-matplotlib                  = {optional=true, python=">=3.8", version=">=3.7"}
-myst-parser                 = {optional=true, python=">=3.8", version=">=1.0"}
-nbsphinx                    = {optional=true, python=">=3.8", version="^0.9"}
-pillow                      = {optional=true, python=">=3.8", version=">=10.1"}
-sphinx                      = {optional=true, python=">=3.8", version="^6.2"}
-sphinx-automodapi           = {optional=true, python=">=3.8", version="^0.15"}
-sphinx-autodoc-typehints    = {optional=true, python=">=3.8", version="1.20"}
-sphinx-copybutton           = {optional=true, python=">=3.8", version=">=0.5"}
-sphinx-design               = {optional=true, python=">=3.8", version=">=0.5"}
-sphinxcontrib-apidoc        = {optional=true, python=">=3.8", version="^0.3"}
-sphinxext-opengraph         = {optional=true, python=">=3.8", version=">=0.9"}
+furo                        = {optional=true, version="^2023.7"}
+ipython                     = {optional=true, version="^8.12"}
+linkify-it-py               = {optional=true, version="^2.0"}
+matplotlib                  = {optional=true, version=">=3.7"}
+myst-parser                 = {optional=true, version=">=1.0"}
+nbsphinx                    = {optional=true, version="^0.9"}
+pillow                      = {optional=true, version=">=10.1"}
+sphinx                      = {optional=true, version="^6.2"}
+sphinx-automodapi           = {optional=true, version="^0.15"}
+sphinx-autodoc-typehints    = {optional=true, version="1.20"}
+sphinx-copybutton           = {optional=true, version=">=0.5"}
+sphinx-design               = {optional=true, version=">=0.5"}
+sphinxcontrib-apidoc        = {optional=true, version="^0.3"}
+sphinxext-opengraph         = {optional=true, version=">=0.9"}
 
 [tool.poetry.dev-dependencies]
 coverage                    = ">=7.2"
@@ -87,7 +81,7 @@ pytest-asyncio              = ">=0.21"
 pytest-cov                  = ">=3.0"
 pytest-xdist                = ">=2.2"
 requests-mock               = "^1.8"
-sphinx-autobuild            = {python=">=3.8", version=">=2021.3"}
+sphinx-autobuild            = ">=2021.3"
 
 [tool.poetry.extras]
 all = ["ujson"]
