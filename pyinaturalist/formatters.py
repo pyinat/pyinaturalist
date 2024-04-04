@@ -7,6 +7,7 @@ These functions will accept any of the following:
 * A list of response objects
 * A single response object
 """
+
 import json
 from datetime import date, datetime, timedelta
 from logging import basicConfig, getLogger

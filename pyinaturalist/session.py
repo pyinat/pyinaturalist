@@ -1,4 +1,5 @@
 """Session class and related functions for preparing and sending API requests"""
+
 import json
 import threading
 from collections import defaultdict

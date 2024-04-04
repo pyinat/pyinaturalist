@@ -1,4 +1,5 @@
 """Classes to handle pagination of API requests"""
+
 from asyncio import AbstractEventLoop, get_running_loop
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor

@@ -4,6 +4,7 @@
 Extra dependencies:
     ``pip install prance[osv] rich``
 """
+
 import json
 from os.path import isfile, join
 from typing import Dict, List, Tuple
@@ -30,9 +31,9 @@ def download_spec(force=False):
     spec = requests.get(SPEC_URL).json()
 
     spec['parameters']['ids_without_taxon_id']['name'] = 'ids_without_taxon_id'
-    spec['parameters']['ids_without_observation_taxon_id'][
-        'name'
-    ] = 'ids_without_observation_taxon_id'
+    spec['parameters']['ids_without_observation_taxon_id']['name'] = (
+        'ids_without_observation_taxon_id'
+    )
     spec['parameters']['projects_order_by']['default'] = 'created'
 
     with open(SPEC_FILE, 'w') as f:

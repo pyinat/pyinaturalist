@@ -1,4 +1,5 @@
 """Utilities for copying and modifying docstrings with type annotations"""
+
 import re
 from inspect import cleandoc
 from typing import Callable, Dict, Iterable, List, Optional, get_type_hints

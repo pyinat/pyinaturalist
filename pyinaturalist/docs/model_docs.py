@@ -1,6 +1,7 @@
 """Utilities for generating documentation for model classes. This outputs CSV files that are then
 rendered in the docs as tables.
 """
+
 import csv
 from inspect import getmembers, isclass
 from os import makedirs

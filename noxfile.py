@@ -3,6 +3,7 @@
 * 'lint' command: tools and environments are managed by pre-commit
 * All other commands: the current environment will be used instead of creating new ones
 """
+
 from os.path import join
 from shutil import rmtree
 

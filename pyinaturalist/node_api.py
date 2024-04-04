@@ -1,4 +1,5 @@
 """Placeholder module for backwards-compatibility"""
+
 # ruff: noqa: F401, F403, F405
 from typing import List
 from warnings import warn

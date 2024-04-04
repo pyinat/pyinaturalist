@@ -2,6 +2,7 @@
 """A script for mapping US county FIPS codes to iNaturalist place IDs.
 This is a bit complicated, since we only have a text search endpoint to work with for iNat places.
 """
+
 import json
 import logging
 import re

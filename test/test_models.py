@@ -9,6 +9,7 @@
 * Any additional properties or aliases on the model
 * Formatting in the model's __str__ method
 """
+
 from copy import deepcopy
 from datetime import date, datetime
 

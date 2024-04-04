@@ -1,4 +1,5 @@
 """Models for additional taxon conservation statuses"""
+
 import re
 from logging import getLogger
 from typing import List, Optional, Union

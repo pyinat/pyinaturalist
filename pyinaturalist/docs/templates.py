@@ -10,6 +10,7 @@ common with other functions, consider using a template function.
 Note: Since the templates are applied dynamically at import time, this adds a tiny amount of overhead
 (about 20 milliseconds as of v0.14) to the import time of the library.
 """
+
 # ruff: noqa: E501
 from typing import Any, Dict, List, Optional, Union
 

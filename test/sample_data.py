@@ -1,4 +1,5 @@
-'Sample responses representing different variations on all supported resource types'
+"Sample responses representing different variations on all supported resource types"
+
 # ruff: noqa: F401, F403
 import json
 from glob import glob

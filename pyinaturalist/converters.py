@@ -1,4 +1,5 @@
 """Type conversion utilities used for both requests and responses"""
+
 import re
 from datetime import date, datetime
 from io import BytesIO

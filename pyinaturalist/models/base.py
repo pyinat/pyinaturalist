@@ -1,4 +1,5 @@
 """Base class and utilities for data models"""
+
 from collections import UserList
 from copy import deepcopy
 from datetime import datetime
