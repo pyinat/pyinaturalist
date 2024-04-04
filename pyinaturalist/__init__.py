@@ -9,7 +9,7 @@ from pyinaturalist.formatters import enable_logging, format_table, pprint, pprin
 from pyinaturalist.models import *
 from pyinaturalist.paginator import Paginator, IDPaginator, WrapperPaginator
 from pyinaturalist.request_params import get_interval_ranges
-from pyinaturalist.session import ClientSession, clear_cache
+from pyinaturalist.session import ClientSession, FileLockSQLiteBucket, clear_cache
 from pyinaturalist.v0 import *
 from pyinaturalist.v1 import *
 

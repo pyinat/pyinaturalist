@@ -1,3 +1,4 @@
+# ruff: noqa: F401
 from datetime import date, datetime, timedelta
 from os.path import abspath, dirname, join
 from pathlib import Path
@@ -5,6 +6,7 @@ from typing import IO, TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Optio
 
 from dateutil.relativedelta import relativedelta
 from platformdirs import user_data_dir
+from pyrate_limiter.sqlite_bucket import LOCK_PATH as DEFAULT_LOCK_PATH
 
 # iNaturalist URLs
 API_V0 = 'https://www.inaturalist.org'

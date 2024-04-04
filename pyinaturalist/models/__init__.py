@@ -1,6 +1,7 @@
 """Data models that represent iNaturalist API response objects.
 See :ref:`data-models` section for usage details.
 """
+
 # ruff: noqa: F401, E402
 # isort: skip_file
 from datetime import datetime, timezone

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # ruff: noqa: E402, F401, F402, F403, F405
 """A script used to determine unique response keys for each response type"""
+
 import sys
 from itertools import chain
 from pprint import pprint

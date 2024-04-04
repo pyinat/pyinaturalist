@@ -12,6 +12,7 @@ from pyinaturalist.constants import CACHE_EXPIRATION, REQUEST_TIMEOUT
 from pyinaturalist.session import (
     CACHE_FILE,
     ClientSession,
+    FileLockSQLiteBucket,
     MockResponse,
     clear_cache,
     delete,
@@ -233,6 +234,23 @@ def test_clear_cache():
     with patch.object(session, 'cache', autospec=True) as mock_cache:
         clear_cache()
         mock_cache.clear.assert_called()
+
+
+@pytest.mark.enable_client_session
+@patch.object(Session, 'send')
+def test_filelock(mock_send, tmp_path):
+    lock_path = str(tmp_path / 'test.lock')
+    session = ClientSession(
+        bucket_class=FileLockSQLiteBucket,
+        lock_path=lock_path,
+    )
+    # Send a request to initialize ratelimiter bucket(s)
+    request = Request(method='GET', url='http://example.com').prepare()
+    session.send(request)
+
+    for bucket in session.limiter.bucket_group.values():
+        assert isinstance(bucket, FileLockSQLiteBucket)
+        assert bucket._lock.lock_file == lock_path
 
 
 @patch('pyinaturalist.session.REFRESH_LIMITER', Limiter(RequestRate(1, 2)))

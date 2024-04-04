@@ -1,4 +1,5 @@
 """Extended list of emoji to represent taxa"""
+
 EMOJI = {
     # Birds
     3: '🐦',

@@ -144,12 +144,14 @@ fix = true
 unsafe-fixes = true
 line-length = 100
 output-format = 'grouped'
-select = ['B', 'C4', 'C90', 'E', 'F']
 target-version = 'py37'
 exclude = ['examples/', 'test/sample_data/']
 
 [tool.ruff.format]
 quote-style = 'single'
+
+[tool.ruff.lint]
+select = ['B', 'C4', 'C90', 'E', 'F']
 
 [tool.ruff.lint.isort]
 known-first-party = ['test']

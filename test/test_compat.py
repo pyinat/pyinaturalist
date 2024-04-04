@@ -1,7 +1,6 @@
 """Tests for backwards-compatible (but deprecated) imports"""
 # ruff: noqa: F401
 
-
 from test.conftest import ignore_deprecation
 
 

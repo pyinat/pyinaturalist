@@ -1,4 +1,5 @@
 """Session class and related functions for preparing and sending API requests"""
+
 import json
 import threading
 from collections import defaultdict
@@ -7,6 +8,7 @@ from logging import getLogger
 from os import getenv
 from typing import Dict, Optional, Type
 
+import pyrate_limiter
 from requests import PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
 from requests.utils import default_user_agent
@@ -32,6 +34,7 @@ from pyinaturalist.constants import (
     CACHE_EXPIRATION,
     CACHE_FILE,
     CONNECT_TIMEOUT,
+    DEFAULT_LOCK_PATH,
     MAX_DELAY,
     RATELIMIT_FILE,
     REQUEST_BURST_RATE,
@@ -121,6 +124,13 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             url_patterns.update(urls_expire_after)
         self.timeout = timeout
 
+        # Extra args to pass to rate limiter backend
+        bucket_kwargs = kwargs.pop('bucket_kwargs', {})
+        if ratelimit_path := kwargs.pop('ratelimit_path', None):
+            bucket_kwargs['path'] = ratelimit_path
+        if lock_path := kwargs.pop('lock_path', None):
+            bucket_kwargs['lock_path'] = lock_path
+
         super().__init__(  # type: ignore  # false positive
             # Cache settings
             cache_name=cache_file,
@@ -132,7 +142,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             stale_if_error=True,
             # Rate limit settings
             bucket_class=bucket_class,
-            bucket_kwargs={'path': RATELIMIT_FILE},
+            bucket_kwargs=bucket_kwargs,
             per_second=per_second,
             per_minute=per_minute,
             per_day=per_day,
@@ -357,6 +367,23 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         else:
             response.json = lambda **kwargs: response_json  # type: ignore
             return response
+
+
+class FileLockSQLiteBucket(pyrate_limiter.FileLockSQLiteBucket):
+    """Bucket backed by a SQLite database and file lock. Suitable for usage from multiple processes
+    with no shared state. Requires installing [py-filelock](https://py-filelock.readthedocs.io).
+
+    The file lock is reentrant and shared across buckets, allowing a process to access multiple
+    buckets at once.
+
+    This modified class allows setting a custom lock path.
+    """
+
+    def __init__(self, lock_path: str = DEFAULT_LOCK_PATH, **kwargs):
+        from filelock import FileLock
+
+        super().__init__(**kwargs)
+        self._lock = FileLock(lock_path)
 
 
 def delete(url: str, session: Optional[ClientSession] = None, **kwargs) -> Response:
