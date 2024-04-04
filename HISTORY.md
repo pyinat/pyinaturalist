@@ -5,7 +5,8 @@
 * Fix `KeyError` when using `create_observation()` in dry-run mode
 * Increase default request timeout from 10 to 20 seconds
 * Add `validate_token()` function to manually check if an access token is valid
-* Support rate limits less than one request per second (e.g.: `ClientSession(per_second=0.5)`)
+* Support rate limits less than one request per second (example: `ClientSession(per_second=0.5)`)
+* Allow setting lockfile path used for multiprocess rate limiting (example: `ClientSession(lock_path='/tmp/pyinat.lock')`)
 
 ## 0.19.0 (2023-12-12)
 
