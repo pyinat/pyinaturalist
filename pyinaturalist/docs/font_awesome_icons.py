@@ -29,7 +29,7 @@ EXTENDED_FONT_AWESOME_ICONS = {
     43579: FontAwesomeIcon('fa-solid', 'fa-otter', 'brown'),
     846280: FontAwesomeIcon('fa-solid', 'fa-otter', 'brown'),
     47144: FontAwesomeIcon('fa-solid', 'fa-dog', 'brown'),
-    42048: FontAwesomeIcon('fa-solid', 'fa-dog', 'gray'),
+    42048: FontAwesomeIcon('fa-solid', 'fa-dog', 'grey'),
     42054: FontAwesomeIcon('fa-solid', 'fa-dog', 'red'),
     41660: FontAwesomeIcon('fa-solid', 'fa-dog', 'brown'),
     41944: FontAwesomeIcon('fa-solid', 'fa-cat', 'orange'),
