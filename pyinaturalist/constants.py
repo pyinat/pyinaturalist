@@ -116,7 +116,7 @@ COLORS = {
     'pink': '#f1a2a9',
     'brown': '#967662',
     'grey': '#b8b0ac',
-    'black': '#000000'
+    'black': '#000000',
 }
 
 @dataclass
