@@ -88,6 +88,7 @@ ICONIC_TAXA = {
     48222: 'Chromista',
     47686: 'Protozoa',
 }
+
 ICONIC_EMOJI = {
     0: '❓',
     1: '🐾',
@@ -139,20 +140,20 @@ class FontAwesomeIcon:
 
 
 ICONIC_FONT_AWESOME = {
-    0: FontAwesomeIcon('fa-solid', 'fa-question-circle', COLORS['grey']),
-    1: FontAwesomeIcon('fa-solid', 'fa-paw', COLORS['black']),
-    3: FontAwesomeIcon('fa-solid', 'fa-dove', COLORS['teal']),
-    20978: FontAwesomeIcon('fa-solid', 'fa-frog', COLORS['green']),
-    26036: FontAwesomeIcon('fa-solid', 'fa-lizard', COLORS['green']),
-    40151: FontAwesomeIcon('fa-solid', 'fa-cat', COLORS['orange']),
-    47178: FontAwesomeIcon('fa-solid', 'fa-fish', COLORS['blue']),
-    47115: FontAwesomeIcon('fa-solid', 'fa-snail', COLORS['brown']),
-    47119: FontAwesomeIcon('fa-solid', 'fa-spider', COLORS['black']),
-    47158: FontAwesomeIcon('fa-solid', 'fa-butterfly', COLORS['purple']),
-    47126: FontAwesomeIcon('fa-solid', 'fa-leaf', COLORS['green']),
-    47170: FontAwesomeIcon('fa-solid', 'fa-bacteria', COLORS['brown']),  # mushroom
-    48222: FontAwesomeIcon('fa-solid', 'fa-bowling-ball', COLORS['green']),
-    47686: FontAwesomeIcon('fa-solid', 'fa-disease', COLORS['green']),
+    0: FontAwesomeIcon('fa-solid', 'fa-question-circle', 'grey'),
+    1: FontAwesomeIcon('fa-solid', 'fa-paw', 'black'),
+    3: FontAwesomeIcon('fa-solid', 'fa-dove', 'teal'),
+    20978: FontAwesomeIcon('fa-solid', 'fa-frog', 'green'),
+    26036: FontAwesomeIcon('fa-solid', 'fa-dragon', 'green'),
+    40151: FontAwesomeIcon('fa-solid', 'fa-cat', 'orange'),
+    47178: FontAwesomeIcon('fa-solid', 'fa-fish', 'blue'),
+    47115: FontAwesomeIcon('fa-solid', 'fa-worm', 'pink'),
+    47119: FontAwesomeIcon('fa-solid', 'fa-spider', 'black'),
+    47158: FontAwesomeIcon('fa-solid', 'fa-mosquito', 'purple'),
+    47126: FontAwesomeIcon('fa-solid', 'fa-leaf', 'green'),
+    47170: FontAwesomeIcon('fa-solid', 'fa-bacteria', 'brown'),  # mushroom
+    48222: FontAwesomeIcon('fa-solid', 'fa-bowling-ball', 'green'),
+    47686: FontAwesomeIcon('fa-solid', 'fa-disease', 'green'),
 }
 
 assert set(ICONIC_TAXA.keys()) == set(ICONIC_EMOJI.keys())
