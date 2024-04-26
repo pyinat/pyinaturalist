@@ -135,10 +135,7 @@ class FontAwesomeIcon:
         )
 
     def __repr__(self):
-        return (
-            f'<FontAwesomeIcon {self.prefix}'
-            f'{self.name} {self.color} {self.size}>'
-        )
+        return f'<FontAwesomeIcon {self.prefix} {self.name} {self.color} {self.size}>'
 
 
 ICONIC_FONT_AWESOME = {
