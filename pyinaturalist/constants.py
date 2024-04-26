@@ -106,18 +106,18 @@ ICONIC_EMOJI = {
 }
 
 COLORS = {
-    "blue": "#5778a4",
-    "orange": "#e49444",
-    "red": "#d1615d",
-    "teal": "#85b6b2",
-    "green": "#6a9f58",
-    "yellow": "#e7ca60",
-    "purple": "#a87c9f",
-    "pink": "#f1a2a9",
-    "brown": "#967662",
-    "grey": "#b8b0ac",
-    "black": "#000000",
-    "grey": "#777",
+    'blue': '#5778a4',
+    'orange': '#e49444',
+    'red': '#d1615d',
+    'teal': '#85b6b2',
+    'green': '#6a9f58',
+    'yellow': '#e7ca60',
+    'purple': '#a87c9f',
+    'pink': '#f1a2a9',
+    'brown': '#967662',
+    'grey': '#b8b0ac',
+    'black': '#000000',
+    'grey': '#777',
 }
 
 @dataclass
