@@ -147,7 +147,7 @@ ICONIC_FONT_AWESOME = {
     47119: FontAwesomeIcon('fa-solid', 'fa-spider', COLORS['black']),
     47158: FontAwesomeIcon('fa-solid', 'fa-butterfly', COLORS['purple']),
     47126: FontAwesomeIcon('fa-solid', 'fa-leaf', COLORS['green']),
-    47170: FontAwesomeIcon('fa-solid', 'fa-bacteria', COLORS['brown']), # mushroom
+    47170: FontAwesomeIcon('fa-solid', 'fa-bacteria', COLORS['brown']),  # mushroom
     48222: FontAwesomeIcon('fa-solid', 'fa-bowling-ball', COLORS['green']),
     47686: FontAwesomeIcon('fa-solid', 'fa-disease', COLORS['green']),
 }

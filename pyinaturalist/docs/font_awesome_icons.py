@@ -133,7 +133,7 @@ EXTENDED_FONT_AWESOME_ICONS = {
     # Other
     1: FontAwesomeIcon('fa-solid', 'fa-paw', 'black'),
     47491: FontAwesomeIcon('fa-solid', 'fa-worm', 'pink'),
-    47170: FontAwesomeIcon('fa-solid', 'fa-bacteria', 'brown'), # mushroom
+    47170: FontAwesomeIcon('fa-solid', 'fa-bacteria', 'brown'),  # mushroom
     48222: FontAwesomeIcon('fa-solid', 'fa-bowling-ball', 'green'),
     67333: FontAwesomeIcon('fa-solid', 'fa-bacterium', 'green'),
     131236: FontAwesomeIcon('fa-solid', 'fa-virus', 'red'),
