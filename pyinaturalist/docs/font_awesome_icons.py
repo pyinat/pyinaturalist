@@ -3,6 +3,7 @@
 from pyinaturalist.constants import FontAwesomeIcon
 
 EXTENDED_FONT_AWESOME_ICONS = {
+    0: FontAwesomeIcon('fa-solid', 'fa-question-circle', 'grey'),
     # Birds
     3: FontAwesomeIcon('fa-solid', 'fa-dove', 'teal'),
     # Pheasants, Grouse, and Allies
