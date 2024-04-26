@@ -128,10 +128,17 @@ class FontAwesomeIcon:
     size: int = 16
 
     def __str__(self):
-        return f'<i class="{self.prefix} {self.name}" style="color: {COLORS[self.color]}; font-size: {self.size}px;"></i>'
+        return (
+            f'<i class="{self.prefix} {self.name}"'
+            f'style="color: {COLORS[self.color]};'
+            f'font-size: {self.size}px;"></i>'
+        )
 
     def __repr__(self):
-        return f'<FontAwesomeIcon {self.prefix} {self.name} {self.color} {self.size}>'
+        return (
+            f'<FontAwesomeIcon {self.prefix}'
+            f'{self.name} {self.color} {self.size}>'
+        )
 
 
 ICONIC_FONT_AWESOME = {
@@ -151,7 +158,8 @@ ICONIC_FONT_AWESOME = {
     47686: FontAwesomeIcon('fa-solid', 'fa-disease', COLORS['green']),
 }
 
-assert set(ICONIC_TAXA.keys()) == set(ICONIC_EMOJI.keys()) == set(ICONIC_FONT_AWESOME.keys())
+assert set(ICONIC_TAXA.keys()) == set(ICONIC_EMOJI.keys())
+assert set(ICONIC_TAXA.keys()) == set(ICONIC_FONT_AWESOME.keys())
 
 ROOT_TAXON_ID = 48460
 
