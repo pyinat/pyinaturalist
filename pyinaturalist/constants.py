@@ -119,9 +119,9 @@ COLORS = {
     'black': '#000000',
 }
 
+
 @dataclass
 class FontAwesomeIcon:
-
     prefix: str
     name: str
     color: str
