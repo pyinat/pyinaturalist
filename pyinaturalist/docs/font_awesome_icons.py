@@ -1,4 +1,5 @@
 """Extended list of font-awesome icons to represent taxa"""
+
 from pyinaturalist.constants import FontAwesomeIcon
 
 EXTENDED_FONT_AWESOME_ICONS = {
