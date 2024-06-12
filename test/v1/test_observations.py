@@ -388,7 +388,7 @@ def test_upload(requests_mock):
         status_code=200,
     )
 
-    response = upload(1234, BytesIO(), BytesIO(), access_token='token')
+    response = upload(1234, photos=BytesIO(b'1234'), sounds=BytesIO(b'1234'), access_token='token')
     assert response[0]['id'] == 1234
     assert response[0]['created_at'] == '2020-09-24T21:06:16.964-05:00'
     assert response[0]['photo']['native_username'] == 'username'

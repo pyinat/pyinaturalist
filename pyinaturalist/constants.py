@@ -31,6 +31,7 @@ LARGE_REQUEST_WARNING = 5000  # Show a warning for queries that will return over
 # Rate-limiting and retry settings
 CONNECT_TIMEOUT = 5
 MAX_DELAY = 60  # Maximum time to wait for rate-limiting before aborting
+MAX_FILESIZE = 20000000  # 20MB maximum file size for uploads
 REQUEST_BURST_RATE = 5
 REQUESTS_PER_SECOND = 1
 REQUESTS_PER_MINUTE = 60
@@ -275,7 +276,7 @@ DateOrStr = Union[date, datetime, str]
 DateOrDatetime = Union[date, datetime]
 DateRange = Tuple[DateOrDatetime, DateOrDatetime]
 Dimensions = Tuple[int, int]
-FileOrPath = Union[BinaryIO, str]
+FileOrPath = Union[BinaryIO, Path, str]
 GeoJson = Dict[str, Any]
 HistogramResponse = Dict[DateOrInt, int]
 IntOrStr = Union[int, str]
