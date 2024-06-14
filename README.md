@@ -146,6 +146,7 @@ response = create_observation(
     positional_accuracy=50,  # GPS accuracy in meters
     access_token=token,
     photos=['~/observations/wasp1.jpg', '~/observations/wasp2.jpg'],
+    sounds=['~/observations/recording.mp3'],
 )
 
 # Save the new observation ID

@@ -6,6 +6,7 @@
 * Increase default request timeout from 10 to 20 seconds
 * Add `validate_token()` function to manually check if an access token is valid
 * Support rate limits less than one request per second (example: `ClientSession(per_second=0.5)`)
+* Add error handling for file uploads over 20MB (not accepted by API)
 * Allow setting lockfile path used for multiprocess rate limiting (example: `ClientSession(lock_path='/tmp/pyinat.lock')`)
 
 ## 0.19.0 (2023-12-12)

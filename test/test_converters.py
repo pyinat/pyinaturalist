@@ -7,6 +7,7 @@ from unittest.mock import MagicMock
 import pytest
 from dateutil.tz import tzoffset
 
+from pyinaturalist.constants import MAX_FILESIZE
 from pyinaturalist.converters import (
     convert_lat_long,
     convert_observation_histogram,
@@ -60,6 +61,17 @@ def test_ensure_file_obj__url():
 
     file_obj = ensure_file_obj('https://example.com/file.mp3', session)
     assert file_obj.read() == b'test content'
+
+
+def test_ensure_file_obj__bytes():
+    file_obj = ensure_file_obj(b'test content')
+    assert file_obj.read() == b'test content'
+
+
+def test_ensure_file_obj__exceeds_max_filesize():
+    contents = b'1' * (MAX_FILESIZE + 1)
+    with pytest.raises(ValueError):
+        ensure_file_obj(value=contents)
 
 
 @pytest.mark.parametrize(

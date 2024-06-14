@@ -4,7 +4,7 @@ import re
 from datetime import date, datetime
 from io import BytesIO
 from logging import getLogger
-from os.path import abspath, expanduser
+from os import SEEK_END
 from pathlib import Path
 from typing import IO, Any, Dict, List, Mapping, MutableSequence, Optional, Union
 from warnings import catch_warnings, simplefilter
@@ -15,6 +15,7 @@ from dateutil.tz import tzlocal
 from requests import Session
 
 from pyinaturalist.constants import (
+    MAX_FILESIZE,
     AnyFile,
     Coordinates,
     Dimensions,
@@ -186,17 +187,26 @@ def ensure_file_obj(value: AnyFile, session: Optional[Session] = None) -> IO:
     # Load from URL
     if isinstance(value, str) and URL_PATTERN.match(value):
         session = session or Session()
-        return session.get(value).raw
-
+        file_obj = session.get(value).raw
     # Load from local file path
-    if isinstance(value, (str, Path)):
-        file_path = abspath(expanduser(value))
+    elif isinstance(value, (str, Path)):
+        file_path = Path(value).expanduser().resolve()
         logger.info(f'Reading from file: {file_path}')
-        with open(file_path, 'rb') as f:
-            return BytesIO(f.read())
-
+        file_obj = BytesIO(file_path.read_bytes())
     # Otherwise, assume it's already a file or file-like object
-    return value
+    elif hasattr(value, 'read'):
+        file_obj = value
+    else:
+        file_obj = BytesIO(value)  # type: ignore
+
+    # Verify maximum file size
+    file_obj.seek(0, SEEK_END)
+    file_size = file_obj.tell()
+    file_obj.seek(0)
+    if file_size > MAX_FILESIZE:
+        raise ValueError(f'File size exceeds maximum allowed ({MAX_FILESIZE} bytes): {file_size}')
+
+    return file_obj
 
 
 def ensure_list(
