@@ -1,13 +1,22 @@
 # History
 
-## Unreleased
-* ⚠️ Drop support for python 3.7
-* Fix `KeyError` when using `create_observation()` in dry-run mode
+## 0.20.0 (Unreleased)
+
+### ⚠️ Deprecations & Removals
+* Drop support for python 3.7
+
+### Models
+* Add `User.annotated_observations_count` field
+
+### Rate limits, timeouts, and error handling
 * Increase default request timeout from 10 to 20 seconds
 * Add `validate_token()` function to manually check if an access token is valid
 * Support rate limits less than one request per second (example: `ClientSession(per_second=0.5)`)
 * Add error handling for file uploads over 20MB (not accepted by API)
 * Allow setting lockfile path used for multiprocess rate limiting (example: `ClientSession(lock_path='/tmp/pyinat.lock')`)
+
+### Bugfixes
+* Fix `KeyError` when using `create_observation()` in dry-run mode
 
 ## 0.19.0 (2023-12-12)
 
@@ -50,6 +59,11 @@ Add support for searching observations by observation fields, using a new `obser
 
 ## 0.18.0 (2023-02-27)
 
+### ⚠️ Deprecations & Removals
+* `get_observation()` is now deprecated, and will be removed in a future release
+  * Please use `get_observations()` or `get_observations_by_id()` instead
+* Remove redundant `Annotation.controlled_attribute_id` and `controlled_value_id` attributes (These can still be used as init arguments)
+
 ### New Endpoints
 * Added new **Observation** endpoint:
   * `get_observations_by_id()`
@@ -64,10 +78,6 @@ Add support for searching observations by observation fields, using a new `obser
   * `preferred_place_id`
   * `all_names`
 
-### Deprecated Endpoints
-* `get_observation()` is now deprecated, and will be removed in a future release
-  * Please use `get_observations()` or `get_observations_by_id()` instead
-
 ### Models
 * Add full mapping of conservation status codes for IUCN, NatureServe, Norma Oficial Mexicana, and other generic codes
 * Translate `ConservationStatus.status_name` based on status code and authority for more consistent results
@@ -76,7 +86,6 @@ Add support for searching observations by observation fields, using a new `obser
 * Use taxon icon as placeholder for `Observation.default_photo` if observation has no photos
 * Update `Annotation` model to include controlled term and value details from updated `GET /observations/{id}` response format
 * Add `Annotation.term` and `value` properties and init arguments for simpler initialization from term and value labels
-* Remove redundant `Annotation.controlled_attribute_id` and `controlled_value_id` attributes (These can still be used as init arguments)
 
 ### Sessions
 * Add `cache_control` option to `ClientSession` to disable using Cache-Control headers for cache
@@ -121,6 +130,9 @@ Add support for searching observations by observation fields, using a new `obser
 ## 0.17.0 (2022-05-17)
 [See all Issues & PRs for 0.17](https://github.com/pyinat/pyinaturalist/milestone/8?closed=1)
 
+### ⚠️ Deprecations & Removals
+* Dropped support for python 3.6
+
 ### New Endpoints
 * Added new **Observation** endpoint:
   * `get_observation_popular_field_values()`
@@ -149,7 +161,6 @@ Add support for searching observations by observation fields, using a new `obser
 * `Taxon`: Use icon in place of `default_photo` if missing
 
 ### Other Changes
-* Dropped support for python 3.6
 * Add an optional, abbreviated namespace `pyinat` as an alias for `pyinaturalist`
 * Updated rate limiting with a SQLite-based backend. This adds persistence for rate limit tracking
   across multiple threads, processes, and/or application restarts. See
@@ -159,6 +170,10 @@ Add support for searching observations by observation fields, using a new `obser
 
 ## 0.16.0 (2022-02-22)
 [See all Issues & PRs for 0.16](https://github.com/pyinat/pyinaturalist/milestone/7?closed=1)
+
+### ⚠️ Deprecations & Removals
+* Removed `pyinaturalist.user_agent` global variable and API function keyword args, and recommend setting on session object instead
+* Removed `pyinaturalist.DRY_RUN*` global variables, and recommend setting in environment variables instead
 
 ### New Endpoints
 * Added new **Taxon** endpoint: `get_taxa_map_layers()`
@@ -174,8 +189,6 @@ The following changes apply to `upload()`, `create_observation()`, and `update_o
 
 ### Other Changes
 * Added support for python 3.10
-* Removed `pyinaturalist.user_agent` global variable and API function keyword args, and recommend setting on session object instead
-* Removed `pyinaturalist.DRY_RUN*` global variables, and recommend setting in environment variables instead
 * Fixed `count_only=True`/`per_page=0` to not run full query
 * Do not error on unrecognized `**kwargs`, for cases where the API may accept some additional undocumented parameters
 * Allow overriding default location for API request cache
@@ -237,6 +250,11 @@ The following changes apply to `upload()`, `create_observation()`, and `update_o
 ## 0.14.0 (2021-07-14)
 [See all Issues & PRs for 0.14](https://github.com/pyinat/pyinaturalist/milestone/5?closed=1)
 
+### ⚠️ Deprecations & Removals
+* Deprecated `pyinaturalist.rest_api` module (moved to `pyinaturalist.v0` subpackage)
+* Deprecated `pyinaturalist.node_api` module (moved to `pyinaturalist.v1` subpackage)
+* Deprecated `get_geojson_observations()` (moved to join other observation conversion tools in `pyinaturalist-convert`)
+
 ### New Endpoints
 * Added new function for **Observation sounds** endpoint: `upload_sounds()`
 * Added new function for **Life list** endpoint: `get_observation_taxonomy()`
@@ -256,10 +274,6 @@ The following changes apply to `upload()`, `create_observation()`, and `update_o
     * All can still be imported via `from pyinaturalist import *`
     * Added aliases for backwards-compatibility, so imports from `pyinaturalist.rest_api` and `pyinaturalist.node_api` will still work
 
-### Deprecated Endpoints
-* Deprecated `pyinaturalist.rest_api` module (moved to `pyinaturalist.v0` subpackage)
-* Deprecated `pyinaturalist.node_api` module (moved to `pyinaturalist.v1` subpackage)
-* Deprecated `get_geojson_observations()` (moved to join other observation conversion tools in `pyinaturalist-convert`)
 
 ### Models
 Added data models for all API response types, to support working with typed python objects instead of JSON.
@@ -311,6 +325,14 @@ Model features:
 ## 0.13.0 (2021-05-22)
 [See all Issues & PRs for 0.13](https://github.com/pyinat/pyinaturalist/milestone/4?closed=1)
 
+### ⚠️ Deprecations & Removals
+* The following methods are now deprecated. They are still functional, but will raise a
+  `DeprecationWarning`, and will be removed in a future release:
+  * `node_api.get_all_observations()`
+  * `node_api.get_all_observation_species_counts()`
+  * `rest_api.get_all_observation_fields()`
+* Removed `minify` option from `get_taxa_autocomplete`
+
 ### New Endpoints
 * Added new function for **Search** endpoint: `search()` (combined search for places, projects, taxa, and users)
 * Added new functions for **Identifications** endpoints: `get_identifications()` and `get_identifications_by_id()`
@@ -332,20 +354,12 @@ Model features:
   * `node_api.get_taxa()`
   * `rest_api.get_observations()`
   * `rest_api.get_observation_fields()`
-* Removed `node_api.get_all_observation_species_counts()`, since this was only added recently
 * Updated `rest_api.get_observation_fields()` to return a dict with `'results'` for consistency with other endpoints
-
-### Deprecated Endpoints
-The following methods are now deprecated. They are still functional, but will raise a
-  `DeprecationWarning`, and will be removed in a future release:
-* `node_api.get_all_observations()`
-* `rest_api.get_all_observation_fields()`
 
 ### Other Changes
 * Added response formatting functions to `pyinaturalist.formatters`
 * All API functions and formatters can now be imported from the top-level package, e.g.
   `from pyinaturalist import *`
-* Removed `minify` option from `get_taxa_autocomplete`
 * Published [pyinaturalist on conda-forge](https://anaconda.org/conda-forge/pyinaturalist)
 * Added global rate-limiting to stay within the rates suggested in
   [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
@@ -362,6 +376,10 @@ The following methods are now deprecated. They are still functional, but will ra
 
 ## 0.12.0 (2021-02-02)
 [See all Issues & PRs for 0.12](https://github.com/pyinat/pyinaturalist/milestone/3?closed=1)
+
+### ⚠️ Deprecations & Removals
+* Dropped support for python 3.5
+* Removed request parameters that were deprecated in 0.11
 
 ### New Endpoints
 * Added new function for **Observation Histogram** endpoint: `get_observation_histogram()`
@@ -395,12 +413,17 @@ The following methods are now deprecated. They are still functional, but will ra
 * Added some more detailed usage examples under `examples/`
 * Improved performance for large paginated queries
 * Fixed bug that dropped request parameter values of `0` as if they were `None`
-* Dropped support for python 3.5
-* Removed request parameters that were deprecated in 0.11
 
 -----
 ## 0.11.0 (2020-11-04)
 [See all Issues & PRs for 0.11](https://github.com/pyinat/pyinaturalist/milestone/2?closed=1)
+
+### ⚠️ Deprecations & Removals
+* Dropped support for python 3.4
+* Using the `params` positional argument for the handful of functions that used it
+  will raise a `DeprecationWarning`, but will otherwise still be functional until `0.12`
+* Using the `search_query` argument for `rest_api.get_observation_fields()` and `rest_api.get_all_observation_fields()`
+  will raise a `DeprecationWarning`, but will otherwise still be functional until `0.12`
 
 ### New Endpoints
 * Added new functions for Node API **Places** endpoints:
@@ -421,11 +444,7 @@ The following methods are now deprecated. They are still functional, but will ra
 * Updated `rest_api.get_observations()` with type conversion from strings to floats for response lat/long coordinates.
   Only applies to JSON response format.
 * Updated `node_api.get_taxa_autocomplete()` with optional `min_rank` and `max_rank` parameters, for consistency with `get_taxa()`
-* Using the `params` positional argument for the handful of functions that used it
-  will raise a `DeprecationWarning`, but will otherwise still be functional until `0.12`
 * Renamed `search_query` argument to `q` to be consistent with API request parameters
-* Using the `search_query` argument for `rest_api.get_observation_fields()` and `rest_api.get_all_observation_fields()`
-  will raise a `DeprecationWarning`, but will otherwise still be functional until `0.12`
 * Renamed `create_observations()` to `create_observation()`, as this only supports creating a single observation per
   call. This is aliased to `create_observations()` for backwards-compatibility, but will raise a `DeprecationWarning`.
 
@@ -439,7 +458,6 @@ The following methods are now deprecated. They are still functional, but will ra
 * Made all API function signatures consistent by taking request params as keyword arguments
 
 ### Other Changes
-* Dropped support for python 3.4
 * Added support for python 3.9
 * Added parameter validation for multiple-choice request parameters
 
