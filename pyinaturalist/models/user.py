@@ -20,6 +20,9 @@ class User(BaseModel):
         default=0,
         doc='Combined user activity including observations, identifications, and journal posts',
     )
+    annotated_observations_count: int = field(
+        default=0, doc='Number of observations the user has annotated'
+    )
     created_at: datetime = datetime_now_field(doc='Date and time the user was registered')
     icon: str = field(default=None, doc='URL for small user icon')
     icon_url: str = field(default=None, doc='URL for medium user icon')
