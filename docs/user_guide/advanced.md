@@ -41,7 +41,7 @@ You can change this behavior using {py:class}`.ClientSession`. For example, to k
 
 To store the cache somewhere other than the default cache directory:
 ```python
->>> session = ClientSession(cache_name='~/data/api_requests.db')
+>>> session = ClientSession(cache_file='~/data/api_requests.db')
 ```
 
 To manually clear the cache:
