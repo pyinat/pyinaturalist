@@ -7,6 +7,7 @@
 
 ### Models
 * Add `User.annotated_observations_count` field
+* Add `root_id` filter to `taxon.make_tree()` to explicitly set the root taxon instead of determining it automatically
 
 ### Rate limits, timeouts, and error handling
 * Increase default request timeout from 10 to 20 seconds
