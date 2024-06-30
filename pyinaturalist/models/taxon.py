@@ -1,5 +1,6 @@
 import re
 from itertools import chain, groupby
+from logging import getLogger
 from typing import Any, Callable, Dict, Iterable, List, Optional
 
 from pyinaturalist.constants import (
@@ -32,6 +33,8 @@ from pyinaturalist.models import (
     define_model_collection,
     field,
 )
+
+logger = getLogger(__name__)
 
 
 @define_model
@@ -408,19 +411,23 @@ def make_tree(
     taxa: Iterable[Taxon],
     include_ranks: Optional[List[str]] = None,
     sort_key: Optional[TaxonSortKey] = None,
+    root_id: Optional[int] = None,
 ) -> Taxon:
     """Organize a list of taxa into a taxonomic tree. Expects exactly one root taxon.
 
     Args:
+        taxa: Taxon objects to organize
         sort_key: Key function for sorting children; defaults to rank and name
         include_ranks: If provided, only include taxa with these ranks; otherwise, include all ranks
+        root_id: ID of the root taxon; if provided, only that taxon and its descendants will
+            be included. Otherwise, the root taxon is determined automatically.
 
     Returns:
         Root taxon of the tree
     """
     include_ranks = [r.lower() for r in include_ranks or []]
-    root = _find_root(taxa, include_ranks)
     sort_key = sort_key if sort_key is not None else _sort_rank_name
+    root = _find_root(taxa, include_ranks, root_id)
 
     # Group taxa by parent ID, including any ungrafted children added directly to root
     taxa_by_parent: Dict[int, List[Taxon]] = _sort_groupby(taxa, key=lambda x: x.parent_id or -1)
@@ -444,16 +451,33 @@ def make_tree(
     return add_descendants(root)
 
 
-def _find_root(taxa: Iterable[Taxon], include_ranks: Optional[List[str]] = None) -> Taxon:
+def _find_root(
+    taxa: Iterable[Taxon],
+    include_ranks: Optional[List[str]] = None,
+    root_id: Optional[int] = None,
+) -> Taxon:
     """Find the root taxon of a list of taxa, optionally filtering by rank.
     Handles ungrafted and multiple root taxa by adding under a new root node.
     """
+    # If a specific root taxon is requested, use that if possible
+    if root_id:
+        root = next((t for t in taxa if t.id == root_id), None)
+        if root and (not include_ranks or root.rank in include_ranks):
+            return root
+        else:
+            logger.warning(f'Root taxon {root_id} not found or filtered out; finding default root')
+
     # Typical case: exactly one root taxon ("Life")
     taxa_by_id = {t.id: t for t in taxa}
     if ROOT_TAXON_ID in taxa_by_id and (not include_ranks or 'stateofmatter' in include_ranks):
         return taxa_by_id[ROOT_TAXON_ID]
+    # Otherwise, find the highest-ranked taxa and graft them under a new root
+    else:
+        return _find_and_graft_root(taxa, include_ranks)
 
-    # Otherwise, find the taxa with the highest rank
+
+def _find_and_graft_root(taxa: Iterable[Taxon], include_ranks: Optional[List[str]] = None) -> Taxon:
+    taxa_by_id = {t.id: t for t in taxa}
     max_rank = max(t.rank_level for t in taxa if not include_ranks or t.rank in include_ranks)
     root_taxa = [t for t in taxa if t.rank_level == max_rank]
 
