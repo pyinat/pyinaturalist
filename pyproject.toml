@@ -56,7 +56,7 @@ filelock                    = {optional=true, version=">2.0"}
 ujson                       = {optional=true, version=">5.0"}
 
 # Documentation dependencies needed for Readthedocs builds
-furo                        = {optional=true, version="^2023.7"}
+furo                        = {optional=true, version=">=2023.7,<2025.0"}
 ipython                     = {optional=true, version="^8.12"}
 linkify-it-py               = {optional=true, version="^2.0"}
 matplotlib                  = {optional=true, version=">=3.7"}
