@@ -438,15 +438,24 @@ def make_tree(
         """Recursively add children and ancestors to a taxon"""
         taxon.children = []
         taxon.ancestors = ancestors or []
-        for child in taxa_by_parent.get(taxon.id, []):
+        for child in get_included_children(taxon):
             child = add_descendants(child, taxon.ancestors + [taxon])
-            if include_ranks and child.rank not in include_ranks:
-                taxon.children.extend(child.children)
-            else:
-                taxon.children.append(child)
+            taxon.children.append(child)
 
         taxon.children = sorted(taxon.children, key=sort_key)
         return taxon
+
+    def included(taxon: Taxon) -> bool:
+        return not include_ranks or taxon.rank in include_ranks
+
+    def get_included_children(taxon: Taxon) -> List[Taxon]:
+        """Get taxon children. If any child ranks are excluded, get the next level of descendants
+        that are included."""
+        immediate_children = taxa_by_parent.get(taxon.id, [])
+        children = [c for c in immediate_children if included(c)]
+        for c in [c for c in immediate_children if not included(c)]:
+            children.extend(get_included_children(c))
+        return children
 
     return add_descendants(root)
 
