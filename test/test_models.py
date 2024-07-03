@@ -1189,11 +1189,10 @@ def test_make_tree__flattened_without_root():
 def test_make_tree__flattened_filtered():
     flat_list = make_tree(
         Taxon.from_json_list(j_life_list_2),
-        include_ranks=['kingdom', 'phylum', 'family', 'genus', 'subgenus'],
+        include_ranks=['kingdom', 'family', 'genus', 'subgenus'],
     ).flatten()
     assert [t.id for t in flat_list] == [
         1,
-        47120,
         47221,
         52775,
         538903,
@@ -1202,7 +1201,7 @@ def test_make_tree__flattened_filtered():
         415027,
         538902,
     ]
-    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 4, 4, 4, 4, 4]
+    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 3, 3, 3, 3]
 
     assert flat_list[0].ancestors == []
     assert [t.id for t in flat_list[1].ancestors] == [1]
