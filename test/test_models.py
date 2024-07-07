@@ -1116,25 +1116,33 @@ def test_make_tree():
     assert node.name == 'Bombus'
     children = [t.name for t in node.children]
     assert children == ['Bombus', 'Psithyrus', 'Pyrobombus', 'Subterraneobombus', 'Thoracobombus']
+    assert (
+        node.child_ids == [t.id for t in node.children] == [538903, 538893, 538900, 415027, 538902]
+    )
 
     # Ensure ancestors are updated
     assert root.ancestors == []
-    assert [t.id for t in node.ancestors] == [
-        48460,
-        1,
-        47120,
-        372739,
-        47158,
-        184884,
-        47201,
-        124417,
-        326777,
-        47222,
-        630955,
-        47221,
-        199939,
-        538883,
-    ]
+    assert node.parent_id == 538883
+    assert (
+        node.ancestor_ids
+        == [t.id for t in node.ancestors]
+        == [
+            48460,
+            1,
+            47120,
+            372739,
+            47158,
+            184884,
+            47201,
+            124417,
+            326777,
+            47222,
+            630955,
+            47221,
+            199939,
+            538883,
+        ]
+    )
 
 
 def test_make_tree__filtered():

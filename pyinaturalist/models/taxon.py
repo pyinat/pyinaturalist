@@ -443,6 +443,8 @@ def make_tree(
         taxon.ancestors = ancestors or []
         for child in get_included_children(taxon):
             child = add_descendants(child, taxon.ancestors + [taxon])
+            child.ancestor_ids = [a.id for a in child.ancestors]
+            child.parent_id = taxon.id
             taxon.children.append(child)
 
         taxon.children = sorted(taxon.children, key=sort_key)
@@ -509,6 +511,8 @@ def _find_and_graft_root(taxa: Iterable[Taxon], include_ranks: Optional[List[str
     root.children = root_taxa
     for t in root.children:
         t.ancestors = [root]
+        t.ancestor_ids = [root.id]
+        t.parent_id = root.id
     return root
 
 
