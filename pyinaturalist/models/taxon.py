@@ -1,4 +1,5 @@
 import re
+from copy import deepcopy
 from itertools import chain, groupby
 from logging import getLogger
 from typing import Any, Callable, Dict, Iterable, List, Optional
@@ -413,7 +414,8 @@ def make_tree(
     sort_key: Optional[TaxonSortKey] = None,
     root_id: Optional[int] = None,
 ) -> Taxon:
-    """Organize a list of taxa into a taxonomic tree. Expects exactly one root taxon.
+    """Organize a list of taxa into a taxonomic tree, defined by ``children`` and ``ancestors``
+    attributes. Expects exactly one root taxon.
 
     Args:
         taxa: Taxon objects to organize
@@ -427,6 +429,7 @@ def make_tree(
     """
     include_ranks = [r.lower() for r in include_ranks or []]
     sort_key = sort_key if sort_key is not None else _sort_rank_name
+    taxa = [deepcopy(t) for t in taxa]
     root = _find_root(taxa, include_ranks, root_id)
 
     # Group taxa by parent ID, including any ungrafted children added directly to root
@@ -504,6 +507,8 @@ def _find_and_graft_root(taxa: Iterable[Taxon], include_ranks: Optional[List[str
     # If there are multiple branches, we need to insert a 'Life' root above them
     root = TaxonCount(id=ROOT_TAXON_ID, name='Life', rank='stateofmatter', is_active=True)  # type: ignore
     root.children = root_taxa
+    for t in root.children:
+        t.ancestors = [root]
     return root
 
 
