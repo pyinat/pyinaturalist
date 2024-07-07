@@ -63,7 +63,7 @@ class LazyProperty(property):
         type: Type = BaseModel,
         **converter_kwargs,
     ):
-        update_wrapper(self, converter)
+        update_wrapper(self, converter)  # type: ignore
         self.converter = converter
         self.converter_kwargs = converter_kwargs
         self.default: Any = None
