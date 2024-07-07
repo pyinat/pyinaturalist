@@ -73,7 +73,7 @@ sphinxext-opengraph         = {optional=true, version=">=0.9"}
 
 [tool.poetry.dev-dependencies]
 coverage                    = ">=7.2"
-nox                         = "^2023.4"
+nox                         = "^2024.4"
 nox-poetry                  = "^1.0.0"
 pre-commit                  = "^3.5"
 pretty-errors               = ">=1.2"
