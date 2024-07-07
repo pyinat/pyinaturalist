@@ -1116,25 +1116,33 @@ def test_make_tree():
     assert node.name == 'Bombus'
     children = [t.name for t in node.children]
     assert children == ['Bombus', 'Psithyrus', 'Pyrobombus', 'Subterraneobombus', 'Thoracobombus']
+    assert (
+        node.child_ids == [t.id for t in node.children] == [538903, 538893, 538900, 415027, 538902]
+    )
 
     # Ensure ancestors are updated
     assert root.ancestors == []
-    assert [t.id for t in node.ancestors] == [
-        48460,
-        1,
-        47120,
-        372739,
-        47158,
-        184884,
-        47201,
-        124417,
-        326777,
-        47222,
-        630955,
-        47221,
-        199939,
-        538883,
-    ]
+    assert node.parent_id == 538883
+    assert (
+        node.ancestor_ids
+        == [t.id for t in node.ancestors]
+        == [
+            48460,
+            1,
+            47120,
+            372739,
+            47158,
+            184884,
+            47201,
+            124417,
+            326777,
+            47222,
+            630955,
+            47221,
+            199939,
+            538883,
+        ]
+    )
 
 
 def test_make_tree__filtered():
@@ -1167,6 +1175,18 @@ def test_make_tree__filtered():
         'Bombus terricola',
         'Bombus vagans',
     ]
+
+
+def test_make_tree__preserves_originals():
+    """Children/ancestors of original taxon objects should be preserved"""
+    taxa = Taxon.from_json_list(j_life_list_2)
+    animalia = taxa[1]
+    animalia.ancestors = [Taxon(name='Life')]
+    animalia.children = [Taxon(name='Arthropoda')]
+    make_tree(taxa, include_ranks=['kingdom', 'class', 'family', 'genus', 'species'])
+
+    assert animalia.ancestors[0].name == 'Life'
+    assert animalia.children[0].name == 'Arthropoda'
 
 
 def test_make_tree__flattened():
@@ -1237,6 +1257,7 @@ def test_make_tree__ungrafted():
     assert root.name == 'Life'
     assert root.children[0].name == 'Animalia'
     assert root.children[1].name == 'Monocots'
+    assert root.children[0].children[0].name == 'Arthropoda'
 
 
 def test_make_tree__explicit_root():
