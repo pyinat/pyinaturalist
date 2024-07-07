@@ -1169,6 +1169,18 @@ def test_make_tree__filtered():
     ]
 
 
+def test_make_tree__preserves_originals():
+    """Children/ancestors of original taxon objects should be preserved"""
+    taxa = Taxon.from_json_list(j_life_list_2)
+    animalia = taxa[1]
+    animalia.ancestors = [Taxon(name='Life')]
+    animalia.children = [Taxon(name='Arthropoda')]
+    make_tree(taxa, include_ranks=['kingdom', 'class', 'family', 'genus', 'species'])
+
+    assert animalia.ancestors[0].name == 'Life'
+    assert animalia.children[0].name == 'Arthropoda'
+
+
 def test_make_tree__flattened():
     flat_list = make_tree(Taxon.from_json_list(j_life_list_1)).flatten()
     assert [t.id for t in flat_list] == [48460, 1, 2, 3, 573, 574, 889, 890, 980, 981]
@@ -1237,6 +1249,7 @@ def test_make_tree__ungrafted():
     assert root.name == 'Life'
     assert root.children[0].name == 'Animalia'
     assert root.children[1].name == 'Monocots'
+    assert root.children[0].children[0].name == 'Arthropoda'
 
 
 def test_make_tree__explicit_root():
