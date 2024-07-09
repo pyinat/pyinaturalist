@@ -475,11 +475,10 @@ def _find_root(
     """
     # If a specific root taxon is requested, use that if possible
     if root_id:
-        root = next((t for t in taxa if t.id == root_id), None)
-        if root and (not include_ranks or root.rank in include_ranks):
+        if root := next((t for t in taxa if t.id == root_id), None):
             return root
         else:
-            logger.warning(f'Root taxon {root_id} not found or filtered out; finding default root')
+            logger.warning(f'Root taxon {root_id} not found; finding default root')
 
     # Typical case: exactly one root taxon ("Life")
     taxa_by_id = {t.id: t for t in taxa}
