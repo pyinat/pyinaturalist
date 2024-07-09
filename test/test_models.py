@@ -1278,12 +1278,11 @@ def test_make_tree__explicit_root_not_found():
 
 
 def test_make_tree__explicit_root_filtered_out():
-    """If a root taxon is provided but filtered out, find the next root matching the filter"""
+    """If a root taxon is provided, it should be exempt from rank filters"""
     taxa = Taxon.from_json_list(j_life_list_2)
     root = make_tree(taxa, root_id=1, include_ranks=['family', 'genus', 'species'])
-    assert root.id == 47221
-    assert root.name == 'Apidae'
-    assert root.rank == 'family'
+    assert root.id == 1
+    assert root.name == 'Animalia'
     assert len(root.children) == 1
 
 
