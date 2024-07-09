@@ -17,6 +17,7 @@
 * Support rate limits less than one request per second (example: `ClientSession(per_second=0.5)`)
 * Add error handling for file uploads over 20MB (not accepted by API)
 * Allow setting lockfile path used for multiprocess rate limiting (example: `ClientSession(lock_path='/tmp/pyinat.lock')`)
+* Add support for font-awesome based icons
 
 ### Bugfixes
 * Fix `KeyError` when using `create_observation()` in dry-run mode

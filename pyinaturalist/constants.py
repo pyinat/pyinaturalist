@@ -1,4 +1,5 @@
 # ruff: noqa: F401
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from os.path import abspath, dirname, join
 from pathlib import Path
@@ -7,6 +8,7 @@ from typing import IO, TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Optio
 from dateutil.relativedelta import relativedelta
 from platformdirs import user_data_dir
 from pyrate_limiter.sqlite_bucket import LOCK_PATH as DEFAULT_LOCK_PATH
+
 
 # iNaturalist URLs
 API_V0 = 'https://www.inaturalist.org'
@@ -87,6 +89,7 @@ ICONIC_TAXA = {
     48222: 'Chromista',
     47686: 'Protozoa',
 }
+
 ICONIC_EMOJI = {
     0: '❓',
     1: '🐾',
@@ -103,6 +106,60 @@ ICONIC_EMOJI = {
     48222: '🟢',
     47686: '🦠',
 }
+
+COLORS = {
+    'blue': '#5778a4',
+    'orange': '#e49444',
+    'red': '#d1615d',
+    'teal': '#85b6b2',
+    'green': '#6a9f58',
+    'yellow': '#e7ca60',
+    'purple': '#a87c9f',
+    'pink': '#f1a2a9',
+    'brown': '#967662',
+    'grey': '#b8b0ac',
+    'black': '#000000',
+}
+
+
+@dataclass
+class FontAwesomeIcon:
+    prefix: str
+    name: str
+    color: str
+    size: int = 16
+
+    def __str__(self):
+        return (
+            f'<i class="{self.prefix} {self.name}"'
+            f'style="color: {COLORS[self.color]};'
+            f'font-size: {self.size}px;"></i>'
+        )
+
+    def __repr__(self):
+        return f'<FontAwesomeIcon {self.prefix} {self.name} {self.color} {self.size}>'
+
+
+ICONIC_FONT_AWESOME = {
+    0: FontAwesomeIcon('fa-solid', 'fa-question-circle', 'grey'),
+    1: FontAwesomeIcon('fa-solid', 'fa-paw', 'black'),
+    3: FontAwesomeIcon('fa-solid', 'fa-dove', 'teal'),
+    20978: FontAwesomeIcon('fa-solid', 'fa-frog', 'green'),
+    26036: FontAwesomeIcon('fa-solid', 'fa-dragon', 'green'),
+    40151: FontAwesomeIcon('fa-solid', 'fa-cat', 'orange'),
+    47178: FontAwesomeIcon('fa-solid', 'fa-fish', 'blue'),
+    47115: FontAwesomeIcon('fa-solid', 'fa-worm', 'pink'),
+    47119: FontAwesomeIcon('fa-solid', 'fa-spider', 'black'),
+    47158: FontAwesomeIcon('fa-solid', 'fa-mosquito', 'purple'),
+    47126: FontAwesomeIcon('fa-solid', 'fa-leaf', 'green'),
+    47170: FontAwesomeIcon('fa-solid', 'fa-bacteria', 'brown'),  # mushroom
+    48222: FontAwesomeIcon('fa-solid', 'fa-bowling-ball', 'green'),
+    47686: FontAwesomeIcon('fa-solid', 'fa-disease', 'green'),
+}
+
+assert set(ICONIC_TAXA.keys()) == set(ICONIC_EMOJI.keys())
+assert set(ICONIC_TAXA.keys()) == set(ICONIC_FONT_AWESOME.keys())
+
 ROOT_TAXON_ID = 48460
 
 # Taxonomic ranks that can be filtered on, and numeric values for comparison

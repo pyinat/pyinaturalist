@@ -7,6 +7,7 @@
 
 from pyinaturalist.docs.docstrings import ApiDocstring, copy_annotations, copy_docstrings
 from pyinaturalist.docs.emoji import EMOJI
+from pyinaturalist.docs.font_awesome_icons import EXTENDED_FONT_AWESOME_ICONS
 from pyinaturalist.docs.signatures import (
     copy_doc_signature,
     copy_signatures,
