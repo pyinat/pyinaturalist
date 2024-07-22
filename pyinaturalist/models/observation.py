@@ -321,6 +321,21 @@ class Observation(BaseModel):
             kwargs['identifications_count'] = len(kwargs['identifications'])
         self.__attrs_init__(**kwargs)  # type: ignore
 
+    def __attrs_post_init__(self):
+        """Add ancestor info to Observation.taxon based on identification data, if available."""
+        if not self.taxon or not self.identifications:
+            return
+
+        taxa_by_id = {
+            t.id: t
+            for t in chain.from_iterable(
+                [i.taxon.ancestors for i in self.identifications if i.taxon]
+            )
+        }
+        self.taxon.ancestors = list(
+            filter(None, [taxa_by_id.get(i) for i in self.taxon.ancestor_ids])
+        )
+
     @property
     def cumulative_ids(self) -> Tuple[int, int]:
         """Calculate the cumulative community ID score (agreements/total), as shown on the observation UI
