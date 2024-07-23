@@ -600,6 +600,24 @@ def test_observation__cumulative_ids__most_agree():
     assert obs.cumulative_ids == (2, 3)
 
 
+def test_observation__add_ancestors():
+    obs = Observation.from_json(j_observation_2)
+    assert [f'{t.rank} {t.name}' for t in obs.taxon.ancestors] == [
+        'kingdom Animalia',
+        'phylum Arthropoda',
+        'subphylum Hexapoda',
+        'class Insecta',
+        'subclass Pterygota',
+        'order Lepidoptera',
+        'superfamily Papilionoidea',
+        'family Nymphalidae',
+        'subfamily Danainae',
+        'tribe Danaini',
+        'subtribe Danaina',
+        'genus Danaus',
+    ]
+
+
 def test_observations():
     obs_list = Observations.from_json_list(
         [j_observation_1, j_observation_1, j_observation_2, j_observation_3_ofvs]
