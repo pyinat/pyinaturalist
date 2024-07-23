@@ -10,6 +10,8 @@
 * Add `root_id` filter to `taxon.make_tree()` to explicitly set the root taxon instead of determining it automatically
 * Fix `taxon.make_tree()` rank filtering to allow skipping any number of rank levels
 * `taxon.make_tree()` now returns copies of original taxon objects instead of modifying them in-place
+* Add shortcut properties to `Taxon` for ancestors of common ranks:
+  `Taxon.kingdom`, `phylum`, `class_` (note the `_`; 'class' is a reserved keyword), `order`, `family`, `genus`
 * Update `Observation.taxon.ancestors` based on identification data, if available
 
 ### Rate limits, timeouts, and error handling
