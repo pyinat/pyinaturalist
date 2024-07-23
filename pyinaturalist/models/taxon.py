@@ -187,6 +187,33 @@ class Taxon(BaseModel):
         return taxa
 
     @property
+    def kingdom(self) -> Optional['Taxon']:
+        return self._get_ancestor_by_rank('kingdom')
+
+    @property
+    def phylum(self) -> Optional['Taxon']:
+        return self._get_ancestor_by_rank('phylum')
+
+    @property
+    def class_(self) -> Optional['Taxon']:
+        return self._get_ancestor_by_rank('class')
+
+    @property
+    def order(self) -> Optional['Taxon']:
+        return self._get_ancestor_by_rank('order')
+
+    @property
+    def family(self) -> Optional['Taxon']:
+        return self._get_ancestor_by_rank('family')
+
+    @property
+    def genus(self) -> Optional['Taxon']:
+        return self._get_ancestor_by_rank('genus')
+
+    def _get_ancestor_by_rank(self, rank: str) -> Optional['Taxon']:
+        return next((t for t in self.ancestors if t.rank == rank), None)
+
+    @property
     def child_ids(self) -> List[int]:
         """Taxon IDs of direct children, sorted by rank then name"""
         return [t.id for t in self.children]
