@@ -938,6 +938,16 @@ def test_taxon__ancestor_ids_from_ancestor_objs():
     assert taxon.ancestor_ids == ids
 
 
+def test_taxon_ancestor_shortcuts():
+    taxon = Taxon.from_json(j_taxon_1)
+    assert taxon.kingdom.id == 1 and taxon.kingdom.name == 'Animalia'
+    assert taxon.phylum.id == 47120 and taxon.phylum.name == 'Arthropoda'
+    assert taxon.class_.id == 47158 and taxon.class_.name == 'Insecta'
+    assert taxon.order.id == 47208 and taxon.order.name == 'Coleoptera'
+    assert taxon.family.id == 53849 and taxon.family.name == 'Silphidae'
+    assert taxon.genus.id == 53850 and taxon.genus.name == 'Nicrophorus'
+
+
 def test_taxon__all_names():
     taxon = Taxon.from_json(j_taxon_8_all_names)
     assert taxon.names[1] == {
