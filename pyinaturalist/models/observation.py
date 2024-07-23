@@ -319,22 +319,18 @@ class Observation(BaseModel):
         # Set identifications_count if missing
         if kwargs.get('identifications') and not kwargs.get('identifications_count'):
             kwargs['identifications_count'] = len(kwargs['identifications'])
+
+        # Add ancestor info to Observation.taxon based on identification data, if available
+        if kwargs.get('taxon') and (idents := kwargs.get('identifications')):
+            taxa_by_id = {
+                t['id']: t
+                for t in chain.from_iterable(
+                    [i.get('taxon', {}).get('ancestors', []) for i in idents]
+                )
+            }
+            ancestors = [taxa_by_id.get(i) for i in kwargs['taxon'].get('ancestor_ids')]
+            kwargs['taxon']['ancestors'] = list(filter(None, ancestors))
         self.__attrs_init__(**kwargs)  # type: ignore
-
-    def __attrs_post_init__(self):
-        """Add ancestor info to Observation.taxon based on identification data, if available."""
-        if not self.taxon or not self.identifications:
-            return
-
-        taxa_by_id = {
-            t.id: t
-            for t in chain.from_iterable(
-                [i.taxon.ancestors for i in self.identifications if i.taxon]
-            )
-        }
-        self.taxon.ancestors = list(
-            filter(None, [taxa_by_id.get(i) for i in self.taxon.ancestor_ids])
-        )
 
     @property
     def cumulative_ids(self) -> Tuple[int, int]:
