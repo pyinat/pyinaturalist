@@ -140,9 +140,10 @@ class Taxon(BaseModel):
         Photo.from_json_list, type=List[Photo], doc='All taxon photos shown on taxon info page'
     )
 
+    # Indicates this was inserted as an artificial tree root
+    _artificial: bool = field(default=False, repr=False)
     # Indicates this is a partial record (e.g. from nested Taxon.ancestors or children)
     _partial: bool = field(default=False, repr=False)
-
     # Used for tree formatting
     _indent_level: int = field(default=None, repr=False)
 
@@ -253,7 +254,7 @@ class Taxon(BaseModel):
             else self.name
         )
         common_name = (
-            f' ({title(self.preferred_common_name)})' if self.preferred_common_name else ''
+            f' ({_title(self.preferred_common_name)})' if self.preferred_common_name else ''
         )
         return f'{rank}{name}{common_name}'
 
@@ -302,7 +303,8 @@ class Taxon(BaseModel):
         ``Taxon.indent_level`` is set to indicate the tree depth of each taxon.
 
         Args:
-            hide_root: If True, exclude the current taxon from the list and from indentation level.
+            hide_root: Exclude the current taxon from the list if it was automatically inserted by
+                :py:func:`make_tree`
         """
 
         def flatten_tree(taxon: Taxon, level: int = 0) -> List[Taxon]:
@@ -315,7 +317,7 @@ class Taxon(BaseModel):
                 )
             )
 
-        return flatten_tree(self, level=-1 if hide_root else 0)
+        return flatten_tree(self, level=-1 if hide_root and self._artificial else 0)
 
     @property
     def _row(self) -> TableRow:
@@ -427,12 +429,14 @@ class LifeList(BaseModelCollection):
         return super().get_count(taxon_id, count_field=count_field)
 
 
-def title(value: str) -> str:
-    """Title case a string, with handling for apostrophes
-
-    Borrowed/modified from ``django.template.defaultfilters.title()``
-    """
-    return re.sub("([a-z])['’]([A-Z])", lambda m: m[0].lower(), value.title())
+DEFAULT_ROOT = TaxonCount(
+    id=ROOT_TAXON_ID,
+    name='Life',
+    rank='stateofmatter',
+    rank_level=100,
+    is_active=True,
+    artificial=True,
+)  # type: ignore
 
 
 def make_tree(
@@ -529,11 +533,14 @@ def _find_and_graft_root(taxa: Iterable[Taxon], include_ranks: Optional[List[str
     ]
     root_taxa = list({t.id: t for t in root_taxa + ungrafted}.values())
 
+    # Single branch: return the root taxon
     if len(root_taxa) == 1:
-        return root_taxa[0]
+        root = root_taxa[0]
+        root._artificial = True
+        return root
 
-    # If there are multiple branches, we need to insert a 'Life' root above them
-    root = TaxonCount(id=ROOT_TAXON_ID, name='Life', rank='stateofmatter', is_active=True)  # type: ignore
+    # Multiple branches: we need to insert a 'Life' root above them
+    root = deepcopy(DEFAULT_ROOT)
     root.children = root_taxa
     for t in root.children:
         t.ancestors = [root]
@@ -550,3 +557,11 @@ def _sort_groupby(values, key):
 def _sort_rank_name(taxon):
     """Get a sort key by rank (descending) and name"""
     return (taxon.rank_level or 0) * -1, taxon.name
+
+
+def _title(value: str) -> str:
+    """Title case a string, with handling for apostrophes
+
+    Borrowed/modified from ``django.template.defaultfilters.title()``
+    """
+    return re.sub("([a-z])['’]([A-Z])", lambda m: m[0].lower(), value.title())
