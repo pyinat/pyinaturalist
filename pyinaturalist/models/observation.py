@@ -330,7 +330,7 @@ class Observation(BaseModel):
             }
             ancestors = [taxa_by_id.get(i) for i in kwargs['taxon'].get('ancestor_ids')]
             kwargs['taxon']['ancestors'] = list(filter(None, ancestors))
-        self.__attrs_init__(**kwargs)  # type: ignore
+        self.__attrs_init__(**kwargs)
 
     @property
     def cumulative_ids(self) -> Tuple[int, int]:

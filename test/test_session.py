@@ -127,7 +127,7 @@ def test_request_dry_run_disabled(requests_mock):
     assert ClientSession().request('GET', 'http://url').json() == real_response
 
 
-@patch.object(urllib3.util.retry.time, 'sleep')  # type: ignore
+@patch.object(urllib3.util.retry.time, 'sleep')
 def test_request_validate_json__retry_failure(mock_sleep, requests_mock):
     requests_mock.get(
         'http://url/invalid_json',

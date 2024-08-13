@@ -116,7 +116,7 @@ class ConservationStatus(BaseModel):
     url: str = field(default=None, doc='Link to data source with more details')
 
     # Lazy-loaded nested model objects
-    place: property = LazyProperty(  # type: ignore
+    place: property = LazyProperty(
         Place.from_json, type=Place, doc='Location that the conservation status applies to'
     )
     updater: User = LazyProperty(User.from_json, type=User, doc='User that last updated the record')  # type: ignore

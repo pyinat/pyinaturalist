@@ -251,7 +251,7 @@ def load_json(value: ResponseOrFile) -> ResponseOrResults:
         with open(expanduser(str(value))) as f:
             json_value = json.load(f)
     else:
-        json_value = json.load(value)  # type: ignore
+        json_value = json.load(value)
 
     if 'results' in json_value:
         json_value = json_value['results']
