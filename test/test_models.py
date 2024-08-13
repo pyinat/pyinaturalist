@@ -1205,6 +1205,15 @@ def test_make_tree__filtered():
     ]
 
 
+def test_make_tree__all_filtered():
+    """When all available ranks are filtered out, a single root node should be created"""
+    root = make_tree(
+        Taxon.from_json_list(j_life_list_2),
+        include_ranks=['infraclass'],
+    )
+    assert root.name == 'Life' and not root.children
+
+
 def test_make_tree__preserves_originals():
     """Children/ancestors of original taxon objects should be preserved"""
     taxa = Taxon.from_json_list(j_life_list_2)

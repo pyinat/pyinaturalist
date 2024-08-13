@@ -522,8 +522,11 @@ def _find_root(
 
 def _find_and_graft_root(taxa: Iterable[Taxon], include_ranks: Optional[List[str]] = None) -> Taxon:
     taxa_by_id = {t.id: t for t in taxa}
-    max_rank = max(t.rank_level for t in taxa if not include_ranks or t.rank in include_ranks)
-    root_taxa = [t for t in taxa if t.rank_level == max_rank]
+    rank_levels = [t.rank_level for t in taxa if not include_ranks or t.rank in include_ranks]
+    if not rank_levels:
+        logger.warning('All taxon ranks excluded; returning default root')
+        return deepcopy(DEFAULT_ROOT)
+    root_taxa = [t for t in taxa if t.rank_level == max(rank_levels)]
 
     # Add any ungrafted taxa and deduplicate
     ungrafted = [
