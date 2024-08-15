@@ -1205,6 +1205,15 @@ def test_make_tree__filtered():
     ]
 
 
+def test_make_tree__all_filtered():
+    """When all available ranks are filtered out, a single root node should be created"""
+    root = make_tree(
+        Taxon.from_json_list(j_life_list_2),
+        include_ranks=['infraclass'],
+    )
+    assert root.name == 'Life' and not root.children
+
+
 def test_make_tree__preserves_originals():
     """Children/ancestors of original taxon objects should be preserved"""
     taxa = Taxon.from_json_list(j_life_list_2)
@@ -1215,44 +1224,6 @@ def test_make_tree__preserves_originals():
 
     assert animalia.ancestors[0].name == 'Life'
     assert animalia.children[0].name == 'Arthropoda'
-
-
-def test_make_tree__flattened():
-    flat_list = make_tree(Taxon.from_json_list(j_life_list_1)).flatten()
-    assert [t.id for t in flat_list] == [48460, 1, 2, 3, 573, 574, 889, 890, 980, 981]
-    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 4, 5, 6, 7, 6, 7]
-
-    assert flat_list[0].ancestors == []
-    assert [t.id for t in flat_list[5].ancestors] == [48460, 1, 2, 3, 573]
-    assert [t.id for t in flat_list[9].ancestors] == [48460, 1, 2, 3, 573, 574, 980]
-
-
-def test_make_tree__flattened_without_root():
-    taxa = Taxon.from_json_list(j_life_list_1)
-    flat_list = make_tree(taxa).flatten(hide_root=True)
-    assert [t.id for t in flat_list] == [1, 2, 3, 573, 574, 889, 890, 980, 981]
-    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 4, 5, 6, 5, 6]
-
-
-def test_make_tree__flattened_filtered():
-    flat_list = make_tree(
-        Taxon.from_json_list(j_life_list_2),
-        include_ranks=['kingdom', 'family', 'genus', 'subgenus'],
-    ).flatten()
-    assert [t.id for t in flat_list] == [
-        1,
-        47221,
-        52775,
-        538903,
-        538893,
-        538900,
-        415027,
-        538902,
-    ]
-    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 3, 3, 3, 3]
-
-    assert flat_list[0].ancestors == []
-    assert [t.id for t in flat_list[1].ancestors] == [1]
 
 
 def test_make_tree__find_root():
@@ -1312,6 +1283,80 @@ def test_make_tree__explicit_root_filtered_out():
     assert root.id == 1
     assert root.name == 'Animalia'
     assert len(root.children) == 1
+
+
+def test_flatten():
+    flat_list = make_tree(Taxon.from_json_list(j_life_list_1)).flatten()
+    assert [t.id for t in flat_list] == [48460, 1, 2, 3, 573, 574, 889, 890, 980, 981]
+    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 4, 5, 6, 7, 6, 7]
+
+    assert flat_list[0].ancestors == []
+    assert [t.id for t in flat_list[5].ancestors] == [48460, 1, 2, 3, 573]
+    assert [t.id for t in flat_list[9].ancestors] == [48460, 1, 2, 3, 573, 574, 980]
+
+
+def test_flatten__filtered():
+    flat_list = make_tree(
+        Taxon.from_json_list(j_life_list_2),
+        include_ranks=['kingdom', 'family', 'genus', 'subgenus'],
+    ).flatten()
+    assert [t.id for t in flat_list] == [
+        1,
+        47221,
+        52775,
+        538903,
+        538893,
+        538900,
+        415027,
+        538902,
+    ]
+    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 3, 3, 3, 3]
+
+    assert flat_list[0].ancestors == []
+    assert [t.id for t in flat_list[1].ancestors] == [1]
+
+
+def test_flatten__hide_root__noop():
+    """hide_root with no automatically inserted root should have no effect"""
+    taxa = Taxon.from_json_list(j_life_list_1)
+    flat_list = make_tree(taxa).flatten(hide_root=True)
+    assert [t.id for t in flat_list] == [48460, 1, 2, 3, 573, 574, 889, 890, 980, 981]
+    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 4, 5, 6, 7, 6, 7]
+
+
+def test_flatten__hide_root__artificial():
+    """hide_root with an automatically inserted root should remove root taxon"""
+    taxa = Taxon.from_json_list(j_life_list_1)
+    tree = make_tree(taxa)
+    tree._artificial = True
+    flat_list = tree.flatten(hide_root=True)
+    assert [t.id for t in flat_list] == [1, 2, 3, 573, 574, 889, 890, 980, 981]
+    assert [t.indent_level for t in flat_list] == [0, 1, 2, 3, 4, 5, 6, 5, 6]
+
+
+def test_flatten__hide_root__multiple_roots():
+    """hide_root with an automatically inserted root (due to multiple roots) should remove root taxon"""
+    fungi = Taxon(id=47170, name='Fungi', rank='kingdom', parent_id=ROOT_TAXON_ID)
+    taxa = Taxon.from_json_list(j_life_list_2) + [fungi]
+    flat_list = make_tree(taxa, include_ranks=COMMON_RANKS).flatten(hide_root=True)
+    assert [t.id for t in flat_list] == [
+        1,
+        47120,
+        47158,
+        47201,
+        47221,
+        52775,
+        52779,
+        143854,
+        52774,
+        541839,
+        118970,
+        155085,
+        127905,
+        121517,
+        128670,
+        47170,
+    ]
 
 
 # Users
