@@ -6,7 +6,7 @@ from inspect import Parameter, ismethod, signature
 from logging import getLogger
 from typing import Callable, Dict, Iterable, List, Optional, Type
 
-import forge
+from pyinaturalist._vendor import forge
 from requests import Session
 
 from pyinaturalist.constants import TemplateFunction
