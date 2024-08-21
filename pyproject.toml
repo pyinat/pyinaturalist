@@ -1,96 +1,96 @@
 [project]
-name = "pyinaturalist"
-version = "0.20.0"
-description = "iNaturalist API client for python"
-authors = [{ name = "Jordan Cook" }]
-license = "MIT"
-readme = "README.md"
+name = 'pyinaturalist'
+version = '0.20.0'
+description = 'iNaturalist API client for python'
+authors = [{ name = 'Jordan Cook' }]
+license = 'MIT'
+readme = 'README.md'
 keywords = [
-    "inaturalist",
-    "biodiversity",
-    "conservation",
-    "citizen-science",
-    "community-science",
-    "api",
-    "api-client",
-    "data-model",
-    "requests",
+    'inaturalist',
+    'biodiversity',
+    'conservation',
+    'citizen-science',
+    'community-science',
+    'api',
+    'api-client',
+    'data-model',
+    'requests',
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Education",
-    "Intended Audience :: Science/Research",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Typing :: Typed",
+    'Development Status :: 4 - Beta',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Education',
+    'Intended Audience :: Science/Research',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Typing :: Typed',
 ]
-requires-python = ">=3.8"
+requires-python = '>=3.8'
 dependencies = [
-    "attrs>=21.2",
-    "keyring>=22.3",
-    "platformdirs>=2.6",
-    "python-dateutil>=2.0",
-    "requests>=2.25",
-    "requests-cache>=1.2",
-    "requests-ratelimiter>=0.5.1",
-    "rich>=10.9",
+    'attrs>=21.2',
+    'keyring>=22.3',
+    'platformdirs>=2.6',
+    'python-dateutil>=2.0',
+    'requests>=2.25',
+    'requests-cache>=1.2',
+    'requests-ratelimiter>=0.5.1',
+    'rich>=10.9',
 ]
 
 [project.urls]
-homepage = "https://github.com/pyinat/pyinaturalist"
-repository = "https://github.com/pyinat/pyinaturalist"
-documentation = "https://pyinaturalist.readthedocs.io"
+homepage = 'https://github.com/pyinat/pyinaturalist'
+repository = 'https://github.com/pyinat/pyinaturalist'
+documentation = 'https://pyinaturalist.readthedocs.io'
 
 # include = [
-#     { path = "*.md" },
-#     { path = "*.yml" },
-#     { path = "docs", format = "sdist" },
-#     { path = "examples", format = "sdist" },
-#     { path = "test", format = "sdist" }
+#     { path = '*.md' },
+#     { path = '*.yml' },
+#     { path = 'docs', format = 'sdist' },
+#     { path = 'examples', format = 'sdist' },
+#     { path = 'test', format = 'sdist' }
 # ]
 # packages = [
-#     { include = "pyinaturalist" },
-#     { include = "pyinat" },
+#     { include = 'pyinaturalist' },
+#     { include = 'pyinat' },
 # ]
 
 
 [project.optional-dependencies]
 # Optional dependencies
 all = [
-    "filelock>2.0",
-    "ujson>5.0",
+    'filelock>2.0',
+    'ujson>5.0',
 ]
 
 # Documentation dependencies needed for Readthedocs builds
 docs = [
-    "furo~=2024.4",
-    "ipython~=8.12",
-    "linkify-it-py~=2.0",
-    "matplotlib>=3.7",
-    "myst-parser>=1.0",
-    "nbsphinx~=0.9",
-    "pillow>=10.1",
-    "sphinx~=6.2",
-    "sphinx-automodapi~=0.15",
-    "sphinx-autodoc-typehints==1.20",
-    "sphinx-copybutton>=0.5",
-    "sphinx-design>=0.5",
-    "sphinxcontrib-apidoc~=0.3",
-    "sphinxext-opengraph>=0.9",
+    'furo~=2024.4',
+    'ipython~=8.12',
+    'linkify-it-py~=2.0',
+    'matplotlib>=3.7',
+    'myst-parser>=1.0',
+    'nbsphinx~=0.9',
+    'pillow>=10.1',
+    'sphinx~=6.2',
+    'sphinx-automodapi~=0.15',
+    'sphinx-autodoc-typehints==1.20',
+    'sphinx-copybutton>=0.5',
+    'sphinx-design>=0.5',
+    'sphinxcontrib-apidoc~=0.3',
+    'sphinxext-opengraph>=0.9',
 ]
 
 [tool.uv]
 dev-dependencies = [
-    "coverage>=7.2",
-    "nox~=2024.4",
-    "pre-commit~=3.5",
-    "pretty-errors>=1.2",
-    "pytest~=8.2",
-    "pytest-asyncio>=0.21",
-    "pytest-cov>=3.0",
-    "pytest-xdist>=2.2",
-    "requests-mock~=1.8",
-    "sphinx-autobuild>=2021.3",
+    'coverage>=7.2',
+    'nox~=2024.4',
+    'pre-commit~=3.5',
+    'pretty-errors>=1.2',
+    'pytest~=8.2',
+    'pytest-asyncio>=0.21',
+    'pytest-cov>=3.0',
+    'pytest-xdist>=2.2',
+    'requests-mock~=1.8',
+    'sphinx-autobuild>=2021.3',
 ]
 
 [build-system]
@@ -128,7 +128,7 @@ files = ['pyinaturalist']
 
 [tool.pytest.ini_options]
 markers = [
-    "enable_client_session: Enable all ClientSession features: caching, rate-limiting, etc.",
+    'enable_client_session: Enable all ClientSession features: caching, rate-limiting, etc.',
 ]
 
 [tool.ruff]

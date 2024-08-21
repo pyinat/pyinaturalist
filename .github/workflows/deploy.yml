@@ -14,7 +14,7 @@ on:
         required: false
         default: ''
 env:
-  LATEST_PY_VERSION: '3.11'
+  LATEST_PY_VERSION: '3.12'
 
 jobs:
   # Deploy stable builds on tags only, and pre-release builds from manual trigger ("workflow_dispatch")
@@ -27,9 +27,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.LATEST_PY_VERSION }}
-      - uses: snok/install-poetry@v1.4
-        with:
-          virtualenvs-in-project: true
+      - uses: yezz123/setup-uv@v4
 
       - name: Set pre-release version
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
@@ -37,20 +35,11 @@ jobs:
           pre-release-suffix: ${{ github.event.inputs.pre-release-suffix || 'dev' }}
           pre-release-version: ${{ github.event.inputs.pre-release-version || github.run_number }}
         run: |
-          poetry version $(poetry version -s).${{ env.pre-release-suffix }}${{ env.pre-release-version }}
-          poetry version
-
+          PKG_VERSION=$(sed -n "s/^version\s*=\s*'\(.*\)'/\1/p")
+          DEV_VERSION=$PKG_VERSION.${{ env.pre-release-suffix }}${{ env.pre-release-version }}
+          echo "Setting version to $DEV_VERSION"
+          sed -i "s/^version\s*=.*/version='$DEV_VERSION'/" pyproject.toml
       - name: Build package distributions
-        run: poetry build
+        run: uvx --from build pyproject-build --installer uv
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-
-      # Notify Docker image repo that there's a new release available
-      #- name: Repository Dispatch
-      #  if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-      #  uses: peter-evans/repository-dispatch@v1
-      #  with:
-      #    token: ${{ secrets.DOCKERHUB_TRIGGER_TOKEN }}
-      #    repository: JWCook/pyinaturalist-notebook
-      #    event-type: post-release
-      #    client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
