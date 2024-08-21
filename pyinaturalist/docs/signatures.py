@@ -6,12 +6,11 @@ from inspect import Parameter, ismethod, signature
 from logging import getLogger
 from typing import Callable, Dict, Iterable, List, Optional, Type
 
-import forge
 from requests import Session
 
 from pyinaturalist.constants import TemplateFunction
 from pyinaturalist.converters import ensure_list
-from pyinaturalist.docs import copy_annotations, copy_docstrings
+from pyinaturalist.docs import copy_annotations, copy_docstrings, forge
 
 AUTOMETHOD_INIT = '.. automethod:: __init__'
 CONTROLLER_EXCLUDE_PARAMS = ['dry_run', 'session', 'page', 'per_page', 'order', 'count_only']
