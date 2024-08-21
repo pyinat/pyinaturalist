@@ -26,9 +26,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: snok/install-poetry@v1.4
-        with:
-          virtualenvs-in-project: true
+      - uses: yezz123/setup-uv@v4
 
       # Cache packages per python version, and reuse until lockfile changes
       - name: Cache python packages
@@ -36,14 +34,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .venv
-          key: venv-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+          key: venv-${{ matrix.python-version }}-${{ hashFiles('uv.lock') }}
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: poetry install -v -E all
+        run: uv sync
 
       # Run tests with coverage report
       - name: Run tests
-        run: poetry run pytest -rs -x -vv ${{ env.XDIST_ARGS }} ${{ env.COVERAGE_ARGS }}
+        run: uv run pytest -rs -x -vv ${{ env.XDIST_ARGS }} ${{ env.COVERAGE_ARGS }}
 
       # Latest python version: send coverage report to codecov
       - name: "Upload coverage report to Codecov"

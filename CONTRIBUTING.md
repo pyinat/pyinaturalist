@@ -3,11 +3,11 @@ Contributions are welcome, and they are greatly appreciated! Every
 little bit helps, and credit will always be given.
 
 ## Installation
-To set up for local development (requires [poetry](https://python-poetry.org)):
+To set up for local development (requires [uv](https://docs.astral.sh/uv)):
 ```bash
 $ git clone https://github.com/pyinat/pyinaturalist.git
 $ cd pyinaturalist
-$ poetry install -v -E docs
+$ uv sync --all-extras
 ```
 
 ## Contribution Guidelines
