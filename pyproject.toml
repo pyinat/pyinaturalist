@@ -67,7 +67,7 @@ sphinx-automodapi           = {optional=true, version="^0.15"}
 sphinx-autodoc-typehints    = {optional=true, version="1.20"}
 sphinx-copybutton           = {optional=true, version=">=0.5"}
 sphinx-design               = {optional=true, version=">=0.5"}
-sphinxcontrib-apidoc        = {optional=true, version="^0.3"}
+sphinxcontrib-apidoc        = {optional=true, version=">=0.3,<0.6"}
 sphinxext-opengraph         = {optional=true, version=">=0.9"}
 setuptools = "^72.2.0"
 
