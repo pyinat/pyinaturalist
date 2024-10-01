@@ -63,7 +63,7 @@ myst-parser                 = {optional=true, version=">=1.0"}
 nbsphinx                    = {optional=true, version="^0.9"}
 pillow                      = {optional=true, version=">=10.1"}
 sphinx                      = {optional=true, version="^6.2"}
-sphinx-automodapi           = {optional=true, version="^0.15"}
+sphinx-automodapi           = {optional=true, version=">=0.15,<0.19"}
 sphinx-autodoc-typehints    = {optional=true, version="1.20"}
 sphinx-copybutton           = {optional=true, version=">=0.5"}
 sphinx-design               = {optional=true, version=">=0.5"}
