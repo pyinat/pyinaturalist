@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import IO, Any, Dict, List, Mapping, MutableSequence, Optional, Union
 from warnings import catch_warnings, simplefilter
 
-from dateutil.parser import UnknownTimezoneWarning  # type: ignore  # (missing from type stubs)
+from dateutil.parser import UnknownTimezoneWarning
 from dateutil.parser import parse as parse_date
 from dateutil.tz import tzlocal
 from requests import Session
@@ -187,7 +187,7 @@ def ensure_file_obj(value: AnyFile, session: Optional[Session] = None) -> IO:
     # Load from URL
     if isinstance(value, str) and URL_PATTERN.match(value):
         session = session or Session()
-        file_obj = session.get(value).raw
+        file_obj: IO = session.get(value).raw  # type: ignore  # HTTPResponse acts as an IO class
     # Load from local file path
     elif isinstance(value, (str, Path)):
         file_path = Path(value).expanduser().resolve()

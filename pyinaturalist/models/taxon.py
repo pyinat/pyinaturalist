@@ -284,7 +284,7 @@ class Taxon(BaseModel):
         return f'{GBIF_TAXON_BASE_URL}/{self.gbif_id}'
 
     @property
-    def parent(self) -> 'Taxon':
+    def parent(self) -> Optional['Taxon']:
         """Immediate parent, if any"""
         return self.ancestors[-1] if self.ancestors else None
 

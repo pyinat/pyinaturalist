@@ -1,3 +1,4 @@
+from io import BytesIO
 from typing import BinaryIO, List, Optional, Tuple
 
 import requests
@@ -139,7 +140,7 @@ class Photo(BaseMedia):
     def open(self, size: str = 'large') -> BinaryIO:
         """Download the image and return as a file-like object"""
         url = self.url_size(size) or self.url
-        return requests.get(url, stream=True).raw
+        return BytesIO(requests.get(url, stream=True).raw.read())
 
     def show(self, size: str = 'large'):
         """Display the image with the system's default image viewer. Requires ``pillow``."""
