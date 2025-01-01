@@ -69,7 +69,7 @@ sphinx-copybutton           = {optional=true, version=">=0.5"}
 sphinx-design               = {optional=true, version=">=0.5"}
 sphinxcontrib-apidoc        = {optional=true, version="^0.3"}
 sphinxext-opengraph         = {optional=true, version=">=0.9"}
-setuptools = "^72.2.0"
+setuptools = ">=72.2,<76.0"
 
 [tool.poetry.dev-dependencies]
 coverage                    = ">=7.2"
