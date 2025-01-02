@@ -14,7 +14,7 @@ on:
         required: false
         default: ''
 env:
-  LATEST_PY_VERSION: '3.11'
+  LATEST_PY_VERSION: '3.13'
 
 jobs:
   # Deploy stable builds on tags only, and pre-release builds from manual trigger ("workflow_dispatch")

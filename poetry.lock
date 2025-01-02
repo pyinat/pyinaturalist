@@ -3211,4 +3211,4 @@ docs = ["furo", "ipython", "linkify-it-py", "matplotlib", "myst-parser", "nbsphi
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "9e0d4a5748f362f1d029ad49792539e45bed70cfb6a98ec790350a024a7716cc"
+content-hash = "6012f9fb1520a2c511840073eedda372c5cd6882f4a71a3556e8cea3ed89824a"

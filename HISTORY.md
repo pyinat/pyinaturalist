@@ -1,6 +1,6 @@
 # History
 
-## 0.20.0 (Unreleased)
+## 0.20.0 (2025-01-02)
 
 ### ⚠️ Deprecations & Removals
 * Drop support for python 3.7
@@ -25,6 +25,9 @@
 
 ### Bugfixes
 * Fix `KeyError` when using `create_observation()` in dry-run mode
+
+### Other changes
+* Added support for python 3.13
 
 ## 0.19.0 (2023-12-12)
 

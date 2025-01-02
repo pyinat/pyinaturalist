@@ -25,7 +25,7 @@ CLEAN_DIRS = [
 ]
 
 
-@session(python=['3.8', '3.9', '3.10', '3.11', '3.12'])
+@session(python=['3.8', '3.9', '3.10', '3.11', '3.12', '3.13'])
 def test(session):
     """Run tests for a specific python version"""
     test_paths = session.posargs or ['test']
