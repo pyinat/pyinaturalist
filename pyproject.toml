@@ -55,7 +55,7 @@ filelock                    = {optional=true, version=">2.0"}
 ujson                       = {optional=true, version=">5.0"}
 
 # Documentation dependencies needed for Readthedocs builds
-furo                        = {optional=true, version="^2024.4"}
+furo                        = {optional=true, version="^2024.8"}
 ipython                     = {optional=true, version="^8.12"}
 linkify-it-py               = {optional=true, version="^2.0"}
 matplotlib                  = {optional=true, version=">=3.7"}
@@ -63,11 +63,11 @@ myst-parser                 = {optional=true, version=">=1.0"}
 nbsphinx                    = {optional=true, version="^0.9"}
 pillow                      = {optional=true, version=">=10.1"}
 sphinx                      = {optional=true, version="^6.2"}
-sphinx-automodapi           = {optional=true, version="^0.15"}
+sphinx-automodapi           = {optional=true, version="^0.18"}
 sphinx-autodoc-typehints    = {optional=true, version="1.20"}
 sphinx-copybutton           = {optional=true, version=">=0.5"}
 sphinx-design               = {optional=true, version=">=0.5"}
-sphinxcontrib-apidoc        = {optional=true, version="^0.3"}
+sphinxcontrib-apidoc        = {optional=true, version="^0.5"}
 sphinxext-opengraph         = {optional=true, version=">=0.9"}
 setuptools = "^72.2.0"
 
