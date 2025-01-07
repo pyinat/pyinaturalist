@@ -1,5 +1,8 @@
 # History
 
+## 0.20.1 (Unreleased)
+* Fix `AttributeError` when initializing `Observation.taxon` with a `Taxon` object
+
 ## 0.20.0 (2025-01-02)
 
 ### ⚠️ Deprecations & Removals

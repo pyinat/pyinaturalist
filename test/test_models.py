@@ -33,6 +33,7 @@ from pyinaturalist.models import *
 from test.conftest import sample_data_path
 from test.sample_data import *
 
+
 # Base
 # --------------------
 
@@ -616,6 +617,34 @@ def test_observation__add_ancestors():
         'subtribe Danaina',
         'genus Danaus',
     ]
+
+
+OBS_IGNORE_ATTRS = [
+    'cached_votes_total',
+    'comments_count',
+    'created_at_details',
+    'created_time_zone',
+    'faves_count',
+    'geojson',
+    'ident_taxon_ids',
+    'map_scale',
+    'non_owner_ids',
+    'observation_photos',
+    'observed_on_details',
+    'observed_on_string',
+    'observed_time_zone',
+    'spam',
+    'time_zone_offset',
+]
+
+
+def test_observation__taxon_obj():
+    obs_json = deepcopy(j_observation_2)
+    obs_json['taxon'] = Taxon.from_json(obs_json['taxon'])
+    for attr in OBS_IGNORE_ATTRS:
+        obs_json.pop(attr, None)
+    obs = Observation(**obs_json)
+    assert isinstance(obs.taxon, Taxon) and obs.taxon.id == 48662
 
 
 def test_observations():
