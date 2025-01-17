@@ -46,7 +46,7 @@ def clean(session):
 @nox.session(python=False, name='cov')
 def coverage(session):
     """Run tests and generate coverage report"""
-    cmd = ['uv', 'run', 'pytest', '--numprocesses=auto', '--cov']
+    cmd = ['pytest', '--numprocesses=auto', '--cov']
 
     # Add coverage formats
     cov_formats = session.posargs or DEFAULT_COVERAGE_FORMATS
@@ -61,7 +61,7 @@ def coverage(session):
 @nox.session(python=False)
 def docs(session):
     """Build Sphinx documentation"""
-    session.run('uv', 'run', 'sphinx-build', 'docs', DOC_BUILD_DIR, '-j', 'auto')
+    session.run('sphinx-build', 'docs', DOC_BUILD_DIR, '-j', 'auto')
 
 
 @nox.session(python=False)
@@ -69,7 +69,7 @@ def livedocs(session):
     """Auto-build docs with live reload in browser.
     Add `-- open` to also open the browser after starting.
     """
-    cmd = ['uv', 'run', 'sphinx-autobuild', 'docs', DOC_BUILD_DIR]
+    cmd = ['sphinx-autobuild', 'docs', DOC_BUILD_DIR]
     cmd += ['-a']
     cmd += ['--port', str(LIVE_DOCS_PORT), '-j', 'auto']
     for pattern in LIVE_DOCS_WATCH:

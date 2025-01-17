@@ -40,7 +40,7 @@ jobs:
 
       # Run tests with coverage report
       - name: Run tests
-        run: nox -e cov -- xml
+        run: uv run nox -e cov -- xml
 
       # Latest python version: send coverage report to codecov
       - name: "Upload coverage report to Codecov"
