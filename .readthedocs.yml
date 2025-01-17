@@ -9,10 +9,13 @@ build:
   os: 'ubuntu-24.04'
   tools:
     python: '3.12'
-
+  jobs:
+    # Use uv to export optional + documentation dependencies
+    post_create_environment:
+      - pip install uv
+      - uv export -q --no-dev --group docs --no-emit-project -o docs/requirements.txt
 python:
   install:
     - method: pip
       path: .
-      extra_requirements:
-        - docs
+    - requirements: docs/requirements.txt

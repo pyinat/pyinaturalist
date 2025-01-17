@@ -48,7 +48,22 @@ all = [
     'ujson>5.0',
 ]
 
-# Documentation dependencies needed for Readthedocs builds
+[dependency-groups]
+# Dev dependencies
+dev = [
+    'coverage>=7.2',
+    'nox~=2024.4',
+    'pre-commit~=3.5',
+    'pretty-errors>=1.2',
+    'pytest~=8.2',
+    'pytest-asyncio>=0.21',
+    'pytest-cov>=3.0',
+    'pytest-xdist>=2.2',
+    'requests-mock~=1.8',
+    'sphinx-autobuild>=2021.3',
+]
+
+# Documentation dependencies for Readthedocs builds
 docs = [
     'furo~=2024.8',
     'ipython~=8.12',
@@ -66,20 +81,6 @@ docs = [
     'sphinxext-opengraph>=0.9',
 ]
 
-[tool.uv]
-dev-dependencies = [
-    'coverage>=7.2',
-    'nox~=2024.4',
-    'pre-commit~=3.5',
-    'pretty-errors>=1.2',
-    'pytest~=8.2',
-    'pytest-asyncio>=0.21',
-    'pytest-cov>=3.0',
-    'pytest-xdist>=2.2',
-    'requests-mock~=1.8',
-    'sphinx-autobuild>=2021.3',
-]
-
 [build-system]
 requires = ['hatchling>=1.0.0']
 build-backend = 'hatchling.build'
@@ -94,7 +95,10 @@ directory = 'test-reports'
 [tool.coverage.run]
 branch = true
 source = ['pyinaturalist', 'pyinat']
-omit = ['pyinaturalist/docs/model_docs.py']
+omit = [
+    'pyinaturalist/docs/model_docs.py',
+    'pyinaturalist/docs/forge.py',
+]
 
 [tool.coverage.report]
 exclude_lines = [

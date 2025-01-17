@@ -7,7 +7,7 @@ To set up for local development (requires [uv](https://docs.astral.sh/uv)):
 ```bash
 $ git clone https://github.com/pyinat/pyinaturalist.git
 $ cd pyinaturalist
-$ uv sync --all-extras
+$ uv sync --all-extras --all-groups
 ```
 
 ## Contribution Guidelines
