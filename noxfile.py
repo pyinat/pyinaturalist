@@ -28,7 +28,7 @@ CLEAN_DIRS = [
 
 
 def install_deps(session):
-    """Install project and test dependencies using uv"""
+    """Install project and test dependencies into a nox session using uv"""
     session.env['UV_PROJECT_ENVIRONMENT'] = session.virtualenv.location
     session.run_install(
         'uv',

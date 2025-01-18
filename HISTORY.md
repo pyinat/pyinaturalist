@@ -31,6 +31,8 @@
 
 ### Other changes
 * Added support for python 3.13
+* Convert packaging and project config to `uv`. This has no impact on users. For developers,
+  see [Contributing Guide](https://github.com/pyinat/pyinaturalist/blob/main/CONTRIBUTING.md) for details.
 
 ## 0.19.0 (2023-12-12)
 
