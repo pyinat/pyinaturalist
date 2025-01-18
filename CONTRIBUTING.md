@@ -3,11 +3,11 @@ Contributions are welcome, and they are greatly appreciated! Every
 little bit helps, and credit will always be given.
 
 ## Installation
-To set up for local development (requires [poetry](https://python-poetry.org)):
+To set up for local development (requires [uv](https://docs.astral.sh/uv)):
 ```bash
 $ git clone https://github.com/pyinat/pyinaturalist.git
 $ cd pyinaturalist
-$ poetry install -v -E docs
+$ uv sync --all-extras --all-groups
 ```
 
 ## Contribution Guidelines
@@ -20,8 +20,10 @@ Here are some general guidelines for submitting a pull request:
 - Submit the PR to be merged into the `main` branch.
 
 ### Tests
-We use the [pytest](https://docs.pytest.org/en/latest/) framework for unit testing.
-Just run the `pytest` command to run locally.
+To run all tests and linting:
+```sh
+uv run nox
+```
 
 #### Testing supported python versions
 For PRs, GitHub Actions will run these tests for each supported python version.
@@ -43,7 +45,7 @@ For PRs, please include docstrings for all functions and classes.
 
 To build the docs locally:
 ```bash
-$ nox -e docs
+$ uv run nox -e docs
 ```
 
 To preview:
@@ -56,7 +58,7 @@ $ xdg-open docs/_build/html/index.html
 
 You can also use [sphinx-autobuild](https://github.com/executablebooks/sphinx-autobuild) to rebuild the docs and live reload in the browser whenever doc contents change:
 ```bash
-$ nox -e livedocs
+$ uv run nox -e livedocs
 ```
 
 Project documentation is generated using [Sphinx](https://www.sphinx-doc.org),

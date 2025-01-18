@@ -1,115 +1,93 @@
-[tool.poetry]
-name = "pyinaturalist"
-version = "0.20.1"
-description = "iNaturalist API client for python"
-authors = ["Jordan Cook"]
-license = "MIT"
-readme = "README.md"
-homepage = "https://github.com/pyinat/pyinaturalist"
-repository = "https://github.com/pyinat/pyinaturalist"
-documentation = "https://pyinaturalist.readthedocs.io"
+[project]
+name = 'pyinaturalist'
+version = '0.20.1'
+description = 'iNaturalist API client for python'
+authors = [{ name = 'Jordan Cook' }]
+license = 'MIT'
+readme = 'README.md'
 keywords = [
-    "inaturalist",
-    "biodiversity",
-    "conservation",
-    "citizen-science",
-    "community-science",
-    "api",
-    "api-client",
-    "data-model",
-    "requests",
+    'inaturalist',
+    'biodiversity',
+    'conservation',
+    'citizen-science',
+    'community-science',
+    'api',
+    'api-client',
+    'data-model',
+    'requests',
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Education",
-    "Intended Audience :: Science/Research",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Typing :: Typed",
+    'Development Status :: 4 - Beta',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Education',
+    'Intended Audience :: Science/Research',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Typing :: Typed',
 ]
-include = [
-    { path = "*.md" },
-    { path = "*.yml" },
-    { path = "docs", format = "sdist" },
-    { path = "examples", format = "sdist" },
-    { path = "test", format = "sdist" }
-]
-packages = [
-    { include = "pyinaturalist" },
-    { include = "pyinat" },
+requires-python = '>=3.8'
+dependencies = [
+    'attrs>=21.2',
+    'keyring>=22.3',
+    'platformdirs>=2.6',
+    'python-dateutil>=2.0',
+    'requests>=2.25',
+    'requests-cache>=1.2',
+    'requests-ratelimiter>=0.5.1',
+    'rich>=10.9',
 ]
 
-[tool.poetry.dependencies]
-python                      = "^3.8"
-attrs                       = ">=21.2"
-keyring                     = ">=22.3"
-platformdirs                = ">=2.6"
-python-dateutil             = ">=2.0"
-requests                    = ">=2.25"
-requests-cache              = ">=1.2"
-requests-ratelimiter        = ">=0.5.1"
-rich                        = ">=10.9"
+[project.urls]
+homepage = 'https://github.com/pyinat/pyinaturalist'
+repository = 'https://github.com/pyinat/pyinaturalist'
+documentation = 'https://pyinaturalist.readthedocs.io'
 
+[project.optional-dependencies]
 # Optional dependencies
-filelock                    = {optional=true, version=">2.0"}
-ujson                       = {optional=true, version=">5.0"}
+all = [
+    'filelock>2.0',
+    'ujson>5.0',
+]
 
-# Documentation dependencies needed for Readthedocs builds
-furo                        = {optional=true, version="^2024.8"}
-ipython                     = {optional=true, version="^8.12"}
-linkify-it-py               = {optional=true, version="^2.0"}
-matplotlib                  = {optional=true, version=">=3.7"}
-myst-parser                 = {optional=true, version=">=1.0"}
-nbsphinx                    = {optional=true, version="^0.9"}
-pillow                      = {optional=true, version=">=10.1"}
-sphinx                      = {optional=true, version="^6.2"}
-sphinx-automodapi           = {optional=true, version="^0.18"}
-sphinx-autodoc-typehints    = {optional=true, version="1.20"}
-sphinx-copybutton           = {optional=true, version=">=0.5"}
-sphinx-design               = {optional=true, version=">=0.5"}
-sphinxcontrib-apidoc        = {optional=true, version="^0.5"}
-sphinxext-opengraph         = {optional=true, version=">=0.9"}
-setuptools = "^72.2.0"
+[dependency-groups]
+# Dev dependencies
+dev = [
+    'coverage>=7.2',
+    'nox~=2024.4',
+    'pre-commit~=3.5',
+    'pretty-errors>=1.2',
+    'pytest~=8.2',
+    'pytest-asyncio>=0.21',
+    'pytest-cov>=3.0',
+    'pytest-xdist>=2.2',
+    'requests-mock~=1.8',
+    'sphinx-autobuild>=2021.3',
+]
 
-[tool.poetry.dev-dependencies]
-coverage                    = ">=7.2"
-nox                         = "^2024.4"
-nox-poetry                  = "^1.0.0"
-pre-commit                  = "^3.5"
-pretty-errors               = ">=1.2"
-pytest                      = "^8.2"
-pytest-asyncio              = ">=0.21"
-pytest-cov                  = ">=3.0"
-pytest-xdist                = ">=2.2"
-requests-mock               = "^1.8"
-sphinx-autobuild            = ">=2021.3"
-
-[tool.poetry.extras]
-all = ["filelock", "ujson"]
+# Documentation dependencies for Readthedocs builds
 docs = [
-    "furo",
-    "ipython",
-    "linkify-it-py",
-    "matplotlib",
-    "myst-parser",
-    "nbsphinx",
-    "pillow",
-    "sphinx",
-    "sphinx-automodapi",
-    "sphinx-autodoc-typehints",
-    "sphinx-copybutton",
-    "sphinx-design",
-    "sphinxcontrib-apidoc",
-    "sphinxext-opengraph",
+    'furo~=2024.8',
+    'ipython~=8.12',
+    'linkify-it-py~=2.0',
+    'matplotlib>=3.7',
+    'myst-parser>=1.0',
+    'nbsphinx~=0.9',
+    'pillow>=10.1',
+    'sphinx~=6.2',
+    'sphinx-automodapi~=0.18',
+    'sphinx-autodoc-typehints==1.20',
+    'sphinx-copybutton>=0.5',
+    'sphinx-design>=0.5',
+    'sphinxcontrib-apidoc~=0.5',
+    'sphinxext-opengraph>=0.9',
 ]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ['hatchling>=1.0.0']
+build-backend = 'hatchling.build'
 
-[tool.black]
-skip-string-normalization = true
-line-length = 100
+[tool.hatch.build]
+packages =  ['pyinaturalist', 'pyinat']
+force-include = {'README.md' = 'pyinaturalist/README.md'}
 
 [tool.coverage.html]
 directory = 'test-reports'
@@ -117,7 +95,10 @@ directory = 'test-reports'
 [tool.coverage.run]
 branch = true
 source = ['pyinaturalist', 'pyinat']
-omit = ['pyinaturalist/docs/model_docs.py']
+omit = [
+    'pyinaturalist/docs/model_docs.py',
+    'pyinaturalist/docs/forge.py',
+]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -142,8 +123,9 @@ files = ['pyinaturalist']
 
 [tool.pytest.ini_options]
 markers = [
-    "enable_client_session: Enable all ClientSession features: caching, rate-limiting, etc.",
+    'enable_client_session: Enable all ClientSession features: caching, rate-limiting, etc.',
 ]
+asyncio_default_fixture_loop_scope = 'module'
 
 [tool.ruff]
 fix = true

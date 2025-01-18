@@ -18,6 +18,7 @@ eggs
 lib
 lib64
 parts
+scratch
 sdist
 var
 venv/
@@ -52,6 +53,7 @@ docs/examples
 docs/sample_data
 docs/models/
 docs/modules/
+docs/requirements.txt
 
 # Mac OS X
 .DS_Store
