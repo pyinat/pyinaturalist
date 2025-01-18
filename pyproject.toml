@@ -125,6 +125,7 @@ files = ['pyinaturalist']
 markers = [
     'enable_client_session: Enable all ClientSession features: caching, rate-limiting, etc.',
 ]
+asyncio_default_fixture_loop_scope = 'module'
 
 [tool.ruff]
 fix = true

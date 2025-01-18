@@ -27,11 +27,22 @@ CLEAN_DIRS = [
 ]
 
 
-@nox.session(python=['3.8', '3.9', '3.10', '3.11', '3.12', '3.13'])
+def install_deps(session):
+    """Install project and test dependencies using uv"""
+    session.env['UV_PROJECT_ENVIRONMENT'] = session.virtualenv.location
+    session.run_install(
+        'uv',
+        'sync',
+        '--frozen',
+        '--all-extras',
+    )
+
+
+@nox.session(python=['3.8', '3.9', '3.10', '3.11', '3.12', '3.13'], venv_backend='uv')
 def test(session):
     """Run tests for a specific python version"""
     test_paths = session.posargs or ['test']
-    session.install('.', 'filelock', 'pytest', 'pytest-sugar', 'pytest-xdist', 'requests-mock')
+    install_deps(session)
     session.run('pytest', '-n', 'auto', *test_paths)
 
 
