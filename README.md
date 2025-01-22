@@ -1,6 +1,6 @@
 # pyinaturalist
 
-[![Build](https://github.com/pyinat/pyinaturalist/workflows/Build/badge.svg?branch=main)](https://github.com/pyinat/pyinaturalist/actions)
+[![Build](https://github.com/pyinat/pyinaturalist/actions/workflows/build.yml/badge.svg)](https://github.com/pyinat/pyinaturalist/actions)
 [![Codecov](https://codecov.io/gh/pyinat/pyinaturalist/branch/main/graph/badge.svg)](https://codecov.io/gh/pyinat/pyinaturalist)
 [![Documentation](https://img.shields.io/readthedocs/pyinaturalist/stable)](https://pyinaturalist.readthedocs.io)
 
