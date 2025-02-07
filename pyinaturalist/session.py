@@ -3,6 +3,7 @@
 import json
 import threading
 from collections import defaultdict
+from importlib.metadata import version as pkg_version
 from json import JSONDecodeError
 from logging import getLogger
 from os import getenv
@@ -29,7 +30,6 @@ from requests_ratelimiter import (
 )
 from urllib3.util import Retry
 
-import pyinaturalist
 from pyinaturalist.constants import (
     CACHE_EXPIRATION,
     CACHE_FILE,
@@ -163,7 +163,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         self.headers['Accept'] = 'application/json'
         user_agent_details = [
             default_user_agent(),
-            f'pyinaturalist/{pyinaturalist.__version__}',
+            f'pyinaturalist/{pkg_version("pyinaturalist")}',
             user_agent or '',
         ]
         self.headers['User-Agent'] = ' '.join(user_agent_details).strip()

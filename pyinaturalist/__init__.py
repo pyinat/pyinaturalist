@@ -1,7 +1,5 @@
 # ruff: noqa: F401, F403
 # isort: skip_file
-__version__ = '0.20.1'
-
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.client import iNatClient
 from pyinaturalist.constants import *
