@@ -29,14 +29,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+import asyncio
 import builtins
 import collections
 import functools
 import inspect
 import types
 import typing
-import asyncio
-
 
 # Convenience
 _TYPE_FP_CTX_CALLABLE = typing.Callable[

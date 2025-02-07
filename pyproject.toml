@@ -106,12 +106,6 @@ exclude_lines = [
     'if TYPE_CHECKING:',
 ]
 
-[tool.isort]
-profile = 'black'
-line_length = 100
-skip_gitignore = true
-known_first_party = ['test']
-
 [tool.mypy]
 ignore_missing_imports = true
 pretty = true
@@ -139,7 +133,7 @@ exclude = ['examples/', 'test/sample_data/']
 quote-style = 'single'
 
 [tool.ruff.lint]
-select = ['B', 'C4', 'C90', 'E', 'F']
+select = ['B', 'C4', 'C90', 'E', 'F', 'I']
 
 [tool.ruff.lint.isort]
 known-first-party = ['test']

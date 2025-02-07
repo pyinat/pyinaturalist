@@ -33,7 +33,6 @@ from pyinaturalist.models import *
 from test.conftest import sample_data_path
 from test.sample_data import *
 
-
 # Base
 # --------------------
 
