@@ -280,6 +280,24 @@ class ObservationController(BaseController):
         return ControlledTermCounts.from_json(response)
 
     @copy_doc_signature(*docs._get_observations)
+    def species_count(self, **params) -> int:
+        """Get a total count of species (or other 'leaf taxa') associated with observations matching the search
+        criteria.
+
+        .. rubric:: Notes
+
+        * API reference: :v1:`GET /observations/species_counts <Observations/get_observations_species_counts>`
+        * **Leaf taxa** are the leaves of the taxonomic tree, like species, subspecies, variety, or form
+        * This method returns only the combined total number of leaf taxa in matched observations;
+          :py:meth:`.species_counts` returns the full list of taxa and the number of observations for each
+
+        Example:
+            >>> client.observations.species_count(taxon_id=52775, place_id=6853)
+        """
+        response = self.client.request(get_observation_species_counts, count_only=True, **params)
+        return response['total_results']
+
+    @copy_doc_signature(*docs._get_observations)
     def species_counts(self, **params) -> TaxonCounts:
         """Get all species (or other 'leaf taxa') associated with observations matching the search
         criteria, and the count of observations they are associated with.
@@ -287,7 +305,7 @@ class ObservationController(BaseController):
         .. rubric:: Notes
 
         * API reference: :v1:`GET /observations/species_counts <Observations/get_observations_species_counts>`
-        * **Leaf taxa** are the leaves of the taxonomic tree, e.g., species, subspecies, variety, etc.
+        * **Leaf taxa** are the leaves of the taxonomic tree, like species, subspecies, variety, or form
 
         Example:
             >>> client.observations.species_counts(user_login='my_username', quality_grade='research')
