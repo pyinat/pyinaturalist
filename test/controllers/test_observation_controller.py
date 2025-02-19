@@ -232,6 +232,16 @@ def test_popular_fields(requests_mock):
     assert results[0].controlled_value.label == results[0].value == 'Adult'
 
 
+def test_species_count(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/observations/species_counts',
+        json=SAMPLE_DATA['get_observation_species_counts'],
+        status_code=200,
+    )
+    client = iNatClient()
+    assert client.observations.species_count(user_id='username') == 215
+
+
 def test_species_counts(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations/species_counts',
