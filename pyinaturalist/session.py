@@ -36,7 +36,6 @@ from pyinaturalist.constants import (
     CONNECT_TIMEOUT,
     DEFAULT_LOCK_PATH,
     MAX_DELAY,
-    RATELIMIT_FILE,
     REQUEST_BURST_RATE,
     REQUEST_RETRIES,
     REQUEST_TIMEOUT,
@@ -56,13 +55,6 @@ from pyinaturalist.request_params import (
     convert_url_ids,
     preprocess_request_body,
     preprocess_request_params,
-)
-
-# Rate limiter specific to forced refresh request
-REFRESH_LIMITER = Limiter(
-    RequestRate(1, 122),
-    bucket_class=SQLiteBucket,
-    bucket_kwargs={'path': RATELIMIT_FILE},
 )
 
 logger = getLogger('pyinaturalist')
@@ -150,6 +142,13 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             burst=burst,
             max_delay=MAX_DELAY,
             **kwargs,
+        )
+
+        # Separate rate limiter specific to forced refresh requests
+        self.refresh_limiter = Limiter(
+            RequestRate(1, 122),
+            bucket_class=bucket_class,
+            bucket_kwargs=bucket_kwargs,
         )
 
         # Retry settings
@@ -332,6 +331,28 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         logger.debug(format_response(response))
         return response
 
+    def get_refresh_params(self, endpoint) -> Dict:
+        """In some cases, we need to be sure we have the most recent version of a resource, for example
+        when updating projects. Normally we would handle this with cache headers, but the CDN cache does
+        not respect these if the cached response is less than ~2 minutes old.
+
+        The iNat webapp handles this by adding an extra `v` request parameter, which results in a
+        different cache key. This function does the same by tracking a separate rate limit per value,
+        and finding the lowest value that is certain to result in a fresh response.
+        """
+        v = 0
+        while True:
+            try:
+                bucket = f'{endpoint}?v={v}'
+                self.refresh_limiter.try_acquire(bucket)
+                break
+            except BucketFullException as e:
+                seconds = int(e.meta_info['remaining_time'])
+                logger.debug(f'{bucket} cannot be refreshed again for {seconds} seconds')
+                v += 1
+
+        return {'refresh': True, 'v': v} if v > 0 else {'refresh': True}
+
     def _validate_json(
         self,
         request: PreparedRequest,
@@ -435,29 +456,6 @@ def get_local_session(**kwargs) -> ClientSession:
     if not hasattr(thread_local, 'session'):
         thread_local.session = ClientSession(**kwargs)
     return thread_local.session
-
-
-def get_refresh_params(endpoint) -> Dict:
-    """In some cases, we need to be sure we have the most recent version of a resource, for example
-    when updating projects. Normally we would handle this with cache headers, but the CDN cache does
-    not respect these if the cached response is less than ~2 minutes old.
-
-    The iNat webapp handles this by adding an extra `v` request parameter, which results in a
-    different cache key. This function does the same by tracking a separate rate limit per value,
-    and finding the lowest value that is certain to result in a fresh response.
-    """
-    v = 0
-    while True:
-        try:
-            bucket = f'{endpoint}?v={v}'
-            REFRESH_LIMITER.try_acquire(bucket)
-            break
-        except BucketFullException as e:
-            seconds = int(e.meta_info['remaining_time'])
-            logger.debug(f'{bucket} cannot be refreshed again for {seconds} seconds')
-            v += 1
-
-    return {'refresh': True, 'v': v} if v > 0 else {'refresh': True}
 
 
 class MockResponse(CachedResponse):

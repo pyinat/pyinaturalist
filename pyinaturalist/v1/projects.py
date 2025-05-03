@@ -14,7 +14,7 @@ from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import split_common_params, validate_multiple_choice_param
-from pyinaturalist.session import delete, get, get_refresh_params, post, put
+from pyinaturalist.session import ClientSession, delete, get, get_local_session, post, put
 
 logger = getLogger(__name__)
 
@@ -70,6 +70,7 @@ def get_projects_by_id(
     project_id: MultiIntOrStr,
     rule_details: Optional[bool] = None,
     force_refresh: bool = False,
+    session: Optional[ClientSession] = None,
     **params,
 ) -> JsonResponse:
     """Get one or more projects by ID
@@ -100,12 +101,16 @@ def get_projects_by_id(
     Returns:
         Response dict containing project records
     """
+    # If needed, invalidate CDN cache to ensure a fresh response
+    session = session or get_local_session()
     if force_refresh:
-        params.update(get_refresh_params(f'/projects/{project_id}'))
-    response = get(
+        params.update(session.get_refresh_params(f'/projects/{project_id}'))
+
+    params['rule_details'] = rule_details
+    response = session.request(
+        'GET',
         f'{API_V1}/projects',
-        rule_details=rule_details,
-        ids=project_id,
+        ids=project_id,  # type: ignore[arg-type]
         allow_str_ids=True,
         **params,
     )
