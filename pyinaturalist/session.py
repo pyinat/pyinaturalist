@@ -36,6 +36,7 @@ from pyinaturalist.constants import (
     CONNECT_TIMEOUT,
     DEFAULT_LOCK_PATH,
     MAX_DELAY,
+    RATELIMIT_FILE,
     REQUEST_BURST_RATE,
     REQUEST_RETRIES,
     REQUEST_TIMEOUT,
@@ -83,6 +84,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         burst: int = REQUEST_BURST_RATE,
         bucket_class: Type[AbstractBucket] = SQLiteBucket,
         backoff_factor: float = RETRY_BACKOFF,
+        ratelimit_path: Optional[str] = RATELIMIT_FILE,
+        lock_path: Optional[str] = DEFAULT_LOCK_PATH,
         max_retries: int = REQUEST_RETRIES,
         timeout: int = REQUEST_TIMEOUT,
         user_agent: Optional[str] = None,
@@ -102,8 +105,12 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             per_minute: Max requests per minute
             per_day: Max requests per day
             burst: Max number of consecutive requests allowed before applying per-second rate-limiting
-            bucket_class: Rate-limiting backend to use. Defaults to a persistent SQLite database.
+            bucket_class: Rate-limiting backend to use; defaults to a persistent SQLite database.
             backoff_factor: Factor for increasing delays between retries
+            ratelimit_path: Path to SQLite database for rate-limiting;
+                defaults to the system default cache directory
+            lock_path: Path to file lock for multiprocess rate-limit database;
+                 defaults to the system default cache directory
             max_retries: Maximum number of times to retry a failed request
             timeout: Maximum number of seconds to wait for a response from the server
             user_agent: Additional User-Agent info to pass to API requests
@@ -118,9 +125,9 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
 
         # Extra args to pass to rate limiter backend
         bucket_kwargs = kwargs.pop('bucket_kwargs', {})
-        if ratelimit_path := kwargs.pop('ratelimit_path', None):
+        if ratelimit_path:
             bucket_kwargs['path'] = ratelimit_path
-        if lock_path := kwargs.pop('lock_path', None):
+        if lock_path and bucket_class is FileLockSQLiteBucket:
             bucket_kwargs['lock_path'] = lock_path
 
         super().__init__(  # type: ignore  # false positive

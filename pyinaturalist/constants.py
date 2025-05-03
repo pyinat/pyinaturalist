@@ -6,7 +6,6 @@ from typing import IO, TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Optio
 
 from dateutil.relativedelta import relativedelta
 from platformdirs import user_data_dir
-from pyrate_limiter.sqlite_bucket import LOCK_PATH as DEFAULT_LOCK_PATH
 
 # iNaturalist URLs
 API_V0 = 'https://www.inaturalist.org'
@@ -66,6 +65,7 @@ CACHE_EXPIRATION = {
 }
 CACHE_FILE = join(DATA_DIR, 'api_requests.db')
 RATELIMIT_FILE = join(DATA_DIR, 'api_ratelimit.db')
+DEFAULT_LOCK_PATH = join(DATA_DIR, 'api_ratelimit.lock')
 
 # Response formats supported by v0 GET /observations endpoint
 OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']

@@ -90,6 +90,11 @@ Float values also work, for example to slow it down to less than 1 request per s
 >>> session = ClientSession(per_second=0.5)
 ```
 
+Some persistent rate-limiting state is stored on-disk. To change the default path for this:
+```python
+>>> session = ClientSession(ratelimit_path='/tmp/ratelimit.db')
+```
+
 ### Distributed Application Rate Limiting
 The default rate-limiting backend is thread-safe, and persistent across application restarts. If
 you have a larger application running from multiple processes, you will need an additional locking
@@ -104,6 +109,11 @@ mechanism to make sure these processes don't conflict with each other. This is a
 This requires installing one additional dependency, [py-filelock](https://github.com/tox-dev/py-filelock):
 ```bash
 pip install filelock
+```
+
+To change the default path used for the file lock:
+```python
+>>> session = ClientSession(bucket_class=FileLockSQLiteBucket, lock_path='/tmp/ratelimit.lock')
 ```
 
 ## Logging
