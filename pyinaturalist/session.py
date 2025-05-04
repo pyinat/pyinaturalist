@@ -58,13 +58,6 @@ from pyinaturalist.request_params import (
     preprocess_request_params,
 )
 
-# Rate limiter specific to forced refresh request
-REFRESH_LIMITER = Limiter(
-    RequestRate(1, 122),
-    bucket_class=SQLiteBucket,
-    bucket_kwargs={'path': RATELIMIT_FILE},
-)
-
 logger = getLogger('pyinaturalist')
 thread_local = threading.local()
 
@@ -91,6 +84,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         burst: int = REQUEST_BURST_RATE,
         bucket_class: Type[AbstractBucket] = SQLiteBucket,
         backoff_factor: float = RETRY_BACKOFF,
+        ratelimit_path: Optional[str] = RATELIMIT_FILE,
+        lock_path: Optional[str] = DEFAULT_LOCK_PATH,
         max_retries: int = REQUEST_RETRIES,
         timeout: int = REQUEST_TIMEOUT,
         user_agent: Optional[str] = None,
@@ -110,8 +105,12 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             per_minute: Max requests per minute
             per_day: Max requests per day
             burst: Max number of consecutive requests allowed before applying per-second rate-limiting
-            bucket_class: Rate-limiting backend to use. Defaults to a persistent SQLite database.
+            bucket_class: Rate-limiting backend to use; defaults to a persistent SQLite database.
             backoff_factor: Factor for increasing delays between retries
+            ratelimit_path: Path to SQLite database for rate-limiting;
+                defaults to the system default cache directory
+            lock_path: Path to file lock for multiprocess rate-limit database;
+                 defaults to the system default cache directory
             max_retries: Maximum number of times to retry a failed request
             timeout: Maximum number of seconds to wait for a response from the server
             user_agent: Additional User-Agent info to pass to API requests
@@ -126,9 +125,9 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
 
         # Extra args to pass to rate limiter backend
         bucket_kwargs = kwargs.pop('bucket_kwargs', {})
-        if ratelimit_path := kwargs.pop('ratelimit_path', None):
+        if ratelimit_path:
             bucket_kwargs['path'] = ratelimit_path
-        if lock_path := kwargs.pop('lock_path', None):
+        if lock_path and bucket_class is FileLockSQLiteBucket:
             bucket_kwargs['lock_path'] = lock_path
 
         super().__init__(  # type: ignore  # false positive
@@ -150,6 +149,13 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             burst=burst,
             max_delay=MAX_DELAY,
             **kwargs,
+        )
+
+        # Separate rate limiter specific to forced refresh requests
+        self.refresh_limiter = Limiter(
+            RequestRate(1, 122),
+            bucket_class=bucket_class,
+            bucket_kwargs=bucket_kwargs,
         )
 
         # Retry settings
@@ -332,6 +338,28 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         logger.debug(format_response(response))
         return response
 
+    def get_refresh_params(self, endpoint) -> Dict:
+        """In some cases, we need to be sure we have the most recent version of a resource, for example
+        when updating projects. Normally we would handle this with cache headers, but the CDN cache does
+        not respect these if the cached response is less than ~2 minutes old.
+
+        The iNat webapp handles this by adding an extra `v` request parameter, which results in a
+        different cache key. This function does the same by tracking a separate rate limit per value,
+        and finding the lowest value that is certain to result in a fresh response.
+        """
+        v = 0
+        while True:
+            try:
+                bucket = f'{endpoint}?v={v}'
+                self.refresh_limiter.try_acquire(bucket)
+                break
+            except BucketFullException as e:
+                seconds = int(e.meta_info['remaining_time'])
+                logger.debug(f'{bucket} cannot be refreshed again for {seconds} seconds')
+                v += 1
+
+        return {'refresh': True, 'v': v} if v > 0 else {'refresh': True}
+
     def _validate_json(
         self,
         request: PreparedRequest,
@@ -435,29 +463,6 @@ def get_local_session(**kwargs) -> ClientSession:
     if not hasattr(thread_local, 'session'):
         thread_local.session = ClientSession(**kwargs)
     return thread_local.session
-
-
-def get_refresh_params(endpoint) -> Dict:
-    """In some cases, we need to be sure we have the most recent version of a resource, for example
-    when updating projects. Normally we would handle this with cache headers, but the CDN cache does
-    not respect these if the cached response is less than ~2 minutes old.
-
-    The iNat webapp handles this by adding an extra `v` request parameter, which results in a
-    different cache key. This function does the same by tracking a separate rate limit per value,
-    and finding the lowest value that is certain to result in a fresh response.
-    """
-    v = 0
-    while True:
-        try:
-            bucket = f'{endpoint}?v={v}'
-            REFRESH_LIMITER.try_acquire(bucket)
-            break
-        except BucketFullException as e:
-            seconds = int(e.meta_info['remaining_time'])
-            logger.debug(f'{bucket} cannot be refreshed again for {seconds} seconds')
-            v += 1
-
-    return {'refresh': True, 'v': v} if v > 0 else {'refresh': True}
 
 
 class MockResponse(CachedResponse):

@@ -1,5 +1,8 @@
 # History
 
+## Unreleased
+* `ClientSession` arguments `ratelimit_path` and `lock_path` will now apply to the separate rate-limiter used for `/projects/{id}`
+
 ## 0.20.1 (2025-01-18)
 * Fix `AttributeError` when initializing `Observation.taxon` with a `Taxon` object
 

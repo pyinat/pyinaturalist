@@ -18,7 +18,6 @@ from pyinaturalist.session import (
     delete,
     get,
     get_local_session,
-    get_refresh_params,
     post,
     put,
 )
@@ -253,11 +252,12 @@ def test_filelock(mock_send, tmp_path):
         assert bucket._lock.lock_file == lock_path
 
 
-@patch('pyinaturalist.session.REFRESH_LIMITER', Limiter(RequestRate(1, 2)))
 def test_get_refresh_params():
-    assert get_refresh_params('test') == {'refresh': True}
-    assert get_refresh_params('test2') == {'refresh': True}
-    assert get_refresh_params('test') == {'refresh': True, 'v': 1}
-    assert get_refresh_params('test') == {'refresh': True, 'v': 2}
+    session = ClientSession()
+    session.refresh_limiter = Limiter(RequestRate(1, 2))
+    assert session.get_refresh_params('test') == {'refresh': True}
+    assert session.get_refresh_params('test2') == {'refresh': True}
+    assert session.get_refresh_params('test') == {'refresh': True, 'v': 1}
+    assert session.get_refresh_params('test') == {'refresh': True, 'v': 2}
     sleep(2)
-    assert get_refresh_params('test') == {'refresh': True}
+    assert session.get_refresh_params('test') == {'refresh': True}
