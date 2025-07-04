@@ -126,7 +126,6 @@ fix = true
 unsafe-fixes = true
 line-length = 100
 output-format = 'grouped'
-target-version = 'py37'
 exclude = ['examples/', 'test/sample_data/']
 
 [tool.ruff.format]

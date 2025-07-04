@@ -259,7 +259,7 @@ def test_validate_multiple_choice_params(params):
 
     # If invalid, an exception should be raised
     with pytest.raises(ValueError):
-        validate_multiple_choice_params({k: 'Invalid_value' for k in params})
+        validate_multiple_choice_params(dict.fromkeys(params, 'Invalid_value'))
 
     # A valid + invalid value should also raise an exception
     def append_invalid_value(value):
