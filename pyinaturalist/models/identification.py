@@ -42,7 +42,7 @@ class Comment(BaseModel):
 
     @property
     def username(self) -> str:
-        return self.user.login
+        return self.user.login if self.user else ''
 
     @property
     def _row(self) -> TableRow:
