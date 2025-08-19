@@ -1,6 +1,6 @@
 # History
 
-## Unreleased
+## 0.20.2 (2025-08-19)
 * Handle empty user when pretty-printing `Identification` objects
 * `ClientSession` arguments `ratelimit_path` and `lock_path` will now apply to the separate rate-limiter used for `/projects/{id}`
 
