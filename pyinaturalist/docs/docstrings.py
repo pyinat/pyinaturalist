@@ -68,7 +68,7 @@ class ApiDocstring:
     def _split_sections(docstring: str) -> Dict[str, str]:
         """Split a docstring into a dict of ``{section_title: section_content}``"""
         docstring = docstring or ''
-        sections = {k: '' for k in DEFAULT_SECTIONS}
+        sections = dict.fromkeys(DEFAULT_SECTIONS, '')
         current_section = 'Description'
 
         for line in docstring.splitlines():

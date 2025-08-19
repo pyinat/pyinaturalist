@@ -65,7 +65,7 @@ def search_counties(counties: FIPSDict, fips_codes: Optional[List[int]] = None) 
             if responses.get(fips) and get_matching_result(responses[fips], county, fips):
                 continue
 
-            print(f'Searching for county: "{search_str}" [{i+1}/{len(fips_codes)}]')
+            print(f'Searching for county: "{search_str}" [{i + 1}/{len(fips_codes)}]')
             response = get_places_autocomplete(search_str, page='all')
             # Add or append to results
             if response.get('results', []):
@@ -120,15 +120,15 @@ def get_display_names(county: Dict) -> Tuple:
     # Some adjustments for states/regions with different naming conventions
     if county['state_abbr'] == 'PR':
         return (
-            f"{county['county_name']}, PR",
-            f"{county['county_name']}, Puerto Rico",
-            f"{county['county_name']}",
+            f'{county["county_name"]}, PR',
+            f'{county["county_name"]}, Puerto Rico',
+            f'{county["county_name"]}',
         )
     if county['state_abbr'] == 'AS':
         return (
-            f"{county['county_name']}, AS",
-            f"{county['county_name']}, American Samoa",
-            f"{county['county_name']}",
+            f'{county["county_name"]}, AS',
+            f'{county["county_name"]}, American Samoa',
+            f'{county["county_name"]}',
         )
     if county['state_abbr'] == 'LA':
         admin_division = ' Parish'
@@ -136,11 +136,11 @@ def get_display_names(county: Dict) -> Tuple:
         county_name = county_name.replace(' City', '')
 
     return (
-        f"{county_name}{admin_division} {county['state_abbr']}, US",
-        f"{county_name}{admin_division} US, {county['state_abbr']}",
-        f"{county_name}, US, {county['state_abbr']}",
-        f"{county_name}, {county['state_abbr']}, US",
-        f"{county_name}, {county['state_abbr']}",
+        f'{county_name}{admin_division} {county["state_abbr"]}, US',
+        f'{county_name}{admin_division} US, {county["state_abbr"]}',
+        f'{county_name}, US, {county["state_abbr"]}',
+        f'{county_name}, {county["state_abbr"]}, US',
+        f'{county_name}, {county["state_abbr"]}',
     )
 
 
