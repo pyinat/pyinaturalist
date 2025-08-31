@@ -32,13 +32,14 @@ class AnnotationController(BaseController):
         * API reference: :v1:`GET /controlled_terms <Controlled_Terms/get_controlled_terms>`
 
         Example:
-            >>> terms = client.annotations
+            >>> terms = client.annotations.all()
             >>> pprint(response[0])
-            1: Life Stage
-                2: Adult
-                3: Teneral
-                4: Pupa
-            ...
+             ID   Label          Values
+             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+             1    Life Stage     Adult, Teneral, Pupa, ...
+             17   Alive or Dead  Alive, Dead, Cannot Be Determined
+             ...
+
         """
         response = get_controlled_terms(**params)
         return ControlledTerm.from_json_list(response['results'])

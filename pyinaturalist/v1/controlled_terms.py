@@ -15,10 +15,10 @@ def get_controlled_terms(taxon_id: Optional[int] = None, **params) -> JsonRespon
     Example:
         >>> response = get_controlled_terms()
         >>> pprint(response)
-        1: Life Stage
-            2: Adult
-            3: Teneral
-            4: Pupa
+         ID   Label          Values
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         1    Life Stage     Adult, Teneral, Pupa, ...
+         17   Alive or Dead  Alive, Dead, Cannot Be Determined
         ...
 
         .. dropdown:: Example Response
@@ -48,11 +48,11 @@ def get_controlled_terms_for_taxon(taxon_id: int, **params) -> JsonResponse:
     Example:
         >>> response = get_controlled_terms_for_taxon(12345)
         >>> pprint(response)
-        1: Life Stage
-            2: Adult
-            3: Teneral
-            4: Pupa
-        ...
+         ID   Label          Values
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         1    Life Stage     Adult, Teneral, Pupa, ...
+         17   Alive or Dead  Alive, Dead, Cannot Be Determined
+         ...
 
         .. dropdown:: Example Response
             :color: primary
