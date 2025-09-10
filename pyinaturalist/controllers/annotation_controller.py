@@ -33,7 +33,7 @@ class AnnotationController(BaseController):
 
         Example:
             >>> terms = client.annotations.all()
-            >>> pprint(response[0])
+            >>> pprint(terms)
              ID   Label          Values
              ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
              1    Life Stage     Adult, Teneral, Pupa, ...
