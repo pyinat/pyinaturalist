@@ -10,6 +10,7 @@ from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import RequestParams
 from pyinaturalist.controllers import (
     AnnotationController,
+    IdentificationController,
     ObservationController,
     PlaceController,
     ProjectController,
@@ -39,6 +40,7 @@ class iNatClient:
     Controllers:
 
     * :fa:`tag` :py:class:`annotations <.AnnotationController>`
+    * :fa:`fingerprint` :py:class:`identifications <.IdentificationController>`
     * :fa:`binoculars` :py:class:`observations <.ObservationController>`
     * :fa:`location-dot` :py:class:`places <.PlaceController>`
     * :fa:`users` :py:class:`projects <.ProjectController>`
@@ -78,6 +80,9 @@ class iNatClient:
         self.annotations = AnnotationController(
             self
         )  #: Interface for :py:class:`annotation requests <.AnnotationController>`
+        self.identifications = IdentificationController(
+            self
+        )  #: Interface for :py:class:`identification requests <.IdentificationController>`
         self.observations = ObservationController(
             self
         )  #: Interface for :py:class:`observation requests <.ObservationController>`
