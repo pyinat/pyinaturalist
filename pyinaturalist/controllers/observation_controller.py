@@ -54,7 +54,7 @@ class ObservationController(BaseController):
             >>> client.observations(16227955)
 
         Args:
-            observation_ids: A single observation ID
+            observation_id: A single observation ID
         """
         return self.from_ids(observation_id, **params).one()
 
@@ -71,7 +71,7 @@ class ObservationController(BaseController):
             >>> obs = client.observations.from_ids([16227955, 16227956]).all()
 
         Args:
-            observation_id: One or more observation IDs
+            observation_ids: One or more observation IDs
         """
 
         def get_observations_by_id(_observation_ids: MultiInt, **params):
