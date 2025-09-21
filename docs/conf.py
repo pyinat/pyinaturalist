@@ -123,6 +123,7 @@ copybutton_prompt_is_regexp = True
 # Disable autodoc's built-in type hints, and use sphinx_autodoc_typehints extension instead
 # The features are similar, but sphinx_autodoc_typehints still produces better output
 autodoc_typehints = 'none'
+typehints_use_signature_return = True
 
 # apidoc settings
 apidoc_module_dir = PACKAGE_DIR
