@@ -9,7 +9,6 @@
 [![PyPI - Python Versions](https://img.shields.io/pypi/pyversions/pyinaturalist)](https://pypi.org/project/pyinaturalist)
 
 [![Run with Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pyinat/pyinaturalist/main?urlpath=lab/tree/examples)
-[![Open in VSCode](docs/images/open-in-vscode.svg)](https://open.vscode.dev/pyinat/pyinaturalist)
 
 <br/>
 
