@@ -82,6 +82,7 @@ def livedocs(session):
     """
     cmd = ['sphinx-autobuild', 'docs', DOC_BUILD_DIR]
     cmd += ['-a']
+    cmd += ['--host', '0.0.0.0']
     cmd += ['--port', str(LIVE_DOCS_PORT), '-j', 'auto']
     for pattern in LIVE_DOCS_WATCH:
         cmd += ['--watch', pattern]
