@@ -48,7 +48,7 @@ See [iNaturalist documentation](https://www.inaturalist.org/pages/api+reference#
 for more details on authentication.
 :::
 
-First, go to [New Application](https://www.inaturalist.org/oauth/applications/new) and fill out the
+First, go to [New Application](https://www.inaturalist.org/oauth/applications) and fill out the
 following pieces of information:
 
 * **Name:** Any name you want to come up with. For example, if this is associated with a GitHub repo,
@@ -149,7 +149,7 @@ You could manually store and retrieve them with a utility like
 [secret-tool](https://manpages.ubuntu.com/manpages/xenial/man1/secret-tool.1.html)
 and place them in environment variables as described above, but there is a much simpler option.
 
-Direct keyring integration is provided via [python keyring](https://github.com/jaraco/keyring). Most common keyring bakcends are supported, including:
+Direct keyring integration is provided via [python keyring](https://github.com/jaraco/keyring). Most common keyring backends are supported, including:
 
 * macOS [Keychain](https://en.wikipedia.org/wiki/Keychain_%28software%29)
 * Freedesktop [Secret Service](http://standards.freedesktop.org/secret-service/)

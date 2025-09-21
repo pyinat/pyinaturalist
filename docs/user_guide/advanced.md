@@ -17,8 +17,8 @@ To get all pages of results and combine them into a single response, use `page='
 Note that this replaces the `get_all_*()` functions from pyinaturalist\<=0.12.
 
 ## Sessions
-If you want more control over how requests are sent, you can provide your own {py:class}`.ClientSession`
-object using the `session` argument for any API request function:
+If you want more control over how HTTP requests are sent, you can provide your own
+{py:class}`.ClientSession` object using the `session` argument for any API request function:
 ```python
 >>> from pyinaturalist import ClientSession
 >>> session = ClientSession(...)
