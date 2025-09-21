@@ -13,6 +13,7 @@ questions, and other contributions that have helped to improve pyinaturalist:
 * [Ken-ichi Ueda](https://github.com/kueda)
 * [Matt Muir](https://forum.inaturalist.org/u/muir)
 * [Nicolas Noé](https://github.com/niconoe)
+* [Oleksii Brodnikov](https://github.com/alterionisto)
 * [Patrick Leary](https://github.com/pleary)
 * [Peter Desmet](https://github.com/peterdesmet)
 * [Sam R](https://github.com/samtreesandbushes)

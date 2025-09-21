@@ -1,3 +1,7 @@
+from datetime import datetime
+
+from dateutil.tz import tzoffset
+
 from pyinaturalist.client import iNatClient
 from pyinaturalist.constants import API_V1
 from pyinaturalist.models import (
@@ -56,3 +60,20 @@ def test_from_ids__limit(requests_mock):
 
     assert len(results) == 1 and isinstance(results[0], Identification)
     assert results[0].id == identification_id
+
+
+def test_search(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/identifications',
+        json=SAMPLE_DATA['get_identifications'],
+        status_code=200,
+    )
+    results = iNatClient().identifications.search().all()
+    assert len(results) == 2
+    expected_datetime = datetime(2021, 2, 18, 20, 31, 32, tzinfo=tzoffset(None, -21600))
+
+    assert results[0].id == 155554373
+    assert results[0].user.id == 2115051
+    assert results[0].taxon.id == 60132
+    assert results[0].created_at == expected_datetime
+    assert results[0].current is True
