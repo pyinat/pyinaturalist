@@ -1,6 +1,7 @@
 """Utilities for modifying function signatures using ``python-forge``"""
 
 # ruff: noqa: E501
+import inspect
 from functools import partial
 from inspect import Parameter, ismethod, signature
 from logging import getLogger
@@ -10,7 +11,7 @@ from requests import Session
 
 from pyinaturalist.constants import TemplateFunction
 from pyinaturalist.converters import ensure_list
-from pyinaturalist.docs import copy_annotations, copy_docstrings, forge
+from pyinaturalist.docs import copy_annotations, copy_docstrings
 
 AUTOMETHOD_INIT = '.. automethod:: __init__'
 CONTROLLER_EXCLUDE_PARAMS = ['dry_run', 'session', 'page', 'per_page', 'order', 'count_only']
@@ -84,20 +85,59 @@ def copy_doc_signature(
     return wrapper
 
 
-# Alias specifically for basic request functions
-document_request_params = partial(copy_doc_signature, add_common_args=True)
+def copy_signatures(
+    target_function: Callable,
+    template_functions: List[TemplateFunction],
+    exclude_args: Optional[Iterable[str]] = None,
+) -> Callable:
+    """Copy function signatures from one or more template functions to a target function.
 
-# Aliases specifically for controller functions
-document_controller_params = partial(
-    copy_doc_signature,
-    include_sections=['Description', 'Args'],
-    include_return_annotation=False,
-    exclude_args=CONTROLLER_EXCLUDE_PARAMS,
-)
-document_controller_description = partial(
-    copy_doc_signature,
-    description_only=True,
-)
+    Args:
+        target_function: Function to modify
+        template_functions: Functions containing params to apply to ``target_function``
+        exclude_args: Arguments to exclude from the copied signature
+    """
+    # Start with 'self' parameter if this is an instance method
+    fparams = {}
+    if 'self' in signature(target_function).parameters or ismethod(target_function):
+        fparams['self'] = Parameter('self', Parameter.POSITIONAL_OR_KEYWORD)
+
+    # Add and combine parameters from all template functions, excluding duplicates, self, and *args
+    for func in template_functions:
+        new_fparams = {
+            k: v
+            for k, v in signature(func).parameters.items()
+            if k != 'self' and v.kind != Parameter.VAR_POSITIONAL
+        }
+        fparams.update(new_fparams)
+
+    # Manually remove any excluded parameters
+    for key in ensure_list(exclude_args):
+        fparams.pop(key, None)
+
+    fparams = _deduplicate_var_kwargs(fparams)
+
+    # Create new signature and apply to function
+    new_params = list(fparams.values())
+    new_sig = inspect.Signature(parameters=new_params)
+    target_function.__signature__ = new_sig  # type: ignore[attr-defined]
+
+    return target_function
+
+
+def _deduplicate_var_kwargs(params: Dict) -> Dict:
+    """Add variadic keyword args (e.g., ``**kwargs``) to the end of a function signature, accounting
+    for any duplicates.
+    """
+    # Check for **kwargs by param type instead of by name
+    for k, v in params.copy().items():
+        if v.kind == Parameter.VAR_KEYWORD:
+            params.pop(k)
+
+    # Add **kwargs as the last param
+    kwargs_param = Parameter('kwargs', Parameter.VAR_KEYWORD)
+    params['kwargs'] = kwargs_param
+    return params
 
 
 def document_common_args(func):
@@ -127,53 +167,20 @@ def extend_init_signature(*template_functions: Callable) -> Callable:
     return wrapper
 
 
-def copy_signatures(
-    target_function: Callable,
-    template_functions: List[TemplateFunction],
-    exclude_args: Optional[Iterable[str]] = None,
-) -> Callable:
-    """A decorator that copies function signatures from one or more template functions to a
-    target function.
+# Alias specifically for basic request functions
+document_request_params = partial(copy_doc_signature, add_common_args=True)
 
-    Args:
-        target_function: Function to modify
-        template_functions: Functions containing params to apply to ``target_function``
-    """
-    # Start with 'self' parameter if this is an instance method
-    fparams = {}
-    if 'self' in signature(target_function).parameters or ismethod(target_function):
-        fparams['self'] = forge.self
-
-    # Add and combine parameters from all template functions, excluding duplicates, self, and *args
-    for func in template_functions:
-        new_fparams = {
-            k: v
-            for k, v in forge.copy(func).signature.parameters.items()
-            if k != 'self' and v.kind != Parameter.VAR_POSITIONAL
-        }
-        fparams.update(new_fparams)
-
-    # Manually remove any excluded parameters
-    for key in ensure_list(exclude_args):
-        fparams.pop(key, None)
-
-    fparams = deduplicate_var_kwargs(fparams)
-    revision = forge.sign(*fparams.values())
-    return revision(target_function)
-
-
-def deduplicate_var_kwargs(params: Dict) -> Dict:
-    """Add variadic keyword args (e.g., ``**kwargs``) to the end of a function signature, accounting
-    for any duplicates.
-    """
-    # Check for **kwargs by param type instead of by name
-    for k, v in params.copy().items():
-        if v.kind == Parameter.VAR_KEYWORD:
-            params.pop(k)
-
-    # Add **kwargs as the last param
-    params.update(forge.kwargs)
-    return params
+# Aliases specifically for controller functions
+document_controller_params = partial(
+    copy_doc_signature,
+    include_sections=['Description', 'Args'],
+    include_return_annotation=False,
+    exclude_args=CONTROLLER_EXCLUDE_PARAMS,
+)
+document_controller_description = partial(
+    copy_doc_signature,
+    description_only=True,
+)
 
 
 # Templates for common params that are added to every request function by default

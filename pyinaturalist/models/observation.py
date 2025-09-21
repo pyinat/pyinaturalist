@@ -309,7 +309,7 @@ class Observation(BaseModel):
     def __init__(self, **kwargs):
         # Convert observation timestamps prior to __attrs_init__
         observed_on = kwargs.pop('time_observed_at', None)
-        if not isinstance(kwargs['observed_on'], datetime) and observed_on:
+        if observed_on and not isinstance(kwargs.get('observed_on'), datetime):
             kwargs['observed_on'] = observed_on
 
         # Set default URL based on observation ID
