@@ -1,6 +1,6 @@
 """Notes:
 * 'test' command: nox will create new virtualenvs per python version
-* 'lint' command: tools and environments are managed by pre-commit
+* 'lint' command: tools and environments are managed by prek (por re-commit)
 * All other commands: will use the project virtualenv managed by uv
 """
 
@@ -97,5 +97,5 @@ def livedocs(session):
 
 @nox.session(python=False)
 def lint(session):
-    """Run linters and code formatters via pre-commit"""
-    session.run('pre-commit', 'run', '--all-files')
+    """Run linters and code formatters"""
+    session.run('prek', 'run', '--all-files')

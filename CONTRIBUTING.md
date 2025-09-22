@@ -88,10 +88,10 @@ nox -e lint
 ```
 
 #### Pre-Commit Hooks
-Optionally, you can use [pre-commit](https://github.com/pre-commit/pre-commit) to automatically
+Optionally, you can use [prek](https://github.com/j178/prek) (or [pre-commit](https://github.com/pre-commit/pre-commit), if you prefer) to automatically
 run all of these checks before a commit is made:
 ```bash
-pre-commit install
+prek install
 ```
 
 This can save you some time in that it will show you errors immediately rather than waiting for CI
@@ -99,7 +99,7 @@ jobs to complete, or if you forget to manually run the checks before committing.
 
 You can disable these hooks at any time with:
 ```bash
-pre-commit uninstall
+prek uninstall
 ```
 
 ### Releases
