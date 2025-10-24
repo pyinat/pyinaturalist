@@ -37,13 +37,16 @@ jobs:
         run: uv run nox -e cov -- xml
 
       # Latest python version: send coverage report to codecov
-      - name: "Upload coverage report to Codecov"
+      - name: Upload coverage report to Codecov
         if: ${{ matrix.python-version == env.LATEST_PY_VERSION }}
         uses: codecov/codecov-action@v5
 
-  # Run code analysis checks via pre-commit hooks
+  # Run code analysis steps via pre-commit hooks
   analyze:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
@@ -51,6 +54,8 @@ jobs:
           python-version: ${{ env.LATEST_PY_VERSION }}
       - name: Run style checks & linting
         uses: j178/prek-action@v1
+
+      # Dependency scan
       - name: Scan dependencies for known vulnerabilities
         uses: pypa/gh-action-pip-audit@v1.1.0
         with:
@@ -58,3 +63,10 @@ jobs:
           # Ignore issues with pip and setuptools versions used by the action itself
           ignore-vulns: |
             GHSA-4xh5-x5gv-qwph
+
+      # Summarize any dependency changes
+      - name: uv lock report
+        uses: mw-root/uv-lock-report@v0.7.0
+        with:
+          output-format: table
+          github-token: ${{ secrets.GITHUB_TOKEN }}
