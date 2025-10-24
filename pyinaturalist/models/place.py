@@ -60,6 +60,8 @@ class Place(BaseModel):
     @classmethod
     def from_json_list(cls, value: ResponseOrResults, **kwargs) -> List['Place']:
         """Optionally use results from /places/nearby to set Place.category"""
+        if not value:
+            return []
         json_value = dict(ensure_list(value)[0])
         if 'results' in json_value:
             json_value = json_value['results']
