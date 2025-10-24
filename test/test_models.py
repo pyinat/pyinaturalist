@@ -811,6 +811,10 @@ def test_place__empty():
     assert place.geometry_geojson == {}
 
 
+def test_place_from_json_list__empty():
+    assert Place.from_json_list([]) == []
+
+
 def test_places__nearby():
     """Results from /places/nearby should have an extra 'category' attribute"""
     places = Place.from_json_list(j_places_nearby)
