@@ -66,7 +66,7 @@ jobs:
 
       # Summarize any dependency changes
       - name: uv lock report
-        uses: mw-root/uv-lock-report@v0.7.0
+        uses: mw-root/uv-lock-report@v0.11.1
         with:
           output-format: table
           github-token: ${{ secrets.GITHUB_TOKEN }}
