@@ -60,7 +60,7 @@ dev = [
     'pytest-xdist>=2.2',
     'requests-mock~=1.12',
     'sphinx-autobuild>=2021.3',
-    'starlette<0.28',  # For compatibility with sphinx-autobuild
+    'starlette<0.50',  # For compatibility with sphinx-autobuild
 ]
 
 # Documentation dependencies for Readthedocs builds
