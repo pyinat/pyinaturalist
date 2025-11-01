@@ -88,6 +88,17 @@ def test_get_observations__all_pages__post(requests_mock):
     assert len(observations['results']) == 2
 
 
+@pytest.mark.parametrize(
+    'n_ids, expected_method',
+    [(1, 'GET'), (30, 'GET'), (31, 'POST'), (200, 'POST')],
+)
+@patch.object(ClientSession, 'send', return_value=MockResponse())
+def test_get_observations__by_id(mock_send, n_ids, expected_method):
+    """If requesting more than MAX_IDS_PER_REQUEST IDs, they should be sent via POST body"""
+    get_observations(id=list(range(n_ids)))
+    assert mock_send.call_args[0][0].method == expected_method
+
+
 @patch.object(ClientSession, 'send', return_value=MockResponse())
 def test_get_observations__by_obs_field(mock_send):
     get_observations(taxon_id=3, observation_fields=['Species count'])

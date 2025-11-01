@@ -2,7 +2,7 @@ from typing import Optional
 
 from attr import fields_dict
 
-from pyinaturalist.constants import MultiInt
+from pyinaturalist.constants import MAX_IDS_PER_REQUEST, MultiInt
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import copy_doc_signature
@@ -10,8 +10,6 @@ from pyinaturalist.docs import templates as docs
 from pyinaturalist.models import Taxon
 from pyinaturalist.paginator import IDPaginator, Paginator
 from pyinaturalist.v1 import get_taxa, get_taxa_autocomplete, get_taxa_by_id
-
-IDS_PER_REQUEST = 30
 
 
 class TaxonController(BaseController):
@@ -54,7 +52,7 @@ class TaxonController(BaseController):
             get_taxa_by_id,
             Taxon,
             ids=ensure_list(taxon_ids),
-            ids_per_request=IDS_PER_REQUEST,
+            ids_per_request=MAX_IDS_PER_REQUEST,
             **params,
         )
 
