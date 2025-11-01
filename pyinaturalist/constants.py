@@ -27,6 +27,9 @@ KEYRING_KEY = '/inaturalist'
 PER_PAGE_RESULTS = 200  # Default number of records per page for paginated queries
 LARGE_REQUEST_WARNING = 5000  # Show a warning for queries that will return over this many results
 
+# Maximum number of IDs that can be included in a single observation or taxon request
+MAX_IDS_PER_REQUEST = 30
+
 # Rate-limiting and retry settings
 CONNECT_TIMEOUT = 5
 MAX_DELAY = 60  # Maximum time to wait for rate-limiting before aborting

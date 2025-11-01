@@ -2,7 +2,7 @@ from copy import deepcopy
 from logging import getLogger
 
 from pyinaturalist.constants import API_V2, V2_OBS_ORDER_BY_PROPERTIES, JsonResponse, RequestParams
-from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps
+from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps, ensure_list
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.paginator import paginate_all
@@ -13,7 +13,6 @@ logger = getLogger(__name__)
 
 
 # TODO: Send GET request with RISON if it fits in URL character limit?
-# TODO: Code reuse, cleanup, etc.
 @document_request_params(
     *docs._get_observations,
     docs._observation_v2,
@@ -54,6 +53,14 @@ def get_observations(**params) -> JsonResponse:
         '[57754375] Species: Danaus plexippus (Monarch) observed by samroom on 2020-08-27 at Railway Ave, Wilcox, SK'
         '[57707611] Species: Danaus plexippus (Monarch) observed by ingridt3 on 2020-08-26 at Michener Dr, Regina, SK'
 
+        Return only observation UUIDs and users:
+
+        >>> response = get_observations(
+        >>>     taxon_name='Danaus plexippus',
+        >>>     created_on='2020-08-27',
+        >>>     fields={'uuid':True, 'user':{'login':True}},
+        >>> )
+
         Return all response fields *except* identifications:
 
         >>> response = get_observations(id=14150125, except_fields=['identifications'])
@@ -93,13 +100,14 @@ def get_observations(**params) -> JsonResponse:
         for k in except_fields:
             params['fields'].pop(k, None)
 
-    # If no field selections are specified (or all fields), use GET method
-    if params.get('fields') in ['all', None]:
-        observations = _get_observations(params)
-
-    # If field selections are specified, use POST method and put fields in request body
-    else:
+    # If field selections are specified, or we're querying more IDs than can fit in a GET request,
+    # then use POST method and put field selection + other params in request body
+    n_ids = len(ensure_list(params.get('id')))
+    if params.get('fields') not in ['all', None] or n_ids > 30:
         observations = _get_post_observations(params)
+    # Otherwise use GET method
+    else:
+        observations = _get_observations(params)
 
     observations['results'] = convert_all_coordinates(observations['results'])
     observations['results'] = convert_all_timestamps(observations['results'])
@@ -118,24 +126,19 @@ def _get_post_observations(params: RequestParams) -> JsonResponse:
     This allows for more complex requests that may exceed the max length of a GET URL.
     """
     headers = {'X-HTTP-Method-Override': 'GET'}
-    fields = {'fields': params.pop('fields')}
-
+    body = params
+    params = {k: body.pop(k) for k in ['page', 'per_page'] if k in body}
     if params.get('page') == 'all':
         return paginate_all(
             post,
             f'{API_V2}/observations',
             method='id',
             headers=headers,
-            json=fields,
+            json=body,
             **params,
         )
     else:
-        return post(
-            f'{API_V2}/observations',
-            headers=headers,
-            json=fields,
-            **params,
-        ).json()
+        return post(f'{API_V2}/observations', headers=headers, json=body, **params).json()
 
 
 # The full `fields` value to request all observation details

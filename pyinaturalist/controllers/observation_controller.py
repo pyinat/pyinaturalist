@@ -2,6 +2,7 @@ from typing import Callable, List, Optional, Union
 
 from pyinaturalist.constants import (
     API_V1,
+    MAX_IDS_PER_REQUEST,
     V1_OBS_ORDER_BY_PROPERTIES,
     HistogramResponse,
     IntOrStr,
@@ -40,8 +41,6 @@ from pyinaturalist.v1 import (
     update_observation,
     upload,
 )
-
-IDS_PER_REQUEST = 30
 
 
 class ObservationController(BaseController):
@@ -85,7 +84,7 @@ class ObservationController(BaseController):
             get_observations_by_id,
             Observation,
             ids=ensure_list(observation_ids),
-            ids_per_request=IDS_PER_REQUEST,
+            ids_per_request=MAX_IDS_PER_REQUEST,
             **params,
         )
 
