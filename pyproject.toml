@@ -51,6 +51,7 @@ all = [
 [dependency-groups]
 # Dev dependencies
 dev = [
+    'dotenv>=0.9',
     'nox~=2025.5',
     'prek>=0.2',
     'pretty-errors>=1.2',
