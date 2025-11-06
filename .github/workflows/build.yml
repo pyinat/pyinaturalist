@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
 
     steps:
       # Install dependencies, with caching
@@ -65,8 +65,9 @@ jobs:
             GHSA-4xh5-x5gv-qwph
 
       # Summarize any dependency changes
-      - name: uv lock report
-        uses: mw-root/uv-lock-report@v0.7.0
-        with:
-          output-format: table
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      # TODO: Does not appear to be working with this repo
+      # - name: uv lock report
+      #   uses: mw-root/uv-lock-report@v0.7.0
+      #   with:
+      #     output-format: table
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
