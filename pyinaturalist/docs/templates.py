@@ -414,15 +414,45 @@ def _create_observation(
     geoprivacy: Geoprivacy for the observation
     observation_fields: Dict of observation fields in the format ``{id: value}``.
         Alias for ``observation_field_values_attributes``.
-    flickr_photos: Flickr photo ID(s) to add as photos for this observation. User must have
-        their Flickr and iNat accounts connected, and the user must own the photo(s) on Flickr.
-    picasa_photos: Picasa photo ID(s) to add as photos for this observation. User must have
-        their Picasa and iNat accounts connected, and the user must own the photo(s) on Picasa.
-    facebook_photos: Facebook photo IDs to add as photos for this observation. User must have
-        their Facebook and iNat accounts connected, and the user must own the photo on Facebook.
     photos: One or more image files, file-like objects, file paths, or URLs
     sounds: One or more sound files, file-like objects, file paths, or URLs
     photo_ids: One or more IDs of previously uploaded photos to attach to the observation
+    """
+
+
+def _create_observation_v2(
+    captive_flag: Optional[bool] = None,
+    coordinate_system: Optional[str] = None,
+    geo_x: Optional[float] = None,
+    geo_y: Optional[float] = None,
+    license: Optional[str] = None,
+    location_is_exact: Optional[bool] = None,
+    make_license_default: Optional[bool] = None,
+    make_licenses_same: Optional[bool] = None,
+    owners_identification_from_vision: Optional[bool] = None,
+    positioning_device: Optional[str] = None,
+    positioning_method: Optional[str] = None,
+    prefers_community_taxon: Optional[bool] = None,
+    project_id: Optional[int] = None,
+    site_id: Optional[int] = None,
+    uuid: Optional[str] = None,
+):
+    """Args:
+    captive_flag: Mark observation as captive/cultivated
+    coordinate_system: Coordinate system used (if not WGS84)
+    geo_x: X coordinate in alternative coordinate system
+    geo_y: Y coordinate in alternative coordinate system
+    license: License to apply to the observation (e.g., 'cc-by', 'cc-by-nc', 'cc0')
+    location_is_exact: Whether the location coordinates are exact
+    make_license_default: Make this license the user's default for future observations
+    make_licenses_same: Apply the same license to all associated photos
+    owners_identification_from_vision: Initial identification came from computer vision
+    positioning_device: Device used for positioning (e.g., 'gps', 'cell', 'network')
+    positioning_method: Method used to determine positioning
+    prefers_community_taxon: User preference for using community taxon over their own identification
+    project_id: Project ID to add observation to upon creation
+    site_id: iNaturalist network site ID (e.g., for iNaturalist.ca, iNaturalist.nz)
+    uuid: UUID of the observation (for updates to preserve UUID)
     """
 
 

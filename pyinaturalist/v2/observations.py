@@ -14,9 +14,10 @@ from pyinaturalist.constants import (
 from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps, ensure_list
 from pyinaturalist.docs import document_common_args, document_request_params
 from pyinaturalist.docs import templates as docs
+from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.paginator import paginate_all
-from pyinaturalist.request_params import validate_multiple_choice_param
-from pyinaturalist.session import get, post
+from pyinaturalist.request_params import convert_observation_params, validate_multiple_choice_param
+from pyinaturalist.session import delete, get, post, put
 
 logger = getLogger(__name__)
 
@@ -35,10 +36,11 @@ def get_observations(**params) -> JsonResponse:
     .. rubric:: Notes
 
     * :fas:`lock-open` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
+    * :fa:`exclamation-triangle` **Provisional:** v2 endpoints are still in development, and may
+      change in future releases
     * API reference: :v2:`GET /observations <Observations/get_observations>`
     * See `iNaturalist API v2 documentation <https://api.inaturalist.org/v2/docs>`_ for details on
       selecting return fields using ``fields`` parameter
-    * :fa:`exclamation-triangle` **Provisional:** This is for testing purposes only, and will change in future releases
 
     Examples:
 
@@ -166,6 +168,8 @@ def upload(
     .. rubric:: Notes
 
     * :fa:`lock` :ref:`Requires authentication <auth>`
+    * :fa:`exclamation-triangle` **Provisional:** v2 endpoints are still in development, and may
+      change in future releases
     * API reference: :v2:`POST /observation_photos <ObservationPhotos/post_observation_photos>`
     * API reference: :v2:`POST /observation_sounds <ObservationSounds/post_observation_sounds>`
 
@@ -184,8 +188,10 @@ def upload(
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/post_observation_media_v2.json
-                :language: JSON
+
+            .. code-block:: javascript
+
+                [{"id": 178539}, {"id": 955963}]
 
     Args:
         observation_uuid: The UUID of the observation
@@ -195,7 +201,7 @@ def upload(
         access_token: Access token for user authentication, as returned by :func:`get_access_token()`
 
     Returns:
-        Information about the uploaded file(s)
+        IDs only for newly created files
     """
     params['raise_for_status'] = False
     responses = []
@@ -232,6 +238,137 @@ def upload(
     for response in responses:
         response.raise_for_status()
     return [response.json()['results'][0] for response in responses]
+
+
+@document_request_params(docs._access_token, docs._create_observation, docs._create_observation_v2)
+def create_observation(**params) -> JsonResponse:
+    """Create a new observation.
+
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * :fa:`exclamation-triangle` **Provisional:** v2 endpoints are still in development, and may
+      change in future releases
+    * API reference: :v2:`POST /observations <Observations/post_observations>`
+
+    Example:
+        >>> token = get_access_token()
+        >>> # Create a new observation:
+        >>> create_observation(
+        ...     access_token=token,
+        ...     species_guess='Pieris rapae',
+        ...     observed_on='2020-09-01',
+        ...     photos='~/observation_photos/2020_09_01_14003156.jpg',
+        ...     observation_fields={297: 1},  # 297 is the obs. field ID for 'Number of individuals'
+        ... )
+
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
+
+            .. literalinclude:: ../sample_data/create_observation_v2.json
+                :language: JSON
+
+    Returns:
+        JSON response containing the newly created observation (submitted fields only)
+    """
+    photos, sounds, photo_ids, params, kwargs = convert_observation_params(params)
+    response = post(f'{API_V2}/observations', json={'observation': params}, **kwargs)
+    response_json = response.json()
+    observation_uuid = response_json['results'][0]['uuid']
+
+    # Upload photos and sounds if provided
+    if photos or sounds or photo_ids:
+        upload(observation_uuid, photos=photos, sounds=sounds, photo_ids=photo_ids, **kwargs)
+
+    return response_json['results'][0]
+
+
+@document_request_params(
+    docs._access_token,
+    docs._create_observation,
+    docs._create_observation_v2,
+)
+def update_observation(observation_uuid: str, **params) -> JsonResponse:
+    """Update a single observation
+
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * :fa:`exclamation-triangle` **Provisional:** v2 endpoints are still in development, and may
+      change in future releases
+    * API reference: :v2:`PUT /observations/{uuid} <Observations/put_observations_uuid>`
+
+    Example:
+
+        >>> token = get_access_token()
+        >>> update_observation(
+        >>>     '53411fc2-bdf0-434e-afce-4dac33970173',
+        >>>     access_token=token,
+        >>>     description='updated description!',
+        >>>     captive_flag=True,
+        >>> )
+
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
+
+            .. code-block:: javascript
+
+                {"uuid": "6444ede0-9831-47bd-8c3b-ee32e08cbfe4"}
+
+    Args:
+        observation_uuid: UUID of the observation to update
+
+    Returns:
+        JSON response containing the updated observation
+    """
+    photos, sounds, photo_ids, params, kwargs = convert_observation_params(params)
+    payload = {'observation': params}
+
+    response = put(f'{API_V2}/observations/{observation_uuid}', json=payload, **kwargs)
+
+    # Upload photos and sounds if provided
+    if photos or sounds or photo_ids:
+        upload(observation_uuid, photos=photos, sounds=sounds, photo_ids=photo_ids, **kwargs)
+
+    return response.json()['results'][0]
+
+
+@document_request_params(docs._access_token)
+def delete_observation(observation_uuid: str, access_token: Optional[str] = None, **params):
+    """Delete an observation
+
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * :fa:`exclamation-triangle` **Provisional:** v2 endpoints are still in development, and may
+      change in future releases
+    * API reference: :v2:`DELETE /observations/{uuid} <Observations/delete_observations_uuid>`
+
+    Example:
+        >>> token = get_access_token()
+        >>> delete_observation('53411fc2-bdf0-434e-afce-4dac33970173', token)
+
+    Args:
+        observation_uuid: UUID of the observation to delete
+
+    Returns:
+        If successful, no response is returned from this endpoint
+
+    Raises:
+        :py:exc:`.ObservationNotFound` if the requested observation doesn't exist
+        :py:exc:`requests.HTTPError` (403) if the observation belongs to another user
+    """
+    response = delete(
+        f'{API_V2}/observations/{observation_uuid}',
+        access_token=access_token,
+        raise_for_status=False,
+        **params,
+    )
+    if response.status_code == 404:
+        raise ObservationNotFound(response=response)
+    response.raise_for_status()
 
 
 # The full `fields` value to request all observation details
