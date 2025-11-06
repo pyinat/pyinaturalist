@@ -1,5 +1,8 @@
 // Extract OpenAPI spec from v2 API (embedded in swagger-ui-init.js)
-// Usage: node scripts/extract_openapi_spec.js > openapi_spec_v2.json
+// Usage:
+//    node scripts/extract_openapi_spec.js | jq > test/sample_data/openapi_spec_v2.json
+//    # For v1 API (already available as a separate JSON file):
+//    curl https://api.inaturalist.org/v1/swagger.json | jq > test/sample_data/openapi_spec_v1.json
 const url = process.argv[2] || 'https://api.inaturalist.org/v2/docs/swagger-ui-init.js';
 
 fetch(url)
