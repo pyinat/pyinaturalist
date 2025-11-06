@@ -1,9 +1,18 @@
 from copy import deepcopy
 from logging import getLogger
+from typing import Optional
 
-from pyinaturalist.constants import API_V2, V2_OBS_ORDER_BY_PROPERTIES, JsonResponse, RequestParams
+from pyinaturalist.constants import (
+    API_V2,
+    V2_OBS_ORDER_BY_PROPERTIES,
+    JsonResponse,
+    ListResponse,
+    MultiFile,
+    MultiIntOrStr,
+    RequestParams,
+)
 from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps, ensure_list
-from pyinaturalist.docs import document_request_params
+from pyinaturalist.docs import document_common_args, document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import validate_multiple_choice_param
@@ -139,6 +148,90 @@ def _get_post_observations(params: RequestParams) -> JsonResponse:
         )
     else:
         return post(f'{API_V2}/observations', headers=headers, json=body, **params).json()
+
+
+@document_common_args
+def upload(
+    observation_uuid: str,
+    photos: Optional[MultiFile] = None,
+    sounds: Optional[MultiFile] = None,
+    photo_ids: Optional[MultiIntOrStr] = None,
+    **params,
+) -> ListResponse:
+    """Upload one or more local photo and/or sound files, and add them to an existing observation.
+
+    You may also attach a previously uploaded photo by photo ID, e.g. if your photo contains
+    multiple organisms and you want to create a separate observation for each one.
+
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v2:`POST /observation_photos <ObservationPhotos/post_observation_photos>`
+    * API reference: :v2:`POST /observation_sounds <ObservationSounds/post_observation_sounds>`
+
+    Example:
+
+        >>> token = get_access_token()
+        >>> upload(
+        ...     '53411fc2-bdf0-434e-afce-4dac33970173',
+        ...     photos=['~/observations/2020_09_01_140031.jpg', '~/observations/2020_09_01_140042.jpg'],
+        ...     sounds='~/observations/2020_09_01_140031.mp3',
+        ...     photo_ids=[1234, 5678],
+        ...     access_token=token,
+        ... )
+
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
+
+            .. literalinclude:: ../sample_data/post_observation_media_v2.json
+                :language: JSON
+
+    Args:
+        observation_uuid: The UUID of the observation
+        photos: One or more image files, file-like objects, file paths, or URLs
+        sounds: One or more audio files, file-like objects, file paths, or URLs
+        photo_ids: One or more IDs of previously uploaded photos to attach to the observation
+        access_token: Access token for user authentication, as returned by :func:`get_access_token()`
+
+    Returns:
+        Information about the uploaded file(s)
+    """
+    params['raise_for_status'] = False
+    responses = []
+    photos, sounds = ensure_list(photos), ensure_list(sounds)
+    logger.info(f'Uploading {len(photos)} photos and {len(sounds)} sounds')
+
+    # Upload photos
+    photo_data = {'observation_photo[observation_id]': observation_uuid}
+    for photo in photos:
+        response = post(f'{API_V2}/observation_photos', files=photo, data=photo_data, **params)
+        responses.append(response)
+
+    # Upload sounds
+    sound_data = {'observation_sound[observation_id]': observation_uuid}
+    for sound in sounds:
+        response = post(f'{API_V2}/observation_sounds', files=sound, data=sound_data, **params)
+        responses.append(response)
+
+    # Attach previously uploaded photos by ID
+    # Note: API will return a 422 if photo ID is invalid or has already been added to the observation
+    if photo_ids:
+        logger.info(f'Attaching {len(ensure_list(photo_ids))} existing photos')
+        for photo_id in ensure_list(photo_ids):
+            payload = {
+                'observation_photo': {
+                    'observation_id': observation_uuid,
+                    'photo_id': int(photo_id),
+                }
+            }
+            response = post(f'{API_V2}/observation_photos', json=payload, **params)
+            responses.append(response)
+
+    # Wait until all uploads complete to raise errors for any failed uploads
+    for response in responses:
+        response.raise_for_status()
+    return [response.json()['results'][0] for response in responses]
 
 
 # The full `fields` value to request all observation details

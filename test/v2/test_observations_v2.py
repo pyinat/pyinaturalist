@@ -1,11 +1,12 @@
 import json
+from io import BytesIO
 from unittest.mock import patch
 
 import pytest
 
 from pyinaturalist.constants import API_V2
 from pyinaturalist.session import ClientSession, MockResponse
-from pyinaturalist.v2 import get_observations
+from pyinaturalist.v2 import get_observations, upload
 from test.sample_data import SAMPLE_DATA
 
 
@@ -116,3 +117,49 @@ def test_get_observations__by_obs_field_values(mock_send):
 def test_get_observations__invalid_fields():
     with pytest.raises(ValueError):
         get_observations(taxon_id=3, fields=['taxon'], except_fields=['identifications'])
+
+
+def test_upload(requests_mock):
+    """Test uploading photos and sounds to an observation"""
+    requests_mock.post(
+        f'{API_V2}/observation_photos',
+        json=SAMPLE_DATA['post_observation_media_v2'],
+        status_code=200,
+    )
+    requests_mock.post(
+        f'{API_V2}/observation_sounds',
+        json=SAMPLE_DATA['post_observation_media_v2'],
+        status_code=200,
+    )
+
+    response = upload(
+        '53411fc2-bdf0-434e-afce-4dac33970173',
+        photos=BytesIO(b'123456'),
+        sounds=BytesIO(b'123456'),
+        access_token='token',
+    )
+    assert response[0]['id'] == 123456
+    assert response[1]['id'] == 123456
+
+
+def test_upload__with_photo_ids(requests_mock):
+    """Test attaching existing photos to an observation"""
+    requests_mock.post(
+        f'{API_V2}/observation_photos',
+        json=SAMPLE_DATA['post_observation_media_v2'],
+        status_code=200,
+    )
+
+    response = upload(
+        '53411fc2-bdf0-434e-afce-4dac33970173',
+        access_token='token',
+        photo_ids=[5678, 9012],
+    )
+    assert len(response) == 2
+    # Verify the request was made with correct JSON body
+    history = requests_mock.request_history
+    for request in history:
+        assert (
+            request.json()['observation_photo']['observation_id']
+            == '53411fc2-bdf0-434e-afce-4dac33970173'
+        )

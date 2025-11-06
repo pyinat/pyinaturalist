@@ -179,6 +179,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         method: str,
         url: str,
         access_token: Optional[str] = None,
+        data: Optional[Dict] = None,
         files: Optional[FileOrPath] = None,
         headers: Optional[Dict] = None,
         ids: Optional[MultiInt] = None,
@@ -206,6 +207,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         return Request(
             method=method,
             url=url,
+            data=data,
             files=files,
             headers=headers,
             json=json,
@@ -222,6 +224,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         access_token: Optional[str] = None,
         allow_redirects: bool = False,
         allow_str_ids: bool = False,
+        data: Optional[Dict] = None,
         dry_run: bool = False,
         expire_after: Optional[ExpirationTime] = None,
         files: Optional[FileOrPath] = None,
@@ -243,6 +246,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             json: JSON request body
             access_token: access_token: the access token, as returned by :func:`get_access_token()`
             dry_run: Just log the request instead of sending a real request
+            data: Form data to include in the request body (for multipart uploads)
             expire_after: How long to keep cached API requests
             files: File object, path, or URL to upload
             ids: One or more integer IDs used as REST resource(s) to request
@@ -263,6 +267,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             url=url,
             access_token=access_token,
             allow_str_ids=allow_str_ids,
+            data=data,
             files=files,
             headers=headers,
             ids=ids,
