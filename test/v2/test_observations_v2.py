@@ -1,11 +1,19 @@
 import json
+from io import BytesIO
 from unittest.mock import patch
 
 import pytest
 
 from pyinaturalist.constants import API_V2
+from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.session import ClientSession, MockResponse
-from pyinaturalist.v2 import get_observations
+from pyinaturalist.v2 import (
+    create_observation,
+    delete_observation,
+    get_observations,
+    update_observation,
+    upload,
+)
 from test.sample_data import SAMPLE_DATA
 
 
@@ -116,3 +124,158 @@ def test_get_observations__by_obs_field_values(mock_send):
 def test_get_observations__invalid_fields():
     with pytest.raises(ValueError):
         get_observations(taxon_id=3, fields=['taxon'], except_fields=['identifications'])
+
+
+def test_upload(requests_mock):
+    """Test uploading photos and sounds to an observation"""
+    requests_mock.post(
+        f'{API_V2}/observation_photos',
+        json=SAMPLE_DATA['post_observation_media_v2'],
+        status_code=200,
+    )
+    requests_mock.post(
+        f'{API_V2}/observation_sounds',
+        json=SAMPLE_DATA['post_observation_media_v2'],
+        status_code=200,
+    )
+
+    response = upload(
+        '53411fc2-bdf0-434e-afce-4dac33970173',
+        photos=BytesIO(b'123456'),
+        sounds=BytesIO(b'123456'),
+        access_token='token',
+    )
+    assert response[0]['id'] == 123456
+    assert response[1]['id'] == 123456
+
+
+def test_upload__with_photo_ids(requests_mock):
+    """Test attaching existing photos to an observation"""
+    requests_mock.post(
+        f'{API_V2}/observation_photos',
+        json=SAMPLE_DATA['post_observation_media_v2'],
+        status_code=200,
+    )
+
+    response = upload(
+        '53411fc2-bdf0-434e-afce-4dac33970173',
+        access_token='token',
+        photo_ids=[5678, 9012],
+    )
+    assert len(response) == 2
+    # Verify the request was made with correct JSON body
+    history = requests_mock.request_history
+    for request in history:
+        assert (
+            request.json()['observation_photo']['observation_id']
+            == '53411fc2-bdf0-434e-afce-4dac33970173'
+        )
+
+
+def test_create_observation(requests_mock):
+    test_uuid = '53411fc2-bdf0-434e-afce-4dac33970173'
+    requests_mock.post(
+        f'{API_V2}/observations',
+        json={
+            'total_results': 1,
+            'results': [
+                {
+                    'uuid': test_uuid,
+                    'id': 123456,
+                    'species_guess': 'Pieris rapae',
+                    'observed_on_string': '2020-09-01',
+                }
+            ],
+        },
+        status_code=200,
+    )
+
+    response = create_observation(
+        species_guess='Pieris rapae', observed_on='2020-09-01', access_token='token'
+    )
+    assert response['uuid'] == test_uuid
+    assert response['id'] == 123456
+
+
+@patch('pyinaturalist.v2.observations.upload')
+@patch('pyinaturalist.v2.observations.post')
+def test_create_observation__with_files(mock_post, mock_upload):
+    test_uuid = '53411fc2-bdf0-434e-afce-4dac33970173'
+    mock_post.return_value.json.return_value = {'results': [{'uuid': test_uuid, 'id': 123456}]}
+
+    create_observation(
+        access_token='token',
+        photos=['photo_1.jpg', 'photo_2.jpg'],
+        sounds=['sound_1.mp3', 'sound_2.wav'],
+        photo_ids=[12345],
+    )
+
+    request_params = mock_post.call_args[1]['json']['observation']
+    assert 'local_photos' not in request_params
+    assert 'photos' not in request_params
+    assert 'sounds' not in request_params
+    assert 'photo_ids' not in request_params
+
+    # Verify upload was called with the correct files
+    mock_upload.assert_called_once()
+    upload_args = mock_upload.call_args
+    assert upload_args[0][0] == test_uuid
+    assert upload_args[1]['photos'] == ['photo_1.jpg', 'photo_2.jpg']
+    assert upload_args[1]['sounds'] == ['sound_1.mp3', 'sound_2.wav']
+    assert upload_args[1]['photo_ids'] == [12345]
+
+
+def test_update_observation(requests_mock):
+    test_uuid = '53411fc2-bdf0-434e-afce-4dac33970173'
+    requests_mock.put(
+        f'{API_V2}/observations/{test_uuid}',
+        json={
+            'total_results': 1,
+            'results': [
+                {
+                    'uuid': test_uuid,
+                    'id': 123456,
+                    'description': 'updated description!',
+                }
+            ],
+        },
+        status_code=200,
+    )
+
+    response = update_observation(
+        test_uuid, access_token='token', description='updated description!'
+    )
+
+    assert response['uuid'] == test_uuid
+    assert response['description'] == 'updated description!'
+
+
+@patch('pyinaturalist.v2.observations.upload')
+@patch('pyinaturalist.v2.observations.put')
+def test_update_observation__with_photos(mock_put, mock_upload):
+    test_uuid = '53411fc2-bdf0-434e-afce-4dac33970173'
+    mock_put.return_value.json.return_value = {'results': [{'uuid': test_uuid}]}
+
+    update_observation(test_uuid, access_token='token', photos='photo.jpg')
+
+    request_args = mock_put.call_args[1]
+    obs_params = request_args['json']['observation']
+    assert request_args['ignore_photos'] == 1
+    assert 'local_photos' not in obs_params
+    assert 'photos' not in obs_params
+    assert 'sounds' not in obs_params
+    mock_upload.assert_called_once()
+
+
+def test_delete_observation(requests_mock):
+    test_uuid = '53411fc2-bdf0-434e-afce-4dac33970173'
+    requests_mock.delete(f'{API_V2}/observations/{test_uuid}', status_code=200)
+    response = delete_observation(observation_uuid=test_uuid, access_token='token')
+    assert response is None
+
+
+def test_delete_observation__not_found(requests_mock):
+    test_uuid = '53411fc2-bdf0-434e-afce-4dac33970173'
+    requests_mock.delete(f'{API_V2}/observations/{test_uuid}', status_code=404)
+    with pytest.raises(ObservationNotFound):
+        delete_observation(observation_uuid=test_uuid, access_token='token')

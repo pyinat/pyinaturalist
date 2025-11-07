@@ -1,4 +1,6 @@
 *.py[cod]
+.env
+.scratch/
 downloads/
 
 # C extensions
@@ -23,23 +25,12 @@ sdist
 var
 venv/
 
-# Installer logs
-pip-log.txt
-
 # Unit test / coverage reports
 .coverage
 .coverage.*
 .tox
 nosetests.xml
 test-reports/
-
-# Translations
-*.mo
-
-# Mr Developer
-.mr.developer.cfg
-.project
-.pydevproject
 
 # Complexity
 output/*.html

@@ -4,6 +4,19 @@
 Below is a list of iNaturalist API endpoints that have either been added or are likely be added in
 the future, along with their corresponding functions in pyinaturalist.
 
+
+## v2 API
+For all available endpoints, see: <http://api.inaturalist.org/v2/docs/>
+
+| Method | Endpoint                           | Function                                                     |
+| ------ | ---------------------------------- | ------------------------------------------------------------ |
+| GET    | /observations                      | {py:func}`~pyinaturalist.v2.observations.get_observations`   |
+| POST   | /observations                      | {py:func}`~pyinaturalist.v2.observations.create_observation` |
+| PUT    | /observation/{uuid}                | {py:func}`~pyinaturalist.v2.observations.update_observation` |
+| DELETE | /observation/{uuid}                | {py:func}`~pyinaturalist.v2.observations.delete_observation` |
+| POST   | /observation_photos                | {py:func}`~pyinaturalist.v2.observations.upload`             |
+| POST   | /observation_sounds                | {py:func}`~pyinaturalist.v2.observations.upload`             |
+
 ## v1 API
 For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 
@@ -28,8 +41,8 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | DELETE | /observation_field_values/{id}     | {py:func}`.delete_observation_field`                         |
 | PUT    | /observation_field_values/{id}     | {py:func}`.set_observation_field`                            |
 | POST   | /observation_field_values          | {py:func}`.set_observation_field`                            |
-| POST   | /observation_photos                | {py:func}`.upload`                                           |
-| POST   | /observation_sounds                | {py:func}`.upload`                                           |
+| POST   | /observation_photos                | {py:func}`~pyinaturalist.v1.observations.upload`             |
+| POST   | /observation_sounds                | {py:func}`~pyinaturalist.v1.observations.upload`             |
 | DELETE | /observations/{id}                 | {py:func}`~pyinaturalist.v1.observations.delete_observation` |
 | GET    | /observations/{id}                 | {py:func}`.get_observations_by_id`                           |
 | PUT    | /observations/{id}                 | {py:func}`~pyinaturalist.v1.observations.update_observation` |
