@@ -1,7 +1,9 @@
 # History
 
 ## Unreleased
-* Add support in V2 `get_observations()` for querying more than 30 observation IDs at once
+* Add create/update/delete observation endpoints for v2 API (`pyinaturalist.v2.create_observation`, `update_observation()`, `delete_observation()`)
+* Add observation media upload for v2 API (`pyinaturalist.v2.upload()`)
+* Add support in v2 `get_observations()` for querying more than 30 observation IDs at once
 * Fix error when initializing Place objects from empty results
 
 ## 0.20.2 (2025-08-19)
