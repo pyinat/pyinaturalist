@@ -44,7 +44,7 @@ def test_from_json():
 
 
 def test_from_json_file():
-    obs_list = Observation.from_json_file(sample_data_path('get_observations_node_page1.json'))
+    obs_list = Observation.from_json_file(sample_data_path('get_observations_v1_page1.json'))
     assert isinstance(obs_list, list)
     assert isinstance(obs_list[0], Observation)
     assert obs_list[0].id == 57754375
@@ -52,7 +52,7 @@ def test_from_json_file():
 
 
 def test_from_json_list():
-    obs_list = Observation.from_json_list(SAMPLE_DATA['get_observations_node_page1'])
+    obs_list = Observation.from_json_list(SAMPLE_DATA['get_observations_v1_page1'])
     assert isinstance(obs_list, list)
     assert isinstance(obs_list[0], Observation)
     assert obs_list[0].id == 57754375
@@ -474,6 +474,7 @@ def test_observation__ofvs():
     assert isinstance(ofv, ObservationFieldValue)
     assert ofv.id == 14106828
     assert ofv.user.id == 2115051
+    assert ofv.updater_id == 2115051
 
 
 def test_observation__project_observations():

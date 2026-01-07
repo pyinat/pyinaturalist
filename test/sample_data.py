@@ -31,7 +31,7 @@ def load_all_sample_data() -> Dict[str, Dict]:
 SAMPLE_DATA = load_all_sample_data()
 
 j_observation_1 = SAMPLE_DATA['get_observation']['results'][0]
-j_observation_2 = SAMPLE_DATA['get_observations_node_page1']['results'][0]
+j_observation_2 = SAMPLE_DATA['get_observations_v1_page1']['results'][0]
 j_observation_3_ofvs = SAMPLE_DATA['get_observation_with_ofvs']['results'][0]
 j_observation_4_sounds = SAMPLE_DATA['get_observation_with_sounds']['results'][0]
 j_observation_5_annotations = SAMPLE_DATA['get_observations_by_id']['results'][0]

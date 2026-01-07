@@ -69,8 +69,8 @@ def test_get_observations__all_pages(requests_mock):
     requests_mock.get(
         f'{API_V2}/observations',
         [
-            {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_v1_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_v1_page2'], 'status_code': 200},
         ],
     )
 
@@ -82,8 +82,8 @@ def test_get_observations__all_pages__post(requests_mock):
     requests_mock.post(
         f'{API_V2}/observations',
         [
-            {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_v1_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_v1_page2'], 'status_code': 200},
         ],
     )
 

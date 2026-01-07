@@ -71,14 +71,17 @@ class ObservationFieldValue(BaseModel):
     field_id: int = field(default=None)
     name: str = field(default=None)
     taxon_id: int = field(default=None)
-    user_id: int = field(default=None)
+    updater_id: int = field(
+        default=None, doc='ID of user who last updated the observation field value'
+    )
+    user_id: int = field(default=None, doc='ID of user who applied the observation field value')
     uuid: str = field(default=None)
     value: OFVValue = field(default=None)
     taxon: property = LazyProperty(
         Taxon.from_json, type=Taxon, doc='Taxon that the observation field applies to'
     )
     user: property = LazyProperty(
-        User.from_json, type=User, doc='User that applied the observation field value'
+        User.from_json, type=User, doc='User who applied the observation field value'
     )
 
     # Unused attrbiutes

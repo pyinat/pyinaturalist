@@ -65,7 +65,7 @@ def test_get_observation_histogram(requests_mock):
 def test_get_observations(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations',
-        json=SAMPLE_DATA['get_observations_node_page1'],
+        json=SAMPLE_DATA['get_observations_v1_page1'],
         status_code=200,
     )
 
@@ -94,8 +94,8 @@ def test_get_observations__all_pages(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations',
         [
-            {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_v1_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_v1_page2'], 'status_code': 200},
         ],
     )
 
