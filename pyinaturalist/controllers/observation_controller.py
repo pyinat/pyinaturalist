@@ -384,7 +384,7 @@ class ObservationController(BaseController):
 
         Example:
             >>> client.observations.update(
-            >>>     17932425,
+            >>>     observation_id=17932425,
             >>>     description='updated description!',
             >>> )
         """

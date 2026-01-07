@@ -68,7 +68,7 @@ def update_test_obs(client, test_obs_id):
     logger.info(f'Added photo to observation: {photo_id}')
 
     response = client.observations.update(
-        test_obs_id,
+        observation_id=test_obs_id,
         taxon_id=54327,
         geoprivacy='obscured',
         description='Updated description',

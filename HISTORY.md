@@ -7,6 +7,7 @@
 * Add `ObservationFieldValue.updater_id` attribute in observation responses
 * Add async paginator method to get a single result (`Paginator.async_one()`)
 * Fix error when initializing Place objects from empty results
+* Fix `io.UnsupportedOperation` error when uploading observation photos from URLs
 
 ## 0.20.2 (2025-08-19)
 * Handle empty user when pretty-printing `Identification` objects

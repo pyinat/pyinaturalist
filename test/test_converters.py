@@ -6,6 +6,8 @@ from unittest.mock import MagicMock
 
 import pytest
 from dateutil.tz import tzoffset
+from requests import Response
+from urllib3 import HTTPResponse
 
 from pyinaturalist.constants import MAX_FILESIZE
 from pyinaturalist.converters import (
@@ -57,7 +59,16 @@ def test_ensure_file_obj__path():
 
 def test_ensure_file_obj__url():
     session = MagicMock()
-    session.get().raw = BytesIO(b'test content')
+    response = Response()
+    response.raw = HTTPResponse(
+        body=BytesIO(b'test content'),
+        preload_content=False,
+        status=200,
+    )
+    response.headers = {'Content-Length': '12'}
+    response.status_code = 200
+    response.encoding = 'utf-8'
+    session.get.return_value = response
 
     file_obj = ensure_file_obj('https://example.com/file.mp3', session)
     assert file_obj.read() == b'test content'
