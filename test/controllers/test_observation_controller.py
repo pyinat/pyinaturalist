@@ -77,7 +77,7 @@ def test_from_ids__limit(requests_mock):
 def test_search(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations',
-        json=SAMPLE_DATA['get_observations_node_page1'],
+        json=SAMPLE_DATA['get_observations_v1_page1'],
         status_code=200,
     )
     results = (

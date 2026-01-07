@@ -239,6 +239,7 @@
                     "field_id": 1685,
                     "datatype": "taxon",
                     "user_id": 2115051,
+                    "updater_id": 2115051,
                     "value_ci": "119900",
                     "name": "Feeding on",
                     "name_ci": "Feeding on",
