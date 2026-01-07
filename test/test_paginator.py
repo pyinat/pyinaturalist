@@ -93,6 +93,28 @@ async def test_async_iter__custom_loop(mock_get_running_loop, requests_mock):
 
 
 @pytest.mark.asyncio
+async def test_async_one(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/observations',
+        [
+            {'json': SAMPLE_DATA['get_observations_node_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_node_page2'], 'status_code': 200},
+        ],
+    )
+
+    paginator = Paginator(
+        get_observations,
+        Observation,
+        id=[57754375, 57707611],
+        per_page=1,
+        page=1,
+    )
+    observation = await paginator.async_one()
+    assert isinstance(observation, Observation)
+    assert observation.id == 57754375
+
+
+@pytest.mark.asyncio
 async def test_async_all(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations',
@@ -111,6 +133,7 @@ async def test_async_all(requests_mock):
     )
     observations = await paginator.async_all()
     assert len(observations) == 2
+    assert observations[0].id == 57754375
 
 
 def test_count(requests_mock):
