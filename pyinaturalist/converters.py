@@ -184,10 +184,17 @@ def safe_split(value: Any, delimiter: str = '|') -> List[str]:
 
 def ensure_file_obj(value: AnyFile, session: Optional[Session] = None) -> IO:
     """Load data into a file-like object, if it isn't already. Accepts local file paths and URLs."""
+    file_size = 0
+
     # Load from URL
     if isinstance(value, str) and URL_PATTERN.match(value):
         session = session or Session()
-        file_obj: IO = session.get(value).raw  # type: ignore  # HTTPResponse acts as an IO class
+        response = session.get(value)
+        file_obj: IO = response.raw  # type: ignore  # HTTPResponse acts as an IO class
+        try:
+            file_size = int(response.headers.get('Content-Length'))  # type: ignore [arg-type]
+        except (TypeError, ValueError):
+            pass
     # Load from local file path
     elif isinstance(value, (str, Path)):
         file_path = Path(value).expanduser().resolve()
@@ -197,12 +204,13 @@ def ensure_file_obj(value: AnyFile, session: Optional[Session] = None) -> IO:
     elif hasattr(value, 'read'):
         file_obj = value
     else:
-        file_obj = BytesIO(value)  # type: ignore
+        file_obj = BytesIO(value)  # type: ignore [arg-type]
 
     # Verify maximum file size
-    file_obj.seek(0, SEEK_END)
-    file_size = file_obj.tell()
-    file_obj.seek(0)
+    if not file_size and hasattr(file_obj, 'seek'):
+        file_obj.seek(0, SEEK_END)
+        file_size = file_obj.tell()
+        file_obj.seek(0)
     if file_size > MAX_FILESIZE:
         raise ValueError(f'File size exceeds maximum allowed ({MAX_FILESIZE} bytes): {file_size}')
 

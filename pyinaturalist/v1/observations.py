@@ -413,6 +413,7 @@ def create_observation(**params) -> JsonResponse:
         JSON response containing the newly created observation(s)
     """
     photos, sounds, photo_ids, params, kwargs = convert_observation_params(params)
+    params.pop('ignore_photos', None)
     response = post(f'{API_V1}/observations', json={'observation': params}, **kwargs)
     response_json = response.json()
     observation_id = response_json['id']
@@ -453,6 +454,7 @@ def update_observation(observation_id: int, **params) -> ListResponse:
     Returns:
         JSON response containing the newly updated observation(s)
     """
+    params.setdefault('ignore_photos', True)
     photos, sounds, photo_ids, params, kwargs = convert_observation_params(params)
     payload = {'observation': params}
 
