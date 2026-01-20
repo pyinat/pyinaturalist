@@ -827,6 +827,9 @@
           "extinct": {
             "type": "boolean"
           },
+          "provisional": {
+            "type": "boolean"
+          },
           "flag_counts": {
             "type": "object",
             "properties": {
@@ -971,6 +974,197 @@
             "nullable": true
           },
           "wikipedia_url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false,
+        "nullable": true
+      },
+      "ConservationStatus": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "authority": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "geoprivacy": {
+            "type": "string",
+            "nullable": true
+          },
+          "iucn": {
+            "type": "integer"
+          },
+          "iucn_status": {
+            "type": "string"
+          },
+          "iucn_status_code": {
+            "type": "string"
+          },
+          "place": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "ancestry": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false,
+            "nullable": true
+          },
+          "place_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "source_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "status": {
+            "type": "string"
+          },
+          "status_name": {
+            "type": "string"
+          },
+          "taxon_id": {
+            "type": "integer"
+          },
+          "user_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false,
+        "nullable": true
+      },
+      "Photo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique auto-increment integer identifier."
+          },
+          "attribution": {
+            "type": "string"
+          },
+          "attribution_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "flags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Flag"
+            }
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "large_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "license_code": {
+            "type": "string",
+            "nullable": true
+          },
+          "medium_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "moderator_actions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModeratorAction"
+            }
+          },
+          "native_page_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "native_photo_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "original_dimensions": {
+            "type": "object",
+            "properties": {
+              "height": {
+                "type": "integer",
+                "nullable": true
+              },
+              "width": {
+                "type": "integer",
+                "nullable": true
+              }
+            },
+            "additionalProperties": false,
+            "nullable": true
+          },
+          "original_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "small_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "square_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "original_filename": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false,
+        "nullable": true
+      },
+      "List": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique auto-increment integer identifier."
+          },
+          "title": {
             "type": "string",
             "nullable": true
           }
@@ -1139,180 +1333,6 @@
         "additionalProperties": false,
         "nullable": true
       },
-      "ConservationStatus": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "authority": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "geoprivacy": {
-            "type": "string",
-            "nullable": true
-          },
-          "iucn": {
-            "type": "integer"
-          },
-          "iucn_status": {
-            "type": "string"
-          },
-          "iucn_status_code": {
-            "type": "string"
-          },
-          "place": {
-            "$ref": "#/components/schemas/Place"
-          },
-          "place_id": {
-            "type": "integer",
-            "nullable": true
-          },
-          "source_id": {
-            "type": "integer",
-            "nullable": true
-          },
-          "status": {
-            "type": "string"
-          },
-          "status_name": {
-            "type": "string"
-          },
-          "taxon_id": {
-            "type": "integer"
-          },
-          "user_id": {
-            "type": "integer",
-            "nullable": true
-          },
-          "url": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "id"
-        ],
-        "additionalProperties": false,
-        "nullable": true
-      },
-      "Photo": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "description": "Unique auto-increment integer identifier."
-          },
-          "attribution": {
-            "type": "string"
-          },
-          "attribution_name": {
-            "type": "string",
-            "nullable": true
-          },
-          "flags": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Flag"
-            }
-          },
-          "hidden": {
-            "type": "boolean"
-          },
-          "large_url": {
-            "type": "string",
-            "nullable": true
-          },
-          "license_code": {
-            "type": "string",
-            "nullable": true
-          },
-          "medium_url": {
-            "type": "string",
-            "nullable": true
-          },
-          "moderator_actions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ModeratorAction"
-            }
-          },
-          "native_page_url": {
-            "type": "string",
-            "nullable": true
-          },
-          "native_photo_id": {
-            "type": "string",
-            "nullable": true
-          },
-          "original_dimensions": {
-            "type": "object",
-            "properties": {
-              "height": {
-                "type": "integer",
-                "nullable": true
-              },
-              "width": {
-                "type": "integer",
-                "nullable": true
-              }
-            },
-            "additionalProperties": false,
-            "nullable": true
-          },
-          "original_url": {
-            "type": "string",
-            "nullable": true
-          },
-          "small_url": {
-            "type": "string",
-            "nullable": true
-          },
-          "square_url": {
-            "type": "string",
-            "nullable": true
-          },
-          "type": {
-            "type": "string"
-          },
-          "url": {
-            "type": "string",
-            "nullable": true
-          },
-          "original_filename": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "id"
-        ],
-        "additionalProperties": false,
-        "nullable": true
-      },
-      "List": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "description": "Unique auto-increment integer identifier."
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "id"
-        ],
-        "additionalProperties": false,
-        "nullable": true
-      },
       "CommonAncestor": {
         "type": "object",
         "properties": {
@@ -1364,6 +1384,131 @@
             }
           }
         },
+        "additionalProperties": false
+      },
+      "IdSummaryReference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique auto-increment integer identifier for the reference."
+          },
+          "id_summary_id": {
+            "type": "integer",
+            "description": "Parent IdSummary ID."
+          },
+          "reference_uuid": {
+            "type": "string",
+            "nullable": true,
+            "description": "External UUID for the referenced object (e.g. identification or comment), if available."
+          },
+          "reference_source": {
+            "type": "string",
+            "nullable": true,
+            "description": "Origin of the reference, e.g. 'observation' or 'identification'."
+          },
+          "reference_observation_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Observation ID associated with the reference, if any."
+          },
+          "reference_date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "When the referenced content was created, if known."
+          },
+          "reference_content": {
+            "type": "string",
+            "nullable": true,
+            "description": "Captured text from the referenced content (e.g. a comment body)."
+          },
+          "user_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "User ID associated with the reference, if any."
+          },
+          "user_login": {
+            "type": "string",
+            "nullable": true,
+            "description": "User login associated with the reference, if any."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Record creation time (UTC)."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Last update time (UTC)."
+          }
+        },
+        "required": [
+          "id",
+          "id_summary_id"
+        ],
+        "additionalProperties": false
+      },
+      "IdSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique auto-increment integer identifier for the IdSummary."
+          },
+          "taxon_id_summary_id": {
+            "type": "integer",
+            "description": "Parent TaxonIdSummary ID."
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true,
+            "description": "Short human-readable identification summary text."
+          },
+          "photo_tip": {
+            "type": "string",
+            "nullable": true,
+            "description": "Plain-language tip describing what to photograph to capture key ID features."
+          },
+          "visual_key_group": {
+            "type": "string",
+            "nullable": true,
+            "description": "Grouping label for the summary (e.g. 'Coloration', 'Shape')."
+          },
+          "score": {
+            "type": "number",
+            "format": "float",
+            "nullable": true,
+            "description": "Overall score for the summary, if available."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Record creation time (UTC)."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Last update time (UTC)."
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IdSummaryReference"
+            },
+            "description": "References (observations, identifications, comments, etc.) that support this summary.",
+            "default": []
+          }
+        },
+        "required": [
+          "id",
+          "taxon_id_summary_id"
+        ],
         "additionalProperties": false
       },
       "Identification": {
@@ -5204,6 +5349,133 @@
         ],
         "additionalProperties": false
       },
+      "TaxonIdSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique auto-increment integer identifier."
+          },
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Stable UUID for this taxon_id_summary."
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Whether this summary is the active one for its taxon."
+          },
+          "taxon_id": {
+            "type": "integer",
+            "description": "Taxon ID this summary."
+          },
+          "taxon_name": {
+            "type": "string",
+            "description": "Scientific name."
+          },
+          "taxon_common_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Common name, if available."
+          },
+          "taxon_photo_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Photo ID for the taxon"
+          },
+          "taxon_photo_attribution": {
+            "type": "string",
+            "nullable": true,
+            "description": "Attribution text from the associated photo."
+          },
+          "taxon_photo_observation_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Observation ID associated with the taxon photo, when the photo comes from an observation."
+          },
+          "taxon_group": {
+            "type": "string",
+            "nullable": true,
+            "description": "Iconic taxon group, if available."
+          },
+          "language": {
+            "type": "string",
+            "nullable": true,
+            "description": "ISO language code for the summary content."
+          },
+          "run_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Label for the run that produced this summary."
+          },
+          "run_generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Timestamp when the run generated this content."
+          },
+          "run_description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Free-text description about the run."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Record creation time (UTC)."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update time (UTC)."
+          },
+          "id_summaries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IdSummary"
+            },
+            "description": "Child IdSummaries for this taxon, each with optional supporting references.",
+            "default": []
+          }
+        },
+        "required": [
+          "id",
+          "uuid",
+          "active",
+          "taxon_id",
+          "taxon_name",
+          "created_at",
+          "updated_at"
+        ],
+        "additionalProperties": false
+      },
+      "ResultsTaxonIdSummaries": {
+        "type": "object",
+        "properties": {
+          "total_results": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "per_page": {
+            "type": "integer"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaxonIdSummary"
+            }
+          }
+        },
+        "required": [
+          "total_results",
+          "page",
+          "per_page",
+          "results"
+        ],
+        "additionalProperties": false
+      },
       "ResultsTaxonNamePriorities": {
         "type": "object",
         "properties": {
@@ -6930,6 +7202,38 @@
           "expected_nearby": {
             "type": "boolean"
           },
+          "fails_dqa_accurate": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          "fails_dqa_date": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          "fails_dqa_evidence": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          "fails_dqa_location": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          "fails_dqa_needs_id": {
+            "type": "boolean",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          "fails_dqa_recent": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          "fails_dqa_subject": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          "fails_dqa_wild": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not wild"
+          },
           "locale": {
             "type": "string"
           },
@@ -7640,6 +7944,38 @@
           "expected_nearby": {
             "type": "boolean"
           },
+          "fails_dqa_accurate": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          "fails_dqa_date": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          "fails_dqa_evidence": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          "fails_dqa_location": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          "fails_dqa_needs_id": {
+            "type": "boolean",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          "fails_dqa_recent": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          "fails_dqa_subject": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          "fails_dqa_wild": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not wild"
+          },
           "locale": {
             "type": "string"
           },
@@ -8322,6 +8658,38 @@
           },
           "expected_nearby": {
             "type": "boolean"
+          },
+          "fails_dqa_accurate": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          "fails_dqa_date": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          "fails_dqa_evidence": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          "fails_dqa_location": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          "fails_dqa_needs_id": {
+            "type": "boolean",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          "fails_dqa_recent": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          "fails_dqa_subject": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          "fails_dqa_wild": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not wild"
           },
           "locale": {
             "type": "string"
@@ -9033,6 +9401,38 @@
           },
           "expected_nearby": {
             "type": "boolean"
+          },
+          "fails_dqa_accurate": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          "fails_dqa_date": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          "fails_dqa_evidence": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          "fails_dqa_location": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          "fails_dqa_needs_id": {
+            "type": "boolean",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          "fails_dqa_recent": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          "fails_dqa_subject": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          "fails_dqa_wild": {
+            "type": "boolean",
+            "description": "Filter by observations voted as not wild"
           },
           "locale": {
             "type": "string"
@@ -9942,6 +10342,119 @@
           },
           "per_page": {
             "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TaxonIdSummariesSearch": {
+        "type": "object",
+        "properties": {
+          "active": {
+            "type": "boolean",
+            "description": "Filter by active=true/false"
+          },
+          "taxon_group": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ],
+            "description": "Group or groups; comma-separated in the query becomes an array here"
+          },
+          "run_name": {
+            "type": "string",
+            "description": "Case-insensitive contains match on run_name"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ],
+            "description": "Filter by one or more ISO language codes"
+          },
+          "taxon_id": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "Filter by one or more taxon IDs"
+          },
+          "taxon_name": {
+            "type": "string",
+            "description": "Case-insensitive contains match on taxon_name"
+          },
+          "run_generated_on": {
+            "type": "string",
+            "description": "YYYY-MM-DD. Records on this date (UTC day bucket)"
+          },
+          "run_generated_d1": {
+            "type": "string",
+            "description": "ISO 8601. Records on/after this time"
+          },
+          "run_generated_d2": {
+            "type": "string",
+            "description": "ISO 8601. Records on/before this time"
+          },
+          "created_on": {
+            "type": "string"
+          },
+          "created_d1": {
+            "type": "string"
+          },
+          "created_d2": {
+            "type": "string"
+          },
+          "updated_on": {
+            "type": "string"
+          },
+          "updated_d1": {
+            "type": "string"
+          },
+          "updated_d2": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "default": 1
+          },
+          "per_page": {
+            "type": "integer",
+            "description": "Max 200",
+            "default": 30
+          },
+          "order": {
+            "type": "string",
+            "enum": [
+              "desc",
+              "asc"
+            ],
+            "default": "desc"
+          },
+          "order_by": {
+            "type": "string",
+            "enum": [
+              "run_generated_at",
+              "created_at",
+              "updated_at",
+              "taxon_id"
+            ],
+            "default": "updated_at"
+          },
+          "fields": {
+            "description": "Attribute fields to return in the response"
           }
         },
         "additionalProperties": false
@@ -10983,6 +11496,232 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ResultsTaxonNamePriorities"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/taxon_id_summaries": {
+      "parameters": [],
+      "get": {
+        "tags": [
+          "TaxonIdSummaries"
+        ],
+        "summary": "Search taxon ID summaries",
+        "x-unpublished": true,
+        "parameters": [
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "active",
+            "description": "Filter by active=true/false"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "title": "taxon_group"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "taxon_group"
+                }
+              ]
+            },
+            "name": "taxon_group",
+            "description": "Group or groups; comma-separated in the query becomes an array here"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "name": "run_name",
+            "description": "Case-insensitive contains match on run_name"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "title": "language"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "language"
+                }
+              ]
+            },
+            "name": "language",
+            "description": "Filter by one or more ISO language codes"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "name": "taxon_id",
+            "description": "Filter by one or more taxon IDs",
+            "explode": false
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "name": "taxon_name",
+            "description": "Case-insensitive contains match on taxon_name"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "name": "run_generated_on",
+            "description": "YYYY-MM-DD. Records on this date (UTC day bucket)"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "name": "run_generated_d1",
+            "description": "ISO 8601. Records on/after this time"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "name": "run_generated_d2",
+            "description": "ISO 8601. Records on/before this time"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "name": "created_on"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "name": "created_d1"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "name": "created_d2"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "name": "updated_on"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "name": "updated_d1"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "name": "updated_d2"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "name": "page"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 30
+            },
+            "name": "per_page",
+            "description": "Max 200"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "desc",
+                "asc"
+              ],
+              "default": "desc"
+            },
+            "name": "order"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "run_generated_at",
+                "created_at",
+                "updated_at",
+                "taxon_id"
+              ],
+              "default": "updated_at"
+            },
+            "name": "order_by"
+          },
+          {
+            "in": "query",
+            "schema": {},
+            "name": "fields",
+            "description": "Attribute fields to return in the response"
+          },
+          {
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "name": "X-HTTP-Method-Override"
+          }
+        ],
+        "x-default-ttl": 300,
+        "responses": {
+          "200": {
+            "description": "An array of taxon ID summaries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultsTaxonIdSummaries"
                 }
               }
             }
@@ -13486,6 +14225,94 @@
           {
             "in": "query",
             "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
+          },
+          {
+            "in": "query",
+            "schema": {
               "type": "string"
             },
             "name": "locale"
@@ -14929,6 +15756,94 @@
           {
             "in": "query",
             "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
+          },
+          {
+            "in": "query",
+            "schema": {
               "type": "string"
             },
             "name": "locale"
@@ -16147,6 +17062,94 @@
               ]
             },
             "name": "expected_nearby"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
           },
           {
             "in": "query",
@@ -17395,6 +18398,94 @@
               ]
             },
             "name": "expected_nearby"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
           },
           {
             "in": "query",
@@ -18665,6 +19756,94 @@
           {
             "in": "query",
             "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
+          },
+          {
+            "in": "query",
+            "schema": {
               "type": "string"
             },
             "name": "locale"
@@ -19877,6 +21056,94 @@
               ]
             },
             "name": "expected_nearby"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
           },
           {
             "in": "query",
@@ -21147,6 +22414,94 @@
           {
             "in": "query",
             "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
+          },
+          {
+            "in": "query",
+            "schema": {
               "type": "string"
             },
             "name": "locale"
@@ -22364,6 +23719,94 @@
               ]
             },
             "name": "expected_nearby"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
           },
           {
             "in": "query",
@@ -23664,6 +25107,94 @@
               ]
             },
             "name": "expected_nearby"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
           },
           {
             "in": "query",
@@ -26251,6 +27782,94 @@
           {
             "in": "query",
             "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
+          },
+          {
+            "in": "query",
+            "schema": {
               "type": "string"
             },
             "name": "locale"
@@ -27484,6 +29103,94 @@
           {
             "in": "query",
             "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
+          },
+          {
+            "in": "query",
+            "schema": {
               "type": "string"
             },
             "name": "locale"
@@ -27641,6 +29348,410 @@
         "responses": {
           "200": {
             "description": "No response body; success implies deletion"
+          }
+        }
+      }
+    },
+    "/taxon_id_summaries/{uuid}/id_summaries/{id}/references/{reference_id}/quality/{metric}": {
+      "parameters": [],
+      "post": {
+        "tags": [
+          "TaxonIdSummaries"
+        ],
+        "summary": "Vote on an ID summary reference quality metric",
+        "x-unpublished": true,
+        "security": [
+          {
+            "userJwtRequired": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "name": "uuid",
+            "description": "UUID of the parent TaxonIdSummary",
+            "required": true
+          },
+          {
+            "in": "path",
+            "schema": {
+              "type": "integer"
+            },
+            "name": "id",
+            "description": "ID of the child IdSummary",
+            "required": true
+          },
+          {
+            "in": "path",
+            "schema": {
+              "type": "integer"
+            },
+            "name": "reference_id",
+            "description": "ID of the IdSummaryReference",
+            "required": true
+          },
+          {
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "name": "metric",
+            "description": "Metric slug to vote on",
+            "required": true
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "agree",
+            "description": "Whether the authenticated user agrees with the metric (defaults to true)"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Vote was recorded"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "TaxonIdSummaries"
+        ],
+        "summary": "Remove the authenticated user's vote on an ID summary reference quality metric",
+        "x-unpublished": true,
+        "security": [
+          {
+            "userJwtRequired": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "name": "uuid",
+            "description": "UUID of the parent TaxonIdSummary",
+            "required": true
+          },
+          {
+            "in": "path",
+            "schema": {
+              "type": "integer"
+            },
+            "name": "id",
+            "description": "ID of the child IdSummary",
+            "required": true
+          },
+          {
+            "in": "path",
+            "schema": {
+              "type": "integer"
+            },
+            "name": "reference_id",
+            "description": "ID of the IdSummaryReference",
+            "required": true
+          },
+          {
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "name": "metric",
+            "description": "Metric slug to remove",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Vote was removed"
+          }
+        }
+      }
+    },
+    "/taxon_id_summaries/{uuid}/id_summaries/{id}/references/{reference_id}/quality_metrics": {
+      "parameters": [],
+      "get": {
+        "tags": [
+          "TaxonIdSummaries"
+        ],
+        "summary": "Fetch quality metrics for an ID summary reference",
+        "x-unpublished": true,
+        "security": [
+          {
+            "userJwtOptional": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "name": "uuid",
+            "description": "UUID of the parent TaxonIdSummary",
+            "required": true
+          },
+          {
+            "in": "path",
+            "schema": {
+              "type": "integer"
+            },
+            "name": "id",
+            "description": "ID of the child IdSummary",
+            "required": true
+          },
+          {
+            "in": "path",
+            "schema": {
+              "type": "integer"
+            },
+            "name": "reference_id",
+            "description": "ID of the IdSummaryReference",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of quality metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultsQualityMetrics"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/taxon_id_summaries/{uuid}/id_summaries/{id}/quality/{metric}": {
+      "parameters": [],
+      "post": {
+        "tags": [
+          "TaxonIdSummaries"
+        ],
+        "summary": "Vote on an ID summary quality metric",
+        "x-unpublished": true,
+        "security": [
+          {
+            "userJwtRequired": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "name": "uuid",
+            "description": "UUID of the parent TaxonIdSummary",
+            "required": true
+          },
+          {
+            "in": "path",
+            "schema": {
+              "type": "integer"
+            },
+            "name": "id",
+            "description": "ID of the child IdSummary",
+            "required": true
+          },
+          {
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "name": "metric",
+            "description": "Metric slug to vote on",
+            "required": true
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "agree",
+            "description": "Whether the authenticated user agrees with the metric (defaults to true)"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Vote was recorded"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "TaxonIdSummaries"
+        ],
+        "summary": "Remove the authenticated user's vote on an ID summary quality metric",
+        "x-unpublished": true,
+        "security": [
+          {
+            "userJwtRequired": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "name": "uuid",
+            "description": "UUID of the parent TaxonIdSummary",
+            "required": true
+          },
+          {
+            "in": "path",
+            "schema": {
+              "type": "integer"
+            },
+            "name": "id",
+            "description": "ID of the child IdSummary",
+            "required": true
+          },
+          {
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "name": "metric",
+            "description": "Metric slug to remove",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Vote was removed"
+          }
+        }
+      }
+    },
+    "/taxon_id_summaries/{uuid}/id_summaries/{id}/quality_metrics": {
+      "parameters": [],
+      "get": {
+        "tags": [
+          "TaxonIdSummaries"
+        ],
+        "summary": "Fetch quality metrics for an ID summary",
+        "x-unpublished": true,
+        "security": [
+          {
+            "userJwtOptional": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "name": "uuid",
+            "description": "UUID of the parent TaxonIdSummary",
+            "required": true
+          },
+          {
+            "in": "path",
+            "schema": {
+              "type": "integer"
+            },
+            "name": "id",
+            "description": "ID of the child IdSummary",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of quality metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultsQualityMetrics"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/taxon_id_summaries/{uuid}": {
+      "parameters": [],
+      "get": {
+        "tags": [
+          "TaxonIdSummaries"
+        ],
+        "summary": "Fetch taxon ID summaries",
+        "x-unpublished": true,
+        "security": [
+          {
+            "userJwtOptional": []
+          }
+        ],
+        "x-default-ttl": -1,
+        "parameters": [
+          {
+            "in": "path",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "name": "uuid",
+            "description": "A single UUID or a comma-separated list of them",
+            "required": true,
+            "explode": false
+          },
+          {
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "name": "fields"
+          },
+          {
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "name": "X-HTTP-Method-Override"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of taxon ID summaries.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultsTaxonIdSummaries"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -29592,6 +31703,94 @@
           {
             "in": "query",
             "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
+          },
+          {
+            "in": "query",
+            "schema": {
               "type": "string"
             },
             "name": "locale"
@@ -30835,6 +33034,94 @@
               ]
             },
             "name": "expected_nearby"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
           },
           {
             "in": "query",
@@ -32144,6 +34431,94 @@
               ]
             },
             "name": "expected_nearby"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
           },
           {
             "in": "query",
@@ -34401,6 +36776,94 @@
           {
             "in": "query",
             "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
+          },
+          {
+            "in": "query",
+            "schema": {
               "type": "string"
             },
             "name": "locale"
@@ -35644,6 +38107,94 @@
               ]
             },
             "name": "expected_nearby"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
           },
           {
             "in": "query",
@@ -36895,6 +39446,94 @@
           {
             "in": "query",
             "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_accurate",
+            "description": "Filter by observations voted as not accurately depicting an organism or scene"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_date",
+            "description": "Filter by observations voted as not having an accurate date"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_evidence",
+            "description": "Filter by observations voted as not evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_location",
+            "description": "Filter by observations voted as not having an accurate location"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_needs_id",
+            "description": "Filter by observations voted as the community ID cannot be improved"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_recent",
+            "description": "Filter by observations voted as not recent evidence of an organism"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_subject",
+            "description": "Filter by observations voted as not having evidence related to a single subject"
+          },
+          {
+            "in": "query",
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "name": "fails_dqa_wild",
+            "description": "Filter by observations voted as not wild"
+          },
+          {
+            "in": "query",
+            "schema": {
               "type": "string"
             },
             "name": "locale"
@@ -37748,6 +40387,9 @@
     },
     {
       "name": "Taxa"
+    },
+    {
+      "name": "TaxonIdSummaries"
     },
     {
       "name": "TaxonNamePriorities"

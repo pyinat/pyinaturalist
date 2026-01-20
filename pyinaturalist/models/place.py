@@ -51,11 +51,16 @@ class Place(BaseModel):
     place_type: int = field(default=None, doc='Place type ID')
     place_type_name: str = field(default=None, doc='Place type name')
     slug: str = field(default=None, doc='Place URL slug')
+    uuid: str = field(default=None, doc='Place UUID')
+    woeid: int = field(default=None, doc='Where On Earth ID')
 
     @classmethod
     def from_json(cls, value: JsonResponse, category: Optional[str] = None, **kwargs) -> 'Place':
         value.setdefault('category', category)
-        return super(Place, cls).from_json(value)
+        place = super(Place, cls).from_json(value)
+        if ancestry := value.get('ancestry'):
+            place.ancestry = ancestry
+        return place
 
     @classmethod
     def from_json_list(cls, value: ResponseOrResults, **kwargs) -> List['Place']:

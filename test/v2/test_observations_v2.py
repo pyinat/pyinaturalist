@@ -61,7 +61,7 @@ def test_get_observations__except_fields(mock_send):
     get_observations(id=57707611, except_fields=['identifications'])
     request_obj = mock_send.call_args[0][0]
     json_body = json.loads(request_obj.body.decode())
-    assert len(json_body['fields'].keys()) == 44
+    assert len(json_body['fields'].keys()) == 47
     assert 'identifications' not in json_body['fields']
 
 

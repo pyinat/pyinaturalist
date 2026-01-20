@@ -374,17 +374,18 @@ def delete_observation(observation_uuid: str, access_token: Optional[str] = None
 # The full `fields` value to request all observation details
 ALL_OBS_FIELDS = {
     'annotations': {
-        'controlled_attribute': {'id': True, 'label': True, 'multivalued': True},
-        'controlled_value': {'id': True, 'label': True, 'multivalued': True},
+        'controlled_attribute': {'id': True, 'label': True},
+        'controlled_value': {'id': True, 'label': True},
         'user': {'login': True, 'icon_url': True},
         'vote_score': True,
-        'votes': {'vote_flag': True, 'user': {'login': True, 'icon_url': True}},
+        'votes': {'user': {'login': True, 'icon_url': True}, 'vote_flag': True, 'vote_scope': True},
     },
     'application': {'icon': True, 'name': True, 'url': True},
+    'captive': True,
     'comments': {
         'body': True,
         'created_at': True,
-        'flags': {'id': True},
+        'flags': {'id': True, 'comment': True},
         'hidden': True,
         'id': True,
         'moderator_actions': {
@@ -395,6 +396,7 @@ ALL_OBS_FIELDS = {
             'user': {'login': True, 'icon_url': True},
         },
         'spam': True,
+        'updated_at': True,
         'user': {'login': True, 'icon_url': True},
     },
     'community_taxon': {
@@ -426,8 +428,8 @@ ALL_OBS_FIELDS = {
     },
     'created_at': True,
     'description': True,
-    'faves': {'id': True, 'user': {'login': True, 'icon_url': True}},
-    'flags': {'id': True, 'flag': True, 'resolved': True},
+    'faves': {'created_at': True, 'id': True, 'user': {'login': True, 'icon_url': True}},
+    'flags': {'id': True, 'comment': True, 'flag': True, 'resolved': True},
     'geojson': True,
     'geoprivacy': True,
     'id': True,
@@ -437,7 +439,7 @@ ALL_OBS_FIELDS = {
         'created_at': True,
         'current': True,
         'disagreement': True,
-        'flags': {'id': True},
+        'flags': {'id': True, 'comment': True, 'flag': True, 'resolved': True},
         'hidden': True,
         'moderator_actions': {
             'action': True,
@@ -508,11 +510,10 @@ ALL_OBS_FIELDS = {
         'vision': True,
     },
     'identifications_most_agree': True,
-    'latitude': True,
     'license_code': True,
     'location': True,
-    'longitude': True,
     'map_scale': True,
+    'mappable': True,
     'non_traditional_projects': {
         'current_user_is_member': True,
         'project_user': {'user': {'login': True, 'icon_url': True}},
@@ -576,19 +577,23 @@ ALL_OBS_FIELDS = {
             'rank_level': True,
         },
     },
+    'out_of_range': True,
     'outlinks': {'source': True, 'url': True},
+    'owners_identification_from_vision': True,
     'photos': {
         'id': True,
-        'uuid': True,
-        'url': True,
         'license_code': True,
-        'flags': {'id': True, 'flag': True, 'resolved': True},
+        'original_dimensions': {'height': True, 'width': True},
+        'original_filename': True,
+        'flags': {'id': True, 'comment': True, 'flag': True, 'resolved': True},
+        'type': True,
+        'url': True,
     },
     'place_guess': True,
     'place_ids': True,
     'positional_accuracy': True,
-    'preferences': {'prefers_community_taxon': True},
-    'private_geojson': True,
+    'preferences': {'auto_obscuration': True, 'prefers_community_taxon': True},
+    'private_geojson': {'coordinates': True, 'type': True},
     'private_place_guess': True,
     'private_place_ids': True,
     'project_observations': {
@@ -597,6 +602,7 @@ ALL_OBS_FIELDS = {
         'project': {
             'admins': {'user_id': True},
             'icon': True,
+            'id': True,
             'project_observation_fields': {
                 'id': True,
                 'observation_field': {
@@ -614,6 +620,12 @@ ALL_OBS_FIELDS = {
     },
     'public_positional_accuracy': True,
     'quality_grade': True,
+    'quality_metrics': {
+        'agree': True,
+        'id': True,
+        'metric': True,
+        'user': {'login': True, 'icon_url': True},
+    },
     'reviewed_by': True,
     'sounds': {
         'file_url': True,
@@ -621,8 +633,7 @@ ALL_OBS_FIELDS = {
         'id': True,
         'license_code': True,
         'play_local': True,
-        'url': True,
-        'uuid': True,
+        'original_filename': True,
     },
     'tags': True,
     'taxon': {
@@ -669,6 +680,7 @@ ALL_OBS_FIELDS = {
     },
     'viewer_trusted_by_observer': True,
     'votes': {
+        'created_at': True,
         'id': True,
         'user': {'login': True, 'icon_url': True, 'id': True},
         'vote_flag': True,

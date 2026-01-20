@@ -1604,6 +1604,30 @@
             "$ref": "#/parameters/observation_accuracy_experiment_id"
           },
           {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
+          },
+          {
             "$ref": "#/parameters/q"
           },
           {
@@ -2482,6 +2506,30 @@
             "$ref": "#/parameters/observation_accuracy_experiment_id"
           },
           {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
+          },
+          {
             "$ref": "#/parameters/q"
           },
           {
@@ -2857,6 +2905,30 @@
             "$ref": "#/parameters/observation_accuracy_experiment_id"
           },
           {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
+          },
+          {
             "$ref": "#/parameters/q"
           },
           {
@@ -3161,6 +3233,30 @@
             "$ref": "#/parameters/observation_accuracy_experiment_id"
           },
           {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
+          },
+          {
             "$ref": "#/parameters/q"
           },
           {
@@ -3460,6 +3556,30 @@
           },
           {
             "$ref": "#/parameters/observation_accuracy_experiment_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
           },
           {
             "$ref": "#/parameters/q"
@@ -3763,6 +3883,30 @@
             "$ref": "#/parameters/observation_accuracy_experiment_id"
           },
           {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
+          },
+          {
             "$ref": "#/parameters/q"
           },
           {
@@ -4053,6 +4197,30 @@
           },
           {
             "$ref": "#/parameters/observation_accuracy_experiment_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
           },
           {
             "$ref": "#/parameters/q"
@@ -5888,6 +6056,30 @@
             "$ref": "#/parameters/observation_accuracy_experiment_id"
           },
           {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
+          },
+          {
             "$ref": "#/parameters/q"
           },
           {
@@ -6181,6 +6373,30 @@
           },
           {
             "$ref": "#/parameters/observation_accuracy_experiment_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
           },
           {
             "$ref": "#/parameters/q"
@@ -6490,6 +6706,30 @@
             "$ref": "#/parameters/observation_accuracy_experiment_id"
           },
           {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
+          },
+          {
             "$ref": "#/parameters/q"
           },
           {
@@ -6783,6 +7023,30 @@
           },
           {
             "$ref": "#/parameters/observation_accuracy_experiment_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
           },
           {
             "$ref": "#/parameters/q"
@@ -7092,6 +7356,30 @@
             "$ref": "#/parameters/observation_accuracy_experiment_id"
           },
           {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
+          },
+          {
             "$ref": "#/parameters/q"
           },
           {
@@ -7385,6 +7673,30 @@
           },
           {
             "$ref": "#/parameters/observation_accuracy_experiment_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
           },
           {
             "$ref": "#/parameters/q"
@@ -7694,6 +8006,30 @@
             "$ref": "#/parameters/observation_accuracy_experiment_id"
           },
           {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
+          },
+          {
             "$ref": "#/parameters/q"
           },
           {
@@ -7987,6 +8323,30 @@
           },
           {
             "$ref": "#/parameters/observation_accuracy_experiment_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_accurate"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_date"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_evidence"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_location"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_needs_id"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_recent"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_subject"
+          },
+          {
+            "$ref": "#/parameters/fails_dqa_wild"
           },
           {
             "$ref": "#/parameters/q"
@@ -8893,6 +9253,54 @@
       },
       "in": "query",
       "description": "Must included in this observation accuracy experiment"
+    },
+    "fails_dqa_accurate": {
+      "name": "fails_dqa_accurate",
+      "type": "boolean",
+      "in": "query",
+      "description": "Must be voted as not accurately depicting an organism or scene"
+    },
+    "fails_dqa_date": {
+      "name": "fails_dqa_date",
+      "type": "boolean",
+      "in": "query",
+      "description": "Must be voted as not having an accurate date"
+    },
+    "fails_dqa_evidence": {
+      "name": "fails_dqa_evidence",
+      "type": "boolean",
+      "in": "query",
+      "description": "Must be voted as not evidence of an organism"
+    },
+    "fails_dqa_location": {
+      "name": "fails_dqa_location",
+      "type": "boolean",
+      "in": "query",
+      "description": "Must be voted as not having an accurate location"
+    },
+    "fails_dqa_needs_id": {
+      "name": "fails_dqa_needs_id",
+      "type": "boolean",
+      "in": "query",
+      "description": "Must be voted as the community ID cannot be improved"
+    },
+    "fails_dqa_recent": {
+      "name": "fails_dqa_recent",
+      "type": "boolean",
+      "in": "query",
+      "description": "Must be voted as not recent evidence of an organism"
+    },
+    "fails_dqa_subject": {
+      "name": "fails_dqa_subject",
+      "type": "boolean",
+      "in": "query",
+      "description": "Must be voted as not having evidence related to a single subject"
+    },
+    "fails_dqa_wild": {
+      "name": "fails_dqa_wild",
+      "type": "boolean",
+      "in": "query",
+      "description": "Must be voted as not wild"
     },
     "unobserved_by_user_id": {
       "name": "unobserved_by_user_id",
