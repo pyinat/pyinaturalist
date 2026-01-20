@@ -1,13 +1,22 @@
 # History
 
 ## Unreleased
+
+### New endpoints
 * Add create/update/delete observation endpoints for v2 API (`pyinaturalist.v2.create_observation`, `update_observation()`, `delete_observation()`)
 * Add observation media upload for v2 API (`pyinaturalist.v2.upload()`)
 * Add support in v2 `get_observations()` for querying more than 30 observation IDs at once
+
+### Models
 * Add `ObservationFieldValue.updater_id` attribute in observation responses
-* Add async paginator method to get a single result (`Paginator.async_one()`)
+* Add `Comment.updated_at` attribute
+
+### Bugfixes
 * Fix error when initializing Place objects from empty results
 * Fix `io.UnsupportedOperation` error when uploading observation photos from URLs
+
+### Other changes
+* Add async paginator method to get a single result (`Paginator.async_one()`)
 
 ## 0.20.2 (2025-08-19)
 * Handle empty user when pretty-printing `Identification` objects

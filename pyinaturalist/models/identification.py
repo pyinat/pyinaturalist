@@ -26,6 +26,7 @@ class Comment(BaseModel):
     user: property = LazyProperty(
         User.from_json, type=User, doc='User that added the comment or ID'
     )
+    updated_at: datetime = field(default=None, doc='Date and time the comment was last updated')
 
     # Unused attributes
     # created_at_details: Dict = field(factory=dict)

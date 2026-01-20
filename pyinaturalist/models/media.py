@@ -28,6 +28,7 @@ class BaseMedia(BaseModel):
         options=ALL_LICENSES,
         doc='Creative Commons license code',
     )
+    original_filename: str = field(default=None, doc='Original filename uploaded to iNaturalist')
     created_at: str = datetime_field(doc='Date the file was added to iNaturalist')
     updated_at: str = datetime_field(doc='Date the file was last updated on iNaturalist')
 

@@ -237,6 +237,7 @@ from dateutil.tz import tzoffset
                     'flags': [],
                     'license_code': None,
                     'original_dimensions': {'height': 1176, 'width': 860},
+                    'original_filename': '20180707_081006.jpg',
                     'url': 'https://static.inaturalist.org/photos/20970868/square.jpg',
                 },
                 {
@@ -245,6 +246,7 @@ from dateutil.tz import tzoffset
                     'flags': [],
                     'license_code': None,
                     'original_dimensions': {'height': 1512, 'width': 2016},
+                    'original_filename': '20180707_081007.jpg',
                     'url': 'https://static.inaturalist.org/photos/20970862/square.jpg',
                 },
             ],
