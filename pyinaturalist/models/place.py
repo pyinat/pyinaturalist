@@ -57,7 +57,10 @@ class Place(BaseModel):
     @classmethod
     def from_json(cls, value: JsonResponse, category: Optional[str] = None, **kwargs) -> 'Place':
         value.setdefault('category', category)
-        return super(Place, cls).from_json(value)
+        place = super(Place, cls).from_json(value)
+        if ancestry := value.get('ancestry'):
+            place.ancestry = ancestry
+        return place
 
     @classmethod
     def from_json_list(cls, value: ResponseOrResults, **kwargs) -> List['Place']:

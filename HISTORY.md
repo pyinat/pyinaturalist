@@ -8,8 +8,10 @@
 * Add support in v2 `get_observations()` for querying more than 30 observation IDs at once
 
 ### Models
+* Add `Photo.original_filename` and `Sound.original_filename` from v2 observation results
 * Add `ObservationFieldValue.updater_id` attribute in observation responses
 * Add `Comment.updated_at` attribute
+* Handle slash-delimited `Place.ancestry` field from places CSV export
 
 ### Bugfixes
 * Fix error when initializing Place objects from empty results

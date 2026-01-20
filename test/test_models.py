@@ -805,6 +805,13 @@ def test_place__converters():
     assert place.location == (-43.3254578926, 172.2325124165)
 
 
+def test_place__ancestry():
+    place_json = deepcopy(j_place_1)
+    place_json['ancestry'] = '1/2/3/4'
+    place = Place.from_json(place_json)
+    assert place.ancestor_place_ids == ['1', '2', '3', '4']
+
+
 def test_place__empty():
     place = Place()
     assert place.ancestor_place_ids == []
