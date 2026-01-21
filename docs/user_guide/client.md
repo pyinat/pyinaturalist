@@ -1,10 +1,6 @@
 (api-client)=
 # API Client Class
-```{warning}
-These features and documentation are a work in progress!
-```
-
-In addition to the standard API wrapper functions, pyinaturalist provides {py:class}`.iNatClient`, a higher-level, object-oriented interface. It adds the following features:
+In addition to the lower-level API wrapper functions, pyinaturalist provides {py:class}`.iNatClient`, a higher-level, object-oriented interface. It adds the following features:
 * Returns fully typed {ref}`model objects <data-models>` instead of JSON
 * Easier to configure
 * Easier to paginate large responses
