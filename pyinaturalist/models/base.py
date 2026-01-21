@@ -192,7 +192,7 @@ class BaseModel:
 
 
 @define(auto_attribs=False, order=False, slots=False)
-class BaseModelCollection(BaseModel, UserList, Generic[T]):
+class BaseModelCollection(BaseModel, UserList, Generic[T]):  # type: ignore [misc]
     """Base class for data model collections. These will behave the same as lists but enable some
     additional operations on contained items.
     """

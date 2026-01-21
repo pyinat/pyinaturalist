@@ -135,7 +135,7 @@ def test_request_validate_json__retry_failure(mock_sleep, requests_mock):
         status_code=200,
     )
 
-    # Expect a MaxRetryError after exhausing retries
+    # Expect a MaxRetryError after exhausting retries
     retries = 7
     session = ClientSession(max_retries=retries)
     with pytest.raises(MaxRetryError) as e:

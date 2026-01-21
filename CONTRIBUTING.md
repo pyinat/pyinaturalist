@@ -38,7 +38,7 @@ Or to run tests for a specific python version:
 nox -e test-3.10
 ```
 
-See `nox --list` for a ful list of available commands.
+See `nox --list` for a full list of available commands.
 
 ### Documentation
 For PRs, please include docstrings for all functions and classes.
