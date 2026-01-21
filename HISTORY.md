@@ -1,6 +1,6 @@
 # History
 
-## Unreleased
+## 0.21.0 (2026-01-21)
 
 ### New endpoints
 * Add create/update/delete observation endpoints for v2 API (`pyinaturalist.v2.create_observation`, `update_observation()`, `delete_observation()`)
