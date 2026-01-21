@@ -1,4 +1,4 @@
-"""Utilities for modifying function signatures using ``python-forge``"""
+"""Utilities for modifying function signatures"""
 
 # ruff: noqa: E501
 import inspect

@@ -30,14 +30,12 @@ logger = getLogger(__name__)
 class iNatClient:
     """API client class that provides an object-oriented interface to the iNaturalist API.
 
-    **WIP/Experimental**
-
     See:
 
     * Usage guide: :ref:`api-client`
     * Query functions: :ref:`Controller classes <controllers>`
 
-    Controllers:
+    Controllers (for separate API resource types):
 
     * :fa:`tag` :py:class:`annotations <.AnnotationController>`
     * :fa:`fingerprint` :py:class:`identifications <.IdentificationController>`
@@ -111,9 +109,12 @@ class iNatClient:
         kwargs = strip_empty_values(kwargs or {})
         client_kwargs = {'dry_run': self.dry_run, 'session': self.session}
 
-        # Add access token and default params, if applicable
+        # Add access token if needed
         if auth:
-            client_kwargs['access_token'] = get_access_token(**self.creds)  # type: ignore
+            access_token = kwargs.pop('access_token', None) or get_access_token(**self.creds)  # type: ignore
+            client_kwargs['access_token'] = access_token
+
+        # Add default request parameters if applicable
         client_kwargs.update(get_valid_kwargs(request_function, self.default_params))
         for k, v in client_kwargs.items():
             kwargs.setdefault(k, v)
