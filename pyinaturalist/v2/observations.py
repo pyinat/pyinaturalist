@@ -35,7 +35,8 @@ def get_observations(**params) -> JsonResponse:
 
     .. rubric:: Notes
 
-    * :fas:`lock-open` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
+    * :fas:`lock-open` :ref:`Optional authentication <auth>` For private/obscured coordinates
+      and original filenames
     * :fa:`exclamation-triangle` **Provisional:** v2 endpoints are still in development, and may
       change in future releases
     * API reference: :v2:`GET /observations <Observations/get_observations>`

@@ -4,7 +4,6 @@ from pyinaturalist.constants import (
     API_V1,
     MAX_IDS_PER_REQUEST,
     V1_OBS_ORDER_BY_PROPERTIES,
-    HistogramResponse,
     IntOrStr,
     MultiFile,
     MultiInt,
@@ -17,6 +16,7 @@ from pyinaturalist.docs import templates as docs
 from pyinaturalist.models import (
     Annotation,
     ControlledTermCounts,
+    Histogram,
     LifeList,
     Observation,
     Photo,
@@ -144,9 +144,8 @@ class ObservationController(BaseController):
             **params,
         )
 
-    # TODO: Does this need a model with utility functions, or is {datetime: count} sufficient?
     @copy_doc_signature(*docs._get_observations, docs._observation_histogram)
-    def histogram(self, **params) -> HistogramResponse:
+    def histogram(self, **params) -> Histogram:
         """Search observations and return histogram data for the given time interval
 
         .. rubric:: Notes
@@ -165,24 +164,37 @@ class ObservationController(BaseController):
         * The 'hour' interval only works with ``date_field='created'``
 
         Example:
-            Get observations per month during 2020 in Austria (place ID 8057)
+            Get observations per month during the first half of 2020 in Austria (place ID 8057)
 
-            >>> client.observations.histogram(
+            >>> hist = client.observations.histogram(
             >>>     interval='month',
             >>>     d1='2020-01-01',
-            >>>     d2='2020-12-31',
+            >>>     d2='2020-06-30',
             >>>     place_id=8057,
             >>> )
+            >>> pprint(hist)
+            Month     Count
+            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            2020-01   2565    ████
+            2020-02   3218    ██████
+            2020-03   8150    ███████████████
+            2020-04   26438   ██████████████████████████████████████████████████
+            2020-05   23656   ████████████████████████████████████████████
+            2020-06   23862   █████████████████████████████████████████████
 
             .. dropdown:: Example Response (observations per month of year)
                 :color: primary
                 :icon: code-square
+
+                >>> hist.raw
 
                 .. literalinclude:: ../sample_data/get_observation_histogram_month_of_year.py
 
             .. dropdown:: Example Response (observations per month)
                 :color: primary
                 :icon: code-square
+
+                >>> hist.raw
 
                 .. literalinclude:: ../sample_data/get_observation_histogram_month.py
                     :lines: 3-
@@ -191,14 +203,16 @@ class ObservationController(BaseController):
                 :color: primary
                 :icon: code-square
 
+                >>> hist.raw
+
                 .. literalinclude:: ../sample_data/get_observation_histogram_day.py
                     :lines: 3-
 
-        Returns:
-            Dict of ``{time_key: observation_count}``. Keys are ints for 'month of year' and\
-            'week of year' intervals, and :py:class:`~datetime.datetime` objects for all other intervals.
         """
-        return self.client.request(get_observation_histogram, **params)
+        response = self.client.request(get_observation_histogram, **params)
+        return Histogram.from_hist_response(
+            response, interval=params.get('interval', 'month_of_year')
+        )
 
     # TODO: Example response UserCounts object?
     @copy_doc_signature(*docs._get_observations)

@@ -11,6 +11,7 @@
 * Add `Photo.original_filename` and `Sound.original_filename` from v2 observation results
 * Add `ObservationFieldValue.updater_id` attribute in observation responses
 * Add `Comment.updated_at` attribute
+* Add `Histogram` class to provide terminal formatting for histogram responses
 * Handle slash-delimited `Place.ancestry` field from places CSV export
 
 ### Bugfixes

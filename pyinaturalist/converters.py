@@ -15,6 +15,7 @@ from dateutil.tz import tzlocal
 from requests import Session
 
 from pyinaturalist.constants import (
+    HISTOGRAM_INTERVALS,
     MAX_FILESIZE,
     AnyFile,
     Coordinates,
@@ -76,12 +77,14 @@ def convert_all_timestamps(results: List[ResponseResult]) -> List[ResponseResult
 def convert_observation_histogram(response: JsonResponse) -> HistogramResponse:
     """Convert a response containing time series data into a single ``{date: value}`` dict"""
     # The inner result object's key will be the name of the interval requested
-    interval = next(iter(response['results'].keys()))
-    return convert_histogram(response['results'][interval], interval)
+    interval = next(iter(response.keys()))
+    return convert_histogram(response[interval], interval)
 
 
-def convert_histogram(result: JsonResponse, interval: str):
+def convert_histogram(result: JsonResponse, interval: str) -> HistogramResponse:
     """Convert keys to appropriate type depending on interval"""
+    if interval not in HISTOGRAM_INTERVALS:
+        raise ValueError(f'Invalid histogram interval: {interval}')
     if interval in ['month_of_year', 'week_of_year']:
         return {int(k): v for k, v in result.items()}
     else:

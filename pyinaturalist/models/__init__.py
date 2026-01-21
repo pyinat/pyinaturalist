@@ -99,6 +99,8 @@ from pyinaturalist.models.observation import (
     Application,
     Fave,
     Flag,
+    HistogramBin,
+    Histogram,
     QualityMetric,
     Vote,
 )
