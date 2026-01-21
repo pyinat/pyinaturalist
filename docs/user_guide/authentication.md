@@ -1,7 +1,7 @@
 (auth)=
 # Authentication
 For any endpoints that create, update, or delete data, you will need to authenticate using an
-access token. There are two main ways to get one: manually via a browser, or programatically, using
+access token. There are two main ways to get one: manually via a browser, or programmatically, using
 your iNaturalist credentials plus separate application credentials. These tokens are typically valid
 for 24 hours, after which you will need to get a new one.
 

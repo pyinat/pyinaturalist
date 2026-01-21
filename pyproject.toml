@@ -141,3 +141,14 @@ known-first-party = ['test']
 # Wrap lines to 100 chars, but don't error on unwrappable lines until 120 chars
 [tool.ruff.lint.pycodestyle]
 max-line-length = 120
+
+[tool.typos]
+files.extend-exclude = [
+    'CONTRIBUTORS.md',
+    'examples/',
+    'test/sample_data',
+]
+
+[tool.typos.default.extend-words]
+Oficial = 'Oficial'
+ND = 'ND'

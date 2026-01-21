@@ -84,7 +84,7 @@ class ObservationFieldValue(BaseModel):
         User.from_json, type=User, doc='User who applied the observation field value'
     )
 
-    # Unused attrbiutes
+    # Unused attributes
     # name_ci: str = field(default=None)
     # value_ci: int = field(default=None)
 

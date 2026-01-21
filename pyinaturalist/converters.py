@@ -321,7 +321,7 @@ def try_float(value: Any) -> Optional[float]:
 
 
 def try_float_pair(*values: Any) -> Optional[Coordinates]:
-    """Convert a pair of coordinat values to floats, if both are valid; return ``None`` otherwise"""
+    """Convert a pair of coordinate values to floats, if both are valid; return ``None`` otherwise"""
     if len(values) != 2:
         return None
     try:
