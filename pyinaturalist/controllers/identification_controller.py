@@ -76,7 +76,7 @@ class IdentificationController(BaseController):
         """
 
         def get_identifications(**params):
-            return self.client.session.request('GET', f'{API_V1}/identifications', **params).json()
+            return self.client.session.get(f'{API_V1}/identifications', **params).json()
 
         params = convert_rank_range(params)
         return self.client.paginate(get_identifications, Identification, **params)

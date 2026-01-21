@@ -10,6 +10,7 @@ from pyinaturalist.constants import API_V1
 from pyinaturalist.models import (
     Annotation,
     ConservationStatus,
+    Histogram,
     LifeList,
     ListedTaxon,
     Observation,
@@ -138,8 +139,9 @@ def test_histogram(requests_mock):
     )
     results = iNatClient().observations.histogram(user_id='username')
 
+    assert isinstance(results, Histogram)
     assert len(results) == 31
-    assert results[datetime(2020, 1, 1, 0, 0)] == 11
+    assert results.raw[datetime(2020, 1, 1, 0, 0)] == 11
 
 
 def test_identifiers(requests_mock):

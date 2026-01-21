@@ -336,6 +336,20 @@ def test_comment__str():
     )
 
 
+# Histogram
+# --------------------
+
+
+def test_histogram():
+    histogram = Histogram.from_json(j_histogram_month_of_year)
+    assert len(histogram) == 12
+    assert histogram[0].label == 1
+    assert histogram[0].formatted_label == 'Jan'
+    assert histogram[0].count == 272
+    assert histogram[0].interval == 'month_of_year'
+    assert histogram[0].interval_column_label == 'Month'
+
+
 # Identifications
 # --------------------
 

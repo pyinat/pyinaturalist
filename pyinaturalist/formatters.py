@@ -59,27 +59,30 @@ pretty.install()
 
 # Default colors for table headers
 HEADER_COLORS = {
+    '': 'green',
     'Category': 'violet',
     'Comment': 'green',
     'Comments': 'blue',
     'Common name': 'blue',
-    'Count': 'blue',
+    'Count': 'cyan',
     'Created at': 'blue',
     'Date': 'blue',
+    'Day': 'blue',
     'Description': 'green',
     'Dimensions': 'blue',
     'Display name': 'violet',
     'Establishment means': 'violet',
-    'From': 'magenta',
     'From CV': 'white',
-    'Identifications': 'blue',
+    'From': 'magenta',
     'ID': 'cyan',
+    'Identifications': 'blue',
     'Label': 'green',
     'Latitude': 'blue',
     'License': 'green',
     'Life list': 'green',
     'Location': 'white',
     'Longitude': 'blue',
+    'Month': 'blue',
     'Name': 'magenta',
     'Observations': 'blue',
     'Observed on': 'blue',
@@ -98,6 +101,8 @@ HEADER_COLORS = {
     'Username': 'magenta',
     'Value': 'green',
     'Votes': 'blue',
+    'Week': 'blue',
+    'Year': 'blue',
 }
 
 # Unique response attributes used to auto-detect response types

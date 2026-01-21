@@ -1,3 +1,4 @@
+import math
 from datetime import datetime
 from itertools import chain
 from typing import Any, Dict, List, Tuple
@@ -5,12 +6,17 @@ from typing import Any, Dict, List, Tuple
 from pyinaturalist.constants import (
     ALL_LICENSES,
     GEOPRIVACY_LEVELS,
+    HISTOGRAM_INTERVALS,
     INAT_BASE_URL,
     QUALITY_GRADES,
     Coordinates,
+    DateOrInt,
     DateTime,
+    HistogramResponse,
+    JsonResponse,
     TableRow,
 )
+from pyinaturalist.converters import convert_histogram, get_histogram_interval
 from pyinaturalist.docs import extend_init_signature
 from pyinaturalist.models import (
     Annotation,
@@ -427,6 +433,95 @@ class Observations(BaseModelCollection):
         """Get all unique taxa"""
         unique_taxa = {obs.taxon.id: obs.taxon for obs in self.data}
         return list(unique_taxa.values())
+
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['data']
+
+
+HIST_BAR_WIDTH = 50
+
+
+@define_model
+class HistogramBin(BaseModel):
+    """:fa:`chart-bar` A single bin in a histogram.
+
+    The main purpose of this class is for terminal formatting with :py:func:`.pprint`.
+    """
+
+    label: DateOrInt = field(default=None, doc='Bin label; type depends on interval')
+    count: int = field(default=0, doc='Number of observations in this bin')
+    interval: str = field(default=None, doc=f'Histogram interval; one of: {HISTOGRAM_INTERVALS}')
+    max_count: int = field(
+        default=0, repr=False, doc='Max count across all bins; used for normalization'
+    )
+
+    @property
+    def bar_width(self) -> int:
+        """A normalized count as a bar width for terminal display"""
+        normalized_count = 0.0 if self.max_count == 0 else self.count / self.max_count
+        return math.ceil(normalized_count * HIST_BAR_WIDTH)
+
+    @property
+    def interval_column_label(self) -> str:
+        """Format the bin interval for display"""
+        return self.interval.split('_')[0].capitalize() if self.interval else 'Value'
+
+    @property
+    def formatted_label(self) -> str:
+        """Format the bin label for display, depending on the interval"""
+        if self.interval == 'year' and isinstance(self.label, datetime):
+            return self.label.strftime('%Y')
+        elif self.interval == 'month' and isinstance(self.label, datetime):
+            return self.label.strftime('%Y-%m')
+        elif self.interval == 'week' and isinstance(self.label, datetime):
+            return self.label.strftime('%Y-%m-%d')
+        elif self.interval == 'month_of_year' and isinstance(self.label, int):
+            return datetime(1999, self.label, 1).strftime('%b')
+        else:
+            return str(self.label)
+
+    @property
+    def _row(self) -> TableRow:
+        return {
+            self.interval_column_label: self.formatted_label,
+            'Count': self.count,
+            '': '█' * self.bar_width,
+        }
+
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['label', 'count']
+
+
+@define_model_collection
+class Histogram(BaseModelCollection):
+    """:fa:`chart-bar` A histogram of observation counts.
+
+    Use with :py:func:`.pprint` for formatted output, or get as a ``{bin: count}`` dict via ``.raw``.
+    """
+
+    data: List[HistogramBin] = field(factory=list, converter=HistogramBin.from_json_list)
+
+    @classmethod
+    def from_json(cls, value: JsonResponse, **kwargs) -> 'Histogram':
+        hist_dict = convert_histogram(value)
+        interval = get_histogram_interval(value)
+        max_count = max(hist_dict.values()) if hist_dict else 0
+        bins = [
+            {'label': k, 'count': v, 'interval': interval, 'max_count': max_count}
+            for k, v in hist_dict.items()
+        ]
+        return cls(data=bins)  # type: ignore [call-arg]
+
+    @property
+    def raw(self) -> HistogramResponse:
+        """Histogram data as a simple dict of ``{bin: count}``"""
+        return {b.label: b.count for b in self.data}
+
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['data']
 
 
 # Fix __init__ and class docstring
