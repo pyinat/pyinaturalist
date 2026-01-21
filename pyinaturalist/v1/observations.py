@@ -19,9 +19,9 @@ from pyinaturalist.converters import (
     convert_all_timestamps,
     convert_generic_timestamps,
     convert_histogram,
-    convert_observation_histogram,
     convert_observation_timestamps,
     ensure_list,
+    get_histogram_interval,
 )
 from pyinaturalist.docs import document_common_args, document_request_params
 from pyinaturalist.docs import templates as docs
@@ -188,7 +188,7 @@ def get_observation_histogram(**params) -> HistogramResponse:
         'week of year' intervals, and :py:class:`~datetime.datetime` objects for all other intervals.
     """
     response = get(f'{API_V1}/observations/histogram', **params)
-    return convert_observation_histogram(response.json()['results'])
+    return convert_histogram(response.json()['results'])
 
 
 @document_request_params(*docs._get_observations, docs._pagination)
@@ -283,8 +283,9 @@ def get_observation_popular_field_values(**params) -> JsonResponse:
             ``controlled_attribute``, and a ``controlled_value``.
     """
     response_json = get(f'{API_V1}/observations/popular_field_values', **params).json()
-    for r in response_json['results']:
-        r['month_of_year'] = convert_histogram(r['month_of_year'], interval='month_of_year')
+    interval = get_histogram_interval(response_json['results'][0])
+    for record in response_json['results']:
+        record[interval] = convert_histogram(record)
     return response_json
 
 

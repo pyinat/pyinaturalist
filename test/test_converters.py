@@ -11,8 +11,8 @@ from urllib3 import HTTPResponse
 
 from pyinaturalist.constants import MAX_FILESIZE
 from pyinaturalist.converters import (
+    convert_histogram,
     convert_lat_long,
-    convert_observation_histogram,
     convert_observation_timestamps,
     ensure_file_obj,
     ensure_list,
@@ -109,14 +109,14 @@ def test_ensure_list__csv(input, delimiter, expected_output):
 
 
 def test_format_histogram__datetime_keys():
-    histogram = convert_observation_histogram(j_histogram_month)
+    histogram = convert_histogram(j_histogram_month)
     assert histogram[datetime(2020, 1, 1, 0, 0)] == 272
     assert all(isinstance(k, datetime) for k in histogram.keys())
     assert all(isinstance(v, int) for v in histogram.values())
 
 
 def test_format_histogram__int_keys():
-    histogram = convert_observation_histogram(j_histogram_month_of_year)
+    histogram = convert_histogram(j_histogram_month_of_year)
     assert histogram[1] == 272
     assert all(isinstance(k, int) for k in histogram.keys())
     assert all(isinstance(v, int) for v in histogram.values())

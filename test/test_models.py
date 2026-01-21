@@ -341,7 +341,7 @@ def test_comment__str():
 
 
 def test_histogram():
-    histogram = Histogram.from_hist_response(j_histogram_month_of_year, interval='month_of_year')
+    histogram = Histogram.from_json(j_histogram_month_of_year)
     assert len(histogram) == 12
     assert histogram[0].label == 1
     assert histogram[0].formatted_label == 'Jan'

@@ -1,7 +1,7 @@
 import math
 from datetime import datetime
 from itertools import chain
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 from pyinaturalist.constants import (
     ALL_LICENSES,
@@ -13,8 +13,10 @@ from pyinaturalist.constants import (
     DateOrInt,
     DateTime,
     HistogramResponse,
+    JsonResponse,
     TableRow,
 )
+from pyinaturalist.converters import convert_histogram, get_histogram_interval
 from pyinaturalist.docs import extend_init_signature
 from pyinaturalist.models import (
     Annotation,
@@ -502,16 +504,15 @@ class Histogram(BaseModelCollection):
     data: List[HistogramBin] = field(factory=list, converter=HistogramBin.from_json_list)
 
     @classmethod
-    def from_hist_response(
-        cls, data: HistogramResponse, interval: Optional[str] = None
-    ) -> 'Histogram':
-        """Initialize from a histogram response"""
-        max_count = max(data.values()) if data else 0
+    def from_json(cls, value: JsonResponse, **kwargs) -> 'Histogram':
+        hist_dict = convert_histogram(value)
+        interval = get_histogram_interval(value)
+        max_count = max(hist_dict.values()) if hist_dict else 0
         bins = [
             {'label': k, 'count': v, 'interval': interval, 'max_count': max_count}
-            for k, v in data.items()
+            for k, v in hist_dict.items()
         ]
-        return cls.from_json({'data': bins})
+        return cls(data=bins)  # type: ignore [call-arg]
 
     @property
     def raw(self) -> HistogramResponse:

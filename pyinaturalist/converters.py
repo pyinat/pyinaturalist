@@ -74,21 +74,26 @@ def convert_all_timestamps(results: List[ResponseResult]) -> List[ResponseResult
     return results
 
 
-def convert_observation_histogram(response: JsonResponse) -> HistogramResponse:
-    """Convert a response containing time series data into a single ``{date: value}`` dict"""
-    # The inner result object's key will be the name of the interval requested
-    interval = next(iter(response.keys()))
-    return convert_histogram(response[interval], interval)
-
-
-def convert_histogram(result: JsonResponse, interval: str) -> HistogramResponse:
-    """Convert keys to appropriate type depending on interval"""
-    if interval not in HISTOGRAM_INTERVALS:
-        raise ValueError(f'Invalid histogram interval: {interval}')
+def convert_histogram(result: JsonResponse) -> HistogramResponse:
+    """Convert histogram keys (bin labels) to the appropriate type depending on interval"""
+    interval = get_histogram_interval(result)
+    data = result[interval]
     if interval in ['month_of_year', 'week_of_year']:
-        return {int(k): v for k, v in result.items()}
+        return {int(k): v for k, v in data.items()}
     else:
-        return {parse_date(k): v for k, v in result.items()}
+        return {parse_date(k): v for k, v in data.items()}
+
+
+def get_histogram_interval(result: JsonResponse) -> str:
+    """Get the histogram interval from the result keys.
+
+    The key containing histogram data will be the name of the interval requested
+    example: ``{'month_of_year': {'1': 5, ...}}``
+    """
+    try:
+        return next(k for k in result.keys() if k in HISTOGRAM_INTERVALS)
+    except StopIteration as e:
+        raise ValueError('Histogram interval not found in result keys') from e
 
 
 # Type conversion functions for individual results or values

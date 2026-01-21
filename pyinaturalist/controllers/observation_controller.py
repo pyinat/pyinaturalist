@@ -31,7 +31,6 @@ from pyinaturalist.v1 import (
     create_observation,
     delete_observation,
     get_life_list_metadata,
-    get_observation_histogram,
     get_observation_identifiers,
     get_observation_observers,
     get_observation_popular_field_values,
@@ -209,10 +208,8 @@ class ObservationController(BaseController):
                     :lines: 3-
 
         """
-        response = self.client.request(get_observation_histogram, **params)
-        return Histogram.from_hist_response(
-            response, interval=params.get('interval', 'month_of_year')
-        )
+        response = self.client.session.get(f'{API_V1}/observations/histogram', **params).json()
+        return Histogram.from_json(response['results'])
 
     # TODO: Example response UserCounts object?
     @copy_doc_signature(*docs._get_observations)
