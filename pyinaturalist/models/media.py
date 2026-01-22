@@ -59,9 +59,9 @@ class Photo(BaseMedia):
     original_dimensions: Tuple[int, int] = field(
         converter=format_dimensions, default=(0, 0), doc='Dimensions of original image'
     )
+    position: str = field(default=None, doc='Position in observation photo list')
     url: str = field(default=None, doc='Image URL; see properties for URLs of specific image sizes')
     user_id: int = field(default=None, doc='Associated user ID')
-    uuid: str = field(default=None)
     _url_format: str = field(init=False, repr=False, default=None)
 
     # Unused attributes
