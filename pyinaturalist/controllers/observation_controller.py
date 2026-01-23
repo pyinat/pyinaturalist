@@ -477,9 +477,10 @@ class ObservationPaginator(IDRangePaginator):
         self,
         *args,
         annotation_callback: Callable[[List[Annotation]], List[Annotation]],
+        order: str = 'asc',
         **kwargs,
     ):
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, order=order, **kwargs)
         self.annotation_callback = annotation_callback
 
     def next_page(self) -> List[Observation]:

@@ -1,5 +1,8 @@
 # History
 
+## Unreleased
+* When paginating observations by ID ranges, allow reversing the order with `order='desc'`
+
 ## 0.21.0 (2026-01-21)
 
 ### New endpoints

@@ -93,6 +93,38 @@ def test_search(requests_mock):
     assert results[0].created_at == datetime(2020, 8, 27, 18, 0, 51, tzinfo=tzutc())
 
 
+def test_search__descending(requests_mock):
+    """When order='desc', pagination should use id_below instead of id_above"""
+    page_1 = {
+        'results': [{'id': 100, 'created_at': '2020-08-27T18:00:51+00:00'}],
+        'total_results': 10000,
+    }
+    page_2 = {
+        'results': [{'id': 50, 'created_at': '2020-08-26T18:00:51+00:00'}],
+        'total_results': 10000,
+    }
+    requests_mock.get(
+        f'{API_V1}/observations',
+        [
+            {'json': page_1, 'status_code': 200},
+            {'json': page_2, 'status_code': 200},
+        ],
+    )
+
+    results = iNatClient().observations.search(order='desc', per_page=1).limit(2)
+
+    # Second request should use id_below based on last result's ID
+    second_request = requests_mock.request_history[1]
+    assert 'id_below=100' in second_request.url
+    assert 'id_above' not in second_request.url
+    assert 'order=desc' in second_request.url
+    assert 'order_by=id' in second_request.url
+
+    assert len(results) == 2
+    assert results[0].id == 100
+    assert results[1].id == 50
+
+
 def test_search__with_ofvs(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations',

@@ -95,7 +95,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             for result in self.next_page():
                 yield result
 
-    async def async_all(self) -> List[T]:  # Better name TBD?
+    async def async_all(self) -> List[T]:
         """Get all results in a single list (non-blocking)"""
         return [result async for result in self]
 
@@ -221,7 +221,8 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
 
 
 class IDRangePaginator(Paginator):
-    """Paginate by a range of IDs instead of standard pagination parameters
+    """Paginate by a range of IDs instead of standard pagination parameters. This is a workaround
+    for large result sets.
 
     .. note::
         Note on pagination by ID, from the iNaturalist documentation:
@@ -232,23 +233,25 @@ class IDRangePaginator(Paginator):
 
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, order: str = 'asc', **kwargs):
         super().__init__(*args, **kwargs)
-        self.id_above: Optional[int] = None
+        self.id_param = 'id_above' if order == 'asc' else 'id_below'
+        self.last_id: Optional[int] = None
+        self.order = order
 
     def _get_pagination_kwargs(self):
         return {
-            'id_above': self.id_above,
+            self.id_param: self.last_id,
             'per_page': self.per_page,
             'order_by': 'id',
-            'order': 'asc',
+            'order': self.order,
         }
 
     def _next_page(self) -> List[ResponseResult]:
         # Update params for next request, if there are more results
         results = super()._next_page()
         if not self.exhausted:
-            self.id_above = results[-1]['id']
+            self.last_id = results[-1]['id']
         return results
 
 
