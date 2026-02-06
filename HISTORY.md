@@ -2,6 +2,7 @@
 
 ## Unreleased
 * When paginating observations by ID ranges, allow reversing the order with `order='desc'`
+* Add a separate `write_timeout` parameter for `ClientSession`, to be used for create/update endpoints; default to 60 seconds
 
 ## 0.21.0 (2026-01-21)
 
