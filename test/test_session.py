@@ -8,7 +8,7 @@ from requests import Request, Session
 from requests_ratelimiter import Limiter, RequestRate
 from urllib3.exceptions import MaxRetryError
 
-from pyinaturalist.constants import CACHE_EXPIRATION, REQUEST_TIMEOUT
+from pyinaturalist.constants import CACHE_EXPIRATION, REQUEST_TIMEOUT, WRITE_TIMEOUT
 from pyinaturalist.session import (
     CACHE_FILE,
     ClientSession,
@@ -203,6 +203,50 @@ def test_session__send(mock_limiter, mock_requests_send):
     request = Request(method='GET', url='http://test.com').prepare()
     session.send(request)
     mock_requests_send.assert_called_with(request, timeout=(5, REQUEST_TIMEOUT))
+
+
+@pytest.mark.parametrize(
+    'method, expected_timeout',
+    [
+        ('GET', REQUEST_TIMEOUT),
+        ('HEAD', REQUEST_TIMEOUT),
+        ('DELETE', REQUEST_TIMEOUT),
+        ('POST', WRITE_TIMEOUT),
+        ('PUT', WRITE_TIMEOUT),
+    ],
+)
+@patch('requests.sessions.Session.send')
+@patch('requests_ratelimiter.requests_ratelimiter.Limiter')
+def test_session__send__write_timeout(mock_limiter, mock_requests_send, method, expected_timeout):
+    session = ClientSession()
+    request = Request(method=method, url='http://test.com').prepare()
+    session.send(request)
+    mock_requests_send.assert_called_with(request, timeout=(5, expected_timeout))
+
+
+@patch('requests.sessions.Session.send')
+@patch('requests_ratelimiter.requests_ratelimiter.Limiter')
+def test_session__send__override_session_timeout(mock_limiter, mock_requests_send):
+    session = ClientSession(timeout=33, write_timeout=66)
+
+    # read timeout
+    request = Request(method='GET', url='http://test.com').prepare()
+    session.send(request)
+    mock_requests_send.assert_called_with(request, timeout=(5, 33))
+
+    # write timeout
+    request = Request(method='POST', url='http://test.com').prepare()
+    session.send(request)
+    mock_requests_send.assert_called_with(request, timeout=(5, 66))
+
+
+@patch('requests.sessions.Session.send')
+@patch('requests_ratelimiter.requests_ratelimiter.Limiter')
+def test_session__send__override_request_timeout(mock_limiter, mock_requests_send):
+    session = ClientSession()
+    request = Request(method='POST', url='http://test.com').prepare()
+    session.send(request, timeout=10)
+    mock_requests_send.assert_called_with(request, timeout=(5, 10))
 
 
 @pytest.mark.enable_client_session  # For all other tests, caching is disabled. Re-enable that here.

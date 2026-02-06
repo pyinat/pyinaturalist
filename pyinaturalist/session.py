@@ -46,6 +46,7 @@ from pyinaturalist.constants import (
     RETRY_BACKOFF,
     RETRY_STATUSES,
     WRITE_HTTP_METHODS,
+    WRITE_TIMEOUT,
     FileOrPath,
     MultiInt,
     RequestParams,
@@ -88,6 +89,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         lock_path: Optional[str] = DEFAULT_LOCK_PATH,
         max_retries: int = REQUEST_RETRIES,
         timeout: int = REQUEST_TIMEOUT,
+        write_timeout: int = WRITE_TIMEOUT,
         user_agent: Optional[str] = None,
         **kwargs,
     ):
@@ -113,6 +115,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
                  defaults to the system default cache directory
             max_retries: Maximum number of times to retry a failed request
             timeout: Maximum number of seconds to wait for a response from the server
+            write_timeout: Maximum number of seconds to wait for sending data (create/update)
             user_agent: Additional User-Agent info to pass to API requests
             kwargs: Additional keyword arguments for :py:class:`~requests_cache.session.CachedSession`
                 and/or :py:class:`~requests_ratelimiter.requests_ratelimiter.LimiterSession`
@@ -121,7 +124,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         url_patterns = CACHE_EXPIRATION
         if urls_expire_after:
             url_patterns.update(urls_expire_after)
-        self.timeout = timeout
+        self.read_timeout = timeout
+        self.write_timeout = write_timeout
 
         # Extra args to pass to rate limiter backend
         bucket_kwargs = kwargs.pop('bucket_kwargs', {})
@@ -322,8 +326,12 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         if dry_run or is_dry_run_enabled(request.method):
             return MockResponse(request)
 
-        # Otherwise, send the request
-        read_timeout = timeout or self.timeout
+        # Set a longer timeout for write operations
+        if not timeout:
+            timeout = self.write_timeout if request.method in ['POST', 'PUT'] else self.read_timeout
+
+        # Send the request and validate the response
+        read_timeout = timeout or self.read_timeout
         response = super().send(
             request,
             expire_after=expire_after,

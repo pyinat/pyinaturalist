@@ -2586,7 +2586,7 @@ wheels = [
 
 [[package]]
 name = "pyinaturalist"
-version = "0.21.0"
+version = "0.21.1"
 source = { editable = "." }
 dependencies = [
     { name = "attrs", version = "25.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
