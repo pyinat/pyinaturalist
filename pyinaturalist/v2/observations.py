@@ -1,6 +1,6 @@
 from copy import deepcopy
 from logging import getLogger
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from pyinaturalist.constants import (
     API_V2,
@@ -16,7 +16,10 @@ from pyinaturalist.docs import document_common_args, document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.paginator import paginate_all
-from pyinaturalist.request_params import convert_observation_params, validate_multiple_choice_param
+from pyinaturalist.request_params import (
+    convert_observation_params_v2,
+    validate_multiple_choice_param,
+)
 from pyinaturalist.session import delete, get, post, put
 
 logger = getLogger(__name__)
@@ -277,16 +280,14 @@ def create_observation(**params) -> JsonResponse:
     Returns:
         JSON response containing the newly created observation (submitted fields only)
     """
-    photos, sounds, photo_ids, params, kwargs = convert_observation_params(params)
-    obs_fields: List[Dict] = params.pop('observation_field_values_attributes', [])
-
+    ofvs, photos, sounds, photo_ids, params, kwargs = convert_observation_params_v2(params)
     response = post(f'{API_V2}/observations', json={'observation': params}, **kwargs)
     response_json = response.json()
     observation_uuid = response_json['results'][0]['uuid']
 
     # Set observation fields separately (v2 API doesn't allow multiple values)
-    for obs_field in obs_fields:
-        set_observation_field(observation_uuid, **obs_field, **kwargs)
+    for ofv in ofvs:
+        set_observation_field(observation_uuid, **ofv, **kwargs)
     # Upload photos and sounds if provided
     if photos or sounds or photo_ids:
         upload(observation_uuid, photos=photos, sounds=sounds, photo_ids=photo_ids, **kwargs)
@@ -333,15 +334,13 @@ def update_observation(observation_uuid: str, **params) -> JsonResponse:
     Returns:
         JSON response containing the updated observation
     """
-    photos, sounds, photo_ids, params, kwargs = convert_observation_params(params)
-    obs_fields: List[Dict] = params.pop('observation_field_values_attributes', [])
+    ofvs, photos, sounds, photo_ids, params, kwargs = convert_observation_params_v2(params)
     payload = {'observation': params}
-
     response = put(f'{API_V2}/observations/{observation_uuid}', json=payload, **kwargs)
 
     # Set observation fields separately (v2 API doesn't allow multiple values)
-    for obs_field in obs_fields:
-        set_observation_field(observation_uuid, **obs_field, **kwargs)
+    for ofv in ofvs:
+        set_observation_field(observation_uuid, **ofv, **kwargs)
     # Upload photos and sounds if provided
     if photos or sounds or photo_ids:
         upload(observation_uuid, photos=photos, sounds=sounds, photo_ids=photo_ids, **kwargs)
