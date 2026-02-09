@@ -8,6 +8,7 @@ from pyinaturalist.v2.observations import (
     create_observation,
     delete_observation,
     get_observations,
+    set_observation_field,
     update_observation,
     upload,
 )

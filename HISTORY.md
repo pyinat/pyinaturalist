@@ -1,6 +1,7 @@
 # History
 
 ## Unreleased
+* Update `v2.create_observation()` and `update_observation()` to accept multiple observation field values, consistent with v0 and v1 APIs.
 * When paginating observations by ID ranges, allow reversing the order with `order='desc'`
 * Add a separate `write_timeout` parameter for `ClientSession`, to be used for create/update endpoints; default to 60 seconds
 

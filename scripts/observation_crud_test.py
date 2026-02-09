@@ -48,7 +48,11 @@ def create_test_obs(client: iNatClient):
         ),
         positional_accuracy=50,
         geoprivacy='open',
-        observation_fields={297: 1},
+        observation_fields={
+            297: 3,  # 297 = 'Number of individuals'
+            816: 1,  # 816 = 'Number of males'
+            821: 2,  # 821 = 'Number of females'
+        },
         photos=[SAMPLE_PHOTO, SAMPLE_PHOTO],
         sounds=[SAMPLE_SOUND, SAMPLE_SOUND],
     )

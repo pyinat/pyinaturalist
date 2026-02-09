@@ -8,14 +8,15 @@ the future, along with their corresponding functions in pyinaturalist.
 ## v2 API
 For all available endpoints, see: <http://api.inaturalist.org/v2/docs/>
 
-| Method | Endpoint                           | Function                                                     |
-| ------ | ---------------------------------- | ------------------------------------------------------------ |
-| GET    | /observations                      | {py:func}`~pyinaturalist.v2.observations.get_observations`   |
-| POST   | /observations                      | {py:func}`~pyinaturalist.v2.observations.create_observation` |
-| PUT    | /observation/{uuid}                | {py:func}`~pyinaturalist.v2.observations.update_observation` |
-| DELETE | /observation/{uuid}                | {py:func}`~pyinaturalist.v2.observations.delete_observation` |
-| POST   | /observation_photos                | {py:func}`~pyinaturalist.v2.observations.upload`             |
-| POST   | /observation_sounds                | {py:func}`~pyinaturalist.v2.observations.upload`             |
+| Method | Endpoint                           | Function                                                        |
+| ------ | ---------------------------------- | --------------------------------------------------------------- |
+| GET    | /observations                      | {py:func}`~pyinaturalist.v2.observations.get_observations`      |
+| POST   | /observations                      | {py:func}`~pyinaturalist.v2.observations.create_observation`    |
+| PUT    | /observation/{uuid}                | {py:func}`~pyinaturalist.v2.observations.update_observation`    |
+| DELETE | /observation/{uuid}                | {py:func}`~pyinaturalist.v2.observations.delete_observation`    |
+| POST   | /observation_photos                | {py:func}`~pyinaturalist.v2.observations.upload`                |
+| POST   | /observation_sounds                | {py:func}`~pyinaturalist.v2.observations.upload`                |
+| POST   | /observation_field_values/{uuid}   | {py:func}`~pyinaturalist.v2.observations.set_observation_field` |
 
 ## v1 API
 For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
@@ -37,7 +38,7 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | GET    | /identifications/similar_species   |
 | GET    | /messages                          | {py:func}`.get_messages`                                     |
 | GET    | /messages/{id}                     | {py:func}`.get_message_by_id`                                |
-| GET    | /messages/unread                   | {py:func}`.get_unread_message_count`                        |
+| GET    | /messages/unread                   | {py:func}`.get_unread_message_count`                         |
 | DELETE | /observation_field_values/{id}     | {py:func}`.delete_observation_field`                         |
 | PUT    | /observation_field_values/{id}     | {py:func}`.set_observation_field`                            |
 | POST   | /observation_field_values          | {py:func}`.set_observation_field`                            |
