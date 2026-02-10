@@ -6,7 +6,7 @@ import pytest
 import urllib3.util.retry
 from requests import ConnectionError, Request, Session
 from requests_cache import CacheMixin
-from requests_ratelimiter import Limiter, RequestRate
+from requests_ratelimiter import Duration, HostBucketFactory, Limiter, Rate, SQLiteBucket
 from urllib3.exceptions import MaxRetryError
 
 from pyinaturalist.constants import (
@@ -196,10 +196,10 @@ def test_session__custom_expiration():
     assert session.settings.urls_expire_after['*'] == CACHE_EXPIRATION['*']
 
 
-def test_session__custom_retry():
+def test_session__custom_rate():
     session = ClientSession(per_second=5)
-    per_second_rate = session.limiter._rates[0]
-    assert per_second_rate.limit / per_second_rate.interval == 5
+    per_second_rate = session.limiter.bucket_factory.rates[0]
+    assert per_second_rate.limit / per_second_rate.interval * Duration.SECOND == 5
 
 
 @patch('pyinaturalist.session.format_response')
@@ -341,23 +341,22 @@ def test_clear_cache():
 @patch('pyinaturalist.session.format_response')
 @patch.object(Session, 'send')
 def test_filelock(mock_send, mock_format, tmp_path):
-    lock_path = str(tmp_path / 'test.lock')
+    str(tmp_path / 'test.lock')
     session = ClientSession(
         bucket_class=FileLockSQLiteBucket,
-        lock_path=lock_path,
     )
     # Send a request to initialize ratelimiter bucket(s)
     request = Request(method='GET', url='http://example.com').prepare()
     session.send(request)
 
-    for bucket in session.limiter.bucket_group.values():
-        assert isinstance(bucket, FileLockSQLiteBucket)
-        assert bucket._lock.lock_file == lock_path
+    for bucket in session.limiter.bucket_factory.buckets.values():
+        assert isinstance(bucket, SQLiteBucket)
+        assert bucket.use_limiter_lock is True
 
 
 def test_get_refresh_params():
     session = ClientSession()
-    session.refresh_limiter = Limiter(RequestRate(1, 2))
+    session.refresh_limiter = Limiter(HostBucketFactory(rates=[Rate(1, Duration.SECOND * 2)]))
     assert session.get_refresh_params('test') == {'refresh': True}
     assert session.get_refresh_params('test2') == {'refresh': True}
     assert session.get_refresh_params('test') == {'refresh': True, 'v': 1}

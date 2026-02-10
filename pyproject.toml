@@ -40,7 +40,7 @@ dependencies = [
     'python-dateutil>=2.0',
     'requests>=2.25',
     'requests-cache>=1.2',
-    'requests-ratelimiter>=0.6,<0.9',
+    'requests-ratelimiter>=0.9',
     'rich>=10.9',
 ]
 

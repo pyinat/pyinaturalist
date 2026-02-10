@@ -69,7 +69,6 @@ CACHE_EXPIRATION = {
 CACHE_FILE = DATA_DIR / 'api_requests.db'
 IGNORED_PARAMETERS = ['Authorization', 'access_token', 'password', 'client_secret']
 RATELIMIT_FILE = DATA_DIR / 'api_ratelimit.db'
-DEFAULT_LOCK_PATH = DATA_DIR / 'api_ratelimit.lock'
 
 # Response formats supported by v0 GET /observations endpoint
 OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
