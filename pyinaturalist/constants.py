@@ -69,7 +69,6 @@ CACHE_EXPIRATION = {
 }
 CACHE_FILE = join(DATA_DIR, 'api_requests.db')
 RATELIMIT_FILE = join(DATA_DIR, 'api_ratelimit.db')
-DEFAULT_LOCK_PATH = join(DATA_DIR, 'api_ratelimit.lock')
 
 # Response formats supported by v0 GET /observations endpoint
 OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
