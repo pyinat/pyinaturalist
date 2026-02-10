@@ -22,12 +22,13 @@ from requests_cache import (
 from requests_ratelimiter import (
     AbstractBucket,
     Duration,
+    HostBucketFactory,
+    InMemoryBucket,
     Limiter,
     LimiterMixin,
     Rate,
     SQLiteBucket,
 )
-from requests_ratelimiter.buckets import HostBucketFactory
 from urllib3.util import Retry
 
 from pyinaturalist.constants import (
@@ -156,17 +157,18 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             **kwargs,
         )
 
-        # Separate rate limiter specific to forced refresh requests
+        # Separate rate limiter for forced refresh requests.
         refresh_factory = HostBucketFactory(
+            bucket_class=InMemoryBucket,
             rates=[Rate(1, Duration.SECOND * 122)],
-            bucket_class=bucket_class,
-            bucket_init_kwargs=bucket_kwargs,
         )
         self.refresh_limiter = Limiter(refresh_factory)
 
         # Retry settings
         self.retries = Retry(
-            total=max_retries, backoff_factor=backoff_factor, status_forcelist=RETRY_STATUSES
+            total=max_retries,
+            backoff_factor=backoff_factor,
+            status_forcelist=RETRY_STATUSES,
         )
         adapter = HTTPAdapter(max_retries=self.retries)
         self.mount('https://', adapter)
