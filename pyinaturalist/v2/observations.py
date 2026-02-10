@@ -1,6 +1,6 @@
 from copy import deepcopy
 from logging import getLogger
-from typing import Optional
+from typing import Any, Optional
 
 from pyinaturalist.constants import (
     API_V2,
@@ -16,7 +16,10 @@ from pyinaturalist.docs import document_common_args, document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.paginator import paginate_all
-from pyinaturalist.request_params import convert_observation_params, validate_multiple_choice_param
+from pyinaturalist.request_params import (
+    convert_observation_params_v2,
+    validate_multiple_choice_param,
+)
 from pyinaturalist.session import delete, get, post, put
 
 logger = getLogger(__name__)
@@ -260,7 +263,11 @@ def create_observation(**params) -> JsonResponse:
         ...     species_guess='Pieris rapae',
         ...     observed_on='2020-09-01',
         ...     photos='~/observation_photos/2020_09_01_14003156.jpg',
-        ...     observation_fields={297: 1},  # 297 is the obs. field ID for 'Number of individuals'
+        ...     observation_fields={
+        ...         297: 3,  # 297 is the obs. field ID for 'Number of individuals'
+        ...         816: 1,  # 816 = 'Number of males'
+        ...         821: 2,  # 821 = 'Number of females'
+        ...     },
         ... )
 
         .. dropdown:: Example Response
@@ -273,11 +280,14 @@ def create_observation(**params) -> JsonResponse:
     Returns:
         JSON response containing the newly created observation (submitted fields only)
     """
-    photos, sounds, photo_ids, params, kwargs = convert_observation_params(params)
+    ofvs, photos, sounds, photo_ids, params, kwargs = convert_observation_params_v2(params)
     response = post(f'{API_V2}/observations', json={'observation': params}, **kwargs)
     response_json = response.json()
     observation_uuid = response_json['results'][0]['uuid']
 
+    # Set observation fields separately (v2 API doesn't allow multiple values)
+    for ofv in ofvs:
+        set_observation_field(observation_uuid, **ofv, **kwargs)
     # Upload photos and sounds if provided
     if photos or sounds or photo_ids:
         upload(observation_uuid, photos=photos, sounds=sounds, photo_ids=photo_ids, **kwargs)
@@ -324,11 +334,13 @@ def update_observation(observation_uuid: str, **params) -> JsonResponse:
     Returns:
         JSON response containing the updated observation
     """
-    photos, sounds, photo_ids, params, kwargs = convert_observation_params(params)
+    ofvs, photos, sounds, photo_ids, params, kwargs = convert_observation_params_v2(params)
     payload = {'observation': params}
-
     response = put(f'{API_V2}/observations/{observation_uuid}', json=payload, **kwargs)
 
+    # Set observation fields separately (v2 API doesn't allow multiple values)
+    for ofv in ofvs:
+        set_observation_field(observation_uuid, **ofv, **kwargs)
     # Upload photos and sounds if provided
     if photos or sounds or photo_ids:
         upload(observation_uuid, photos=photos, sounds=sounds, photo_ids=photo_ids, **kwargs)
@@ -370,6 +382,53 @@ def delete_observation(observation_uuid: str, access_token: Optional[str] = None
     if response.status_code == 404:
         raise ObservationNotFound(response=response)
     response.raise_for_status()
+
+
+@document_request_params(docs._access_token)
+def set_observation_field(
+    observation_id: int, observation_field_id: int, value: Any, **params
+) -> JsonResponse:
+    """Create or update an observation field value on an observation
+
+    Args:
+        observation_id: ID or UUID of the observation to update
+        observation_field_id: ID of the observation field for this observation field value
+        value: Value for the observation field
+
+    .. rubric:: Notes
+
+    * :fa:`lock` :ref:`Requires authentication <auth>`
+    * API reference: :v2:`POST /observation_field_values/{id} <ObservationFieldValues/post_observation_field_values>`
+    * To find an ``observation_field_id``, either user :py:func:`.get_observation_fields` or
+      `search observation fields on iNaturalist <https://www.inaturalist.org/observation_fields>`_
+
+    Example:
+        >>> set_observation_field(
+        ...     7345179,
+        ...     observation_field_id,
+        ...     value=250,
+        ...     access_token=token,
+        ... )
+
+        .. dropdown:: Example Response
+            :color: primary
+            :icon: code-square
+
+            .. literalinclude:: ../sample_data/post_put_observation_field_value.json
+                :language: javascript
+
+    Returns:
+        The newly updated field value record
+    """
+    body = {
+        'observation_field_value': {
+            'observation_id': observation_id,
+            'observation_field_id': observation_field_id,
+            'value': value,
+        }
+    }
+    response = post(f'{API_V2}/observation_field_values', json=body, **params)
+    return response.json()
 
 
 # The full `fields` value to request all observation details

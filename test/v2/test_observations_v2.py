@@ -11,6 +11,7 @@ from pyinaturalist.v2 import (
     create_observation,
     delete_observation,
     get_observations,
+    set_observation_field,
     update_observation,
     upload,
 )
@@ -225,6 +226,26 @@ def test_create_observation__with_files(mock_post, mock_upload):
     assert upload_args[1]['photo_ids'] == [12345]
 
 
+@patch('pyinaturalist.v2.observations.set_observation_field')
+@patch('pyinaturalist.v2.observations.post')
+def test_create_observation__with_observation_fields(mock_post, mock_set_field):
+    """Observation fields should be added in separate requests"""
+    test_uuid = '53411fc2-bdf0-434e-afce-4dac33970173'
+    mock_post.return_value.json.return_value = {'results': [{'uuid': test_uuid, 'id': 123456}]}
+
+    create_observation(
+        access_token='token',
+        species_guess='Pieris rapae',
+        observation_fields={297: 1, 567: 'test value'},
+    )
+
+    # Observation fields should not be in the create request body
+    request_params = mock_post.call_args[1]['json']['observation']
+    assert 'observation_field_values_attributes' not in request_params
+    assert 'observation_fields' not in request_params
+    assert mock_set_field.call_count == 2
+
+
 def test_update_observation(requests_mock):
     test_uuid = '53411fc2-bdf0-434e-afce-4dac33970173'
     requests_mock.put(
@@ -265,6 +286,52 @@ def test_update_observation__with_photos(mock_put, mock_upload):
     assert 'photos' not in obs_params
     assert 'sounds' not in obs_params
     mock_upload.assert_called_once()
+
+
+@patch('pyinaturalist.v2.observations.set_observation_field')
+@patch('pyinaturalist.v2.observations.put')
+def test_update_observation__with_observation_fields(mock_put, mock_set_field):
+    """Observation fields should be added in separate requests"""
+    test_uuid = '53411fc2-bdf0-434e-afce-4dac33970173'
+    mock_put.return_value.json.return_value = {'results': [{'uuid': test_uuid}]}
+
+    update_observation(
+        test_uuid,
+        access_token='token',
+        observation_fields={297: 1},
+    )
+
+    # Observation fields should not be in the update request body
+    obs_params = mock_put.call_args[1]['json']['observation']
+    assert 'observation_field_values_attributes' not in obs_params
+    mock_set_field.assert_called_once()
+
+
+def test_set_observation_field(requests_mock):
+    test_uuid = '53411fc2-bdf0-434e-afce-4dac33970173'
+    requests_mock.post(
+        f'{API_V2}/observation_field_values',
+        json={'results': [{'uuid': 'ofv-uuid-1'}]},
+        status_code=200,
+    )
+
+    response = set_observation_field(
+        test_uuid,
+        observation_field_id=297,
+        value=1,
+        access_token='token',
+    )
+
+    assert response == {'results': [{'uuid': 'ofv-uuid-1'}]}
+    assert len(requests_mock.request_history) == 1
+    body = requests_mock.request_history[0].json()
+    assert body == {
+        'observation_field_value': {
+            'observation_id': test_uuid,
+            'observation_field_id': 297,
+            'value': 1,
+        }
+    }
 
 
 def test_delete_observation(requests_mock):

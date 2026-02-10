@@ -164,17 +164,30 @@ def convert_list_params(params: RequestParams) -> RequestParams:
     return {k: _join_list(v) for k, v in params.items()}
 
 
-def convert_observation_params(params):
+def convert_observation_params(
+    params: RequestParams,
+) -> Tuple[List, List, List, RequestParams, RequestParams]:
     """Some common parameter conversions needed by observation CRUD endpoints"""
-    params = convert_observation_field_params(params)
+    ofvs, photos, sounds, photo_ids, params, kwargs = convert_observation_params_v2(params)
+    params['observation_field_values_attributes'] = ofvs
+    return photos, sounds, photo_ids, params, kwargs
+
+
+def convert_observation_params_v2(
+    params: RequestParams,
+) -> Tuple[List, List, List, List, RequestParams, RequestParams]:
+    """Some common parameter conversions needed by observation CRUD endpoints;
+    same as convert_observation_params but splits out observation field values.
+    """
     if params.get('observed_on'):
         params['observed_on_string'] = params.pop('observed_on')
 
     # Split out photos and sounds to upload separately
+    ofvs = convert_ofv_params(params)
     photos = ensure_list(params.pop('local_photos', None))
     photos.extend(ensure_list(params.pop('photos', None)))  # Alias for 'local_photos'
-    sounds = ensure_list(params.pop('sounds', None))
     photo_ids = ensure_list(params.pop('photo_ids', None))
+    sounds = ensure_list(params.pop('sounds', None))
 
     # Split API request params from common function args
     params, kwargs = split_common_params(params)
@@ -183,19 +196,17 @@ def convert_observation_params(params):
     if params.pop('ignore_photos', True):
         kwargs['ignore_photos'] = 1
 
-    return photos, sounds, photo_ids, params, kwargs
+    return ofvs, photos, sounds, photo_ids, params, kwargs  # type: ignore
 
 
-def convert_observation_field_params(params: RequestParams) -> RequestParams:
-    """Translate simplified format of observation field values into API-compatible format"""
-    if 'observation_fields' in params:
-        params['observation_field_values_attributes'] = params.pop('observation_fields')
-    obs_fields = params.get('observation_field_values_attributes')
-    if isinstance(obs_fields, dict):
-        params['observation_field_values_attributes'] = [
-            {'observation_field_id': k, 'value': v} for k, v in obs_fields.items()
-        ]
-    return params
+def convert_ofv_params(params: RequestParams) -> List[Dict]:
+    """Translate simplified format of observation field values into API-compatible format.
+    Also handles an already API-compatible format.
+    """
+    if ofvs := params.pop('observation_fields', None):
+        return [{'observation_field_id': k, 'value': v} for k, v in ofvs.items()]
+    else:
+        return params.pop('observation_field_values_attributes', [])
 
 
 def convert_observation_field_filters(params: RequestParams) -> RequestParams:

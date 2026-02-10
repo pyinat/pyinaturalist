@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import date, datetime, timedelta
 from unittest.mock import patch
 
@@ -8,7 +9,7 @@ from pyinaturalist.request_params import (
     convert_bool_params,
     convert_datetime_params,
     convert_list_params,
-    convert_observation_field_params,
+    convert_ofv_params,
     convert_pagination_params,
     convert_url_ids,
     get_interval_ranges,
@@ -67,8 +68,7 @@ def test_convert_list_params():
 
 
 def test_convert_observation_fields():
-    params = convert_observation_field_params(TEST_PARAMS)
-    assert params['observation_field_values_attributes'] == [
+    assert convert_ofv_params(deepcopy(TEST_PARAMS)) == [
         {'observation_field_id': 1, 'value': 'value'}
     ]
 
