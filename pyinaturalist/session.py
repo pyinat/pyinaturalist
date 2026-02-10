@@ -22,12 +22,13 @@ from requests_cache import (
 from requests_ratelimiter import (
     AbstractBucket,
     Duration,
+    HostBucketFactory,
+    InMemoryBucket,
     Limiter,
     LimiterMixin,
     Rate,
     SQLiteBucket,
 )
-from requests_ratelimiter.buckets import HostBucketFactory
 from urllib3.util import Retry
 
 from pyinaturalist.constants import (
@@ -35,7 +36,6 @@ from pyinaturalist.constants import (
     CACHE_FILE,
     CONNECT_TIMEOUT,
     IGNORED_PARAMETERS,
-    MAX_DELAY,
     RATELIMIT_FILE,
     REQUEST_BURST_RATE,
     REQUEST_RETRIES,
@@ -49,6 +49,7 @@ from pyinaturalist.constants import (
     WRITE_TIMEOUT,
     FileOrPath,
     MultiInt,
+    PathOrStr,
     RequestParams,
 )
 from pyinaturalist.converters import ensure_file_obj
@@ -85,7 +86,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         burst: int = REQUEST_BURST_RATE,
         bucket_class: Type[AbstractBucket] = SQLiteBucket,
         backoff_factor: float = RETRY_BACKOFF,
-        ratelimit_path: Optional[str] = RATELIMIT_FILE,
+        ratelimit_path: Optional[PathOrStr] = RATELIMIT_FILE,
         use_file_lock: bool = False,
         max_retries: int = REQUEST_RETRIES,
         timeout: int = REQUEST_TIMEOUT,
@@ -131,7 +132,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         bucket_kwargs = kwargs.pop('bucket_kwargs', {})
         bucket_kwargs.setdefault('create_new_table', True)
         if ratelimit_path:
-            bucket_kwargs['db_path'] = ratelimit_path
+            bucket_kwargs['db_path'] = str(ratelimit_path)
         if bucket_class is FileLockSQLiteBucket or use_file_lock:
             bucket_class = SQLiteBucket
             bucket_kwargs['use_file_lock'] = True
@@ -153,21 +154,21 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             per_day=per_day,
             per_host=True,
             burst=burst,
-            max_delay=MAX_DELAY,
             **kwargs,
         )
 
-        # Separate rate limiter specific to forced refresh requests
+        # Separate rate limiter for forced refresh requests.
         refresh_factory = HostBucketFactory(
+            bucket_class=InMemoryBucket,
             rates=[Rate(1, Duration.SECOND * 122)],
-            bucket_class=bucket_class,
-            bucket_init_kwargs=bucket_kwargs,
         )
         self.refresh_limiter = Limiter(refresh_factory)
 
         # Retry settings
         self.retries = Retry(
-            total=max_retries, backoff_factor=backoff_factor, status_forcelist=RETRY_STATUSES
+            total=max_retries,
+            backoff_factor=backoff_factor,
+            status_forcelist=RETRY_STATUSES,
         )
         adapter = HTTPAdapter(max_retries=self.retries)
         self.mount('https://', adapter)
