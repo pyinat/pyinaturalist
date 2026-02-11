@@ -11,9 +11,10 @@ These functions will accept any of the following:
 import json
 from datetime import date, datetime, timedelta
 from logging import basicConfig, getLogger
-from typing import List, Mapping, Type, Union
+from typing import TYPE_CHECKING, List, Mapping, Type, Union
 
 from requests import PreparedRequest, Response
+from requests_cache import CachedResponse
 from rich import pretty, print
 from rich.box import SIMPLE_HEAVY
 from rich.logging import RichHandler
@@ -259,6 +260,8 @@ def format_response(response: Response) -> str:
 def _format_expiration(response: Response) -> str:
     if not getattr(response, 'from_cache', False):
         return 'not cached'
+    if TYPE_CHECKING:
+        assert isinstance(response, CachedResponse)
     if response.expires:
         expires_delta = timedelta(seconds=response.expires_delta)
         expires_str = f'expires in {expires_delta}'
