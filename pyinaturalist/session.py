@@ -5,7 +5,7 @@ import threading
 from collections import defaultdict
 from importlib.metadata import version as pkg_version
 from json import JSONDecodeError
-from logging import getLogger
+from logging import DEBUG, INFO, getLogger
 from os import getenv
 from typing import Dict, Optional, Type
 
@@ -320,7 +320,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         """
         if not isinstance(request, PreparedRequest):
             request = super().prepare_request(request)
-        logger.info(format_request(request, dry_run))
+        if logger.level <= INFO:
+            logger.info(format_request(request, dry_run))
 
         # Make a mock request, if specified
         if dry_run or is_dry_run_enabled(request.method):
@@ -363,7 +364,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             **kwargs,
         )
 
-        logger.debug(format_response(response))
+        if logger.level <= DEBUG:
+            logger.debug(format_response(response))
         return response
 
     def get_refresh_params(self, endpoint) -> Dict:

@@ -25,7 +25,7 @@ from pyinaturalist.constants import SAMPLE_DATA_DIR
 SAMPLE_PHOTO = join(SAMPLE_DATA_DIR, 'obs_image.jpg')
 SAMPLE_SOUND = join(SAMPLE_DATA_DIR, 'obs_sound.wav')
 logger = getLogger('pyinaturalist.scripts')
-enable_logging()
+enable_logging('DEBUG')
 
 
 def run_observation_crud_test():
