@@ -21,7 +21,7 @@ from rich.table import Column, Table
 from rich.tree import Tree
 
 from pyinaturalist.constants import DATETIME_SHORT_FORMAT, ResponseResult
-from pyinaturalist.converters import ensure_list
+from pyinaturalist.converters import ensure_list, format_file_size
 from pyinaturalist.models import (
     Annotation,
     BaseModel,
@@ -246,18 +246,41 @@ def format_request(request: PreparedRequest, dry_run: bool = False) -> str:
 
 def format_response(response: Response) -> str:
     """Format HTTP response info, including whether it came from the cache"""
-    headers = _format_headers(response.headers)
     error_msg = f' {response.text}' if not response.ok else ''
 
-    def _expires_str():
-        if response.expires:
-            expires_delta = timedelta(seconds=response.expires_delta)
-            return f'expires in {expires_delta}'
-        else:
-            return 'never expires'
+    return (
+        f'Response ({_format_expiration(response)}):\n'
+        f'{response.status_code} {response.reason}{error_msg}\n'
+        f'{_format_transfer(response)}\n'
+        f'{_format_headers(response.headers)}'
+    )
 
-    cached = f'cached; {_expires_str()}' if getattr(response, 'from_cache', False) else 'not cached'
-    return f'Response ({cached}):\n{response.status_code} {response.reason}{error_msg}\n{headers}'
+
+def _format_expiration(response: Response) -> str:
+    if not getattr(response, 'from_cache', False):
+        return 'not cached'
+    if response.expires:
+        expires_delta = timedelta(seconds=response.expires_delta)
+        expires_str = f'expires in {expires_delta}'
+    else:
+        expires_str = 'never expires'
+    return f'cached; {expires_str}'
+
+
+def _format_transfer(response: Response) -> str:
+    elapsed = response.elapsed.total_seconds()
+    transfer_str = f'Elapsed: {elapsed:.3f}s'
+
+    try:
+        sent_size = int(response.request.headers.get('Content-Length', 0))
+    except (AttributeError, TypeError, ValueError):
+        sent_size = 0
+
+    if sent_size and elapsed > 0:
+        rate = format_file_size(int(sent_size / elapsed))
+        transfer_str += f'; sent {format_file_size(sent_size)} @ {rate}/s'
+
+    return transfer_str
 
 
 def format_tree(taxon: Taxon, **kwargs) -> Tree:
@@ -292,4 +315,5 @@ def _format_body(body):
                 body[key] = '[REDACTED]'
         return body
     except Exception:
-        return '(non-JSON request body)'
+        size_str = f' ({format_file_size(len(body))})' if isinstance(body, (str, bytes)) else ''
+        return f'(non-JSON request body{size_str})'
