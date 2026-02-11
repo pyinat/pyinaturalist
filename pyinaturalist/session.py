@@ -10,7 +10,7 @@ from os import getenv
 from typing import Dict, Optional, Type
 
 import pyrate_limiter
-from requests import PreparedRequest, Request, Response, Session
+from requests import ConnectionError, PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
 from requests.utils import default_user_agent
 from requests_cache import (
@@ -332,13 +332,28 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
 
         # Send the request and validate the response
         read_timeout = timeout or self.read_timeout
-        response = super().send(
-            request,
-            expire_after=expire_after,
-            refresh=refresh,
-            timeout=(CONNECT_TIMEOUT, read_timeout),
-            **kwargs,
-        )
+        try:
+            response = super().send(
+                request,
+                expire_after=expire_after,
+                refresh=refresh,
+                timeout=(CONNECT_TIMEOUT, read_timeout),
+                **kwargs,
+            )
+        # Handle write timeouts, which are not captured by urllib3 retry handling;
+        except ConnectionError as e:
+            if 'write operation timed out' not in str(e):
+                raise
+            logger.debug('Write timed out:', exc_info=True)
+            logger.warning('Write timed out; retrying...')
+
+            # use the same retry object to share the same retry state and limits
+            retries = retries or self.retries
+            retries = retries.increment(request.method, request.url, error=e)
+            # wait with configured backoff before retrying
+            retries.sleep()
+            return self.send(request, retries=retries, timeout=timeout, **kwargs)
+
         response = self._validate_json(
             request,
             response,

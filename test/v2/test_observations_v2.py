@@ -57,8 +57,9 @@ def test_get_observations__some_fields(requests_mock):
     assert observations['results'][0]['species_guess'] == 'Common Loon'
 
 
+@patch('pyinaturalist.session.format_response')
 @patch('requests.sessions.Session.send')
-def test_get_observations__except_fields(mock_send):
+def test_get_observations__except_fields(mock_send, mock_format):
     get_observations(id=57707611, except_fields=['identifications'])
     request_obj = mock_send.call_args[0][0]
     json_body = json.loads(request_obj.body.decode())
