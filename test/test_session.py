@@ -5,10 +5,16 @@ from unittest.mock import patch
 import pytest
 import urllib3.util.retry
 from requests import Request, Session
+from requests.exceptions import ConnectionError as RequestsConnectionError
 from requests_ratelimiter import Limiter, RequestRate
 from urllib3.exceptions import MaxRetryError
 
-from pyinaturalist.constants import CACHE_EXPIRATION, REQUEST_TIMEOUT, WRITE_TIMEOUT
+from pyinaturalist.constants import (
+    CACHE_EXPIRATION,
+    CONNECT_TIMEOUT,
+    REQUEST_TIMEOUT,
+    WRITE_TIMEOUT,
+)
 from pyinaturalist.session import (
     CACHE_FILE,
     ClientSession,
@@ -196,13 +202,14 @@ def test_session__custom_retry():
     assert per_second_rate.limit / per_second_rate.interval == 5
 
 
+@patch('pyinaturalist.session.format_response')
 @patch('requests.sessions.Session.send')
 @patch('requests_ratelimiter.requests_ratelimiter.Limiter')
-def test_session__send(mock_limiter, mock_requests_send):
+def test_send__defaults(mock_limiter, mock_requests_send, mock_format):
     session = ClientSession()
     request = Request(method='GET', url='http://test.com').prepare()
     session.send(request)
-    mock_requests_send.assert_called_with(request, timeout=(5, REQUEST_TIMEOUT))
+    mock_requests_send.assert_called_with(request, timeout=(CONNECT_TIMEOUT, REQUEST_TIMEOUT))
 
 
 @pytest.mark.parametrize(
@@ -215,18 +222,22 @@ def test_session__send(mock_limiter, mock_requests_send):
         ('PUT', WRITE_TIMEOUT),
     ],
 )
+@patch('pyinaturalist.session.format_response')
 @patch('requests.sessions.Session.send')
 @patch('requests_ratelimiter.requests_ratelimiter.Limiter')
-def test_session__send__write_timeout(mock_limiter, mock_requests_send, method, expected_timeout):
+def test_send__write_timeout(
+    mock_limiter, mock_requests_send, mock_format, method, expected_timeout
+):
     session = ClientSession()
     request = Request(method=method, url='http://test.com').prepare()
     session.send(request)
     mock_requests_send.assert_called_with(request, timeout=(5, expected_timeout))
 
 
+@patch('pyinaturalist.session.format_response')
 @patch('requests.sessions.Session.send')
 @patch('requests_ratelimiter.requests_ratelimiter.Limiter')
-def test_session__send__override_session_timeout(mock_limiter, mock_requests_send):
+def test_send__override_session_timeout(mock_limiter, mock_requests_send, mock_format):
     session = ClientSession(timeout=33, write_timeout=66)
 
     # read timeout
@@ -240,18 +251,63 @@ def test_session__send__override_session_timeout(mock_limiter, mock_requests_sen
     mock_requests_send.assert_called_with(request, timeout=(5, 66))
 
 
+@patch('pyinaturalist.session.format_response')
 @patch('requests.sessions.Session.send')
 @patch('requests_ratelimiter.requests_ratelimiter.Limiter')
-def test_session__send__override_request_timeout(mock_limiter, mock_requests_send):
+def test_send__override_request_timeout(mock_limiter, mock_requests_send, mock_format):
     session = ClientSession()
     request = Request(method='POST', url='http://test.com').prepare()
     session.send(request, timeout=10)
     mock_requests_send.assert_called_with(request, timeout=(5, 10))
 
 
+@patch.object(urllib3.util.retry.time, 'sleep')
+def test_send__write_timeout_retry_success(mock_sleep, requests_mock):
+    write_timeout_error = RequestsConnectionError(
+        'Connection aborted.', TimeoutError('The write operation timed out')
+    )
+    requests_mock.post(
+        'http://test.com',
+        [
+            {'exc': write_timeout_error},  # first attempt: write timeout
+            {'json': {'results': []}, 'status_code': 200},  # second attempt: success
+        ],
+    )
+
+    session = ClientSession(max_retries=3)
+    response = session.request('POST', 'http://test.com', raise_for_status=False)
+    assert response.status_code == 200
+    assert response.json() == {'results': []}
+
+
+@patch.object(urllib3.util.retry.time, 'sleep')
+def test_send__write_timeout_retry_exhausted(mock_sleep, requests_mock):
+    write_timeout_error = RequestsConnectionError(
+        'Connection aborted.', TimeoutError('The write operation timed out')
+    )
+    requests_mock.post('http://test.com', exc=write_timeout_error)
+
+    retries = 3
+    session = ClientSession(max_retries=retries)
+    with pytest.raises(MaxRetryError):
+        session.request('POST', 'http://test.com', raise_for_status=False)
+    assert mock_sleep.call_count == retries - 1
+
+
+@patch.object(urllib3.util.retry.time, 'sleep')
+def test_send__non_write_connection_error_not_retried(mock_sleep, requests_mock):
+    connection_error = RequestsConnectionError('Connection refused')
+    requests_mock.post('http://test.com', exc=connection_error)
+
+    session = ClientSession(max_retries=3)
+    with pytest.raises(RequestsConnectionError, match='Connection refused'):
+        session.request('POST', 'http://test.com', raise_for_status=False)
+    assert mock_sleep.call_count == 0
+
+
 @pytest.mark.enable_client_session  # For all other tests, caching is disabled. Re-enable that here.
 @patch.object(Session, 'send')
-def test_session__send__cache_settings(mock_send):
+def test_send__cache_settings(mock_send):
     session = ClientSession()
     with patch.object(session, 'send') as mock_cache_send:
         request = Request(method='GET', url='http://test.com').prepare()
@@ -280,8 +336,9 @@ def test_clear_cache():
 
 
 @pytest.mark.enable_client_session
+@patch('pyinaturalist.session.format_response')
 @patch.object(Session, 'send')
-def test_filelock(mock_send, tmp_path):
+def test_filelock(mock_send, mock_format, tmp_path):
     lock_path = str(tmp_path / 'test.lock')
     session = ClientSession(
         bucket_class=FileLockSQLiteBucket,
