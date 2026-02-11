@@ -8,7 +8,7 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.13
+    rev: v0.15.0
     hooks:
       - id: ruff
         args: [ --fix ]
@@ -25,6 +25,6 @@ repos:
       - id: xenon
         args: [--max-average=A, --max-modules=C, --max-absolute=C]
   - repo: https://github.com/crate-ci/typos
-    rev: v1.42.1
+    rev: v1.43.4
     hooks:
       - id: typos
