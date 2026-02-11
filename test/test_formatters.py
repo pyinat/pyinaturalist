@@ -4,7 +4,7 @@ from copy import deepcopy
 from io import StringIO
 
 import pytest
-from requests import Request
+from requests import PreparedRequest, Request
 from requests_cache import CachedResponse
 from rich import get_console, reconfigure
 from rich.console import Console
@@ -211,10 +211,30 @@ def test_format_request():
 
 
 def test_format_response():
-    response = CachedResponse(status_code=200, expires=datetime(2021, 1, 1), headers={'Age': '0'})
+    mock_request = PreparedRequest()
+    mock_request.prepare_headers({})
+    response = CachedResponse(
+        status_code=200,
+        expires=datetime(2021, 1, 1),
+        headers={'Age': '0'},
+        request=mock_request,
+        elapsed=timedelta(seconds=0.5),
+    )
     response_str = format_response(response)
 
     assert 'cached; expires in ' in response_str
-    assert 'Age: 0' in response_str
     response.expires = None
     assert 'never expires' in format_response(response)
+    assert 'Age: 0' in response_str
+    assert 'Elapsed: 0.500s' in response_str
+    assert 'sent' not in response_str
+
+
+def test_format_response__transfer_info():
+    mock_request = PreparedRequest()
+    mock_request.prepare_headers({'Content-Length': '5242880'})  # 5 MB
+    response = CachedResponse(status_code=200, request=mock_request, elapsed=timedelta(seconds=2.5))
+
+    response_str = format_response(response)
+    assert 'Elapsed: 2.500s' in response_str
+    assert 'sent 5.00 MB @ 2.00 MB/s' in response_str
