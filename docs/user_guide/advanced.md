@@ -44,6 +44,7 @@ To store the cache somewhere other than the default cache directory:
 >>> session = ClientSession(cache_file='~/data/api_requests.db')
 ```
 
+### Clearing and bypassing the cache
 To manually clear the cache:
 ```python
 >>> session.cache.clear()
@@ -54,6 +55,16 @@ Or as a shortcut, without a session object:
 from pyinaturalist import clear_cache
 
 clear_cache()
+```
+
+To bypass the cache for a given request (always fetch a new response), most API functions accept a `force_refresh` option:
+```
+get_observations(id=12345, force_refresh=True)
+```
+
+To "soft-refresh" ([revalidate](https://requests-cache.readthedocs.io/en/stable/user_guide/expiration.html#manual-refresh) the request), most API functions accept a `refresh` option:
+```
+get_observations(id=12345, refresh=True)
 ```
 
 ## Timeouts
