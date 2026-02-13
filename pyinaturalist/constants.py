@@ -68,6 +68,7 @@ CACHE_EXPIRATION = {
     '*': timedelta(minutes=30),
 }
 CACHE_FILE = join(DATA_DIR, 'api_requests.db')
+IGNORED_PARAMETERS = ['Authorization', 'access_token', 'password', 'client_secret']
 RATELIMIT_FILE = join(DATA_DIR, 'api_ratelimit.db')
 DEFAULT_LOCK_PATH = join(DATA_DIR, 'api_ratelimit.lock')
 

@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 import urllib3.util.retry
 from requests import ConnectionError, Request, Session
+from requests_cache import CacheMixin
 from requests_ratelimiter import Limiter, RequestRate
 from urllib3.exceptions import MaxRetryError
 
@@ -304,18 +305,21 @@ def test_send__non_write_connection_error_not_retried(mock_sleep, requests_mock)
 
 
 @pytest.mark.enable_client_session  # For all other tests, caching is disabled. Re-enable that here.
-@patch.object(Session, 'send')
-def test_send__cache_settings(mock_send):
+@patch.object(CacheMixin, 'send')
+def test_send__cache_settings(mock_cache_send):
+    """Per-request cache settings should be passed along to requests-cache"""
     session = ClientSession()
-    with patch.object(session, 'send') as mock_cache_send:
-        request = Request(method='GET', url='http://test.com').prepare()
-        mock_send.return_value = MockResponse(request)
+    request = Request(method='GET', url='http://test.com').prepare()
+    mock_cache_send.return_value = MockResponse(request)
 
-        session.send(request)
-        mock_cache_send.assert_called_with(request)
+    session.get('http://test.com', expire_after=360)
+    assert mock_cache_send.call_args.kwargs.get('expire_after') == 360
 
-        session.send(request, expire_after=60, refresh=True)
-        mock_cache_send.assert_called_with(request, expire_after=60, refresh=True)
+    session.get('http://test.com', refresh=True)
+    assert mock_cache_send.call_args.kwargs.get('refresh') is True
+
+    session.get('http://test.com', force_refresh=True)
+    assert mock_cache_send.call_args.kwargs.get('force_refresh') is True
 
 
 def test_get_local_session():

@@ -35,6 +35,7 @@ from pyinaturalist.constants import (
     CACHE_FILE,
     CONNECT_TIMEOUT,
     DEFAULT_LOCK_PATH,
+    IGNORED_PARAMETERS,
     MAX_DELAY,
     RATELIMIT_FILE,
     REQUEST_BURST_RATE,
@@ -141,7 +142,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             cache_control=cache_control,
             expire_after=expire_after,
             urls_expire_after=url_patterns,
-            ignored_parameters=['Authorization', 'access_token'],
+            ignored_parameters=IGNORED_PARAMETERS,
             stale_if_error=True,
             # Rate limit settings
             bucket_class=bucket_class,
@@ -236,6 +237,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         only_if_cached: bool = False,
         raise_for_status: bool = True,
         refresh: bool = False,
+        force_refresh: bool = False,
         stream: bool = False,
         timeout: Optional[int] = None,
         verify: bool = True,
@@ -256,7 +258,10 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             ids: One or more integer IDs used as REST resource(s) to request
             only_if_cached: Only return a response if it is cached
             raise_for_status: Raise an exception if the response status is not 2xx
-            refresh: Skip reading from the cache and always fetch a fresh response
+            refresh: Revalidate with the server before using a cached response, and refresh if needed
+                (e.g., a "soft refresh," like F5 in a browser)
+            force_refresh: Always make a new request, and overwrite any previously cached response
+                (e.g., a "hard refresh", like Ctrl-F5 in a browser))
             stream: Stream the response content
             timeout: Time (in seconds) to wait for a response from the server; if exceeded, a
                 :py:exc:`requests.exceptions.Timeout` will be raised.
@@ -285,6 +290,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             expire_after=expire_after,
             only_if_cached=only_if_cached,
             refresh=refresh,
+            force_refresh=force_refresh,
             timeout=timeout,
             allow_redirects=allow_redirects,
             stream=stream,
@@ -302,6 +308,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         dry_run: bool = False,
         expire_after: Optional[ExpirationTime] = None,
         refresh: bool = False,
+        force_refresh: bool = False,
         retries: Optional[Retry] = None,
         timeout: Optional[int] = None,
         **kwargs,
@@ -312,7 +319,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             request: Prepared request to send
             dry_run: Just log the request instead of sending a real request
             expire_after: How long to keep cached API requests
-            refresh: Skip reading from the cache and always fetch a fresh response
+            refresh: Revalidate with the server before using a cached response, and refresh if needed
+            force_refresh: Always make a new request, and overwrite any previously cached response
             timeout: Maximum number of seconds to wait for a response from the server
 
         **Note:** :py:meth:`requests.Session.send` accepts separate timeout values for connect and
@@ -338,6 +346,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
                 request,
                 expire_after=expire_after,
                 refresh=refresh,
+                force_refresh=force_refresh,
                 timeout=(CONNECT_TIMEOUT, read_timeout),
                 **kwargs,
             )
