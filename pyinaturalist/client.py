@@ -7,7 +7,7 @@ from inspect import ismethod
 from logging import getLogger
 from typing import Any
 
-from pyinaturalist.auth import get_access_token
+from pyinaturalist.auth import get_access_token, get_access_token_via_auth_code
 from pyinaturalist.constants import RequestParams
 from pyinaturalist.controllers import (
     AnnotationController,
@@ -117,8 +117,12 @@ class iNatClient:
 
         # Add access token if needed
         if auth:
-            access_token = kwargs.pop('access_token', None) or get_access_token(**self.creds)  # type: ignore
-            client_kwargs['access_token'] = access_token
+            if self.creds.get('auth_flow') == 'authorization_code':
+                auth_code_creds = {k: v for k, v in self.creds.items() if k != 'auth_flow'}
+                client_kwargs['access_token'] = get_access_token_via_auth_code(**auth_code_creds)  # type: ignore
+            else:
+                access_token = kwargs.pop('access_token', None) or get_access_token(**self.creds)  # type: ignore
+                client_kwargs['access_token'] = access_token
 
         # Add default request parameters if applicable
         client_kwargs.update(get_valid_kwargs(request_function, self.default_params))
