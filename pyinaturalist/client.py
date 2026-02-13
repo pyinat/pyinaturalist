@@ -7,7 +7,9 @@ from inspect import ismethod
 from logging import getLogger
 from typing import Any
 
-from pyinaturalist.auth import get_access_token
+from requests import HTTPError
+
+from pyinaturalist.auth import get_access_token, get_access_token_via_auth_code
 from pyinaturalist.constants import RequestParams
 from pyinaturalist.controllers import (
     AnnotationController,
@@ -26,6 +28,19 @@ from pyinaturalist.request_params import get_valid_kwargs, strip_empty_values
 from pyinaturalist.session import ClientSession
 
 logger = getLogger(__name__)
+
+AUTH_CODE_CRED_KEYS = frozenset(
+    {
+        'app_id',
+        'app_secret',
+        'use_pkce',
+        'use_oob',
+        'jwt',
+        'refresh',
+        'port',
+        'timeout',
+    }
+)
 
 
 # 'iNatClient' is nonstandard casing, but 'InatClient' just looks wrong. Deal with it, pep8.
@@ -50,8 +65,10 @@ class iNatClient:
     * :fa:`user` :py:class:`users <.UserController>`
 
     Args:
-        creds: Optional arguments for :py:func:`.get_access_token`, used to get and refresh access
-            tokens as needed. Using a keyring instead is recommended, though.
+        creds: Optional arguments for :py:func:`.get_access_token` or
+            :py:func:`.get_access_token_via_auth_code`, used to get and refresh access
+            tokens as needed. Use ``auth_flow='authorization_code'`` to select authorization code
+            flow; otherwise password flow is used.
         default_params: Default request parameters to pass to any applicable API requests
         dry_run: Just log all requests instead of sending real requests
         loop: An event loop to run any executors used for async iteration
@@ -61,7 +78,7 @@ class iNatClient:
 
     def __init__(
         self,
-        creds: dict[str, str] | None = None,
+        creds: dict[str, Any] | None = None,
         default_params: dict[str, Any] | None = None,
         dry_run: bool = False,
         loop: AbstractEventLoop | None = None,
@@ -73,9 +90,7 @@ class iNatClient:
         self.dry_run = dry_run
         self.loop = loop
         self.session = session or ClientSession(**kwargs)
-
-        self._access_token = None
-        self._token_expires = None
+        self._access_token: str | None = None
 
         # Controllers
         self.annotations = AnnotationController(
@@ -117,8 +132,9 @@ class iNatClient:
 
         # Add access token if needed
         if auth:
-            access_token = kwargs.pop('access_token', None) or get_access_token(**self.creds)  # type: ignore
-            client_kwargs['access_token'] = access_token
+            access_token = self._resolve_access_token(kwargs)
+            if access_token:
+                client_kwargs['access_token'] = access_token
 
         # Add default request parameters if applicable
         client_kwargs.update(get_valid_kwargs(request_function, self.default_params))
@@ -130,6 +146,33 @@ class iNatClient:
             kwargs.pop('session')
 
         return kwargs
+
+    def _resolve_access_token(self, kwargs: RequestParams) -> str | None:
+        """Resolve an access token from request args, client cache, or credentials."""
+        access_token = kwargs.pop('access_token', None)
+        if access_token:
+            return access_token
+        if self._access_token:
+            return self._access_token
+        self._access_token = self._fetch_access_token_from_creds()
+        return self._access_token
+
+    def _fetch_access_token_from_creds(self, force_refresh: bool = False) -> str:
+        """Get a new access token from configured credentials."""
+        if self.creds.get('auth_flow') == 'authorization_code':
+            auth_code_creds = self._filter_auth_code_creds(self.creds).copy()
+            if force_refresh:
+                auth_code_creds['refresh'] = True
+            return get_access_token_via_auth_code(**auth_code_creds)
+        token_creds = self.creds.copy()
+        if force_refresh:
+            token_creds['refresh'] = True
+        return get_access_token(**token_creds)
+
+    @staticmethod
+    def _filter_auth_code_creds(creds: dict[str, Any]) -> dict[str, Any]:
+        """Keep only credentials accepted by get_access_token_via_auth_code()."""
+        return {k: v for k, v in creds.items() if k in AUTH_CODE_CRED_KEYS}
 
     def paginate(
         self,
@@ -162,5 +205,19 @@ class iNatClient:
         Returns:
             Results of ``request_function()``
         """
+        explicit_access_token = kwargs.get('access_token') is not None
         kwargs = self.add_defaults(request_function, kwargs, auth)
-        return request_function(*args, **kwargs)
+        try:
+            return request_function(*args, **kwargs)
+        except HTTPError as e:
+            if not auth or explicit_access_token or not self._is_unauthorized_error(e):
+                raise
+            self._access_token = self._fetch_access_token_from_creds(force_refresh=True)
+            kwargs = kwargs.copy()
+            kwargs['access_token'] = self._access_token
+            return request_function(*args, **kwargs)
+
+    @staticmethod
+    def _is_unauthorized_error(error: HTTPError) -> bool:
+        response = getattr(error, 'response', None)
+        return bool(response is not None and response.status_code == 401)

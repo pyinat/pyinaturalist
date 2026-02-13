@@ -71,6 +71,17 @@ observation = client.observations(12345)
 Add credentials needed for {ref}`authenticated requests <auth>`:
 Note: Passing credentials via environment variables or keyring is preferred
 
+Authorization code flow (recommended):
+```py
+>>> creds = {
+...     'auth_flow': 'authorization_code',
+...     'app_id': '33f27dc63bdf27f4ca6cd95dd9dcd5df',
+...     'use_pkce': True,
+... }
+>>> client = iNatClient(creds=creds)
+```
+
+Password flow:
 ```py
 >>> creds = {
 ...     'username': 'my_inaturalist_username',
