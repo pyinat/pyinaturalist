@@ -71,7 +71,63 @@ only be shown once, so save them somewhere secure, preferably in a password mana
 :width: 400
 ```
 
-## Basic Usage
+## Authorization Code Flow (Recommended)
+The Authorization Code flow with PKCE is the recommended way to authenticate for CLI and desktop
+applications. Instead of providing your iNaturalist password directly, you authorize the
+application in your browser. This is more secure because your password is never shared with
+third-party code.
+
+### Quick Start with PKCE
+PKCE (Proof Key for Code Exchange) is the simplest path — no client secret is needed:
+
+```python
+>>> from pyinaturalist import get_access_token_via_auth_code
+>>> access_token = get_access_token_via_auth_code(
+...     app_id='33f27dc63bdf27f4ca6cd95dd',
+... )
+```
+
+This will:
+1. Open your browser to the iNaturalist authorization page
+2. Start a local server on port 8080 to receive the callback
+3. Exchange the authorization code for an access token
+
+:::{note} When registering your iNaturalist application, set the **Redirect URI** to
+`http://127.0.0.1:8080`. If port 8080 conflicts with another service, you can use a
+different port via the `port` parameter, and update your redirect URI accordingly.
+:::
+
+### OOB Mode (Headless Environments)
+For headless or remote environments where a browser redirect is not possible, use
+out-of-band (OOB) mode. The authorization code is displayed in the browser and you
+paste it into the terminal:
+
+```python
+>>> access_token = get_access_token_via_auth_code(
+...     app_id='33f27dc63bdf27f4ca6cd95dd',
+...     use_oob=True,
+... )
+```
+
+:::{note} For OOB mode, register your redirect URI as `urn:ietf:wg:oauth:2.0:oob` in your
+iNaturalist application settings.
+:::
+
+### Usage with iNatClient
+To use the authorization code flow with {py:class}`.iNatClient`, pass
+`auth_flow='authorization_code'` in the `creds` dict:
+
+```python
+>>> from pyinaturalist import iNatClient
+>>> client = iNatClient(creds={
+...     'auth_flow': 'authorization_code',
+...     'app_id': '33f27dc63bdf27f4ca6cd95dd',
+... })
+```
+
+The client will automatically use the authorization code flow when authentication is needed.
+
+## Password Flow (Basic Usage)
 There are a few different ways you can pass your credentials to iNaturalist. First, you can pass
 them as keyword arguments to {py:func}`.get_access_token`:
 

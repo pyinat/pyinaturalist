@@ -12,6 +12,7 @@ API_V0 = 'https://www.inaturalist.org'
 API_V1 = 'https://api.inaturalist.org/v1'
 API_V2 = 'https://api.inaturalist.org/v2'
 EXPORT_URL = 'https://www.inaturalist.org/observations/export'
+OAUTH_AUTHORIZE_URL = f'{API_V0}/oauth/authorize'
 GBIF_TAXON_BASE_URL = 'https://www.gbif.org/species'
 INAT_BASE_URL = API_V0
 INAT_REPO = 'https://raw.githubusercontent.com/inaturalist/inaturalist/main'
