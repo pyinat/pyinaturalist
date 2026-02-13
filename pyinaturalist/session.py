@@ -35,6 +35,7 @@ from pyinaturalist.constants import (
     CACHE_FILE,
     CONNECT_TIMEOUT,
     DEFAULT_LOCK_PATH,
+    IGNORED_PARAMETERS,
     MAX_DELAY,
     RATELIMIT_FILE,
     REQUEST_BURST_RATE,
@@ -141,7 +142,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             cache_control=cache_control,
             expire_after=expire_after,
             urls_expire_after=url_patterns,
-            ignored_parameters=['Authorization', 'access_token'],
+            ignored_parameters=IGNORED_PARAMETERS,
             stale_if_error=True,
             # Rate limit settings
             bucket_class=bucket_class,
