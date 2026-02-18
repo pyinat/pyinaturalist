@@ -377,6 +377,15 @@ class Observation(BaseModel):
             return IconPhoto.from_iconic_taxon('unknown')
 
     @property
+    def formatted_location(self) -> str:
+        """Format the observation coordinates + geoprivacy, if available"""
+        coords = self.private_location or self.location
+        if not coords or len(coords) < 2:
+            return 'N/A'
+        geoprivacy = f' ({self.geoprivacy})' if self.geoprivacy else ''
+        return f'({coords[0]:.4f}, {coords[1]:.4f}){geoprivacy}'
+
+    @property
     def ident_taxon_ids(self) -> List[int]:
         """Get all taxon IDs (including ancestors) from identifications"""
         ident_taxa = [

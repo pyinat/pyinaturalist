@@ -2,6 +2,7 @@
 
 ## Unreleased
 * Fix corner case resulting in `observed_on` not being converted to `datetime`
+* Add an `Observation.formatted_location` property
 
 ## 0.21.1 (2026-02-13)
 * Update `v2.create_observation()` and `update_observation()` to accept multiple observation field values, consistent with v0 and v1 APIs.

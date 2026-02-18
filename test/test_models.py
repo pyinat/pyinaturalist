@@ -542,6 +542,25 @@ def test_observation__missing_default_photo_and_taxon():
     assert obs.default_photo.original_url.endswith('unknown-200px.png')
 
 
+@pytest.mark.parametrize(
+    'obs, expected',
+    [
+        (Observation(location=(50.646894, 4.360086)), '(50.6469, 4.3601)'),
+        (
+            Observation(location=(41.6532861424, -93.6965336266), geoprivacy='obscured'),
+            '(41.6533, -93.6965) (obscured)',
+        ),
+        (
+            Observation(location=(50.0, -100.0), private_location=(51.1111, -101.2222)),
+            '(51.1111, -101.2222)',
+        ),
+        (Observation(), 'N/A'),
+    ],
+)
+def test_observation__formatted_location(obs, expected):
+    assert obs.formatted_location == expected
+
+
 def test_observation__ident_taxon_ids():
     obs = Observation.from_json(j_observation_2)
     assert obs.ident_taxon_ids == [
