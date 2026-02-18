@@ -9,6 +9,7 @@ def extract_fields(
     schema: dict,
     spec: dict,
     visited: set[str] | None = None,
+    scalars_only: bool = False,
 ) -> dict | bool:
     """
     Recursively extract fields from a schema.
@@ -17,6 +18,8 @@ def extract_fields(
         schema: The schema definition to process
         spec: The full OpenAPI spec (for resolving $refs)
         visited: Set of schema names already visited in current path (for cycle detection)
+        scalars_only: If True, don't follow $refs or recurse into nested objects (used for
+            circular references)
 
     Returns:
         A dict of fields where scalars are True and objects are nested dicts,
@@ -27,15 +30,16 @@ def extract_fields(
 
     # Handle $ref
     if '$ref' in schema:
+        if scalars_only:
+            return True  # Don't follow refs in scalars_only mode
         ref_name = schema['$ref'].split('/')[-1]
         resolved = resolve_ref(schema['$ref'], spec)
 
         # Circular reference (i.e., taxon.ancestors)
         if ref_name in visited:
-            return extract_scalar_fields_only(resolved)
+            return extract_fields(resolved, spec, visited, scalars_only=True)
 
-        new_visited = visited | {ref_name}
-        return extract_fields(resolved, spec, new_visited)
+        return extract_fields(resolved, spec, visited | {ref_name})
 
     schema_type = schema.get('type')
 
@@ -46,9 +50,11 @@ def extract_fields(
     # Arrays
     if schema_type == 'array':
         items = schema.get('items', {})
-        if not items:
-            return True
         if items.get('type') in ('string', 'integer', 'number', 'boolean'):
+            return True
+        if scalars_only:
+            return {}  # Non-scalar array: exclude in scalars_only mode
+        if not items:
             return True
         return extract_fields(items, spec, visited)
 
@@ -60,54 +66,24 @@ def extract_fields(
 
         result = {}
         for prop_name, prop_schema in sorted(properties.items()):
-            result[prop_name] = extract_fields(prop_schema, spec, visited)
-        return result
+            # In scalars_only mode, skip $ref properties and nested objects
+            if scalars_only and '$ref' in prop_schema:
+                continue
+            value = extract_fields(prop_schema, spec, visited, scalars_only)
+            if value is True or not scalars_only:
+                result[prop_name] = value
+        return result if result else True
 
     return True
 
 
 def resolve_ref(ref: str, spec: dict) -> dict:
     """Resolve a $ref string (ex: `#/components/schemas/Annotation`) to its schema definition"""
-    parts = ref.lstrip('#/').split('/')
+    parts = ref.removeprefix('#/').split('/')
     result = spec
     for part in parts:
         result = result[part]
     return result
-
-
-def get_ref_name(ref: str) -> str:
-    """Extract schema name from a $ref string."""
-    return ref.split('/')[-1]
-
-
-def extract_scalar_fields_only(schema: dict) -> dict | bool:
-    """
-    Extract only scalar fields from a schema (used for circular references).
-    Does not follow any $refs or expand nested objects.
-    """
-    schema_type = schema.get('type')
-
-    if schema_type in ('string', 'integer', 'number', 'boolean'):
-        return True
-
-    if schema_type == 'object' or 'properties' in schema:
-        properties = schema.get('properties', {})
-        if not properties:
-            return True
-
-        result = {}
-        for prop_name, prop_schema in sorted(properties.items()):
-            prop_type = prop_schema.get('type')
-            if prop_type in ('string', 'integer', 'number', 'boolean'):
-                result[prop_name] = True
-            elif prop_type == 'array':
-                items = prop_schema.get('items', {})
-                if items.get('type') in ('string', 'integer', 'number', 'boolean'):
-                    result[prop_name] = True
-
-        return result if result else True
-
-    return True
 
 
 def main():

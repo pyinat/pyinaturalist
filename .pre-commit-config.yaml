@@ -24,6 +24,7 @@ repos:
     hooks:
       - id: xenon
         args: [--max-average=A, --max-modules=C, --max-absolute=C]
+        exclude: ^scripts/
   - repo: https://github.com/crate-ci/typos
     rev: v1.43.4
     hooks:

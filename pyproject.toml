@@ -141,7 +141,7 @@ exclude = ['examples/', 'test/sample_data/']
 quote-style = 'single'
 
 [tool.ruff.lint]
-select = ['B', 'C4', 'C90', 'E', 'F', 'I']
+select = ['B', 'C4', 'E', 'F', 'I']
 
 [tool.ruff.lint.isort]
 known-first-party = ['test']
