@@ -87,7 +87,7 @@ requests easier:
 * Simplified pagination
 * Validation for multiple-choice parameters
 
-And more, depending on the function.
+..and more, depending on the function.
 See the {ref}`reference-docs` section for a complete list of functions available.
 
 ## Responses
@@ -109,8 +109,8 @@ And here is what that same observation looks like in JSON:
 :::
 
 ### Previewing Responses
-These responses can contain large amounts of response attributes, making it somewhat cumbersome if you
-just want to quickly preview results (for example, in a Jupyter notebook). For that purpose, the
+These responses can contain large amounts of response attributes, which can be cumbersome when you
+want to quickly preview results (for example, in a Jupyter notebook). For that purpose, the
 {py:func}`~pyinaturalist.formatters.pprint` function is available to format response data as a
 condensed, color-highlighted table.
 

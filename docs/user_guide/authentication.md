@@ -141,7 +141,7 @@ $Env:INAT_APP_SECRET="bbce628be722bfe283de4"
 ::::
 
 Note that in any shell, these environment variables will only be set for your current shell
-session. I.e., you can't set them in one terminal and then access them in another.
+session; you cannot set them in one terminal and access them from another.
 
 ## Keyring Integration
 To handle your credentials more securely, you can store them in your system keyring.

@@ -20,7 +20,8 @@ All API calls are available as methods on {py:class}`.iNatClient`, grouped by re
 * Unified search: {py:class}`iNatClient.search <.SearchController>`
 * Taxon requests: {py:class}`iNatClient.taxa <.TaxonController>`
 * User requests: {py:class}`iNatClient.users <.UserController>`
-* These resource groups are referred to elsewhere in the docs as **controllers.**  See :ref:`Controller classes <controllers>` for more info.
+
+These resource groups are referred to elsewhere in the docs as **controllers.**  See :ref:`Controller classes <controllers>` for more info.
 
 The main observation search is available in `client.observations.search()`.
 Here is an example of searching for observations by taxon name:

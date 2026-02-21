@@ -32,14 +32,14 @@ these data easily accessible in the python programming language.
 ## Features
 * ➡️ **Easier requests:** Simplified request formats, easy pagination, and complete request
   parameter type annotations for better IDE integration
-* ⬅️ **Convenient responses:** Type conversions to the things you would expect in python, and an
-  optional object-oriented interface for response data
+* ⬅️ **Convenient responses:** Type conversions to the things you would expect in python, and
+  optional typed model objects (`Observation`, `Taxon`, etc.) with full IDE autocompletion
 * 🔒 **Security:** Keyring integration for secure credential storage
 * 📗 **Docs:** Example requests, responses, scripts, and Jupyter notebooks to help get you started
-* 💚 **Responsible use:** Follows the
-  [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)
-  by default, so you can be nice to the iNaturalist servers and not worry about rate-limiting errors
 * 🧪 **Testing:** A dry-run testing mode to preview your requests before potentially modifying data
+* 💚 **Responsible use:** Follows the
+  [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices) without extra configuration;
+  caching and rate-limiting features reduce bandwidth usage, errors, and unexpected throttling
 
 ### Supported Endpoints
 Many of the most relevant API endpoints are supported, including:
@@ -76,8 +76,7 @@ Let's start by searching for all your own observations. There are
 
 The full response will be in JSON format, but we can use `pyinaturalist.pprint()` to print out a summary:
 ```python
->>> for obs in observations['results']:
->>>    pprint(obs)
+>>> pprint(observations)
 ID         Taxon                               Observed on   User     Location
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 117585709  Genus: Hyoscyamus (henbanes)        May 18, 2022  niconoe  Calvi, France

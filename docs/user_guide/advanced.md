@@ -27,7 +27,7 @@ If you want more control over how HTTP requests are sent, you can provide your o
 
 ## Caching
 By default most API requests are cached according to `Cache-Control` headers sent by inaturalist.org,
-similar to browser behavior.This significantly reduces rate-limit and bandwidth usage for repeat requests.
+similar to browser behavior. This significantly reduces rate-limit and bandwidth usage for repeat requests.
 
 Typically responses are cached for a few minutes, but some
 infrequently-changing data (like taxa and places) are cached for longer periods, and some more
@@ -110,7 +110,7 @@ For example, to reduce the rate to 50 requests per minute:
 >>> get_taxa(q='warbler', locale='en', session=session)
 ```
 
-Float values also work, for example to slow it down to less than 1 request per second):
+Float values also work, for example to slow it down to less than 1 request per second:
 ```python
 >>> session = ClientSession(per_second=0.5)
 ```
