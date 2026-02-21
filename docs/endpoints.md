@@ -29,7 +29,7 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | DELETE | /comments/{id}                     |
 | PUT    | /comments/{id}                     |
 | GET    | /controlled_terms                  | {py:func}`.get_controlled_terms`                             |
-| GET    | /controlled_terms/for_taxon        | {py:func}`.get_controlled_terms`                             |
+| GET    | /controlled_terms/for_taxon        | {py:func}`.get_controlled_terms_for_taxon`                   |
 | GET    | /identifications                   | {py:func}`.get_identifications`                              |
 | GET    | /identifications/{id}              | {py:func}`.get_identifications_by_id`                        |
 | GET    | /identifications/species_counts    |
@@ -40,8 +40,8 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | GET    | /messages/{id}                     | {py:func}`.get_message_by_id`                                |
 | GET    | /messages/unread                   | {py:func}`.get_unread_message_count`                         |
 | DELETE | /observation_field_values/{id}     | {py:func}`.delete_observation_field`                         |
-| PUT    | /observation_field_values/{id}     | {py:func}`.set_observation_field`                            |
-| POST   | /observation_field_values          | {py:func}`.set_observation_field`                            |
+| PUT    | /observation_field_values/{id}     | {py:func}`~pyinaturalist.v1.observation_fields.set_observation_field` |
+| POST   | /observation_field_values          | {py:func}`~pyinaturalist.v1.observation_fields.set_observation_field` |
 | POST   | /observation_photos                | {py:func}`~pyinaturalist.v1.observations.upload`             |
 | POST   | /observation_sounds                | {py:func}`~pyinaturalist.v1.observations.upload`             |
 | DELETE | /observations/{id}                 | {py:func}`~pyinaturalist.v1.observations.delete_observation` |
@@ -67,6 +67,8 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | GET    | /projects/{id}/subscriptions       |
 | POST   | /projects/{id}/add                 | {py:func}`.add_project_observation`                          |
 | DELETE | /projects/{id}/remove              | {py:func}`.delete_project_observation`                       |
+| PUT    | /projects/{id}                     | {py:func}`.add_project_users`                                |
+| PUT    | /projects/{id}                     | {py:func}`.delete_project_users`                             |
 | GET    | /projects/autocomplete             |
 | GET    | /search                            | {py:func}`.search`                                           |
 | GET    | /taxa                              | {py:func}`.get_taxa`                                         |

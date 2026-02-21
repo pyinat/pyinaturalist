@@ -12,8 +12,14 @@ In addition to the standard API wrapper functions, pyinaturalist provides {py:cl
 
 ## Basic usage
 All API calls are available as methods on {py:class}`.iNatClient`, grouped by resource type. For example:
-* Taxon requests: {py:class}`iNatClient.taxa <.TaxonController>`
+* Annotation requests: {py:class}`iNatClient.annotations <.AnnotationController>`
+* Identification requests: {py:class}`iNatClient.identifications <.IdentificationController>`
 * Observation requests: {py:class}`iNatClient.observations <.ObservationController>`
+* Place requests: {py:class}`iNatClient.places <.PlaceController>`
+* Project requests: {py:class}`iNatClient.projects <.ProjectController>`
+* Unified search: {py:class}`iNatClient.search <.SearchController>`
+* Taxon requests: {py:class}`iNatClient.taxa <.TaxonController>`
+* User requests: {py:class}`iNatClient.users <.UserController>`
 * These resource groups are referred to elsewhere in the docs as **controllers.**  See :ref:`Controller classes <controllers>` for more info.
 
 The main observation search is available in `client.observations.search()`.
