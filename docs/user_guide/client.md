@@ -93,7 +93,7 @@ See :py:class:`.ClientSession` and :ref:`advanced` for details on these settings
 
 `iNatClient` will accept any arguments for `ClientSession`, for example:
 ```py
->>> client = iNatClient(per_second=50, expire_after=3600, timeout=30, retries=3)
+>>> client = iNatClient(per_minute=50, expire_after=3600, timeout=30, retries=3)
 ```
 
 Or you can provide your own session object:

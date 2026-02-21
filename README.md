@@ -69,7 +69,7 @@ from pyinaturalist import *
 
 ### Search observations
 Let's start by searching for all your own observations. There are
-[numerous fields you can search on](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.v1.observations.html#pyinaturalist.v1.observations.create_observation), but we'll just use `user_id` for now:
+[numerous fields you can search on](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.v1.observations.html#pyinaturalist.v1.observations.get_observations), but we'll just use `user_id` for now:
 ```python
 >>> observations = get_observations(user_id='my_username')
 ```
@@ -127,7 +127,7 @@ token = get_access_token(
     app_secret='my_app_secret',
 )
 ```
-See [Authentication](https://pyinaturalist.readthedocs.io/en/stable/authentication.md)
+See [Authentication](https://pyinaturalist.readthedocs.io/en/stable/authentication.html)
 for more options including environment variables, keyrings, and password managers.
 
 Now we can [create a new observation](https://pyinaturalist.readthedocs.io/en/stable/modules/pyinaturalist.v1.observations.html#pyinaturalist.v1.observations.create_observation):

@@ -29,17 +29,17 @@ If you want more control over how HTTP requests are sent, you can provide your o
 By default most API requests are cached according to `Cache-Control` headers sent by inaturalist.org,
 similar to browser behavior.This significantly reduces rate-limit and bandwidth usage for repeat requests.
 
-Typically reqponses are cached for a few minutes, but some
+Typically responses are cached for a few minutes, but some
 infrequently-changing data (like taxa and places) are cached for longer periods, and some more
 frequently-changing data (like observations) are not cached at all.
 
-You can change any of this this behavior using {py:class}`.ClientSession`.
+You can change any of this behavior using {py:class}`.ClientSession`.
 For example, to cache all requests for 1 day:
 ```python
 >>> from datetime import timedelta
 >>> from pyinaturalist import ClientSession, get_taxa
 >>> session = ClientSession(expire_after=timedelta(days=1))
->>> get_taxa(q='warbler', locale=1, session=session)
+>>> get_taxa(q='warbler', locale='en', session=session)
 ```
 
 To store the cache somewhere other than the default cache directory:
@@ -107,7 +107,7 @@ For example, to reduce the rate to 50 requests per minute:
 ```python
 >>> from pyinaturalist import ClientSession, get_taxa
 >>> session = ClientSession(per_minute=50)
->>> get_taxa(q='warbler', locale=1, session=session)
+>>> get_taxa(q='warbler', locale='en', session=session)
 ```
 
 Float values also work, for example to slow it down to less than 1 request per second):
@@ -171,9 +171,9 @@ You must enable at least INFO-level logging to see the logged request info
 ```
 ```python
 >>> from pyinaturalist import get_taxa
->>> get_taxa(q='warbler', locale=1, dry_run=True)
+>>> get_taxa(q='warbler', locale='en', dry_run=True)
 {'results': [], 'total_results': 0}
-[07-26 18:55:50] INFO  Request: GET https://api.inaturalist.org/v1/taxa?q=warbler&locale=1
+[07-26 18:55:50] INFO  Request: GET https://api.inaturalist.org/v1/taxa?q=warbler&locale=en
 User-Agent: pyinaturalist/0.15.0
 Accept: application/json
 ```
