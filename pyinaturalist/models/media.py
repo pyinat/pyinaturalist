@@ -144,11 +144,21 @@ class Photo(BaseMedia):
         return BytesIO(requests.get(url, stream=True).raw.read())
 
     def show(self, size: str = 'large'):
-        """Display the image with the system's default image viewer. Requires ``pillow``."""
+        """Display the image inline in Jupyter notebooks, or with the system's default image viewer.
+
+        Requires ``ipython`` in Jupyter environments, or ``pillow`` elsewhere.
+        """
+        try:
+            from IPython.display import Image, display
+
+            display(Image(data=self.open(size=size).read(), format=self.ext))
+            return
+        except ImportError:
+            pass
+
         from PIL import Image
 
-        img = Image.open(self.open(size=size))
-        img.show()
+        Image.open(self.open(size=size)).show()
 
     @property
     def _row(self) -> TableRow:
