@@ -17,22 +17,26 @@
 
 # ruff: noqa: E402
 from importlib.metadata import version as pkg_version
-from os import makedirs, symlink
-from os.path import dirname, exists, join
+from pathlib import Path
 from shutil import copytree, rmtree
 
-from pyinaturalist.constants import DOCS_DIR, EXAMPLES_DIR, PROJECT_DIR, SAMPLE_DATA_DIR
 from pyinaturalist.docs.model_docs import document_models
 
+# Handle paths on both local and readthedocs build (package in site-packages, but conf.py in repo root)
+DOCS_DIR = Path(__file__).parent.resolve()
+PROJECT_DIR = DOCS_DIR.parent
+EXAMPLES_DIR = PROJECT_DIR / 'examples'
+SAMPLE_DATA_DIR = PROJECT_DIR / 'test' / 'sample_data'
+
 # Relevant doc directories used in extension settings
-CSS_DIR = join(DOCS_DIR, '_static')
+CSS_DIR = DOCS_DIR / '_static'
 MODULE_DOCS_DIR = 'modules'
-PACKAGE_DIR = join(PROJECT_DIR, 'pyinaturalist')
-TEMPLATE_DIR = join(DOCS_DIR, '_templates')
+PACKAGE_DIR = PROJECT_DIR / 'pyinaturalist'
+TEMPLATE_DIR = DOCS_DIR / '_templates'
 
 # Symlink paths for static content outside docs directory
-DATA_DIR_SYMLINK = join(DOCS_DIR, 'sample_data')
-NOTEBOOK_DIR_COPY = join(DOCS_DIR, 'examples')
+DATA_DIR_SYMLINK = DOCS_DIR / 'sample_data'
+NOTEBOOK_DIR_COPY = DOCS_DIR / 'examples'
 
 # General information about the project.
 exclude_patterns = ['_build', f'{MODULE_DOCS_DIR}/pyinaturalist.rst']
@@ -116,7 +120,7 @@ autodoc_typehints = 'none'
 typehints_use_signature_return = True
 
 # apidoc settings
-apidoc_module_dir = PACKAGE_DIR
+apidoc_module_dir = str(PACKAGE_DIR)
 apidoc_output_dir = MODULE_DOCS_DIR
 apidoc_excluded_paths = [
     'controllers/*',
@@ -148,8 +152,8 @@ ogp_image = (
 
 # HTML general settings
 html_static_path = ['_static']
-html_favicon = join('_static', 'favicon.ico')
-html_logo = join('_static', 'pyinaturalist_logo.png')
+html_favicon = '_static/favicon.ico'
+html_logo = '_static/pyinaturalist_logo.png'
 html_css_files = [
     'colors.css',
     'table.css',
@@ -202,10 +206,10 @@ def setup_external_files(app):
     copytree(EXAMPLES_DIR, NOTEBOOK_DIR_COPY)
 
 
-def make_symlink(src, dest):
-    makedirs(dirname(dest), exist_ok=True)
-    if not exists(dest):
-        symlink(src, dest)
+def make_symlink(src: Path, dest: Path) -> None:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if not dest.exists():
+        dest.symlink_to(src)
 
 
 # TODO: Surely there's an easier way to do this?
