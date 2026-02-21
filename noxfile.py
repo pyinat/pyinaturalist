@@ -14,7 +14,7 @@ nox.options.reuse_existing_virtualenvs = True
 nox.options.sessions = ['lint', 'cov']
 
 LIVE_DOCS_PORT = 8181
-LIVE_DOCS_IGNORE = ['*.csv', '*.ipynb', '*.pyc', '*.tmp', '**/modules/*']
+LIVE_DOCS_IGNORE = ['*.csv', '*.ipynb', '*.pyc', '*.tmp', '**/modules/*', '**/jupyter_execute/*']
 LIVE_DOCS_WATCH = ['pyinaturalist', 'examples']
 DEFAULT_COVERAGE_FORMATS = ['html', 'term']
 DOC_BUILD_DIR = join('docs', '_build', 'html')
