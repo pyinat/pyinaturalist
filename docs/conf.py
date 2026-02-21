@@ -21,12 +21,6 @@ from os import makedirs, symlink
 from os.path import dirname, exists, join
 from shutil import copytree, rmtree
 
-# Avoid a potential circular import in nbsphinx
-try:
-    import prompt_toolkit  # noqa
-except ImportError:
-    pass
-
 from pyinaturalist.constants import DOCS_DIR, EXAMPLES_DIR, PROJECT_DIR, SAMPLE_DATA_DIR
 from pyinaturalist.docs.model_docs import document_models
 
@@ -63,8 +57,7 @@ extensions = [
     'sphinx_design',
     'sphinxcontrib.apidoc',
     'sphinxext.opengraph',
-    'myst_parser',
-    'nbsphinx',
+    'myst_nb',
 ]
 
 # MyST extensions
@@ -76,7 +69,8 @@ myst_enable_extensions = [
     'smartquotes',
 ]
 
-nbsphinx_allow_errors = True
+nb_execution_mode = 'off'
+nb_execution_allow_errors = True
 
 # Prefixes to shorten common links
 extlinks = {
@@ -203,7 +197,7 @@ def setup_external_files(app):
     directives.
     """
     make_symlink(SAMPLE_DATA_DIR, DATA_DIR_SYMLINK)
-    # Unfortunately this can't be symlinked; nbsphinx will insert image links relative to this dir
+    # Unfortunately this can't be symlinked; myst-nb will insert image links relative to this dir
     rmtree(NOTEBOOK_DIR_COPY, ignore_errors=True)
     copytree(EXAMPLES_DIR, NOTEBOOK_DIR_COPY)
 
