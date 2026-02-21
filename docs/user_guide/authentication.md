@@ -22,7 +22,7 @@ to use an access token.
 :::
 
 ## Manual Authentication
-You can get an access token from a browser by logging in to inaturalist.org and going to
+You can get an access token from a browser by logging in to inaturalist.org and then going to
 https://www.inaturalist.org/users/api_token.
 
 This has the advantage of not needing to create an iNaturalist application (see section below), but

@@ -45,7 +45,7 @@ of python, here are the last compatible versions of pyinaturalist:
 ## Imports
 You can import all public functions and classes from the top-level `pyinaturalist` package:
 ```
->>> from pyinaturalist import Taxon, get_observations, pprint  # etc.
+>>> from pyinaturalist import Taxon, iNatClient, get_observations, pprint  # etc.
 ```
 
 Or you can just import everything:
