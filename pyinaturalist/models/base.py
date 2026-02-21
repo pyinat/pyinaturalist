@@ -237,6 +237,17 @@ class BaseModelCollection(BaseModel, UserList, Generic[T]):  # type: ignore [mis
         """
         return getattr(self.id_map.get(id), count_field, 0)
 
+    def __getitem__(self, index):
+        result = self.data[index]
+        # When getting a slice, skip converters and directly copy data
+        if isinstance(index, slice):
+            new_obj = object.__new__(self.__class__)
+            vars(new_obj).update(vars(self))
+            object.__setattr__(new_obj, 'data', result)
+            object.__setattr__(new_obj, '_id_map', None)
+            return new_obj
+        return result
+
     def __str__(self) -> str:
         return '\n'.join([str(obj) for obj in self.data])
 
