@@ -1190,6 +1190,14 @@ def test_taxon_counts__empty():
     assert taxon_counts.id_map == {}
 
 
+def test_taxon_counts__slice():
+    taxon_counts = TaxonCounts.from_json(j_obs_species_counts)
+    sliced = taxon_counts[:3]
+    assert len(sliced) == 3
+    assert isinstance(sliced, TaxonCounts)
+    assert all(isinstance(item, TaxonCount) for item in sliced)
+
+
 def test_taxon_summary():
     ts = TaxonSummary.from_json(j_taxon_summary_2_listed)
     assert ts.listed_taxon.taxon_id == 47219
