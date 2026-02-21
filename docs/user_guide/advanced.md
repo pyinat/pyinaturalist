@@ -26,16 +26,19 @@ If you want more control over how HTTP requests are sent, you can provide your o
 ```
 
 ## Caching
-All API requests are cached by default. These expire in 30 minutes for most endpoints, and
-1 day for some infrequently-changing data (like taxa and places). See
-[requests-cache: Expiration](https://requests-cache.readthedocs.io/en/stable/user_guide/expiration.html)
-for details on cache expiration behavior.
+By default most API requests are cached according to `Cache-Control` headers sent by inaturalist.org,
+similar to browser behavior.This significantly reduces rate-limit and bandwidth usage for repeat requests.
 
-You can change this behavior using {py:class}`.ClientSession`. For example, to keep cached requests for 5 days:
+Typically reqponses are cached for a few minutes, but some
+infrequently-changing data (like taxa and places) are cached for longer periods, and some more
+frequently-changing data (like observations) are not cached at all.
+
+You can change any of this this behavior using {py:class}`.ClientSession`.
+For example, to cache all requests for 1 day:
 ```python
 >>> from datetime import timedelta
 >>> from pyinaturalist import ClientSession, get_taxa
->>> session = ClientSession(expire_after=timedelta(days=5))
+>>> session = ClientSession(expire_after=timedelta(days=1))
 >>> get_taxa(q='warbler', locale=1, session=session)
 ```
 
@@ -43,6 +46,10 @@ To store the cache somewhere other than the default cache directory:
 ```python
 >>> session = ClientSession(cache_file='~/data/api_requests.db')
 ```
+
+See [requests-cache](https://requests-cache.readthedocs.io) docs for more fine-grained control
+over caching behavior, particularly
+[expiration settings](https://requests-cache.readthedocs.io/en/stable/user_guide/expiration.html).
 
 ### Clearing and bypassing the cache
 To manually clear the cache:
@@ -52,19 +59,26 @@ To manually clear the cache:
 
 Or as a shortcut, without a session object:
 ```python
-from pyinaturalist import clear_cache
-
-clear_cache()
+>>> from pyinaturalist import clear_cache
+>>> clear_cache()
 ```
 
-To bypass the cache for a given request (always fetch a new response), most API functions accept a `force_refresh` option:
-```
-get_observations(id=12345, force_refresh=True)
+To bypass the cache for a given request (always fetch a new response), most API functions accept a
+`force_refresh` option:
+```py
+>>> get_observations(id=12345, force_refresh=True)
 ```
 
 To "soft-refresh" ([revalidate](https://requests-cache.readthedocs.io/en/stable/user_guide/expiration.html#manual-refresh) the request), most API functions accept a `refresh` option:
+```py
+>>> get_observations(id=12345, refresh=True)
 ```
-get_observations(id=12345, refresh=True)
+
+To fully disable the cache:
+```py
+>>> session = ClientSession()
+>>> session.cache.disabled = True
+>>> get_observations(id=12345, session=session)
 ```
 
 ## Timeouts
