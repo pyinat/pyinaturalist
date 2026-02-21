@@ -5,7 +5,7 @@ iNaturalist data. These can also be found in the
 [examples/](https://github.com/pyinat/pyinaturalist/tree/main/examples) folder on GitHub.
 
 ## Notebooks
-Example Jupter notebooks. Click the badge below to try them out in your browser using Binder:
+Example Jupyter notebooks. Click the badge below to try them out in your browser using Binder:
 
 ```{image} https://mybinder.org/badge_logo.svg
 :target: https://mybinder.org/v2/gh/pyinat/pyinaturalist/main?filepath=examples

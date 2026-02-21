@@ -12,9 +12,16 @@ In addition to the standard API wrapper functions, pyinaturalist provides {py:cl
 
 ## Basic usage
 All API calls are available as methods on {py:class}`.iNatClient`, grouped by resource type. For example:
-* Taxon requests: {py:class}`iNatClient.taxa <.TaxonController>`
+* Annotation requests: {py:class}`iNatClient.annotations <.AnnotationController>`
+* Identification requests: {py:class}`iNatClient.identifications <.IdentificationController>`
 * Observation requests: {py:class}`iNatClient.observations <.ObservationController>`
-* These resource groups are referred to elsewhere in the docs as **controllers.**  See :ref:`Controller classes <controllers>` for more info.
+* Place requests: {py:class}`iNatClient.places <.PlaceController>`
+* Project requests: {py:class}`iNatClient.projects <.ProjectController>`
+* Unified search: {py:class}`iNatClient.search <.SearchController>`
+* Taxon requests: {py:class}`iNatClient.taxa <.TaxonController>`
+* User requests: {py:class}`iNatClient.users <.UserController>`
+
+These resource groups are referred to elsewhere in the docs as **controllers.**  See :ref:`Controller classes <controllers>` for more info.
 
 The main observation search is available in `client.observations.search()`.
 Here is an example of searching for observations by taxon name:
@@ -93,7 +100,7 @@ See :py:class:`.ClientSession` and :ref:`advanced` for details on these settings
 
 `iNatClient` will accept any arguments for `ClientSession`, for example:
 ```py
->>> client = iNatClient(per_second=50, expire_after=3600, timeout=30, retries=3)
+>>> client = iNatClient(per_minute=50, expire_after=3600, timeout=30, retries=3)
 ```
 
 Or you can provide your own session object:

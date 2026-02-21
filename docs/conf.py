@@ -16,7 +16,6 @@
 """
 
 # ruff: noqa: E402
-import sys
 from importlib.metadata import version as pkg_version
 from os import makedirs, symlink
 from os.path import dirname, exists, join
@@ -28,8 +27,6 @@ try:
 except ImportError:
     pass
 
-# Add project path so we can import our package
-sys.path.insert(0, '..')
 from pyinaturalist.constants import DOCS_DIR, EXAMPLES_DIR, PROJECT_DIR, SAMPLE_DATA_DIR
 from pyinaturalist.docs.model_docs import document_models
 
@@ -46,7 +43,6 @@ NOTEBOOK_DIR_COPY = join(DOCS_DIR, 'examples')
 # General information about the project.
 exclude_patterns = ['_build', f'{MODULE_DOCS_DIR}/pyinaturalist.rst']
 master_doc = 'index'
-needs_sphinx = '5.0'
 project = 'pyinaturalist'
 source_suffix = ['.rst', '.md']
 templates_path = ['_templates']
@@ -101,7 +97,7 @@ intersphinx_mapping = {
 
 # Generate labels in the format <page>:<section>
 autosectionlabel_prefix_document = True
-suppress_warnings = ['autosectionlabel.*']
+suppress_warnings = ['autosectionlabel.automodapi', 'autosectionlabel.history']
 
 # napoleon settings
 napoleon_google_docstring = True
@@ -163,7 +159,7 @@ html_logo = join('_static', 'pyinaturalist_logo.png')
 html_css_files = [
     'colors.css',
     'table.css',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css',
 ]
 html_show_sphinx = False
 pygments_style = 'friendly'
