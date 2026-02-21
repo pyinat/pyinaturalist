@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   jupyter:
     container_name: jupyter
@@ -9,9 +7,12 @@ services:
     volumes:
       - .:/home/jovyan/work
       - ~/.cache:/home/jovyan/.cache
+      - ~/.local/share/pyinaturalist:/home/jovyan/.pyinaturalist
     restart: unless-stopped
     environment:
       # Enable JupyterLab (comment out to use classic notebook)
       JUPYTER_ENABLE_LAB: 'yes'
+      # Point pyinaturalist data dir to the mounted volume (for API cache, ratelimit db, etc.)
+      XDG_DATA_HOME: '/home/jovyan'
       # Set any value here to use as a token instead of generating a new one
       # JUPYTER_TOKEN: 'token goes here'
