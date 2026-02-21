@@ -245,8 +245,16 @@ class BaseModelCollection(BaseModel, UserList, Generic[T]):  # type: ignore [mis
             vars(new_obj).update(vars(self))
             object.__setattr__(new_obj, 'data', result)
             object.__setattr__(new_obj, '_id_map', None)
+            # Ensure BaseModel instance attrs are initialized
+            if '_BaseModel__is_nested' not in vars(new_obj):
+                object.__setattr__(new_obj, '_BaseModel__is_nested', False)
             return new_obj
         return result
+
+    def __rich_repr__(self):
+        """Yield contained items so rich renders the collection as a list"""
+        for item in self.data:
+            yield item
 
     def __str__(self) -> str:
         return '\n'.join([str(obj) for obj in self.data])
