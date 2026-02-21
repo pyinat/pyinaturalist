@@ -25,6 +25,7 @@ examples/Data Visualizations - Regional Activity Report.ipynb
 examples/Data Visualizations - Regional Observation Stats.ipynb
 examples/Data Visualizations - Seaborn.ipynb
 examples/Data Visualizations - Matplotlib.ipynb
+Folium example <examples/Data Visualizations - Geospatial Mapping with Folium.ipynb>
 ```
 
 <!--
