@@ -1,6 +1,5 @@
 # ruff: noqa: F401
 from datetime import date, datetime, timedelta
-from os.path import abspath, dirname, join
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Optional, Tuple, Union
 
@@ -48,12 +47,12 @@ WRITE_TIMEOUT = 60
 WRITE_HTTP_METHODS = ['PATCH', 'POST', 'PUT', 'DELETE']
 
 # Project directories
-PROJECT_DIR = abspath(dirname(dirname(__file__)))
+PROJECT_DIR = Path(__file__).parent.parent
 DATA_DIR = Path(user_data_dir()) / 'pyinaturalist'
-DOCS_DIR = join(PROJECT_DIR, 'docs')
-DOWNLOAD_DIR = join(PROJECT_DIR, 'downloads')
-EXAMPLES_DIR = join(PROJECT_DIR, 'examples')
-SAMPLE_DATA_DIR = join(PROJECT_DIR, 'test', 'sample_data')
+DOCS_DIR = PROJECT_DIR / 'docs'
+DOWNLOAD_DIR = PROJECT_DIR / 'downloads'
+EXAMPLES_DIR = PROJECT_DIR / 'examples'
+SAMPLE_DATA_DIR = PROJECT_DIR / 'test' / 'sample_data'
 
 # Cache settings
 CACHE_EXPIRATION = {
@@ -67,10 +66,10 @@ CACHE_EXPIRATION = {
     f'{ICONIC_TAXA_BASE_URL}/*': -1,
     '*': timedelta(minutes=30),
 }
-CACHE_FILE = join(DATA_DIR, 'api_requests.db')
+CACHE_FILE = DATA_DIR / 'api_requests.db'
 IGNORED_PARAMETERS = ['Authorization', 'access_token', 'password', 'client_secret']
-RATELIMIT_FILE = join(DATA_DIR, 'api_ratelimit.db')
-DEFAULT_LOCK_PATH = join(DATA_DIR, 'api_ratelimit.lock')
+RATELIMIT_FILE = DATA_DIR / 'api_ratelimit.db'
+DEFAULT_LOCK_PATH = DATA_DIR / 'api_ratelimit.lock'
 
 # Response formats supported by v0 GET /observations endpoint
 OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']

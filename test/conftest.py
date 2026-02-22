@@ -9,7 +9,6 @@ import re
 import warnings
 from contextlib import contextmanager
 from inspect import Parameter, getmembers, isfunction, signature
-from os.path import join
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -101,7 +100,7 @@ def get_mock_args_for_signature(func):
 
 
 def sample_data_path(filename):
-    return join(SAMPLE_DATA_DIR, filename)
+    return SAMPLE_DATA_DIR / filename
 
 
 def load_sample_data(filename):
