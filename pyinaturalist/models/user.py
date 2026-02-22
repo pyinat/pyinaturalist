@@ -1,10 +1,11 @@
 from datetime import datetime
-from typing import List
+from typing import Dict, List
 
 from pyinaturalist.constants import INAT_BASE_URL, JsonResponse, TableRow
 from pyinaturalist.models import (
     BaseModel,
     BaseModelCollection,
+    datetime_field,
     datetime_now_field,
     define_model,
     define_model_collection,
@@ -24,19 +25,25 @@ class User(BaseModel):
         default=0, doc='Number of observations the user has annotated'
     )
     created_at: datetime = datetime_now_field(doc='Date and time the user was registered')
+    description: str = field(default=None, doc='User profile description')
+    faved_project_ids: List[int] = field(factory=list, doc='IDs of projects the user has favorited')
     icon: str = field(default=None, doc='URL for small user icon')
     icon_url: str = field(default=None, doc='URL for medium user icon')
     identifications_count: int = field(default=0, doc='Number of identifications the user has made')
     journal_posts_count: int = field(default=0, doc='Number of journal posts the user has made')
+    last_active: datetime = datetime_field(doc='Date and time the user was last active')
     login: str = field(default=None, doc='User login/username')
+    monthly_supporter: bool = field(default=None, doc='Indicates if user is a monthly supporter')
     name: str = field(default=None, doc='User real name or display name')
     observations_count: int = field(default=0, doc='Number of observations the user has made')
     orcid: str = field(default=None, doc='ORCID iD')
+    preferences: Dict = field(factory=dict, doc='User preferences')
     roles: List[str] = field(factory=list, doc='User roles on inaturalist.org')
     site_id: int = field(
         default=None, doc='Site ID for iNaturalist network members, or ``1`` for inaturalist.org'
     )
     species_count: int = field(default=0, doc='Number of unique species the user has observed')
+    updated_at: datetime = datetime_now_field(doc='Date and time the user was last updated')
 
     # Unused attributes
     # login_autocomplete: str = field(default=None)

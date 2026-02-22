@@ -27,8 +27,9 @@ class ControlledTermValue(BaseModel):
     label: str = field(default=None)
     ontology_uri: str = field(default=None)
     uri: str = field(default=None)
-    uuid: str = field(default=None)
     taxon_ids: List[int] = field(factory=list)
+    labels: List[Dict] = field(factory=list, doc='Labels for this value in various locales')
+    valid_within_clade: int = field(default=None)
 
     @property
     def _str_attrs(self) -> List[str]:
@@ -41,14 +42,16 @@ class ControlledTerm(BaseModel):
     `GET /controlled_terms <https://api.inaturalist.org/v1/docs/#!/Controlled_Terms/get_controlled_terms>`_.
     """
 
-    is_value: bool = field(default=None)
-    multivalued: bool = field(default=None)
-    label: str = field(default=None)
-    ontology_uri: str = field(default=None)
-    uri: str = field(default=None)
-    uuid: str = field(default=None)
-    taxon_ids: List[int] = field(factory=list)
+    blocking: bool = field(default=None)
     excepted_taxon_ids: List[int] = field(factory=list)
+    is_value: bool = field(default=None)
+    label: str = field(default=None)
+    labels: List[Dict] = field(factory=list, doc='Labels for this term in various locales')
+    multivalued: bool = field(default=None)
+    ontology_uri: str = field(default=None)
+    taxon_ids: List[int] = field(factory=list)
+    uri: str = field(default=None)
+    valid_within_clade: int = field(default=None)
     values: property = LazyProperty(
         ControlledTermValue.from_json_list,
         type=List[ControlledTermValue],
@@ -107,7 +110,6 @@ class Annotation(BaseModel):
     """
 
     user_id: int = field(default=None)
-    uuid: str = field(default=None)
     vote_score: int = field(default=None)
     votes: List = field(factory=list)
     user: property = LazyProperty(User.from_json, type=User, doc='User who added the annotation')

@@ -21,7 +21,9 @@ from pyinaturalist.models import BaseModel, datetime_field, define_model, field
 
 @define_model
 class BaseMedia(BaseModel):
-    attribution: str = field(default=None, doc='License attribution')
+    attribution: str = field(default=None, doc='Full license attribution')
+    attribution_name: str = field(default=None, doc='Name to use in attribution')
+    hidden: bool = field(default=None, doc='Indicates if the file is hidden')
     license_code: str = field(
         default=None,
         converter=format_license,
@@ -61,11 +63,13 @@ class Photo(BaseMedia):
     )
     url: str = field(default=None, doc='Image URL; see properties for URLs of specific image sizes')
     user_id: int = field(default=None, doc='Associated user ID')
-    uuid: str = field(default=None)
+    type: str = field(default=None, doc='Photo type')
     _url_format: str = field(init=False, repr=False, default=None)
 
     # Unused attributes
     # flags: List = field(factory=list)
+    # native_page_url: str = field(default=None)
+    # native_photo_id: str = field(default=None)
 
     def __attrs_post_init__(self):
         # If there's no URL, make a guess based on ID and license:

@@ -10,8 +10,9 @@ from pyinaturalist.constants import (
     TableRow,
 )
 from pyinaturalist.converters import convert_lat_long
-from pyinaturalist.models import BaseModel, define_model, field, is_in
+from pyinaturalist.models import BaseModel, LazyProperty, define_model, field, is_in
 from pyinaturalist.models.base import ensure_list
+from pyinaturalist.models.user import User
 
 
 def convert_optional_lat_long(obj: Union[Dict, List, None, str]):
@@ -47,12 +48,22 @@ class Place(BaseModel):
         converter=convert_optional_lat_long,
         doc='Location in ``(latitude, longitude)`` decimal degrees',
     )
+    matched_term: str = field(default=None, doc='Matched search term, from autocomplete results')
     name: str = field(default=None, doc='Place name')
+    observations_count: int = field(default=None, doc='Number of observations in this place')
     place_type: int = field(default=None, doc='Place type ID')
     place_type_name: str = field(default=None, doc='Place type name')
     slug: str = field(default=None, doc='Place URL slug')
-    uuid: str = field(default=None, doc='Place UUID')
+    without_check_list: bool = field(default=None, doc='Indicates if the place has no check list')
     woeid: int = field(default=None, doc='Where On Earth ID')
+
+    user: property = LazyProperty(User.from_json, type=User, doc='User that created the place')
+
+    # Unused attributes
+    # display_name_autocomplete: str = field(default=None)
+    # TODO (if needed): add as property, converted from location
+    # point_geojson: GeoJson = field(factory=dict, doc='GeoJSON point for place location')
+    # universal_search_rank: int = field(default=None)
 
     @classmethod
     def from_json(cls, value: JsonResponse, category: Optional[str] = None, **kwargs) -> 'Place':

@@ -88,6 +88,7 @@ def test_pprint(response):
 PRINTED_OBSERVATION = """
 Observation(
     id=16227955,
+    uuid='6448d03a-7f9a-4099-86aa-ca09a7740b00',
     created_at='2018-09-05 14:31:08+02:00',
     captive=False,
     community_taxon_id=493595,
@@ -116,7 +117,6 @@ Observation(
     species_guess='Lixus bardanae',
     updated_at='2018-09-22 19:19:27+02:00',
     uri='https://www.inaturalist.org/observations/16227955',
-    uuid='6448d03a-7f9a-4099-86aa-ca09a7740b00',
     annotations=[],
     application=None,
     comments=[
