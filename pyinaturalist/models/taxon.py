@@ -147,13 +147,24 @@ class Taxon(BaseModel):
     # Used for tree formatting
     _indent_level: int = field(default=None, repr=False)
 
+    endemic: bool = field(default=None, doc='Indicates if the taxon is endemic to its range')
+    english_common_name: str = field(default=None, doc='English common name')
+    introduced: bool = field(default=None, doc='Indicates if the taxon is introduced in its range')
+    native: bool = field(default=None, doc='Indicates if the taxon is native to its range')
+    preferred_common_names: List[Dict] = field(
+        factory=list, doc='All preferred common names by place/locale'
+    )
+    provisional: bool = field(default=None, doc='Indicates if the taxon is provisional')
+    threatened: bool = field(default=None, doc='Indicates if the taxon is threatened')
+
     # Unused attributes
-    # atlas_id: int = field(default=None)
-    # flag_counts: Dict[str, int] = field(factory=dict)  # {"unresolved": 1, "resolved": 2}
-    # min_species_ancestry: str = field(default=None)  # Used internally by iNaturalist for Elasticsearch aggregations
+    # atlas_id: int = field(default=None, doc='Atlas ID for this taxon')
+    # flag_counts: Dict[str, int] = field(factory=dict, doc='Counts of resolved and unresolved flags')
+    # min_species_ancestry: str = field(default=None, doc='Used internally for Elasticsearch aggregations')
     # min_species_taxon_id: int = field(default=None)
-    # photos_locked: bool = field(default=None)
-    # universal_search_rank: int = field(default=None)
+    # photos_locked: bool = field(default=None, doc='Indicates if taxon photos can be edited')
+    # universal_search_rank: int = field(default=None, doc='Search ranking for universal search')
+    # representative_photo: property = LazyProperty(Photo.from_json, type=Photo, doc='Representative taxon photo')
 
     def __attrs_post_init__(self):
         # If only ancestor string (or objects) are provided, split into IDs
