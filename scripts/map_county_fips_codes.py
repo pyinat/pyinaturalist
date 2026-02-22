@@ -3,6 +3,7 @@
 This is a bit complicated, since we only have a text search endpoint to work with for iNat places.
 """
 
+import csv
 import json
 import logging
 import re
@@ -23,9 +24,9 @@ DATA_DIR = join(
     'examples',
     'sample_data',
 )
-FIPS_CODES_FILE = join(DATA_DIR, 'us_county_fips_codes.csv')
+FIPS_CSV = join(DATA_DIR, 'us_county_fips_codes.csv')
 SEARCH_RESULTS_FILE = join(DATA_DIR, 'us_county_search.json')
-OUTPUT_FILE = join(DATA_DIR, 'fips_to_inat_place_ids.json')
+OUTPUT_FILE = join(DATA_DIR, 'us_county_place_ids.csv')
 
 FIPSDict = Dict[int, Dict[str, Any]]
 ResultsList = List[Dict[str, Any]]
@@ -39,7 +40,7 @@ def get_counties() -> FIPSDict:
     Source: https://www.nrcs.usda.gov/wps/portal/nrcs/detail/national/home/?cid=nrcs143_013697
     (Plus some manual adjustments for alternative spellings)
     """
-    with open(FIPS_CODES_FILE) as f:
+    with open(FIPS_CSV) as f:
         counties = list(DictReader(f))
     return {
         int(k): list(group)[0] for k, group in groupby(counties, key=lambda x: int(x['fips_code']))
@@ -150,8 +151,21 @@ def main():
     responses = load_search_results()
     matching_ids, unmatched = match_responses(responses, counties)
 
-    with open('fips_to_inat_lookup.json', 'w') as f:
-        json.dump(matching_ids, f)
+    rows = [
+        {
+            'fips_code': str(fips).zfill(5),
+            'county_name': counties[fips]['county_name'],
+            'state_abbr': counties[fips]['state_abbr'],
+            'inat_place_id': inat_id,
+        }
+        for fips, inat_id in sorted(matching_ids.items())
+    ]
+    with open(OUTPUT_FILE, 'w', newline='') as f:
+        writer = csv.DictWriter(
+            f, fieldnames=['fips_code', 'county_name', 'state_abbr', 'inat_place_id']
+        )
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 # Debugging
