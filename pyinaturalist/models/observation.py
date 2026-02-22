@@ -72,6 +72,7 @@ class Flag(BaseModel):
     resolved_at: datetime = datetime_field(doc='Date and time the flag was resolved')
     updated_at: datetime = datetime_field(doc='Date and time the flag was last updated')
     user: property = LazyProperty(User.from_json, type=User, doc='User that added the flag')
+    _populate_id_attrs = ['user_id']
 
     # Unused attributes
     # created_at_utc: datetime = datetime_field(doc='Date and time the flag was created (UTC)')
@@ -93,8 +94,11 @@ class QualityMetric(BaseModel):
 
     agree: bool = field(default=None, doc='Indicates if the user agrees with this metric')
     metric: str = field(default=None, doc='Quality metric name')
-    user_id: int = field(default=None, doc='ID of the user who added the metric')
     user: property = LazyProperty(User.from_json, type=User, doc='User that added the metric')
+    _populate_id_attrs = ['user_id']
+
+    # Unused attributes
+    # user_id: int = field(default=None, doc='ID of the user who added the metric')
 
     @property
     def username(self) -> str:
@@ -122,6 +126,7 @@ class Vote(BaseModel):
     user: property = LazyProperty(User.from_json, type=User, doc='User that added the vote')
     vote_flag: bool = field(default=None)
     vote_scope: str = field(default=None)
+    _populate_id_attrs = ['user_id']
 
     # Unused attributes
     # user_id: int = field(default=None, doc='ID of the user who voted')

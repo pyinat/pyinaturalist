@@ -225,7 +225,7 @@ def test_annotation__converters():
 def test_annotation__empty():
     annotation = Annotation()
     assert annotation.votes == []
-    assert annotation.user is None
+    assert not annotation.user
 
 
 def test_annotation__init_from_ids():
@@ -325,7 +325,7 @@ def test_comment__converters():
 def test_comment__empty():
     comment = Comment()
     assert isinstance(comment.created_at, datetime)
-    assert comment.user is None
+    assert not comment.user
 
 
 def test_comment__str():
@@ -362,8 +362,8 @@ def test_identification__converters():
 def test_identification__empty():
     identification = ID()
     assert isinstance(identification.created_at, datetime)
-    assert identification.taxon is None
-    assert identification.user is None
+    assert not identification.taxon
+    assert not identification.user
 
 
 def test_identification__str():
@@ -418,8 +418,8 @@ def test_message__converters():
 def test_message__empty():
     message = Message()
     assert message.thread_flags == []
-    assert message.to_user is None
-    assert message.from_user is None
+    assert not message.to_user
+    assert not message.from_user
 
 
 def test_message__str():
@@ -454,8 +454,8 @@ def test_observation__empty():
     assert obs.identifications == []
     assert obs.photos == []
     assert obs.uuid is None
-    assert obs.taxon is None
-    assert obs.user is None
+    assert not obs.taxon
+    assert not obs.user
 
 
 def test_observation__application():
@@ -722,7 +722,7 @@ def test_observation_field_value__numeric():
     ofv = OFV.from_json(j_ofv_1_numeric)
     assert ofv.datatype == 'numeric'
     assert ofv.value == 100
-    assert ofv.taxon is None
+    assert not ofv.taxon
     assert isinstance(ofv.user, User) and ofv.user.id == 2115051
 
 
@@ -737,14 +737,14 @@ def test_observation_field_value__date():
     ofv = OFV.from_json(j_ofv_3_date)
     assert ofv.datatype == 'date'
     assert ofv.value == date(2022, 11, 9)
-    assert ofv.taxon is None
+    assert not ofv.taxon
 
 
 def test_observation_field_value__datetime():
     ofv = OFV.from_json(j_ofv_4_datetime)
     assert ofv.datatype == 'datetime'
     assert ofv.value == datetime(2022, 11, 9, 11, 20, 42)
-    assert ofv.taxon is None
+    assert not ofv.taxon
 
 
 def test_observation_field_value__converter_error():
@@ -755,7 +755,7 @@ def test_observation_field_value__converter_error():
 def test_observation_field_value__empty():
     ofv = OFV()
     assert ofv.value is None
-    assert ofv.taxon is None
+    assert not ofv.taxon
 
 
 def test_observation_field_value__str():
@@ -883,7 +883,7 @@ def test_project__empty():
     assert project.location is None
     assert project.project_observation_rules == []
     assert project.search_parameters == []
-    assert project.user is None
+    assert not project.user
 
 
 def test_project_observation_fields():

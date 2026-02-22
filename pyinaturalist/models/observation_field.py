@@ -71,11 +71,9 @@ class ObservationFieldValue(BaseModel):
     datatype: str = field(default=None)  # Enum
     field_id: int = field(default=None)
     name: str = field(default=None)
-    taxon_id: int = field(default=None)
     updater_id: int = field(
         default=None, doc='ID of user who last updated the observation field value'
     )
-    user_id: int = field(default=None, doc='ID of user who applied the observation field value')
     value: OFVValue = field(default=None)
 
     observation_field: property = LazyProperty(
@@ -87,9 +85,12 @@ class ObservationFieldValue(BaseModel):
     user: property = LazyProperty(
         User.from_json, type=User, doc='User who applied the observation field value'
     )
+    _populate_id_attrs = ['taxon_id', 'user_id']
 
     # Unused attributes
     # name_ci: str = field(default=None)
+    # taxon_id: int = field(default=None)
+    # user_id: int = field(default=None, doc='ID of user who applied the observation field value')
     # value_ci: int = field(default=None)
 
     # Convert value by datatype

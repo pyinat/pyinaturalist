@@ -6,6 +6,28 @@ from attr import Attribute, Factory
 
 from pyinaturalist.models import BaseModel
 
+
+class _NullModel:
+    """Sentinel returned when a LazyProperty has no data, so attribute access returns None
+    instead of raising AttributeError. Allows checking nested attributes, like ``obj.user.id``,
+    without needing to check ``if obj.user`` first.
+
+    Evaluates as falsy, so ``if obj.user:`` and ``if not obj.user:`` work as expected; but not
+    ``obj.user is None``.
+    """
+
+    def __getattr__(self, name: str):
+        return None
+
+    def __bool__(self) -> bool:
+        return False
+
+    def __repr__(self) -> str:
+        return 'None'
+
+
+_NULL_MODEL = _NullModel()
+
 FIELD_DEFAULTS = {
     'default': None,
     'validator': None,
@@ -83,6 +105,8 @@ class LazyProperty(property):
             return self
 
         value = getattr(obj, self.temp_attr)
+        if value is None and not isinstance(self.default, Factory):
+            return _NULL_MODEL
         if value and not _is_model_object_or_list(value):
             value = self.converter(value, **self.converter_kwargs)
             setattr(obj, self.temp_attr, value)

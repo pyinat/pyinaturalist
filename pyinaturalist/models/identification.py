@@ -88,6 +88,7 @@ class Identification(Comment):
         default=None, doc='Indicates if the taxon was selected from computer vision results'
     )
     taxon: property = LazyProperty(Taxon.from_json, type=Taxon, doc='Identification taxon')
+    _populate_id_attrs = ['taxon_id']
 
     @property
     def taxon_name(self) -> str:
@@ -99,7 +100,7 @@ class Identification(Comment):
     # flags: List = field(factory=list)
     # moderator_actions: List = field(factory=list)
     # observation: {}
-    # taxon_id: int = field(default=None)
+    # taxon_id: int = field(default=None, doc='Identification taxon ID')
     # previous_observation_taxon: property = LazyProperty(Taxon.from_json, type=Taxon)
 
     @property

@@ -39,6 +39,7 @@ class BaseModel:
     uuid: str = field(default=None, metadata={'doc': 'Unversally unique record ID'})
     __is_nested: bool = field(default=False, repr=False, init=False)
     temp_attrs: List[str] = []
+    _populate_id_attrs: List[str] = []
 
     @classmethod
     def copy(cls, obj: 'BaseModel') -> 'BaseModel':
@@ -59,6 +60,18 @@ class BaseModel:
         value = value or {}
         if isinstance(value, cls):
             return value
+
+        if cls._populate_id_attrs:
+            from pyinaturalist.models.lazy_property import LazyProperty
+
+            for id_attr in cls._populate_id_attrs:
+                nested_attr = id_attr.removesuffix('_id')
+                if (
+                    isinstance(getattr(cls, nested_attr, None), LazyProperty)
+                    and (id_val := value.get(id_attr))
+                    and nested_attr not in value
+                ):
+                    value = {**value, nested_attr: {'id': id_val}}
 
         cls_attrs = {k.lstrip('_'): v for k, v in fields_dict(cls).items()}
 
