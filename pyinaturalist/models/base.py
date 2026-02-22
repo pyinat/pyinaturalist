@@ -65,7 +65,7 @@ class BaseModel:
             from pyinaturalist.models.lazy_property import LazyProperty
 
             for id_attr in cls._populate_id_attrs:
-                nested_attr = id_attr.removesuffix('_id')
+                nested_attr = id_attr[:-3] if id_attr.endswith('_id') else id_attr
                 if (
                     isinstance(getattr(cls, nested_attr, None), LazyProperty)
                     and (id_val := value.get(id_attr))
