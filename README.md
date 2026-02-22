@@ -68,9 +68,8 @@ from pyinaturalist import *
 client = iNatClient()
 ```
 
-```{note}
-If you are looking for the lower-level API functions (without the client class), see [this page](docs/user_guide/quickstart_v0.md)
-```
+Note: If you are looking for the lower-level API functions (without the client class), see
+[this page](https://pyinaturalist.readthedocs.io/en/main/user_guide/quickstart_v0.html)
 
 ### Search observations
 Let's start by searching for all your own observations. There are
