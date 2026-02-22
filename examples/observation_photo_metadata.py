@@ -22,7 +22,7 @@ from pprint import pprint
 import requests
 from bs4 import BeautifulSoup
 
-from pyinaturalist import get_access_token, get_observation
+from pyinaturalist import get_access_token, iNatClient
 
 IGNORE_ATTRIBUTES = ['Associated observations', 'Sizes']
 PHOTO_INFO_BASE_URL = 'https://www.inaturalist.org/photos'
@@ -47,8 +47,9 @@ def get_photo_metadata(photo_url, access_token):
 def get_observation_photo_metadata(observation_id, access_token):
     """Attempt to scrape metadata from all photo info pages associated with an observation"""
     print(f'Fetching observation {observation_id}')
-    obs = get_observation(observation_id)
-    photo_ids = [photo['id'] for photo in obs.get('photos', [])]
+    client = iNatClient()
+    obs = client.observations(observation_id)
+    photo_ids = [photo.id for photo in obs.photos]
     photo_urls = [f'{PHOTO_INFO_BASE_URL}/{id}' for id in photo_ids]
     print(f'{len(photo_urls)} photo URL(s) found')
     return [get_photo_metadata(url, access_token) for url in photo_urls]

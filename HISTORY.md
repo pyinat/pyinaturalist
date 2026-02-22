@@ -3,6 +3,7 @@
 ## Unreleased
 * Fix corner case resulting in `observed_on` not being converted to `datetime`
 * Fix list slicing on custom collection types (`TaxonCounts`, etc.)
+* Fix displaying images in Jupyter with `Photo.show()``
 * Add an `Observation.formatted_location` property
 
 ## 0.21.1 (2026-02-13)
