@@ -135,7 +135,7 @@ fix = true
 unsafe-fixes = true
 line-length = 100
 output-format = 'grouped'
-exclude = ['examples/', 'test/sample_data/']
+exclude = ['examples/', 'scripts/specs/', 'scripts/parse_openapi_spec.py', 'test/sample_data/']
 
 [tool.ruff.format]
 quote-style = 'single'
@@ -154,7 +154,8 @@ max-line-length = 120
 files.extend-exclude = [
     'CONTRIBUTORS.md',
     'examples/',
-    'test/sample_data',
+    'scripts/specs/',
+    'test/sample_data/',
 ]
 
 [tool.typos.default.extend-words]

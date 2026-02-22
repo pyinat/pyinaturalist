@@ -9,7 +9,7 @@ from pyinaturalist import PROJECT_DIR, format_table, pprint
 from pyinaturalist.models import *
 
 # Import sample response JSON used for unit tests
-sys.path.insert(0, PROJECT_DIR)
+sys.path.insert(0, str(PROJECT_DIR))
 from test.sample_data import *
 
 # Sample model objects

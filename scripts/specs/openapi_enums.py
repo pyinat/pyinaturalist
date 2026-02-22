@@ -1,0 +1,55 @@
+# Auto-generated enum parameter values from OpenAPI spec
+
+# Params with the same allowed values across all endpoints
+CONSTANT_ENUM_PARAMS = {
+    'admin_level': [-10, 0, 10, 20, 30, 100],
+    'box': ['inbox', 'sent', 'any'],
+    'category': ['improving', 'supporting', 'leading', 'maverick'],
+    'csi': ['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX'],
+    'current': [True, False, 'any'],
+    'date_field': ['created', 'observed'],
+    'featured': [True],
+    'geoprivacy': ['obscured', 'obscured_private', 'open', 'private'],
+    'hrank': ['kingdom', 'phylum', 'subphylum', 'superclass', 'class', 'subclass', 'superorder', 'order', 'suborder', 'infraorder', 'superfamily', 'epifamily', 'family', 'subfamily', 'supertribe', 'tribe', 'subtribe', 'genus', 'genushybrid', 'species', 'hybrid', 'subspecies', 'variety', 'form'],
+    'iconic_taxa': ['Actinopterygii', 'Animalia', 'Amphibia', 'Arachnida', 'Aves', 'Chromista', 'Fungi', 'Insecta', 'Mammalia', 'Mollusca', 'Reptilia', 'Plantae', 'Protozoa', 'unknown'],
+    'identifications': ['most_agree', 'most_disagree', 'some_agree'],
+    'interval': ['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year'],
+    'license': ['cc-by', 'cc-by-nc', 'cc-by-nd', 'cc-by-sa', 'cc-by-nc-nd', 'cc-by-nc-sa', 'cc0'],
+    'lrank': ['kingdom', 'phylum', 'subphylum', 'superclass', 'class', 'subclass', 'superorder', 'order', 'suborder', 'infraorder', 'superfamily', 'epifamily', 'family', 'subfamily', 'supertribe', 'tribe', 'subtribe', 'genus', 'genushybrid', 'species', 'hybrid', 'subspecies', 'variety', 'form'],
+    'metric': ['date', 'location', 'wild'],
+    'noteworthy': [True],
+    'obscuration': ['obscured', 'private', 'none'],
+    'observation_hrank': ['kingdom', 'phylum', 'subphylum', 'superclass', 'class', 'subclass', 'superorder', 'order', 'suborder', 'infraorder', 'superfamily', 'epifamily', 'family', 'subfamily', 'supertribe', 'tribe', 'subtribe', 'genus', 'genushybrid', 'species', 'hybrid', 'subspecies', 'variety', 'form'],
+    'observation_lrank': ['kingdom', 'phylum', 'subphylum', 'superclass', 'class', 'subclass', 'superorder', 'order', 'suborder', 'infraorder', 'superfamily', 'epifamily', 'family', 'subfamily', 'supertribe', 'tribe', 'subtribe', 'genus', 'genushybrid', 'species', 'hybrid', 'subspecies', 'variety', 'form'],
+    'observation_rank': ['kingdom', 'phylum', 'subphylum', 'superclass', 'class', 'subclass', 'superorder', 'order', 'suborder', 'infraorder', 'superfamily', 'epifamily', 'family', 'subfamily', 'supertribe', 'tribe', 'subtribe', 'genus', 'genushybrid', 'species', 'hybrid', 'subspecies', 'variety', 'form'],
+    'observations_by': ['owner', 'following'],
+    'order': ['desc', 'asc'],
+    'photo_license': ['cc-by', 'cc-by-nc', 'cc-by-nd', 'cc-by-sa', 'cc-by-nc-nd', 'cc-by-nc-sa', 'cc0'],
+    'project_type': ['traditional', 'collection', 'umbrella'],
+    'quality_grade': ['casual', 'needs_id', 'research'],
+    'rank': ['kingdom', 'phylum', 'subphylum', 'superclass', 'class', 'subclass', 'superorder', 'order', 'suborder', 'infraorder', 'superfamily', 'epifamily', 'family', 'subfamily', 'supertribe', 'tribe', 'subtribe', 'genus', 'genushybrid', 'species', 'hybrid', 'subspecies', 'variety', 'form'],
+    'role': ['curator', 'manager'],
+    'rule_details': [True],
+    'search_on': ['names', 'tags', 'description', 'place'],
+    'sound_license': ['cc-by', 'cc-by-nc', 'cc-by-nd', 'cc-by-sa', 'cc-by-nc-nd', 'cc-by-nc-sa', 'cc0'],
+    'sources': ['places', 'projects', 'taxa', 'users'],
+    'taxon_geoprivacy': ['obscured', 'obscured_private', 'open', 'private'],
+    'taxon_of': ['identification', 'observation'],
+    'type': ['collection', 'umbrella'],
+}
+
+# Params with different allowed values depending on the endpoint
+VARIABLE_ENUM_PARAMS = {
+    'order_by': {
+        '/identifications': ['created_at', 'id'],
+        '/identifications/categories': ['created_at', 'id'],
+        '/identifications/identifiers': ['created_at', 'id'],
+        '/identifications/observers': ['created_at', 'id'],
+        '/identifications/recent_taxa': ['created_at', 'id'],
+        '/identifications/species_counts': ['created_at', 'id'],
+        '/observations': ['created_at', 'geo_score', 'id', 'observed_on', 'random', 'species_guess', 'updated_at', 'votes'],
+        '/places/autocomplete': ['area'],
+        '/projects': ['recent_posts', 'created', 'updated', 'distance', 'featured'],
+        '/taxa': ['id', 'created_at', 'observations_count'],
+    },
+}

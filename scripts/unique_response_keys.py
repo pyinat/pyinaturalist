@@ -8,7 +8,7 @@ from pprint import pprint
 
 from pyinaturalist.constants import PROJECT_DIR
 
-sys.path.insert(0, PROJECT_DIR)
+sys.path.insert(0, str(PROJECT_DIR))
 from test.sample_data import *
 
 RESPONSES = {

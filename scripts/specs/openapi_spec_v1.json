@@ -912,17 +912,6 @@
               "observation"
             ],
             "default": "identification"
-          },
-          {
-            "name": "order",
-            "type": "string",
-            "in": "query",
-            "description": "Sort order",
-            "default": "desc",
-            "enum": [
-              "desc",
-              "asc"
-            ]
           }
         ],
         "tags": [
@@ -10011,7 +10000,7 @@
       ]
     },
     "ids_without_taxon_id": {
-      "name": "without_taxon_id",
+      "name": "ids_without_taxon_id",
       "type": "array",
       "items": {
         "type": "string"
@@ -10021,7 +10010,7 @@
       "description": "Exclude IDs of these taxa and their descendants"
     },
     "ids_without_observation_taxon_id": {
-      "name": "without_observation_taxon_id",
+      "name": "ids_without_observation_taxon_id",
       "type": "array",
       "items": {
         "type": "string"
@@ -10194,7 +10183,8 @@
         "updated",
         "distance",
         "featured"
-      ]
+      ],
+      "default": "created"
     },
     "project_type": {
       "name": "project_type",

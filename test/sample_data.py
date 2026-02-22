@@ -2,8 +2,6 @@
 
 # ruff: noqa: F401, F403
 import json
-from glob import glob
-from os.path import basename, join, splitext
 from typing import Dict
 
 from pyinaturalist.constants import SAMPLE_DATA_DIR
@@ -11,15 +9,15 @@ from pyinaturalist.constants import SAMPLE_DATA_DIR
 
 def load_sample_data(filename):
     """Load a single sample data file"""
-    with open(join(SAMPLE_DATA_DIR, filename, encoding='utf-8')) as f:
+    with open(SAMPLE_DATA_DIR / filename, encoding='utf-8') as f:
         return json.load(f)
 
 
 def load_all_sample_data() -> Dict[str, Dict]:
     """Load all sample data files"""
     sample_data = {}
-    for file_path in glob(join(SAMPLE_DATA_DIR, '*.json')):
-        name = splitext(basename(file_path))[0]
+    for file_path in SAMPLE_DATA_DIR.glob('*.json'):
+        name = file_path.stem
         with open(file_path, encoding='utf-8') as f:
             sample_data[name] = json.load(f)
     return sample_data

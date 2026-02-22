@@ -4,8 +4,6 @@ rendered in the docs as tables.
 
 import csv
 from inspect import getmembers, isclass
-from os import makedirs
-from os.path import join
 from typing import TYPE_CHECKING, Any, List, Tuple, Type, get_type_hints
 
 from attr import Attribute
@@ -16,12 +14,12 @@ from pyinaturalist.constants import DOCS_DIR
 from pyinaturalist.models import LazyProperty, get_lazy_properties
 
 IGNORE_PROPERTIES = ['_row', '_str_attrs']
-MODEL_DOC_DIR = join(DOCS_DIR, 'models')
+MODEL_DOC_DIR = DOCS_DIR / 'models'
 
 
 def document_models(app):
     """Export attribute documentation for all models to CSV files"""
-    makedirs(MODEL_DOC_DIR, exist_ok=True)
+    MODEL_DOC_DIR.mkdir(parents=True, exist_ok=True)
     for model in get_model_classes():
         doc_table = get_model_doc(model, app.config)
         export_model_doc(model.__name__, doc_table)
@@ -107,5 +105,5 @@ def _get_lazy_property_doc(prop: LazyProperty, config: Config) -> Tuple[str, str
 
 def export_model_doc(model_name, doc_table):
     """Export attribute documentation for a model to a CSV file"""
-    with open(join(MODEL_DOC_DIR, f'{model_name}.csv'), 'w') as f:
+    with open(MODEL_DOC_DIR / f'{model_name}.csv', 'w') as f:
         csv.writer(f).writerows(doc_table)

@@ -1,8 +1,37 @@
 #!/usr/bin/env python
-"""Parse the OpenAPI v2 spec and extract a simplified RISON structure of Observation fields"""
+"""Parse the OpenAPI v2 spec and extract a nested field structure for a subset of relevant models"""
 
 import json
+import re
 from pathlib import Path
+
+SPECS_DIR = Path(__file__).parent / 'specs'
+SPECS_DIR.mkdir(exist_ok=True)
+SPEC_PATH = SPECS_DIR / 'openapi_spec_v2.json'
+OUTPUT_PATH = SPECS_DIR / 'openapi_model_fields.json'
+
+MODELS = [
+    'Annotation',
+    'ConservationStatus',
+    'ControlledTerm',
+    'Flag',
+    'Identification',
+    'ListedTaxon',
+    'Observation',
+    'ObservationField',
+    'ObservationFieldValue',
+    'Photo',
+    'Place',
+    'Project',
+    'Sound',
+    'Taxon',
+    'User',
+    'Vote',
+]
+
+
+def to_snake_case(name: str) -> str:
+    return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
 
 
 def extract_fields(
@@ -87,18 +116,20 @@ def resolve_ref(ref: str, spec: dict) -> dict:
 
 
 def main():
-    repo_root = Path(__file__).parent.parent
-    spec_path = repo_root / 'test/sample_data/openapi_spec_v2.json'
-    output_path = repo_root / 'test/sample_data/obs_fields.json'
+    spec = json.loads(SPEC_PATH.read_text())
+    schemas = spec['components']['schemas']
 
-    with open(spec_path) as f:
-        spec = json.load(f)
-    observation_schema = spec['components']['schemas']['Observation']
-    fields = extract_fields(observation_schema, spec)
+    all_fields = {}
+    for model_name in MODELS:
+        schema = schemas.get(model_name)
+        if schema is None:
+            print(f'Warning: schema {model_name!r} not found in spec, skipping')
+            continue
+        all_fields[to_snake_case(model_name)] = extract_fields(schema, spec)
 
-    with open(output_path, 'w') as f:
-        json.dump(fields, f, indent=2)
-    print(f'Written to {output_path}')
+    with open(OUTPUT_PATH, 'w') as f:
+        json.dump(all_fields, f, indent=2)
+    print(f'Written to {OUTPUT_PATH}')
 
 
 if __name__ == '__main__':

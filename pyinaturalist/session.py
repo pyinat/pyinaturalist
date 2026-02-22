@@ -86,8 +86,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         burst: int = REQUEST_BURST_RATE,
         bucket_class: Type[AbstractBucket] = SQLiteBucket,
         backoff_factor: float = RETRY_BACKOFF,
-        ratelimit_path: Optional[str] = RATELIMIT_FILE,
-        lock_path: Optional[str] = DEFAULT_LOCK_PATH,
+        ratelimit_path: Optional[FileOrPath] = RATELIMIT_FILE,
+        lock_path: Optional[FileOrPath] = DEFAULT_LOCK_PATH,
         max_retries: int = REQUEST_RETRIES,
         timeout: int = REQUEST_TIMEOUT,
         write_timeout: int = WRITE_TIMEOUT,
@@ -446,7 +446,7 @@ class FileLockSQLiteBucket(pyrate_limiter.FileLockSQLiteBucket):
     This modified class allows setting a custom lock path.
     """
 
-    def __init__(self, lock_path: str = DEFAULT_LOCK_PATH, **kwargs):
+    def __init__(self, lock_path: FileOrPath = DEFAULT_LOCK_PATH, **kwargs):
         from filelock import FileLock
 
         super().__init__(**kwargs)

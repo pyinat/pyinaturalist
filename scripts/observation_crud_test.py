@@ -17,13 +17,12 @@ python scripts/obs_crud_test.py
 
 from datetime import datetime
 from logging import getLogger
-from os.path import join
 
 from pyinaturalist import enable_logging, iNatClient
 from pyinaturalist.constants import SAMPLE_DATA_DIR
 
-SAMPLE_PHOTO = join(SAMPLE_DATA_DIR, 'obs_image.jpg')
-SAMPLE_SOUND = join(SAMPLE_DATA_DIR, 'obs_sound.wav')
+SAMPLE_PHOTO = SAMPLE_DATA_DIR / 'obs_image.jpg'
+SAMPLE_SOUND = SAMPLE_DATA_DIR / 'obs_sound.wav'
 logger = getLogger('pyinaturalist.scripts')
 enable_logging('DEBUG')
 

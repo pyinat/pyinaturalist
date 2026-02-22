@@ -175,7 +175,7 @@ def test_request_validate_json__retry_success(requests_mock):
 
 def test_session__cache_file():
     session = ClientSession()
-    assert str(session.cache.responses.db_path) == CACHE_FILE
+    assert session.cache.responses.db_path == CACHE_FILE
 
 
 def test_session__custom_expiration():

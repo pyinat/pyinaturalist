@@ -1,2 +1,2 @@
 # Scripts
-Utility scripts for development and debugging
+Utility scripts for development, testing, and debugging
