@@ -1,6 +1,6 @@
 [project]
 name = 'pyinaturalist'
-version = '0.21.1'
+version = '0.22.0'
 description = 'iNaturalist API client for python'
 authors = [{ name = 'Jordan Cook' }]
 license = 'MIT'
