@@ -18,3 +18,5 @@ for more details.
 ![](images/observation_image_grid.png)
 
 ![](images/observation_map.png)
+
+![](images/choropleth.svg)
