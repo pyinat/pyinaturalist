@@ -18,7 +18,7 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [attrs, types-python-dateutil, types-requests, types-ujson]
-        exclude: ^(examples/|test/sample_data/)
+        exclude: ^(examples/|scripts/specs/|test/sample_data/)
   - repo: https://github.com/yunojuno/pre-commit-xenon
     rev: v0.1
     hooks:

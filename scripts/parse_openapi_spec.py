@@ -13,15 +13,14 @@ import requests
 from prance import ResolvingParser
 from rich import print
 
-from pyinaturalist.constants import DOWNLOAD_DIR, SAMPLE_DATA_DIR
-
-DOWNLOAD_DIR.mkdir(exist_ok=True)
-SPEC_FILE = DOWNLOAD_DIR / 'swagger_v1.json'
+SPECS_DIR = Path(__file__).parent / 'specs'
+SPECS_DIR.mkdir(exist_ok=True)
+SPEC_FILE = SPECS_DIR / 'swagger_v1.json'
 SPEC_V1_URL = 'https://api.inaturalist.org/v1/swagger.json'
-SPEC_V2_FILE = SAMPLE_DATA_DIR / 'openapi_spec_v2.json'
-REQUEST_MODELS_FILE = SAMPLE_DATA_DIR / 'openapi_request_models.py'
-RESPONSE_MODELS_FILE = SAMPLE_DATA_DIR / 'openapi_response_models.py'
-ENUMS_FILE = SAMPLE_DATA_DIR / 'openapi_enums.py'
+SPEC_V2_FILE = SPECS_DIR / 'openapi_spec_v2.json'
+REQUEST_MODELS_FILE = SPECS_DIR / 'openapi_request_models.py'
+RESPONSE_MODELS_FILE = SPECS_DIR / 'openapi_response_models.py'
+ENUMS_FILE = SPECS_DIR / 'openapi_enums.py'
 
 
 STRING_FORMATS = {'date-time': 'datetime', 'date': 'date', 'binary': 'bytes'}
