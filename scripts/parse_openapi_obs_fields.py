@@ -4,6 +4,9 @@
 import json
 from pathlib import Path
 
+SPECS_DIR = Path(__file__).parent / 'specs'
+SPECS_DIR.mkdir(exist_ok=True)
+
 
 def extract_fields(
     schema: dict,
@@ -87,12 +90,10 @@ def resolve_ref(ref: str, spec: dict) -> dict:
 
 
 def main():
-    repo_root = Path(__file__).parent.parent
-    spec_path = repo_root / 'test/sample_data/openapi_spec_v2.json'
-    output_path = repo_root / 'test/sample_data/obs_fields.json'
+    spec_path = SPECS_DIR / 'openapi_spec_v2.json'
+    output_path = SPECS_DIR / 'obs_fields.json'
 
-    with open(spec_path) as f:
-        spec = json.load(f)
+    spec = json.loads(spec_path.read_text())
     observation_schema = spec['components']['schemas']['Observation']
     fields = extract_fields(observation_schema, spec)
 

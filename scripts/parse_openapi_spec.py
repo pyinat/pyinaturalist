@@ -15,13 +15,13 @@ from rich import print
 
 SPECS_DIR = Path(__file__).parent / 'specs'
 SPECS_DIR.mkdir(exist_ok=True)
-SPEC_FILE = SPECS_DIR / 'swagger_v1.json'
 SPEC_V1_URL = 'https://api.inaturalist.org/v1/swagger.json'
+SPEC_V1_FILE = SPECS_DIR / 'openapi_spec_v1.json'
+SPEC_V2_URL = 'https://api.inaturalist.org/v2/docs/swagger-ui-init.js'
 SPEC_V2_FILE = SPECS_DIR / 'openapi_spec_v2.json'
 REQUEST_MODELS_FILE = SPECS_DIR / 'openapi_request_models.py'
 RESPONSE_MODELS_FILE = SPECS_DIR / 'openapi_response_models.py'
 ENUMS_FILE = SPECS_DIR / 'openapi_enums.py'
-
 
 STRING_FORMATS = {'date-time': 'datetime', 'date': 'date', 'binary': 'bytes'}
 PRIMITIVE_TYPES = {'integer': 'int', 'number': 'float', 'boolean': 'bool', 'object': 'dict'}
@@ -32,12 +32,12 @@ from typing import Any, Literal
 """
 
 
-def download_spec(force=False):
-    """Download the V1 OpenAPI spec, fix a couple issues that throw validation errors in osv/ssv,
+def download_v1_spec(force=False):
+    """Download the V1 OpenAPI spec, fix some issues that throw validation errors in osv/ssv,
     and write a modified copy with fully resolved references
     """
-    if SPEC_FILE.is_file() and not force:
-        print(f'Using previously downloaded OpenAPI spec: {SPEC_FILE}')
+    if SPEC_V1_FILE.is_file() and not force:
+        print(f'Using previously downloaded OpenAPI spec: {SPEC_V1_FILE}')
         return
 
     print(f'Downloading OpenAPI spec: {SPEC_V1_URL}')
@@ -64,14 +64,31 @@ def download_spec(force=False):
                     if not (param_name(p) in seen or seen.add(param_name(p)))
                 ]
 
-    with open(SPEC_FILE, 'w') as f:
-        json.dump(spec, f, indent=2)
-    print(f'Modified and written to: {SPEC_FILE}')
+    SPEC_V1_FILE.write_text(json.dumps(spec, indent=2))
+    print(f'Modified and written to: {SPEC_V1_FILE}')
+
+
+def download_v2_spec(force: bool = False) -> None:
+    """Download and extract the v2 OpenAPI spec from the embedded swagger-ui-init.js page"""
+    if SPEC_V2_FILE.is_file() and not force:
+        print(f'Using previously downloaded OpenAPI v2 spec: {SPEC_V2_FILE}')
+        return
+
+    print(f'Downloading v2 swagger-ui-init.js: {SPEC_V2_URL}')
+    js = requests.get(SPEC_V2_URL).text
+
+    match = re.search(r'"swaggerDoc":\s*(\{)', js)
+    if not match:
+        raise ValueError('Could not find swaggerDoc in swagger-ui-init.js')
+
+    spec, _ = json.JSONDecoder().raw_decode(js, match.start(1))
+    SPEC_V2_FILE.write_text(json.dumps(spec, indent=2))
+    print(f'Extracted and written to: {SPEC_V2_FILE}')
 
 
 def parse_spec():
     """Get path definitions from a parsed OpenAPI spec with all references resolved"""
-    parser = ResolvingParser(str(SPEC_FILE))
+    parser = ResolvingParser(str(SPEC_V1_FILE))
     return parser.specification['paths']
 
 
@@ -228,7 +245,8 @@ def write_enum_params(
 
 
 def main():
-    download_spec()
+    download_v1_spec()
+    download_v2_spec()
     endpoints = parse_spec()
     enum_params = get_enum_params(endpoints)
     constant_enum_params, variable_enum_params = process_enum_params(enum_params)
