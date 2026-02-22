@@ -22,11 +22,14 @@ class Comment(BaseModel):
     body: str = field(default='', doc='Comment text')
     created_at: datetime = datetime_now_field(doc='Date and time the comment was created')
     hidden: bool = field(default=None, doc='Indicates if the comment is hidden')
-    uuid: str = field(default=None, doc='Universally unique identifier')
     user: property = LazyProperty(
         User.from_json, type=User, doc='User that added the comment or ID'
     )
     updated_at: datetime = field(default=None, doc='Date and time the comment was last updated')
+    parent_id: int = field(default=None, doc='ID of the parent object')
+    parent_type: str = field(
+        default=None, doc='Type of parent object (Observation, Project, or User)'
+    )
 
     # Unused attributes
     # created_at_details: Dict = field(factory=dict)
@@ -77,6 +80,9 @@ class Identification(Comment):
         default=None, doc='Indicates if the identifier is also the observer'
     )
     previous_observation_taxon_id: int = field(default=None, doc='Previous observation taxon ID')
+    observation_id: int = field(default=None, doc='ID of the observation being identified')
+    taxon_change_id: int = field(default=None, doc='ID of the taxon change, if any')
+    taxon_change_type: str = field(default=None, doc='Type of taxon change, if any')
     taxon_change: bool = field(default=None)
     vision: bool = field(
         default=None, doc='Indicates if the taxon was selected from computer vision results'
@@ -94,6 +100,7 @@ class Identification(Comment):
     # moderator_actions: List = field(factory=list)
     # observation: {}
     # taxon_id: int = field(default=None)
+    # previous_observation_taxon: property = LazyProperty(Taxon.from_json, type=Taxon)
 
     @property
     def _row(self) -> TableRow:

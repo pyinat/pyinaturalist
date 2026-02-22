@@ -39,13 +39,14 @@ class ObservationField(BaseModel):
     datatype: str = field(default=None)  # Enum
     description: str = field(default=None)
     name: str = field(default=None)
-    updated_at: datetime = datetime_now_field(
-        doc='Date and time the observation field was last updated'
-    )
+    updated_at: datetime = datetime_now_field(doc='Date and time the observation field was updated')
     user_id: int = field(default=None)
     users_count: int = field(default=None)
-    uuid: str = field(default=None)
     values_count: int = field(default=None)
+
+    # Unused attributes
+    # description_autocomplete: str = field(default=None)
+    # name_autocomplete: str = field(default=None)
 
     @property
     def _row(self) -> TableRow:
@@ -75,8 +76,11 @@ class ObservationFieldValue(BaseModel):
         default=None, doc='ID of user who last updated the observation field value'
     )
     user_id: int = field(default=None, doc='ID of user who applied the observation field value')
-    uuid: str = field(default=None)
     value: OFVValue = field(default=None)
+
+    observation_field: property = LazyProperty(
+        ObservationField.from_json, type=ObservationField, doc='Observation field definition'
+    )
     taxon: property = LazyProperty(
         Taxon.from_json, type=Taxon, doc='Taxon that the observation field applies to'
     )

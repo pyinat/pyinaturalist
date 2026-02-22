@@ -867,6 +867,15 @@ def test_places__nearby():
 # --------------------
 
 
+def test_project__converters():
+    project = Project.from_json(j_project_1)
+    assert project.id == 8291
+    assert project.title == 'PNW Invasive Plant EDDR'
+    assert project.location == (48.777404, -122.306929)
+    assert isinstance(project.user, User) and project.user.id == 233188
+    assert str(project) == 'Project(id=8291, title=PNW Invasive Plant EDDR)'
+
+
 def test_project__empty():
     project = Project()
     assert project.admins == []
@@ -875,6 +884,31 @@ def test_project__empty():
     assert project.project_observation_rules == []
     assert project.search_parameters == []
     assert project.user is None
+
+
+def test_project_observation_fields():
+    project = Project.from_json(j_project_3_obs_fields)
+    assert len(project.project_observation_fields) == 3
+    pof = project.project_observation_fields[0]
+    assert isinstance(pof, ProjectObservationField)
+    assert pof.project_observation_field_id == 18
+    assert pof.position == 0
+    assert pof.required is False
+    assert pof.id == 30
+    assert pof.name == 'Group size'
+    assert pof.datatype == 'numeric'
+
+
+def test_project_user():
+    project = Project.from_json(j_project_3_obs_fields)
+    assert len(project.admins) == 3
+    admin = project.admins[0]
+    assert isinstance(admin, ProjectUser)
+    assert admin.project_id == 407
+    assert admin.project_user_id == 3737
+    assert admin.role == 'curator'
+    assert admin.id == 9042
+    assert admin.login == 'mhill'
 
 
 # Search

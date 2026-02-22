@@ -73,6 +73,11 @@ class Flag(BaseModel):
     updated_at: datetime = datetime_field(doc='Date and time the flag was last updated')
     user: property = LazyProperty(User.from_json, type=User, doc='User that added the flag')
 
+    # Unused attributes
+    # created_at_utc: datetime = datetime_field(doc='Date and time the flag was created (UTC)')
+    # updated_at_utc: datetime = datetime_field(doc='Date and time the flag was last updated (UTC)')
+    # user_id: int = field(default=None, doc='ID of the user who created the flag')
+
     @property
     def username(self) -> str:
         return self.user.login
@@ -88,6 +93,7 @@ class QualityMetric(BaseModel):
 
     agree: bool = field(default=None, doc='Indicates if the user agrees with this metric')
     metric: str = field(default=None, doc='Quality metric name')
+    user_id: int = field(default=None, doc='ID of the user who added the metric')
     user: property = LazyProperty(User.from_json, type=User, doc='User that added the metric')
 
     @property
@@ -116,6 +122,9 @@ class Vote(BaseModel):
     user: property = LazyProperty(User.from_json, type=User, doc='User that added the vote')
     vote_flag: bool = field(default=None)
     vote_scope: str = field(default=None)
+
+    # Unused attributes
+    # user_id: int = field(default=None, doc='ID of the user who voted')
 
     @property
     def username(self) -> str:
@@ -238,9 +247,6 @@ class Observation(BaseModel):
     taxon_geoprivacy: str = field(default=None)
     updated_at: DateTime = datetime_field(doc='Date and time the observation was last updated')
     uri: str = field(default=None, doc='Link to observation details page')
-    uuid: str = field(
-        default=None, doc='Universally unique ID; generally preferred over ``id`` where possible'
-    )
     viewer_trusted_by_observer: bool = field(
         default=None, doc='Observer trusts the authenticated user with access to hidden coordinates'
     )
@@ -292,6 +298,7 @@ class Observation(BaseModel):
     # Additional attributes from API response that aren't needed; just left here for reference
     # cached_votes_total: int = field(default=None)
     # comments_count: int = field(default=None)
+    # community_taxon: property = LazyProperty(Taxon.from_json, type=Taxon)
     # created_at_details: Dict = field(factory=dict)
     # created_time_zone: str = field(default=None)
     # faves_count: int = field(default=None)

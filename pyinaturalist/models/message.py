@@ -19,6 +19,9 @@ class Message(BaseModel):
     updated_at: DateTime = datetime_field(doc='When the message was last edited')
     thread_flags: List[str] = field(factory=list)
     thread_messages_count: int = field(default=None, doc='Number of messages in the thread')
+    comments_count: int = field(
+        default=None, doc='Number of comments on the observation this message relates to'
+    )
 
     from_user: property = LazyProperty(User.from_json, type=User, doc='Message sender')
     to_user: property = LazyProperty(User.from_json, type=User, doc='Message recipient')

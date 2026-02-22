@@ -26,13 +26,16 @@ from pyinaturalist.models import (
 class ProjectObservation(BaseModel):
     """:fa:`binoculars` Metadata about an observation that has been added to a project"""
 
+    current_user_is_member: bool = field(default=None)
     preferences: Dict = field(factory=dict)  # Example: {'allows_curator_coordinate_access': True}
     project: Dict = field(factory=dict)  # Example: {'id': 24237}
     user_id: int = field(default=None)
-    uuid: str = field(default=None, doc='Universally unique identifier')
     user: property = LazyProperty(
         User.from_json, type=User, doc='User that added the observation to the project'
     )
+
+    # Unused attributes
+    # project_id: int = field(default=None, doc='Project ID')
 
     @property
     def _str_attrs(self) -> List[str]:
@@ -68,15 +71,17 @@ class ProjectUser(User):
     project_id: int = field(default=None)
     project_user_id: int = field(default=None)
     role: str = field(default=None)
+    taxa_count: int = field(
+        default=0, doc='Number of unique taxa the user has observed in the project'
+    )
+    prefers_curator_coordinate_access_for: str = field(default=None)
 
     @classmethod
     def from_json(cls, value: JsonResponse, **kwargs) -> 'ProjectUser':
-        """Flatten out nested values"""
-        user = value.get('user', {})
-        user['project_id'] = value['project_id']
-        user['project_user_id'] = value['id']
-        user['role'] = value['role']
-        return super(ProjectUser, cls).from_json(user, **kwargs)
+        """Merge outer project membership fields with inner user fields"""
+        value = {**value, 'project_user_id': value['id']}
+        value.update(value.pop('user', {}))
+        return super(ProjectUser, cls).from_json(value, **kwargs)
 
     @property
     def _str_attrs(self) -> List[str]:
@@ -99,6 +104,8 @@ class Project(BaseModel):
         default=None,
         doc='Indicates if this is an umbrella project (containing observations from other projects)',
     )
+    delegated_project_id: int = field(default=None)
+    is_delegated_umbrella: bool = field(default=None)
     last_post_at: Optional[datetime] = datetime_field(
         doc='Date and time of the last project journal post'
     )
