@@ -8,7 +8,6 @@ Extra dependencies:
 import json
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 import requests
 from prance import ResolvingParser
@@ -22,6 +21,7 @@ SPEC_V1_URL = 'https://api.inaturalist.org/v1/swagger.json'
 SPEC_V2_FILE = SAMPLE_DATA_DIR / 'openapi_spec_v2.json'
 REQUEST_MODELS_FILE = SAMPLE_DATA_DIR / 'openapi_request_models.py'
 RESPONSE_MODELS_FILE = SAMPLE_DATA_DIR / 'openapi_response_models.py'
+ENUMS_FILE = SAMPLE_DATA_DIR / 'openapi_enums.py'
 
 
 STRING_FORMATS = {'date-time': 'datetime', 'date': 'date', 'binary': 'bytes'}
@@ -161,7 +161,7 @@ def generate_models() -> None:
     print(f'Omitted {len(omitted)} unreferenced schemas: {omitted}')
 
 
-def get_enum_params(endpoints) -> List[Tuple[str, str, str]]:
+def get_enum_params(endpoints) -> list[tuple[str, str, str]]:
     """Find all request parameters with multiple-choice (enumerated) options"""
     return sorted(
         [
@@ -174,7 +174,7 @@ def get_enum_params(endpoints) -> List[Tuple[str, str, str]]:
     )
 
 
-def process_enum_params(enum_params) -> Tuple[Dict, Dict]:
+def process_enum_params(enum_params) -> tuple[dict, dict]:
     """Condense enumerated params into two categories:
     * Params with the same values across all endpoints
     * Params with different values for some endpoints
@@ -201,13 +201,39 @@ def process_enum_params(enum_params) -> Tuple[Dict, Dict]:
     return constant_enum_params, variable_enum_params
 
 
+def write_enum_params(
+    constant_enum_params: dict, variable_enum_params: dict, output_path: Path
+):
+    """Write enum params to a Python file."""
+    lines = ['# Auto-generated enum parameter values from OpenAPI spec', '']
+
+    lines.append('# Params with the same allowed values across all endpoints')
+    lines.append('CONSTANT_ENUM_PARAMS = {')
+    for name, options in sorted(constant_enum_params.items()):
+        lines.append(f'    {name!r}: {options!r},')
+    lines.append('}')
+
+    lines.append('')
+
+    lines.append('# Params with different allowed values depending on the endpoint')
+    lines.append('VARIABLE_ENUM_PARAMS = {')
+    for name, endpoints in sorted(variable_enum_params.items()):
+        lines.append(f'    {name!r}: {{')
+        for path, options in sorted(endpoints.items()):
+            lines.append(f'        {path!r}: {options!r},')
+        lines.append('    },')
+    lines.append('}')
+
+    output_path.write_text('\n'.join(lines) + '\n')
+    print(f'Generated enum params -> {output_path}')
+
+
 def main():
     download_spec()
     endpoints = parse_spec()
     enum_params = get_enum_params(endpoints)
     constant_enum_params, variable_enum_params = process_enum_params(enum_params)
-    print('[bold cyan]Constant multiple-choice params:[/bold cyan]', constant_enum_params)
-    print('[bold cyan]Variable multiple-choice params:[/bold cyan]', variable_enum_params)
+    write_enum_params(constant_enum_params, variable_enum_params, ENUMS_FILE)
     generate_models()
 
 
