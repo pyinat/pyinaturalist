@@ -33,13 +33,26 @@ Add the following new attributes, mostly from v2 API responses:
 * `ProjectObservation.current_user_is_member`
 * `ProjectUser.prefers_curator_coordinate_access_for`
 * `ProjectUser.taxa_count`
-* `QualityMetric.user_id`
+* `QualityMetric.user`
 * `User.description`
 * `User.faved_project_ids`
 * `User.last_active`
 * `User.monthly_supporter`
 * `User.preferences`
 * `User.updated_at`
+
+Combine ID-only and nested-object API response values on the following models:
+* `Flag.user_id` -> `Flag.user.id`
+* `Identification.taxon_id` -> `Identification.taxon.id`
+* `ObservationFieldValue.taxon_id` -> `ObservationFieldValue.taxon.id`
+* `ObservationFieldValue.user_id` -> `ObservationFieldValue.user.id`
+* `Project.user_id` -> `Project.user.id`
+* `ProjectObservation.project_id` -> `ProjectObservation.project.id`
+* `ProjectObservation.user_id` -> `ProjectObservation.user.id`
+* `QualityMetric.user_id` -> `QualityMetric.user.id`
+* `Vote.user_id` -> `Vote.user.id`
+
+This means that instead of checking, for example, `id = Project.user.id if Project.user else Project.user_id`, just check `Project.user.id`.
 
 ## 0.21.1 (2026-02-13)
 * Update `v2.create_observation()` and `update_observation()` to accept multiple observation field values, consistent with v0 and v1 APIs.

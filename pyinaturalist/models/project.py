@@ -23,26 +23,6 @@ from pyinaturalist.models import (
 
 
 @define_model
-class ProjectObservation(BaseModel):
-    """:fa:`binoculars` Metadata about an observation that has been added to a project"""
-
-    current_user_is_member: bool = field(default=None)
-    preferences: Dict = field(factory=dict)  # Example: {'allows_curator_coordinate_access': True}
-    project: Dict = field(factory=dict)  # Example: {'id': 24237}
-    user_id: int = field(default=None)
-    user: property = LazyProperty(
-        User.from_json, type=User, doc='User that added the observation to the project'
-    )
-
-    # Unused attributes
-    # project_id: int = field(default=None, doc='Project ID')
-
-    @property
-    def _str_attrs(self) -> List[str]:
-        return ['project', 'user_id']
-
-
-@define_model
 class ProjectObservationField(ObservationField):
     """:fa:`tag` An :py:class:`.ObservationField` with additional project-specific information"""
 
@@ -141,6 +121,7 @@ class Project(BaseModel):
         doc='Observation fields used by the project',
     )
     user: property = LazyProperty(User.from_json, type=User, doc='User that created the project')
+    _populate_id_attrs = ['user_id']
 
     # Unused attributes
     # flags: List = field(factory=list)
@@ -177,3 +158,27 @@ class Project(BaseModel):
     @property
     def _str_attrs(self) -> List[str]:
         return ['id', 'title']
+
+
+@define_model
+class ProjectObservation(BaseModel):
+    """:fa:`binoculars` Metadata about an observation that has been added to a project"""
+
+    current_user_is_member: bool = field(default=None)
+    preferences: Dict = field(factory=dict)  # Example: {'allows_curator_coordinate_access': True}
+    project: property = LazyProperty(
+        Project.from_json, type=Project, doc='Project that the observation was added to'
+    )
+    user: property = LazyProperty(
+        User.from_json, type=User, doc='User that added the observation to the project'
+    )
+
+    _populate_id_attrs = ['project_id', 'user_id']
+
+    # Unused attributes
+    # project_id: int = field(default=None, doc='Project ID')
+    # user_id: int = field(default=None)
+
+    @property
+    def _str_attrs(self) -> List[str]:
+        return ['project', 'user']
