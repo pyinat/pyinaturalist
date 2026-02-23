@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # ruff: noqa: E402, F401, F402, F403, F405
 """Sample response data of every type to experiment with"""
+
 import sys
 
 from rich import print

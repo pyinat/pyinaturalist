@@ -5,18 +5,19 @@ An example of converting observation locations + metadata into GPX format.
 Extra dependencies:
     ``pip install gpxpy``
 """
+
 from logging import getLogger
 
 from gpxpy.gpx import GPX, GPXTrack, GPXTrackPoint, GPXTrackSegment, GPXWaypoint
 
 from pyinaturalist import Observation, iNatClient
-from pyinaturalist.constants import JsonResponse, List
+from pyinaturalist.constants import List
 
 logger = getLogger(__name__)
 
 
 def observations_to_gpx(
-    observations: List[Observation], output_file: str = "observations.gpx", track: bool = True
+    observations: List[Observation], output_file: str = 'observations.gpx', track: bool = True
 ):
     """Convert a list of observations to a set of GPX waypoints or a GPX track
 
@@ -26,7 +27,7 @@ def observations_to_gpx(
         track: Create an ordered GXP track; otherwise, create unordered GPX waypoints
     """
     gpx = GPX()
-    logger.info(f"Converting {len(observations)} to GPX points")
+    logger.info(f'Converting {len(observations)} to GPX points')
     points = [observation_to_gpx_point(obs, track=track) for obs in observations]
     # Filter out any None points (observations without location)
     points = [point for point in points if point is not None]
@@ -41,8 +42,8 @@ def observations_to_gpx(
         gpx.waypoints = points
 
     # Save to file
-    logger.info(f"Writing GPX data to {output_file}")
-    with open(output_file, "w") as f:
+    logger.info(f'Writing GPX data to {output_file}')
+    with open(output_file, 'w') as f:
         f.write(gpx.to_xml())
 
 
@@ -82,17 +83,17 @@ def observation_to_gpx_point(observation: Observation, track: bool = True):
     return point
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # Create a client for API requests
     client = iNatClient()
 
     # Get search results
     search_params = {
-        "project_id": 36883,  # ID of the 'Sugarloaf Ridge State Park' project
-        "created_d1": "2020-01-01",  # Get observations from January 2020...
-        "created_d2": "2020-09-30",  # ...through September 2020 (adjust these dates as needed)
-        "geo": True,  # Only get observations with geospatial coordinates
-        "geoprivacy": "open",  # Only get observations with public coordinates (not obscured/private)
+        'project_id': 36883,  # ID of the 'Sugarloaf Ridge State Park' project
+        'created_d1': '2020-01-01',  # Get observations from January 2020...
+        'created_d2': '2020-09-30',  # ...through September 2020 (adjust these dates as needed)
+        'geo': True,  # Only get observations with geospatial coordinates
+        'geoprivacy': 'open',  # Only get observations with public coordinates (not obscured/private)
     }
     results = client.observations.search(**search_params).all()
 

@@ -180,7 +180,7 @@ from dateutil.tz import tzoffset
                 {
                     'id': 22080796,
                     'photo': {
-                        'attribution': '(c) Nicolas Noé, some ' 'rights reserved (CC BY)',
+                        'attribution': '(c) Nicolas Noé, some rights reserved (CC BY)',
                         'flags': [],
                         'id': 24355315,
                         'license_code': 'cc-by',
@@ -193,7 +193,7 @@ from dateutil.tz import tzoffset
                 {
                     'id': 22080797,
                     'photo': {
-                        'attribution': '(c) Nicolas Noé, some ' 'rights reserved (CC BY)',
+                        'attribution': '(c) Nicolas Noé, some rights reserved (CC BY)',
                         'flags': [],
                         'id': 24355313,
                         'license_code': 'cc-by',
