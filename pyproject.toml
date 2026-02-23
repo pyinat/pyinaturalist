@@ -32,7 +32,7 @@ classifiers = [
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Typing :: Typed',
 ]
-requires-python = '>=3.8'
+requires-python = '>=3.10'
 dependencies = [
     'attrs>=21.2',
     'keyring>=22.3',
