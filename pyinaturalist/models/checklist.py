@@ -1,5 +1,7 @@
 """Models for taxon checklists (aka "original life lists")"""
 
+from __future__ import annotations
+
 from pyinaturalist.constants import ESTABLISTMENT_MEANS, DateTime, TableRow
 from pyinaturalist.models import (
     BaseModel,
