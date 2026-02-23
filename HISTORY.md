@@ -2,10 +2,14 @@
 
 ## Unreleased
 
+### ⚠️ Deprecations & Removals
+* Update to pyrate-limiter v4. See its [changelog](https://github.com/vutran1710/PyrateLimiter/blob/master/CHANGELOG.md) for breaking changes, if you are using its features directly. Changes in pyinaturalist:
+  * `ClientSession` argument `lock_path` has been removed; lockfile will be placed in the same directory as `ratelimit_path` (defaults to platform-specific user data dir).
+  * `ClientSession` argument `max_delay` has been removed (removed upstream)
+  * Added `ClientSession` argument `use_file_lock`; this replaces `FileLockSQLiteBucket`, but the class is still available for backwards-compatibility.
+* Drop support for python 3.8 and 3.9 (removed upstream)
+
 ### Models
-* Fix displaying images in Jupyter with `Photo.show()`
-* Fix corner case resulting in `observed_on` not being converted to `datetime`
-* Fix list slicing on custom collection types (`TaxonCounts`, etc.)
 * Add an `Observation.formatted_location` property
 
 Add the following new attributes, mostly from v2 API responses:
@@ -52,7 +56,15 @@ Combine ID-only and nested-object API response values on the following models:
 * `QualityMetric.user_id` -> `QualityMetric.user.id`
 * `Vote.user_id` -> `Vote.user.id`
 
-This means that instead of checking, for example, `id = Project.user.id if Project.user else Project.user_id`, just check `Project.user.id`.
+In addition, checking attributes on nested objects will not raise `AttributeError` if missing from the API response. This means that instead of checking, for example, `id = Project.user.id if Project.user else Project.user_id`, just check `Project.user.id`.
+
+### Bugfixes
+* Fix displaying images in Jupyter with `Photo.show()`
+* Fix corner case resulting in `observed_on` not being converted to `datetime`
+* Fix list slicing on custom collection types (`TaxonCounts`, etc.)
+
+### Other Changes
+* Add support for python 3.15
 
 ## 0.21.1 (2026-02-13)
 * Update `v2.create_observation()` and `update_observation()` to accept multiple observation field values, consistent with v0 and v1 APIs.
@@ -82,6 +94,7 @@ This means that instead of checking, for example, `id = Project.user.id if Proje
 
 ### Other changes
 * Add async paginator method to get a single result (`Paginator.async_one()`)
+* Add support for python 3.14
 
 ## 0.20.2 (2025-08-19)
 * Handle empty user when pretty-printing `Identification` objects
@@ -117,7 +130,7 @@ This means that instead of checking, for example, `id = Project.user.id if Proje
 * Fix `KeyError` when using `create_observation()` in dry-run mode
 
 ### Other changes
-* Added support for python 3.13
+* Add support for python 3.13
 * Convert packaging and project config to `uv`. This has no impact on users. For developers,
   see [Contributing Guide](https://github.com/pyinat/pyinaturalist/blob/main/CONTRIBUTING.md) for details.
 
