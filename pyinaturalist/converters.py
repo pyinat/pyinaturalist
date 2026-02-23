@@ -1,12 +1,13 @@
 """Type conversion utilities used for both requests and responses"""
 
 import re
+from collections.abc import Mapping, MutableSequence
 from datetime import date, datetime
 from io import BytesIO
 from logging import getLogger
 from os import SEEK_END
 from pathlib import Path
-from typing import IO, Any, Dict, List, Mapping, MutableSequence, Optional, Union
+from typing import IO, Any
 from warnings import catch_warnings, simplefilter
 
 from dateutil.parser import UnknownTimezoneWarning
@@ -46,7 +47,7 @@ logger = getLogger(__name__)
 # --------------------
 
 
-def convert_all_coordinates(results: List[ResponseResult]) -> List[ResponseResult]:
+def convert_all_coordinates(results: list[ResponseResult]) -> list[ResponseResult]:
     """Convert coordinate pairs in response items from strings to floats, if valid
 
     Args:
@@ -67,7 +68,7 @@ def convert_all_place_coordinates(response: JsonResponse) -> JsonResponse:
     return response
 
 
-def convert_all_timestamps(results: List[ResponseResult]) -> List[ResponseResult]:
+def convert_all_timestamps(results: list[ResponseResult]) -> list[ResponseResult]:
     """Replace all date/time info with datetime objects, where possible"""
     results = [convert_generic_timestamps(result) for result in results]
     results = [convert_observation_timestamps(result) for result in results]
@@ -100,7 +101,7 @@ def get_histogram_interval(result: JsonResponse) -> str:
 # --------------------
 
 
-def convert_isoformat(value: Union[date, datetime, str]) -> str:
+def convert_isoformat(value: date | datetime | str) -> str:
     """Convert a date, datetime, or timestamps to a string in ISO 8601 format.
     If it's a datetime and doesn't already have tzinfo, set it to the system's local timezone.
 
@@ -114,7 +115,7 @@ def convert_isoformat(value: Union[date, datetime, str]) -> str:
     return value.isoformat()
 
 
-def convert_lat_long(obj: Union[Dict, List, None, str]) -> Optional[Coordinates]:
+def convert_lat_long(obj: dict | list | None | str) -> Coordinates | None:
     """Convert a coordinate pair as a dict, list, or string into a pair of floats, if valid"""
     if not obj:
         return None
@@ -181,7 +182,7 @@ def convert_observation_timestamps(result: ResponseResult) -> ResponseResult:
     return observation
 
 
-def safe_split(value: Any, delimiter: str = '|') -> List[str]:
+def safe_split(value: Any, delimiter: str = '|') -> list[str]:
     """Split a pipe-(or other token)-delimited string"""
     return list(ensure_list(value, split_str_list=True, delimiter=delimiter))
 
@@ -190,7 +191,7 @@ def safe_split(value: Any, delimiter: str = '|') -> List[str]:
 # -------------------
 
 
-def ensure_file_obj(value: AnyFile, session: Optional[Session] = None) -> IO:
+def ensure_file_obj(value: AnyFile, session: Session | None = None) -> IO:
     """Load data into a file-like object, if it isn't already. Accepts local file paths and URLs."""
     file_size = 0
 
@@ -255,7 +256,7 @@ def ensure_list(
 # --------------------
 
 
-def format_dimensions(dimensions: Union[Dict[str, int], Dimensions, None]) -> Dimensions:
+def format_dimensions(dimensions: dict[str, int] | Dimensions | None) -> Dimensions:
     """Simplify a 'dimensions' dict into a ``(width, height)`` tuple"""
     if not dimensions:
         return (0, 0)
@@ -280,7 +281,7 @@ def format_file_size(n_bytes: int) -> str:
     return _format(unit)
 
 
-def format_license(value: str) -> Optional[str]:
+def format_license(value: str) -> str | None:
     """Format a Creative Commons license code"""
     return str(value).upper().replace('_', '-') if value else None
 
@@ -289,7 +290,7 @@ def format_license(value: str) -> Optional[str]:
 # --------------------
 
 
-def try_datetime(timestamp: Any, **kwargs) -> Optional[datetime]:
+def try_datetime(timestamp: Any, **kwargs) -> datetime | None:
     """Parse a date/time string into a datetime, if valid; return ``None`` otherwise"""
     if isinstance(timestamp, datetime):
         return timestamp
@@ -306,13 +307,13 @@ def try_datetime(timestamp: Any, **kwargs) -> Optional[datetime]:
         return None
 
 
-def try_date(timestamp: Any, **kwargs) -> Optional[date]:
+def try_date(timestamp: Any, **kwargs) -> date | None:
     """Parse a date string into a date, if valid; return ``None`` otherwise"""
     dt = try_datetime(timestamp, **kwargs)
     return dt.date() if dt else None
 
 
-def try_float(value: Any) -> Optional[float]:
+def try_float(value: Any) -> float | None:
     """Convert a value to a float, if valid; return ``None`` otherwise"""
     try:
         return float(value)
@@ -320,7 +321,7 @@ def try_float(value: Any) -> Optional[float]:
         return None
 
 
-def try_float_pair(*values: Any) -> Optional[Coordinates]:
+def try_float_pair(*values: Any) -> Coordinates | None:
     """Convert a pair of coordinate values to floats, if both are valid; return ``None`` otherwise"""
     if len(values) != 2:
         return None
@@ -330,7 +331,7 @@ def try_float_pair(*values: Any) -> Optional[Coordinates]:
         return None
 
 
-def try_int(value: Any) -> Optional[float]:
+def try_int(value: Any) -> float | None:
     """Convert a value to a int, if valid; return ``None`` otherwise"""
     try:
         return int(value)
@@ -338,6 +339,6 @@ def try_int(value: Any) -> Optional[float]:
         return None
 
 
-def try_int_or_float(value: Any) -> Union[int, float, None]:
+def try_int_or_float(value: Any) -> int | float | None:
     """Convert a value to either an int or a float, if valid; return ``None`` otherwise"""
     return try_int(str(value)) or try_float(str(value))

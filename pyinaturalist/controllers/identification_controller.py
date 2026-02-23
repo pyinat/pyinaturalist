@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pyinaturalist.constants import (
     API_V1,
     MultiInt,
@@ -20,7 +18,7 @@ IDS_PER_REQUEST = 30
 class IdentificationController(BaseController):
     """:fa:`binoculars` Controller for Identification requests"""
 
-    def __call__(self, identification_id: int, **params) -> Optional[Identification]:
+    def __call__(self, identification_id: int, **params) -> Identification | None:
         """Get a single identification by ID
 
         Example:

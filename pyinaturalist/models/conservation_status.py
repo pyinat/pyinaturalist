@@ -2,7 +2,6 @@
 
 import re
 from logging import getLogger
-from typing import List, Optional, Union
 
 from attr import define
 
@@ -131,10 +130,10 @@ class ConservationStatus(BaseModel):
 
     def __init__(
         self,
-        status_name: Optional[str] = None,
-        place_id: Optional[int] = None,
-        updater_id: Optional[int] = None,
-        user_id: Optional[int] = None,
+        status_name: str | None = None,
+        place_id: int | None = None,
+        updater_id: int | None = None,
+        user_id: int | None = None,
         **kwargs,
     ):
         self.__attrs_init__(**kwargs)  # type: ignore
@@ -178,7 +177,7 @@ class ConservationStatus(BaseModel):
 
     # Wrapper properties to handle inconsistencies between obs, taxa, and taxon_summary endpoints
     @property
-    def place_id(self) -> Optional[int]:
+    def place_id(self) -> int | None:
         return self.place.id if self.place else None
 
     @place_id.setter
@@ -188,7 +187,7 @@ class ConservationStatus(BaseModel):
         self.place.id = value
 
     @property
-    def updater_id(self) -> Optional[int]:
+    def updater_id(self) -> int | None:
         return self.updater.id if self.updater else None
 
     @updater_id.setter
@@ -198,7 +197,7 @@ class ConservationStatus(BaseModel):
         self.updater.id = value
 
     @property
-    def user_id(self) -> Optional[int]:
+    def user_id(self) -> int | None:
         return self.user.id if self.user else None
 
     @user_id.setter
@@ -208,11 +207,11 @@ class ConservationStatus(BaseModel):
         self.user.id = value
 
     @property
-    def place_name(self) -> Optional[str]:
+    def place_name(self) -> str | None:
         return (self.place.display_name or self.place.name) if self.place else None
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['status_name', 'status', 'authority', 'place_name']
 
 
@@ -236,14 +235,14 @@ class TaxonSummary(BaseModel):
     wikipedia_summary: str = field(default=None, doc='Taxon summary from Wikipedia article')
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['conservation_status', 'listed_taxon']
 
 
 def translate_status_code(
-    status: Union[str, int, None] = None,
-    iucn_id: Optional[int] = None,
-    authority: Optional[str] = None,
+    status: str | int | None = None,
+    iucn_id: int | None = None,
+    authority: str | None = None,
 ) -> str:
     """Translate a conservation status code from a given authority into a descriptive name"""
     status = str(status or '').upper()

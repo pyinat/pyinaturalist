@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pyinaturalist.constants import API_V1, IntOrStr, JsonResponse, MultiInt
 from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.docs import document_request_params
@@ -47,9 +45,9 @@ def get_taxa(**params) -> JsonResponse:
 
 def get_taxa_by_id(
     taxon_id: MultiInt,
-    locale: Optional[str] = None,
-    preferred_place_id: Optional[int] = None,
-    all_names: Optional[bool] = None,
+    locale: str | None = None,
+    preferred_place_id: int | None = None,
+    all_names: bool | None = None,
     **params,
 ) -> JsonResponse:
     """Get one or more taxa by ID
@@ -173,9 +171,7 @@ def get_taxa_map_layers(taxon_id: int, **params) -> JsonResponse:
     return response
 
 
-def get_life_list_metadata(
-    user_id: IntOrStr, locale: Optional[str] = None, **params
-) -> JsonResponse:
+def get_life_list_metadata(user_id: IntOrStr, locale: str | None = None, **params) -> JsonResponse:
     """Get common names and default taxon photos for a user's life list
 
     .. rubric:: Notes

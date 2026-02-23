@@ -7,10 +7,11 @@ params.
 """
 
 import re
+from collections.abc import Callable, Iterable, Mapping
 from datetime import date, datetime, timedelta
 from inspect import signature
 from logging import getLogger
-from typing import Any, Callable, Dict, Iterable, List, Mapping, Optional, Tuple, Union
+from typing import Any
 
 from dateutil.parser import parse as parse_date
 from dateutil.relativedelta import relativedelta
@@ -42,7 +43,7 @@ COMMON_PARAMS = [
 ]
 
 # Time interval options used by observation histogram
-INTERVALS: Dict[str, Union[timedelta, relativedelta]] = {
+INTERVALS: dict[str, timedelta | relativedelta] = {
     'hour': timedelta(hours=1),
     'day': timedelta(days=1),
     'week': relativedelta(weeks=1),
@@ -70,7 +71,7 @@ MAX_URL_LENGTH = 2048  # Depends on server and browser. This is is on the lower 
 logger = getLogger(__name__)
 
 
-def preprocess_request_body(body: Optional[RequestParams]) -> Optional[RequestParams]:
+def preprocess_request_body(body: RequestParams | None) -> RequestParams | None:
     """Perform type conversions, sanity checks, etc. on JSON-formatted request body"""
     if not body:
         return None
@@ -83,7 +84,7 @@ def preprocess_request_body(body: Optional[RequestParams]) -> Optional[RequestPa
 
 
 def preprocess_request_params(
-    params: Optional[RequestParams], convert_lists: bool = True
+    params: RequestParams | None, convert_lists: bool = True
 ) -> RequestParams:
     """Perform type conversions, sanity checks, etc. on request parameters"""
     if not params:
@@ -110,7 +111,7 @@ def convert_bool_params(params: RequestParams) -> RequestParams:
     return params
 
 
-def convert_url_ids(url: str, ids: Optional[MultiInt] = None, allow_str_ids: bool = False) -> str:
+def convert_url_ids(url: str, ids: MultiInt | None = None, allow_str_ids: bool = False) -> str:
     """If one or more resources are requested by ID, validate and update the request URL
     accordingly"""
     if not ids:
@@ -130,7 +131,7 @@ def _join_list(obj: Any) -> str:
         return str(obj)
 
 
-def _validate_ids(ids: Any) -> List[int]:
+def _validate_ids(ids: Any) -> list[int]:
     """Ensure ID(s) are all valid, and convert to a comma-delimited string if there are multiple
 
     Raises:
@@ -166,7 +167,7 @@ def convert_list_params(params: RequestParams) -> RequestParams:
 
 def convert_observation_params(
     params: RequestParams,
-) -> Tuple[List, List, List, RequestParams, RequestParams]:
+) -> tuple[list, list, list, RequestParams, RequestParams]:
     """Some common parameter conversions needed by observation CRUD endpoints"""
     ofvs, photos, sounds, photo_ids, params, kwargs = convert_observation_params_v2(params)
     params['observation_field_values_attributes'] = ofvs
@@ -175,7 +176,7 @@ def convert_observation_params(
 
 def convert_observation_params_v2(
     params: RequestParams,
-) -> Tuple[List, List, List, List, RequestParams, RequestParams]:
+) -> tuple[list, list, list, list, RequestParams, RequestParams]:
     """Some common parameter conversions needed by observation CRUD endpoints;
     same as convert_observation_params but splits out observation field values.
     """
@@ -199,7 +200,7 @@ def convert_observation_params_v2(
     return ofvs, photos, sounds, photo_ids, params, kwargs  # type: ignore
 
 
-def convert_ofv_params(params: RequestParams) -> List[Dict]:
+def convert_ofv_params(params: RequestParams) -> list[dict]:
     """Translate simplified format of observation field values into API-compatible format.
     Also handles an already API-compatible format.
     """
@@ -282,7 +283,7 @@ def normalize_rank_params(params: RequestParams) -> RequestParams:
 
 def get_interval_ranges(
     start: DateOrStr, end: DateOrStr, interval: TimeInterval
-) -> List[DateRange]:
+) -> list[DateRange]:
     """Given a date range and a time interval, split the range into a list of smaller ranges
 
     Args:
@@ -308,19 +309,19 @@ def get_interval_ranges(
     return ranges
 
 
-def get_valid_kwargs(func: Callable, kwargs: Dict) -> Dict:
+def get_valid_kwargs(func: Callable, kwargs: dict) -> dict:
     """Get the subset of non-None ``kwargs`` that are valid params for ``func``"""
     sig_params = list(signature(func).parameters)
     return {k: v for k, v in kwargs.items() if k in sig_params and v is not None}
 
 
-def split_common_params(params: RequestParams) -> Tuple[RequestParams, RequestParams]:
+def split_common_params(params: RequestParams) -> tuple[RequestParams, RequestParams]:
     """Split out common keyword args (for pyinaturalist functions) from request params (for API)"""
     kwargs = {k: params.pop(k, None) for k in COMMON_PARAMS}
     return params, kwargs
 
 
-def strip_empty_values(values: Dict) -> Dict:
+def strip_empty_values(values: dict) -> dict:
     """Remove any dict items with empty or ``None`` values.
     Observation field filters are an exception (e.g. ``field:foo=``).
     """
@@ -374,7 +375,7 @@ def validate_multiple_choice_param(
 
 def _validate_multiple_choice_param(
     params: RequestParams, key: str, choices: Iterable
-) -> Tuple[RequestParams, Optional[str]]:
+) -> tuple[RequestParams, str | None]:
     """Verify that a multiple-choice request parameter contains valid value(s);
     if not, return an error message.
 

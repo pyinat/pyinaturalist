@@ -1,6 +1,7 @@
+from collections.abc import Callable
 from functools import update_wrapper
 from inspect import signature
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any
 
 from attr import Attribute, Factory
 
@@ -80,9 +81,9 @@ class LazyProperty(property):
     def __init__(
         self,
         converter: Callable,
-        name: Optional[str] = None,
-        doc: Optional[str] = None,
-        type: Type = BaseModel,
+        name: str | None = None,
+        doc: str | None = None,
+        type: type = BaseModel,
         **converter_kwargs,
     ):
         update_wrapper(self, converter)  # type: ignore
@@ -136,7 +137,7 @@ def add_lazy_attrs(cls, fields):
     return list(fields) + [p.get_lazy_attr() for p in lazy_properties]
 
 
-def get_lazy_properties(cls: Type[BaseModel]) -> Dict[str, LazyProperty]:
+def get_lazy_properties(cls: type[BaseModel]) -> dict[str, LazyProperty]:
     return {k: v for k, v in cls.__dict__.items() if isinstance(v, LazyProperty)}
 
 
@@ -156,4 +157,4 @@ def _is_model_object_or_list(value):
 def _returns_list(func: Callable) -> bool:
     """Determine if a function is annotated with a List return type"""
     return_type = signature(func).return_annotation
-    return getattr(return_type, '__origin__', None) in (list, List)
+    return getattr(return_type, '__origin__', None) in (list, list)

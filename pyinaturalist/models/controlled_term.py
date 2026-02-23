@@ -1,6 +1,5 @@
 # ruff: noqa: E501
 from copy import deepcopy
-from typing import Dict, List, Optional
 
 from attr import define
 
@@ -27,12 +26,12 @@ class ControlledTermValue(BaseModel):
     label: str = field(default=None)
     ontology_uri: str = field(default=None)
     uri: str = field(default=None)
-    taxon_ids: List[int] = field(factory=list)
-    labels: List[Dict] = field(factory=list, doc='Labels for this value in various locales')
+    taxon_ids: list[int] = field(factory=list)
+    labels: list[dict] = field(factory=list, doc='Labels for this value in various locales')
     valid_within_clade: int = field(default=None)
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'label']
 
 
@@ -43,18 +42,18 @@ class ControlledTerm(BaseModel):
     """
 
     blocking: bool = field(default=None)
-    excepted_taxon_ids: List[int] = field(factory=list)
+    excepted_taxon_ids: list[int] = field(factory=list)
     is_value: bool = field(default=None)
     label: str = field(default=None)
-    labels: List[Dict] = field(factory=list, doc='Labels for this term in various locales')
+    labels: list[dict] = field(factory=list, doc='Labels for this term in various locales')
     multivalued: bool = field(default=None)
     ontology_uri: str = field(default=None)
-    taxon_ids: List[int] = field(factory=list)
+    taxon_ids: list[int] = field(factory=list)
     uri: str = field(default=None)
     valid_within_clade: int = field(default=None)
     values: property = LazyProperty(
         ControlledTermValue.from_json_list,
-        type=List[ControlledTermValue],
+        type=list[ControlledTermValue],
         doc='Allowed values for this controlled term',
     )
 
@@ -63,7 +62,7 @@ class ControlledTerm(BaseModel):
         """Combined labels from all controlled term values"""
         return ', '.join([value.label for value in self.values])
 
-    def get_value_by_id(self, controlled_value_id: int) -> Optional[ControlledTermValue]:
+    def get_value_by_id(self, controlled_value_id: int) -> ControlledTermValue | None:
         """Get the value with the specified controlled value ID"""
         return next((v for v in self.values if v.id == controlled_value_id), None)
 
@@ -76,7 +75,7 @@ class ControlledTerm(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'label', 'value_labels']
 
 
@@ -111,7 +110,7 @@ class Annotation(BaseModel):
 
     user_id: int = field(default=None)
     vote_score: int = field(default=None)
-    votes: List = field(factory=list)
+    votes: list = field(factory=list)
     user: property = LazyProperty(User.from_json, type=User, doc='User who added the annotation')
 
     controlled_attribute: property = LazyProperty(
@@ -189,18 +188,18 @@ class ControlledTermCount(BaseModel):
     """:fa:`tag` A count + histogram of a controlled term and value"""
 
     count: int = field(default=0, doc='')
-    histogram: Dict[int, int] = field(factory=dict)
+    histogram: dict[int, int] = field(factory=dict)
     controlled_attribute = LazyProperty(ControlledTerm.from_json, type=ControlledTerm)
     controlled_value = LazyProperty(ControlledTermValue.from_json, type=ControlledTermValue)
 
     @classmethod
     def from_json(
-        cls, value: JsonResponse, user_id: Optional[int] = None, **kwargs
+        cls, value: JsonResponse, user_id: int | None = None, **kwargs
     ) -> 'ControlledTermCount':
         """Rename some response fields before initializing"""
         value = deepcopy(value)
         value['histogram'] = value.pop('month_of_year', None)
-        return super(ControlledTermCount, cls).from_json(value)
+        return super().from_json(value)
 
     @property
     def term(self) -> str:
@@ -219,7 +218,7 @@ class ControlledTermCount(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['term', 'value', 'count']
 
 
@@ -229,6 +228,6 @@ class ControlledTermCounts(BaseModelCollection):
     :v1:`GET /observations/popular_field_values <Observations/get_observations_popular_field_values>`.
     """
 
-    data: List[ControlledTermCount] = field(
+    data: list[ControlledTermCount] = field(
         factory=list, converter=ControlledTermCount.from_json_list
     )

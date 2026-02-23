@@ -17,6 +17,7 @@ For more details on authentication, see:
 Extra dependencies:
     ``pip install beautifulsoup4``
 """
+
 from pprint import pprint
 
 import requests

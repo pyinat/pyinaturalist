@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from logging import getLogger
-from typing import List, Union
+from typing import TypeAlias
 
 from pyinaturalist.constants import TableRow
 from pyinaturalist.converters import safe_split, try_date, try_datetime, try_int_or_float
@@ -25,7 +25,7 @@ OFV_DATATYPES = {
     'text': str,
     'time': str,
 }
-OFVValue = Union[date, datetime, float, int, str]
+OFVValue: TypeAlias = date | datetime | float | int | str
 
 
 @define_model
@@ -34,7 +34,7 @@ class ObservationField(BaseModel):
     `GET /observation_fields <https://www.inaturalist.org/pages/api+reference#get-observation_fields>`_.
     """
 
-    allowed_values: List[str] = field(converter=safe_split, factory=list)
+    allowed_values: list[str] = field(converter=safe_split, factory=list)
     created_at: datetime = datetime_now_field(doc='Date and time the observation field was created')
     datatype: str = field(default=None)  # Enum
     description: str = field(default=None)
@@ -58,7 +58,7 @@ class ObservationField(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'datatype', 'name', 'description']
 
 
@@ -113,5 +113,5 @@ class ObservationFieldValue(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'datatype', 'name', 'value']

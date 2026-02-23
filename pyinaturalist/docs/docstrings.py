@@ -1,8 +1,9 @@
 """Utilities for copying and modifying docstrings with type annotations"""
 
 import re
+from collections.abc import Callable, Iterable
 from inspect import cleandoc
-from typing import Callable, Dict, Iterable, List, Optional, get_type_hints
+from typing import get_type_hints
 
 from pyinaturalist.constants import TemplateFunction
 
@@ -16,14 +17,14 @@ class ApiDocstring:
     Assumes Google-style docstrings.
     """
 
-    def __init__(self, docstring: Optional[str] = None):
+    def __init__(self, docstring: str | None = None):
         self.sections = self._split_sections(docstring or '')
 
     def extend(
         self,
         docstring: str,
-        include_sections: Optional[List[str]] = None,
-        exclude_args: Optional[Iterable[str]] = None,
+        include_sections: list[str] | None = None,
+        exclude_args: Iterable[str] | None = None,
     ):
         """Extend with contents from another docstring
 
@@ -49,7 +50,7 @@ class ApiDocstring:
 
     # Note: Currently this only applies to single-line arg docs; no need for multi-line (yet)
     @staticmethod
-    def _exclude_args(args_section: str, exclude_args: Optional[Iterable[str]] = None) -> str:
+    def _exclude_args(args_section: str, exclude_args: Iterable[str] | None = None) -> str:
         if not exclude_args:
             return args_section
 
@@ -65,7 +66,7 @@ class ApiDocstring:
         return prefix + value.replace('\n', f'\n{prefix}')
 
     @staticmethod
-    def _split_sections(docstring: str) -> Dict[str, str]:
+    def _split_sections(docstring: str) -> dict[str, str]:
         """Split a docstring into a dict of ``{section_title: section_content}``"""
         docstring = docstring or ''
         sections = dict.fromkeys(DEFAULT_SECTIONS, '')
@@ -92,7 +93,7 @@ class ApiDocstring:
 
 def copy_annotations(
     target_function: Callable,
-    template_functions: List[TemplateFunction],
+    template_functions: list[TemplateFunction],
     include_return: bool = True,
 ) -> Callable:
     """Copy type annotations from one or more template functions to a target function"""
@@ -109,9 +110,9 @@ def copy_annotations(
 
 def copy_docstrings(
     target_function: Callable,
-    template_functions: List[TemplateFunction],
-    include_sections: Optional[List[str]] = None,
-    exclude_args: Optional[Iterable[str]] = None,
+    template_functions: list[TemplateFunction],
+    include_sections: list[str] | None = None,
+    exclude_args: Iterable[str] | None = None,
 ) -> Callable:
     """Copy docstrings from one or more template functions to a target function.
     Assumes Google-style docstrings.

@@ -1,7 +1,7 @@
 """Test signature copying functionality to validate behavior before simplifying implementation."""
 
 import inspect
-from typing import List, Optional
+from typing import Optional
 
 from pyinaturalist.docs import (
     copy_doc_signature,
@@ -12,8 +12,8 @@ from pyinaturalist.docs import (
 
 # Test template functions that mimic the real ones in templates.py
 def _test_template_basic(
-    param_a: Optional[str] = None,
-    param_b: Optional[int] = None,
+    param_a: str | None = None,
+    param_b: int | None = None,
 ):
     """Args:
     param_a: First parameter description
@@ -22,7 +22,7 @@ def _test_template_basic(
 
 
 def _test_template_complex(
-    param_c: Optional[List[str]] = None,
+    param_c: list[str] | None = None,
     param_d: bool = False,
 ):
     """Args:
@@ -165,9 +165,9 @@ def test_document_controller_params():
     def _controller_template(
         dry_run: bool = False,
         session=None,
-        page: Optional[int] = None,
-        per_page: Optional[int] = None,
-        param_x: Optional[str] = None,
+        page: int | None = None,
+        per_page: int | None = None,
+        param_x: str | None = None,
     ):
         """Args:
         dry_run: Should be excluded
@@ -240,7 +240,7 @@ def test_observation_search_pattern():
 
     # Simulate the pattern from observation_controller.py
     def _observation_common(
-        q: Optional[str] = None,
+        q: str | None = None,
         d1=None,
         d2=None,
     ):
@@ -250,7 +250,7 @@ def test_observation_search_pattern():
         d2: Must be observed on or before this date
         """
 
-    def _only_id(only_id: Optional[bool] = None):
+    def _only_id(only_id: bool | None = None):
         """Args:
         only_id: Return only the record IDs
         """
@@ -280,8 +280,8 @@ def test_identification_pattern():
     """Test the pattern used by identification controller."""
 
     def _identification_params(
-        current_taxon: Optional[bool] = None,
-        own_observation: Optional[bool] = None,
+        current_taxon: bool | None = None,
+        own_observation: bool | None = None,
     ):
         """Args:
         current_taxon: ID's taxon is the same it's observation's taxon
@@ -289,15 +289,15 @@ def test_identification_pattern():
         """
 
     def _pagination(
-        page: Optional[int] = None,
-        per_page: Optional[int] = None,
+        page: int | None = None,
+        per_page: int | None = None,
     ):
         """Args:
         page: Page number of results to return
         per_page: Number of results to return in a page
         """
 
-    def _only_id_local(only_id: Optional[bool] = None):
+    def _only_id_local(only_id: bool | None = None):
         """Args:
         only_id: Return only the record IDs
         """

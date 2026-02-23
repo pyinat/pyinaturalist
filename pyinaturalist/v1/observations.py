@@ -1,7 +1,6 @@
 # TODO: pprint examples are out of date
 from copy import deepcopy
 from logging import getLogger
-from typing import Optional
 
 from pyinaturalist.constants import (
     API_V1,
@@ -97,7 +96,7 @@ def get_observations(**params) -> JsonResponse:
 
 @document_common_args
 def get_observations_by_id(
-    observation_id: MultiInt, access_token: Optional[str] = None, **params
+    observation_id: MultiInt, access_token: str | None = None, **params
 ) -> JsonResponse:
     """Get one or more observations by ID
 
@@ -476,9 +475,9 @@ def update_observation(observation_id: int, **params) -> ListResponse:
 @document_common_args
 def upload(
     observation_id: int,
-    photos: Optional[MultiFile] = None,
-    sounds: Optional[MultiFile] = None,
-    photo_ids: Optional[MultiIntOrStr] = None,
+    photos: MultiFile | None = None,
+    sounds: MultiFile | None = None,
+    photo_ids: MultiIntOrStr | None = None,
     **params,
 ) -> ListResponse:
     """Upload one or more local photo and/or sound files, and add them to an existing observation.
@@ -560,7 +559,7 @@ def upload(
 
 
 @document_request_params(docs._observation_id, docs._access_token)
-def delete_observation(observation_id: int, access_token: Optional[str] = None, **params):
+def delete_observation(observation_id: int, access_token: str | None = None, **params):
     """Delete an observation
 
     .. rubric:: Notes
@@ -592,7 +591,7 @@ def delete_observation(observation_id: int, access_token: Optional[str] = None, 
 
 @document_common_args
 def get_observation(
-    observation_id: int, access_token: Optional[str] = None, **params
+    observation_id: int, access_token: str | None = None, **params
 ) -> ResponseResult:
     """Get details about a single observation by ID
 

@@ -4,7 +4,7 @@ rendered in the docs as tables.
 
 import csv
 from inspect import getmembers, isclass
-from typing import TYPE_CHECKING, Any, List, Tuple, Type, get_type_hints
+from typing import TYPE_CHECKING, Any, get_type_hints
 
 from attr import Attribute
 from sphinx.config import Config
@@ -25,7 +25,7 @@ def document_models(app):
         export_model_doc(model.__name__, doc_table)
 
 
-def get_model_classes() -> List[Type]:
+def get_model_classes() -> list[type]:
     """Get all model classes defined in the :py:mod:`pyinaturalist.models` package"""
     import pyinaturalist.models
     from pyinaturalist.models import BaseModel
@@ -37,7 +37,7 @@ def get_model_classes() -> List[Type]:
     return model_classes
 
 
-def get_model_doc(cls: Type, config: Config) -> List[Tuple[str, str, str]]:
+def get_model_doc(cls: type, config: Config) -> list[tuple[str, str, str]]:
     """Get the name, type and description for all model attributes, properties, and LazyProperties.
     If an attribute has metadata for options (possible values for the attribute), include those
     options in the description.
@@ -47,7 +47,7 @@ def get_model_doc(cls: Type, config: Config) -> List[Tuple[str, str, str]]:
 
     doc_rows = [
         _get_field_doc(field, config)
-        for field in cls.__attrs_attrs__
+        for field in cls.__attrs_attrs__  # type: ignore[attr-defined]
         if not field.name.startswith('_')
     ]
     doc_rows += [('', '', '')]
@@ -61,7 +61,7 @@ def get_model_doc(cls: Type, config: Config) -> List[Tuple[str, str, str]]:
     return doc_rows
 
 
-def get_properties(cls: Type) -> List[property]:
+def get_properties(cls: type) -> list[property]:
     """Get all @property descriptors from a class"""
     return [
         member
@@ -72,7 +72,7 @@ def get_properties(cls: Type) -> List[property]:
     ]
 
 
-def _get_field_doc(field: Attribute, config: Config) -> Tuple[str, str, str]:
+def _get_field_doc(field: Attribute, config: Config) -> tuple[str, str, str]:
     """Get a row documenting an attrs Attribute"""
     rtype = format_annotation(field.type, config)
     doc = field.metadata.get('doc', '')
@@ -83,7 +83,7 @@ def _get_field_doc(field: Attribute, config: Config) -> Tuple[str, str, str]:
     return (f'**{field.name}**', rtype, doc)
 
 
-def _get_property_doc(prop: property, config: Config) -> Tuple[str, str, str]:
+def _get_property_doc(prop: property, config: Config) -> tuple[str, str, str]:
     """Get a row documenting a regular @property"""
     fget_rtype = get_type_hints(prop.fget).get('return', Any)
     rtype = format_annotation(fget_rtype, config)
@@ -95,7 +95,7 @@ def _get_property_doc(prop: property, config: Config) -> Tuple[str, str, str]:
     return (f'**{prop.fget.__name__}** ({property_type})', rtype, doc)
 
 
-def _get_lazy_property_doc(prop: LazyProperty, config: Config) -> Tuple[str, str, str]:
+def _get_lazy_property_doc(prop: LazyProperty, config: Config) -> tuple[str, str, str]:
     """Get a row documenting a LazyProperty"""
     rtype = format_annotation(prop.type, config)
 

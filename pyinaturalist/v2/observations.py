@@ -1,6 +1,6 @@
 from copy import deepcopy
 from logging import getLogger
-from typing import Any, Optional
+from typing import Any
 
 from pyinaturalist.constants import (
     API_V2,
@@ -159,9 +159,9 @@ def _get_post_observations(params: RequestParams) -> JsonResponse:
 @document_common_args
 def upload(
     observation_uuid: str,
-    photos: Optional[MultiFile] = None,
-    sounds: Optional[MultiFile] = None,
-    photo_ids: Optional[MultiIntOrStr] = None,
+    photos: MultiFile | None = None,
+    sounds: MultiFile | None = None,
+    photo_ids: MultiIntOrStr | None = None,
     **params,
 ) -> ListResponse:
     """Upload one or more local photo and/or sound files, and add them to an existing observation.
@@ -349,7 +349,7 @@ def update_observation(observation_uuid: str, **params) -> JsonResponse:
 
 
 @document_request_params(docs._access_token)
-def delete_observation(observation_uuid: str, access_token: Optional[str] = None, **params):
+def delete_observation(observation_uuid: str, access_token: str | None = None, **params):
     """Delete an observation
 
     .. rubric:: Notes

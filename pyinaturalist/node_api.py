@@ -15,7 +15,7 @@ msg = (
 warn(DeprecationWarning(msg), stacklevel=2)
 
 
-def get_all_observations(**params) -> List[JsonResponse]:
+def get_all_observations(**params) -> list[JsonResponse]:
     """:fas:`triangle-exclamation` Deprecated; use ``get_observations(page='all')`` instead"""
     msg = "get_all_observations() is deprecated; please use get_observations(page='all') instead"
     warn(DeprecationWarning(msg), stacklevel=2)

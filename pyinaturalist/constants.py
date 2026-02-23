@@ -1,7 +1,8 @@
 # ruff: noqa: F401
+from collections.abc import Iterable
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import IO, TYPE_CHECKING, Any, BinaryIO, Dict, Iterable, List, Optional, Tuple, Union
+from typing import IO, TYPE_CHECKING, Any, BinaryIO, Optional, TypeAlias
 
 from dateutil.relativedelta import relativedelta
 from platformdirs import user_data_dir
@@ -268,35 +269,37 @@ DATETIME_PARAMS = [
 DATETIME_SHORT_FORMAT = '%b %d, %Y'
 
 # Type aliases
-Coordinates = Tuple[float, float]
-AnyDate = Union[date, datetime, str]
-AnyDateTime = Union[datetime, str]
-AnyFile = Union[IO, Path, str]
+Coordinates: TypeAlias = tuple[float, float]
+AnyDate: TypeAlias = date | datetime | str
+AnyDateTime: TypeAlias = datetime | str
+AnyFile: TypeAlias = IO | Path | str
 DateTime = datetime
-DateOrInt = Union[date, datetime, int]
-DateOrStr = Union[date, datetime, str]
-DateOrDatetime = Union[date, datetime]
-DateRange = Tuple[DateOrDatetime, DateOrDatetime]
-Dimensions = Tuple[int, int]
-FileOrPath = Union[BinaryIO, Path, str]
-GeoJson = Dict[str, Any]
-HistogramResponse = Dict[DateOrInt, int]
-IntOrStr = Union[int, str]
-JsonResponse = Dict[str, Any]
-ListResponse = List[Dict[str, Any]]
-ObsFieldValues = Union[Dict, List[Dict]]
-PathOrStr = Union[Path, str]
-RequestParams = Dict[str, Any]
-ResponseResult = Dict[str, Any]
-ResponseOrResults = Union[JsonResponse, Iterable[ResponseResult]]
-ResponseOrFile = Union[AnyFile, JsonResponse]
-MultiFile = Union[FileOrPath, Iterable[FileOrPath]]
-MultiInt = Union[int, Iterable[int]]
-MultiStr = Union[str, Iterable[str]]
-MultiIntOrStr = Union[MultiInt, MultiStr]
-TableRow = Dict[str, Any]
-TemplateFunction = Any  # Cannot use Callable/Protocol, as these will not allow a mix of signatures
-TimeInterval = Union[str, timedelta, relativedelta]
+DateOrInt: TypeAlias = date | datetime | int
+DateOrStr: TypeAlias = date | datetime | str
+DateOrDatetime: TypeAlias = date | datetime
+DateRange: TypeAlias = tuple[DateOrDatetime, DateOrDatetime]
+Dimensions: TypeAlias = tuple[int, int]
+FileOrPath: TypeAlias = BinaryIO | Path | str
+GeoJson: TypeAlias = dict[str, Any]
+HistogramResponse: TypeAlias = dict[DateOrInt, int]
+IntOrStr: TypeAlias = int | str
+JsonResponse: TypeAlias = dict[str, Any]
+ListResponse: TypeAlias = list[dict[str, Any]]
+ObsFieldValues: TypeAlias = dict | list[dict]
+PathOrStr: TypeAlias = Path | str
+RequestParams: TypeAlias = dict[str, Any]
+ResponseResult: TypeAlias = dict[str, Any]
+ResponseOrResults: TypeAlias = JsonResponse | Iterable[ResponseResult]
+ResponseOrFile: TypeAlias = AnyFile | JsonResponse
+MultiFile: TypeAlias = FileOrPath | Iterable[FileOrPath]
+MultiInt: TypeAlias = int | Iterable[int]
+MultiStr: TypeAlias = str | Iterable[str]
+MultiIntOrStr: TypeAlias = MultiInt | MultiStr
+TableRow: TypeAlias = dict[str, Any]
+TemplateFunction: TypeAlias = (
+    Any  # Cannot use Callable/Protocol, as these will not allow a mix of signatures
+)
+TimeInterval: TypeAlias = str | timedelta | relativedelta
 
 # For type checking purposes, some nullable attrs need to be marked as Optional.
 # For documentation purposes, this is redundant since all keyword args are optional.

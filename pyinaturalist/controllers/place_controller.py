@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pyinaturalist.constants import IntOrStr, MultiIntOrStr
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.converters import ensure_list
@@ -11,7 +9,7 @@ from pyinaturalist.v1 import get_places_autocomplete, get_places_by_id, get_plac
 class PlaceController(BaseController):
     """:fa:`location-dot` Controller for Place requests"""
 
-    def __call__(self, place_id: IntOrStr, **kwargs) -> Optional[Place]:
+    def __call__(self, place_id: IntOrStr, **kwargs) -> Place | None:
         """Get a single place by ID
 
         Example:
@@ -39,7 +37,7 @@ class PlaceController(BaseController):
             get_places_by_id, Place, place_id=ensure_list(place_ids), **params
         )
 
-    def autocomplete(self, q: Optional[str] = None, **params) -> Paginator[Place]:
+    def autocomplete(self, q: str | None = None, **params) -> Paginator[Place]:
         """Given a query string, get places with names starting with the search term
 
         .. rubric:: Notes
@@ -67,7 +65,7 @@ class PlaceController(BaseController):
         nelng: float,
         swlat: float,
         swlng: float,
-        name: Optional[str] = None,
+        name: str | None = None,
         **params,
     ) -> Paginator[Place]:
         """Search for places near a given location

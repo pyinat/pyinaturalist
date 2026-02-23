@@ -1,6 +1,5 @@
 from logging import getLogger
 from os import getenv
-from typing import Dict, Optional
 
 from keyring import get_password, set_password
 from keyring.errors import KeyringError
@@ -14,10 +13,10 @@ logger = getLogger(__name__)
 
 
 def get_access_token(
-    username: Optional[str] = None,
-    password: Optional[str] = None,
-    app_id: Optional[str] = None,
-    app_secret: Optional[str] = None,
+    username: str | None = None,
+    password: str | None = None,
+    app_id: str | None = None,
+    app_secret: str | None = None,
     jwt: bool = True,
     refresh: bool = False,
 ) -> str:
@@ -116,7 +115,7 @@ def validate_token(access_token: str) -> bool:
         return False
 
 
-def get_keyring_credentials() -> Dict[str, Optional[str]]:
+def get_keyring_credentials() -> dict[str, str | None]:
     """Attempt to get iNaturalist credentials from the system keyring
 
     Returns:

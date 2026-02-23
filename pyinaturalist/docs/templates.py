@@ -12,7 +12,7 @@ Note: Since the templates are applied dynamically at import time, this adds a ti
 """
 
 # ruff: noqa: E501
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from pyinaturalist.constants import (
     AnyDate,
@@ -31,38 +31,38 @@ from pyinaturalist.constants import (
 
 
 def _identification_params(
-    current_taxon: Optional[bool] = None,
-    own_observation: Optional[bool] = None,
-    is_change: Optional[bool] = None,
-    taxon_active: Optional[bool] = None,
-    observation_taxon_active: Optional[bool] = None,
-    id: Optional[MultiInt] = None,
-    rank: Optional[MultiStr] = None,
-    observation_rank: Optional[MultiStr] = None,
-    user_id: Optional[MultiIntOrStr] = None,
-    user_login: Optional[MultiStr] = None,
-    current: Optional[bool] = None,
-    category: Optional[MultiStr] = None,
-    place_id: Optional[MultiInt] = None,
-    quality_grade: Optional[MultiStr] = None,
-    taxon_id: Optional[MultiInt] = None,
-    observation_taxon_id: Optional[MultiInt] = None,
-    iconic_taxon_id: Optional[MultiInt] = None,
-    observation_iconic_taxon_id: Optional[MultiInt] = None,
-    lrank: Optional[str] = None,
-    hrank: Optional[str] = None,
-    observation_lrank: Optional[str] = None,
-    observation_hrank: Optional[str] = None,
-    without_taxon_id: Optional[MultiInt] = None,
-    without_observation_taxon_id: Optional[MultiInt] = None,
-    d1: Optional[AnyDate] = None,
-    d2: Optional[AnyDate] = None,
-    observation_created_d1: Optional[AnyDate] = None,
-    observation_created_d2: Optional[AnyDate] = None,
-    observed_d1: Optional[AnyDate] = None,
-    observed_d2: Optional[AnyDate] = None,
-    id_above: Optional[int] = None,
-    id_below: Optional[int] = None,
+    current_taxon: bool | None = None,
+    own_observation: bool | None = None,
+    is_change: bool | None = None,
+    taxon_active: bool | None = None,
+    observation_taxon_active: bool | None = None,
+    id: MultiInt | None = None,
+    rank: MultiStr | None = None,
+    observation_rank: MultiStr | None = None,
+    user_id: MultiIntOrStr | None = None,
+    user_login: MultiStr | None = None,
+    current: bool | None = None,
+    category: MultiStr | None = None,
+    place_id: MultiInt | None = None,
+    quality_grade: MultiStr | None = None,
+    taxon_id: MultiInt | None = None,
+    observation_taxon_id: MultiInt | None = None,
+    iconic_taxon_id: MultiInt | None = None,
+    observation_iconic_taxon_id: MultiInt | None = None,
+    lrank: str | None = None,
+    hrank: str | None = None,
+    observation_lrank: str | None = None,
+    observation_hrank: str | None = None,
+    without_taxon_id: MultiInt | None = None,
+    without_observation_taxon_id: MultiInt | None = None,
+    d1: AnyDate | None = None,
+    d2: AnyDate | None = None,
+    observation_created_d1: AnyDate | None = None,
+    observation_created_d2: AnyDate | None = None,
+    observed_d1: AnyDate | None = None,
+    observed_d2: AnyDate | None = None,
+    id_above: int | None = None,
+    id_below: int | None = None,
 ):
     """Args:
     current_taxon: ID's taxon is the same it's observation's taxon
@@ -105,10 +105,10 @@ def _identification_params(
 
 
 def _message_params(
-    page: Optional[int] = None,
-    box: Optional[str] = None,
-    q: Optional[str] = None,
-    user_id: Optional[int] = None,
+    page: int | None = None,
+    box: str | None = None,
+    q: str | None = None,
+    user_id: int | None = None,
     threads: bool = False,
 ):
     """Args:
@@ -133,22 +133,22 @@ def _message_id(message_id: int):
 
 # Params that are in most observation-related endpoints in all API versions
 def _observation_common(
-    q: Optional[str] = None,
-    d1: Optional[AnyDate] = None,
-    d2: Optional[AnyDate] = None,
-    day: Optional[MultiInt] = None,
-    month: Optional[MultiInt] = None,
-    year: Optional[MultiInt] = None,
-    license: Optional[MultiStr] = None,
-    list_id: Optional[int] = None,
-    photo_license: Optional[MultiStr] = None,
-    out_of_range: Optional[bool] = None,
-    quality_grade: Optional[str] = None,
-    id: Optional[MultiInt] = None,
-    taxon_id: Optional[MultiInt] = None,
-    taxon_name: Optional[MultiStr] = None,
-    iconic_taxa: Optional[MultiStr] = None,
-    updated_since: Optional[AnyDateTime] = None,
+    q: str | None = None,
+    d1: AnyDate | None = None,
+    d2: AnyDate | None = None,
+    day: MultiInt | None = None,
+    month: MultiInt | None = None,
+    year: MultiInt | None = None,
+    license: MultiStr | None = None,
+    list_id: int | None = None,
+    photo_license: MultiStr | None = None,
+    out_of_range: bool | None = None,
+    quality_grade: str | None = None,
+    id: MultiInt | None = None,
+    taxon_id: MultiInt | None = None,
+    taxon_name: MultiStr | None = None,
+    iconic_taxa: MultiStr | None = None,
+    updated_since: AnyDateTime | None = None,
 ):
     """Args:
     q: Search observation properties
@@ -172,69 +172,69 @@ def _observation_common(
 
 # Observation params that are only in the v1 API
 def _observation_v1(
-    acc: Optional[bool] = None,
-    captive: Optional[bool] = None,
-    endemic: Optional[bool] = None,
-    geo: Optional[bool] = None,
-    id_please: Optional[bool] = None,
-    identified: Optional[bool] = None,
-    introduced: Optional[bool] = None,
-    mappable: Optional[bool] = None,
-    native: Optional[bool] = None,
-    pcid: Optional[bool] = None,
-    photos: Optional[bool] = None,
-    popular: Optional[bool] = None,
-    sounds: Optional[bool] = None,
-    taxon_is_active: Optional[bool] = None,
-    threatened: Optional[bool] = None,
-    verifiable: Optional[bool] = None,
-    not_id: Optional[MultiInt] = None,
-    sound_license: Optional[MultiStr] = None,
-    observation_fields: Optional[Union[List, Dict]] = None,
-    ofv_datatype: Optional[MultiStr] = None,
-    place_id: Optional[MultiInt] = None,
-    project_id: Optional[MultiInt] = None,
-    rank: Optional[MultiStr] = None,
-    site_id: Optional[MultiStr] = None,
-    without_taxon_id: Optional[MultiInt] = None,
-    user_id: Optional[MultiIntOrStr] = None,
-    user_login: Optional[MultiStr] = None,
-    ident_user_id: Optional[MultiIntOrStr] = None,
-    term_id: Optional[MultiInt] = None,
-    term_value_id: Optional[MultiInt] = None,
-    without_term_value_id: Optional[MultiInt] = None,
-    acc_above: Optional[str] = None,
-    acc_below: Optional[str] = None,
-    acc_below_or_unknown: Optional[str] = None,
-    created_d1: Optional[AnyDateTime] = None,
-    created_d2: Optional[AnyDateTime] = None,
-    created_on: Optional[AnyDate] = None,
-    observed_on: Optional[AnyDate] = None,
-    unobserved_by_user_id: Optional[int] = None,
-    apply_project_rules_for: Optional[str] = None,
-    cs: Optional[str] = None,
-    csa: Optional[str] = None,
-    csi: Optional[MultiStr] = None,
-    geoprivacy: Optional[MultiStr] = None,
-    taxon_geoprivacy: Optional[MultiStr] = None,
-    max_rank: Optional[str] = None,
-    min_rank: Optional[str] = None,
-    hrank: Optional[str] = None,
-    lrank: Optional[str] = None,
-    id_above: Optional[int] = None,
-    id_below: Optional[int] = None,
-    identifications: Optional[str] = None,
-    lat: Optional[float] = None,
-    lng: Optional[float] = None,
-    radius: Optional[float] = None,
-    not_in_project: Optional[IntOrStr] = None,
-    not_matching_project_rules_for: Optional[IntOrStr] = None,
-    search_on: Optional[str] = None,
-    viewer_id: Optional[int] = None,
-    reviewed: Optional[bool] = None,
-    locale: Optional[str] = None,
-    preferred_place_id: Optional[int] = None,
-    ttl: Optional[str] = None,
+    acc: bool | None = None,
+    captive: bool | None = None,
+    endemic: bool | None = None,
+    geo: bool | None = None,
+    id_please: bool | None = None,
+    identified: bool | None = None,
+    introduced: bool | None = None,
+    mappable: bool | None = None,
+    native: bool | None = None,
+    pcid: bool | None = None,
+    photos: bool | None = None,
+    popular: bool | None = None,
+    sounds: bool | None = None,
+    taxon_is_active: bool | None = None,
+    threatened: bool | None = None,
+    verifiable: bool | None = None,
+    not_id: MultiInt | None = None,
+    sound_license: MultiStr | None = None,
+    observation_fields: list | dict | None = None,
+    ofv_datatype: MultiStr | None = None,
+    place_id: MultiInt | None = None,
+    project_id: MultiInt | None = None,
+    rank: MultiStr | None = None,
+    site_id: MultiStr | None = None,
+    without_taxon_id: MultiInt | None = None,
+    user_id: MultiIntOrStr | None = None,
+    user_login: MultiStr | None = None,
+    ident_user_id: MultiIntOrStr | None = None,
+    term_id: MultiInt | None = None,
+    term_value_id: MultiInt | None = None,
+    without_term_value_id: MultiInt | None = None,
+    acc_above: str | None = None,
+    acc_below: str | None = None,
+    acc_below_or_unknown: str | None = None,
+    created_d1: AnyDateTime | None = None,
+    created_d2: AnyDateTime | None = None,
+    created_on: AnyDate | None = None,
+    observed_on: AnyDate | None = None,
+    unobserved_by_user_id: int | None = None,
+    apply_project_rules_for: str | None = None,
+    cs: str | None = None,
+    csa: str | None = None,
+    csi: MultiStr | None = None,
+    geoprivacy: MultiStr | None = None,
+    taxon_geoprivacy: MultiStr | None = None,
+    max_rank: str | None = None,
+    min_rank: str | None = None,
+    hrank: str | None = None,
+    lrank: str | None = None,
+    id_above: int | None = None,
+    id_below: int | None = None,
+    identifications: str | None = None,
+    lat: float | None = None,
+    lng: float | None = None,
+    radius: float | None = None,
+    not_in_project: IntOrStr | None = None,
+    not_matching_project_rules_for: IntOrStr | None = None,
+    search_on: str | None = None,
+    viewer_id: int | None = None,
+    reviewed: bool | None = None,
+    locale: str | None = None,
+    preferred_place_id: int | None = None,
+    ttl: str | None = None,
 ):
     """Args:
     acc: Whether or not positional accuracy / coordinate uncertainty has been specified
@@ -316,13 +316,13 @@ def _observation_v1(
 
 # Observation params that are only in the v0 API
 def _observation_v0(
-    has: Optional[MultiStr] = None,
-    on: Optional[AnyDate] = None,
-    m1: Optional[AnyDate] = None,
-    m2: Optional[AnyDate] = None,
-    h1: Optional[AnyDate] = None,
-    h2: Optional[AnyDate] = None,
-    extra: Optional[str] = None,
+    has: MultiStr | None = None,
+    on: AnyDate | None = None,
+    m1: AnyDate | None = None,
+    m2: AnyDate | None = None,
+    h1: AnyDate | None = None,
+    h2: AnyDate | None = None,
+    extra: str | None = None,
     response_format: str = 'json',
 ):
     """Args:
@@ -344,8 +344,8 @@ def _observation_v0(
 
 # Observation params that are only in the v2 API
 def _observation_v2(
-    fields: Optional[Union[List[str], Dict[str, Any]]] = None,
-    except_fields: Optional[List[str]] = None,
+    fields: list[str] | dict[str, Any] | None = None,
+    except_fields: list[str] | None = None,
 ):
     """Args:
     fields: Data fields to return in the response
@@ -372,28 +372,28 @@ def _ofvs(observation_id: int, observation_field_id: int, value: Any):
 
 
 def _create_observation(
-    species_guess: Optional[str] = None,
-    taxon_id: Optional[int] = None,
-    observed_on: Optional[AnyDate] = None,
-    observed_on_string: Optional[AnyDate] = None,
-    time_zone: Optional[str] = None,
-    description: Optional[str] = None,
-    tag_list: Optional[MultiStr] = None,
-    place_guess: Optional[str] = None,
-    latitude: Optional[float] = None,
-    longitude: Optional[float] = None,
-    map_scale: Optional[int] = None,
-    positional_accuracy: Optional[int] = None,
-    geoprivacy: Optional[str] = None,
-    observation_fields: Optional[ObsFieldValues] = None,
-    observation_field_values_attributes: Optional[ObsFieldValues] = None,
-    flickr_photos: Optional[MultiInt] = None,
-    picasa_photos: Optional[MultiStr] = None,
-    facebook_photos: Optional[MultiStr] = None,
-    local_photos: Optional[MultiFile] = None,
-    photos: Optional[MultiFile] = None,
-    sounds: Optional[MultiFile] = None,
-    photo_ids: Optional[MultiIntOrStr] = None,
+    species_guess: str | None = None,
+    taxon_id: int | None = None,
+    observed_on: AnyDate | None = None,
+    observed_on_string: AnyDate | None = None,
+    time_zone: str | None = None,
+    description: str | None = None,
+    tag_list: MultiStr | None = None,
+    place_guess: str | None = None,
+    latitude: float | None = None,
+    longitude: float | None = None,
+    map_scale: int | None = None,
+    positional_accuracy: int | None = None,
+    geoprivacy: str | None = None,
+    observation_fields: ObsFieldValues | None = None,
+    observation_field_values_attributes: ObsFieldValues | None = None,
+    flickr_photos: MultiInt | None = None,
+    picasa_photos: MultiStr | None = None,
+    facebook_photos: MultiStr | None = None,
+    local_photos: MultiFile | None = None,
+    photos: MultiFile | None = None,
+    sounds: MultiFile | None = None,
+    photo_ids: MultiIntOrStr | None = None,
 ):
     """Args:
     species_guess: Equivalent to the 'What did you see?' field on the observation form.
@@ -421,21 +421,21 @@ def _create_observation(
 
 
 def _create_observation_v2(
-    captive_flag: Optional[bool] = None,
-    coordinate_system: Optional[str] = None,
-    geo_x: Optional[float] = None,
-    geo_y: Optional[float] = None,
-    license: Optional[str] = None,
-    location_is_exact: Optional[bool] = None,
-    make_license_default: Optional[bool] = None,
-    make_licenses_same: Optional[bool] = None,
-    owners_identification_from_vision: Optional[bool] = None,
-    positioning_device: Optional[str] = None,
-    positioning_method: Optional[str] = None,
-    prefers_community_taxon: Optional[bool] = None,
-    project_id: Optional[int] = None,
-    site_id: Optional[int] = None,
-    uuid: Optional[str] = None,
+    captive_flag: bool | None = None,
+    coordinate_system: str | None = None,
+    geo_x: float | None = None,
+    geo_y: float | None = None,
+    license: str | None = None,
+    location_is_exact: bool | None = None,
+    make_license_default: bool | None = None,
+    make_licenses_same: bool | None = None,
+    owners_identification_from_vision: bool | None = None,
+    positioning_device: str | None = None,
+    positioning_method: str | None = None,
+    prefers_community_taxon: bool | None = None,
+    project_id: int | None = None,
+    site_id: int | None = None,
+    uuid: str | None = None,
 ):
     """Args:
     captive_flag: Mark observation as captive/cultivated
@@ -470,10 +470,10 @@ def _update_observation(
 
 
 def _get_posts(
-    login: Optional[str] = None,
-    project_id: Optional[int] = None,
-    page: Optional[int] = None,
-    per_page: Optional[int] = None,
+    login: str | None = None,
+    project_id: int | None = None,
+    page: int | None = None,
+    per_page: int | None = None,
 ):
     """Args:
     login: Return posts by this user
@@ -489,21 +489,21 @@ def _get_posts(
 
 # Note: 'page' parameter is not in API docs, but it appears to work. 'order' does not, however.
 def _projects_params(
-    q: Optional[str] = None,
-    id: Optional[MultiInt] = None,
-    not_id: Optional[MultiInt] = None,
-    lat: Optional[float] = None,
-    lng: Optional[float] = None,
+    q: str | None = None,
+    id: MultiInt | None = None,
+    not_id: MultiInt | None = None,
+    lat: float | None = None,
+    lng: float | None = None,
     radius: int = 500,
-    featured: Optional[bool] = None,
-    noteworthy: Optional[bool] = None,
-    place_id: Optional[MultiInt] = None,
-    site_id: Optional[int] = None,
-    rule_details: Optional[bool] = None,
-    type: Optional[MultiStr] = None,
-    member_id: Optional[int] = None,
-    has_params: Optional[bool] = None,
-    has_posts: Optional[bool] = None,
+    featured: bool | None = None,
+    noteworthy: bool | None = None,
+    place_id: MultiInt | None = None,
+    site_id: int | None = None,
+    rule_details: bool | None = None,
+    type: MultiStr | None = None,
+    member_id: int | None = None,
+    has_params: bool | None = None,
+    has_posts: bool | None = None,
 ):
     """Args:
     q: Project name must begin with this value
@@ -539,31 +539,31 @@ def _project_observation_params(access_token: str, project_id: int, observation_
 
 def _project_update_params(
     project_id: IntOrStr,
-    cover: Optional[str] = None,
-    description: Optional[str] = None,
-    icon: Optional[str] = None,
-    preferred_banner_color: Optional[str] = None,
-    prefers_banner_contain: Optional[bool] = None,
-    prefers_hide_title: Optional[bool] = None,
-    prefers_hide_umbrella_map_flags: Optional[bool] = None,
-    prefers_rule_d1: Optional[DateOrStr] = None,
-    prefers_rule_d2: Optional[DateOrStr] = None,
-    prefers_rule_introduced: Optional[str] = None,
-    prefers_rule_members_only: Optional[str] = None,
-    prefers_rule_month: Optional[MultiStr] = None,
-    prefers_rule_native: Optional[bool] = None,
-    prefers_rule_observed_on: Optional[DateOrStr] = None,
-    prefers_rule_photos: Optional[bool] = None,
-    prefers_rule_quality_grade: Optional[MultiStr] = None,
-    prefers_rule_sounds: Optional[bool] = None,
-    prefers_rule_term_id: Optional[str] = None,
-    prefers_rule_term_value_id: Optional[str] = None,
-    prefers_user_trust: Optional[bool] = None,
-    project_type: Optional[str] = None,
-    title: Optional[str] = None,
-    user_id: Optional[int] = None,
-    admin_attributes: Optional[List[Dict]] = None,
-    project_observation_rules_attributes: Optional[List[Dict]] = None,
+    cover: str | None = None,
+    description: str | None = None,
+    icon: str | None = None,
+    preferred_banner_color: str | None = None,
+    prefers_banner_contain: bool | None = None,
+    prefers_hide_title: bool | None = None,
+    prefers_hide_umbrella_map_flags: bool | None = None,
+    prefers_rule_d1: DateOrStr | None = None,
+    prefers_rule_d2: DateOrStr | None = None,
+    prefers_rule_introduced: str | None = None,
+    prefers_rule_members_only: str | None = None,
+    prefers_rule_month: MultiStr | None = None,
+    prefers_rule_native: bool | None = None,
+    prefers_rule_observed_on: DateOrStr | None = None,
+    prefers_rule_photos: bool | None = None,
+    prefers_rule_quality_grade: MultiStr | None = None,
+    prefers_rule_sounds: bool | None = None,
+    prefers_rule_term_id: str | None = None,
+    prefers_rule_term_value_id: str | None = None,
+    prefers_user_trust: bool | None = None,
+    project_type: str | None = None,
+    title: str | None = None,
+    user_id: int | None = None,
+    admin_attributes: list[dict] | None = None,
+    project_observation_rules_attributes: list[dict] | None = None,
 ):
     """Args:
     project_id: Numeric project ID or slug (the short name shown in project URL)
@@ -601,10 +601,10 @@ def _project_update_params(
 
 def _search_params(
     q: str,
-    sources: Optional[MultiStr] = None,  # enum
-    place_id: Optional[MultiInt] = None,
-    locale: Optional[str] = None,
-    preferred_place_id: Optional[int] = None,
+    sources: MultiStr | None = None,  # enum
+    place_id: MultiInt | None = None,
+    locale: str | None = None,
+    preferred_place_id: int | None = None,
 ):
     """Args:
     q: Search query
@@ -620,16 +620,16 @@ def _search_params(
 
 
 def _taxon_params(
-    q: Optional[str] = None,
-    is_active: Optional[bool] = None,
-    taxon_id: Optional[int] = None,
-    rank: Optional[str] = None,
-    max_rank: Optional[str] = None,
-    min_rank: Optional[str] = None,
-    rank_level: Optional[int] = None,
-    locale: Optional[str] = None,
-    preferred_place_id: Optional[int] = None,
-    all_names: Optional[bool] = None,
+    q: str | None = None,
+    is_active: bool | None = None,
+    taxon_id: int | None = None,
+    rank: str | None = None,
+    max_rank: str | None = None,
+    min_rank: str | None = None,
+    rank_level: int | None = None,
+    locale: str | None = None,
+    preferred_place_id: int | None = None,
+    all_names: bool | None = None,
 ):
     """Args:
     q: Name must begin with this value
@@ -647,10 +647,10 @@ def _taxon_params(
 
 
 def _taxon_id_params(
-    id_above: Optional[int] = None,
-    id_below: Optional[int] = None,
-    only_id: Optional[bool] = None,
-    parent_id: Optional[int] = None,
+    id_above: int | None = None,
+    id_below: int | None = None,
+    only_id: bool | None = None,
+    parent_id: int | None = None,
 ):
     """Args:
     id_above: Must have an ID above this value
@@ -664,17 +664,17 @@ def _taxon_id_params(
 # ------------------------
 
 
-def _access_token(access_token: Optional[str] = None):
+def _access_token(access_token: str | None = None):
     """Args:
     access_token: An access token for user authentication, as returned by :py:func:`.get_access_token()`
     """
 
 
 def _bounding_box(
-    nelat: Optional[float] = None,
-    nelng: Optional[float] = None,
-    swlat: Optional[float] = None,
-    swlng: Optional[float] = None,
+    nelat: float | None = None,
+    nelng: float | None = None,
+    swlat: float | None = None,
+    swlng: float | None = None,
 ):
     """Args:
     nelat: NE latitude of bounding box
@@ -684,19 +684,19 @@ def _bounding_box(
     """
 
 
-def _geojson_properties(properties: Optional[List[str]] = None):
+def _geojson_properties(properties: list[str] | None = None):
     """Args:
     properties: Properties from observation results to include as GeoJSON properties
     """
 
 
-def _name(name: Optional[str] = None):
+def _name(name: str | None = None):
     """Args:
     name: Name must match this value
     """
 
 
-def _only_id(only_id: Optional[bool] = None):
+def _only_id(only_id: bool | None = None):
     """Args:
     only_id: Return only the record IDs
     """
@@ -708,19 +708,19 @@ def _observation_id(observation_id: int):
     """
 
 
-def _project_id(project_id: Optional[int] = None):
+def _project_id(project_id: int | None = None):
     """Args:
     project_id: Only show users who are members of this project
     """
 
 
 def _pagination(
-    page: Optional[int] = None,
-    per_page: Optional[int] = None,
-    order: Optional[str] = None,
-    order_by: Optional[str] = None,
-    count_only: Optional[bool] = None,
-    reverse: Optional[bool] = None,
+    page: int | None = None,
+    per_page: int | None = None,
+    order: str | None = None,
+    order_by: str | None = None,
+    count_only: bool | None = None,
+    reverse: bool | None = None,
 ):
     """Args:
     page: Page number of results to return
@@ -740,7 +740,7 @@ _get_observations = [
 ]
 
 
-def _search_query(q: Optional[str] = None):
+def _search_query(q: str | None = None):
     """Args:
     q: Search query
     """

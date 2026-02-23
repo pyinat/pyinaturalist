@@ -1,6 +1,6 @@
 """Models for taxon checklists (aka "original life lists")"""
 
-from typing import List, Optional
+from __future__ import annotations
 
 from pyinaturalist.constants import ESTABLISTMENT_MEANS, DateTime, TableRow
 from pyinaturalist.models import (
@@ -96,10 +96,10 @@ class ListedTaxon(EstablishmentMeans):
 
     def __init__(
         self,
-        list_id: Optional[int] = None,
-        place_id: Optional[int] = None,
-        updater_id: Optional[int] = None,
-        user_id: Optional[int] = None,
+        list_id: int | None = None,
+        place_id: int | None = None,
+        updater_id: int | None = None,
+        user_id: int | None = None,
         **kwargs,
     ):
         self.__attrs_init__(**kwargs)  # type: ignore
@@ -115,7 +115,7 @@ class ListedTaxon(EstablishmentMeans):
 
     # Wrapper properties to handle some more inconsistencies between similar endpoints
     @property
-    def list_id(self) -> Optional[int]:
+    def list_id(self) -> int | None:
         return self.list.id if self.list else None
 
     @list_id.setter
@@ -123,7 +123,7 @@ class ListedTaxon(EstablishmentMeans):
         self.list.id = value
 
     @property
-    def place_id(self) -> Optional[int]:
+    def place_id(self) -> int | None:
         return self.place.id if self.place else None
 
     @place_id.setter
@@ -132,7 +132,7 @@ class ListedTaxon(EstablishmentMeans):
         self.place.id = value
 
     @property
-    def updater_id(self) -> Optional[int]:
+    def updater_id(self) -> int | None:
         return self.updater.id if self.updater else None
 
     @updater_id.setter
@@ -141,7 +141,7 @@ class ListedTaxon(EstablishmentMeans):
         self.updater.id = value
 
     @property
-    def user_id(self) -> Optional[int]:
+    def user_id(self) -> int | None:
         return self.user.id if self.user else None
 
     @user_id.setter
@@ -162,7 +162,7 @@ class ListedTaxon(EstablishmentMeans):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:  # type: ignore[valid-type]
         return ['id', 'taxon_id', 'place', 'establishment_means', 'observations_count']
 
     def __str__(self) -> str:

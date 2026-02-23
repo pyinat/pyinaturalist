@@ -1,11 +1,11 @@
-from typing import List, Union
+from typing import TypeAlias
 
 from pyinaturalist.constants import TableRow
 from pyinaturalist.models import BaseModel, Place, Project, Taxon, User, define_model, field
 
 SEARCH_RESULT_TYPES = {cls.__name__: cls for cls in [Place, Project, Taxon, User]}
 SEARCH_RESULT_TITLES = {'Place': 'name', 'Project': 'title', 'Taxon': 'full_name', 'User': 'login'}
-SearchResultRecord = Union[Place, Project, Taxon, User]
+SearchResultRecord: TypeAlias = Place | Project | Taxon | User
 
 
 @define_model
@@ -16,7 +16,7 @@ class SearchResult(BaseModel):
 
     score: float = field(default=0, doc='Search result rank')
     type: str = field(default=None, options=SEARCH_RESULT_TYPES, doc='Search result type')
-    matches: List[str] = field(factory=list, doc='Search terms matched')
+    matches: list[str] = field(factory=list, doc='Search terms matched')
     record: SearchResultRecord = field(default=None, doc='Search result object')
 
     # Convert value by datatype
@@ -41,5 +41,5 @@ class SearchResult(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'type', 'score', 'record_name']

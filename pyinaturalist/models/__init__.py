@@ -5,7 +5,8 @@ See :ref:`data-models` section for usage details.
 # ruff: noqa: F401, E402
 # isort: skip_file
 from datetime import datetime, timezone
-from typing import Callable, Dict, Iterable, Optional, Union
+from typing import TypeAlias
+from collections.abc import Callable, Iterable
 
 import attr
 from attr import define, validators
@@ -27,9 +28,7 @@ define_model_custom_init: Callable = define(
 define_model_collection: Callable = define(auto_attribs=False, order=False, slots=False)
 
 
-def field(
-    doc: str = '', options: Optional[Iterable] = None, metadata: Optional[Dict] = None, **kwargs
-):
+def field(doc: str = '', options: Iterable | None = None, metadata: dict | None = None, **kwargs):
     """A field with extra metadata for documentation and options"""
     metadata = metadata or {}
     metadata['doc'] = doc
@@ -43,7 +42,7 @@ def is_in(options: Iterable):
     return validators.in_(list(options) + [None])
 
 
-def coordinate_pair(doc: Optional[str] = None, **kwargs):
+def coordinate_pair(doc: str | None = None, **kwargs):
     """Field containing a pair of coordinates"""
     return field(
         default=None,
@@ -63,7 +62,7 @@ def datetime_now_field(**kwargs):
     return field(converter=try_datetime, factory=lambda: datetime.now(timezone.utc), **kwargs)
 
 
-def upper(value) -> Optional[str]:
+def upper(value) -> str | None:
     """Converter to change a string to uppercase, if applicable"""
     return value.upper() if isinstance(value, str) else None
 
@@ -108,9 +107,9 @@ from pyinaturalist.models.search import SearchResult
 
 
 # Type aliases involving model objects
-ModelObjects = Union[BaseModel, BaseModelCollection, Iterable[BaseModel]]
-ResponseOrObject = Union[BaseModel, JsonResponse]
-ResponseOrObjects = Union[ModelObjects, ResponseOrResults]
+ModelObjects: TypeAlias = BaseModel | BaseModelCollection | Iterable[BaseModel]
+ResponseOrObject: TypeAlias = BaseModel | JsonResponse
+ResponseOrObjects: TypeAlias = ModelObjects | ResponseOrResults
 
 # Short aliases for some of the longer class names
 ID = Identification

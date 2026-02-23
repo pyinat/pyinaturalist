@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional, Union
+from collections.abc import Callable
 
 from pyinaturalist.constants import (
     API_V1,
@@ -45,7 +45,7 @@ from pyinaturalist.v1 import (
 class ObservationController(BaseController):
     """:fa:`binoculars` Controller for Observation requests"""
 
-    def __call__(self, observation_id: int, **params) -> Optional[Observation]:
+    def __call__(self, observation_id: int, **params) -> Observation | None:
         """Get a single observation by ID
 
         Example:
@@ -229,7 +229,7 @@ class ObservationController(BaseController):
         return UserCounts.from_json(response)
 
     def life_list(
-        self, user_id: Optional[IntOrStr] = None, locale: Optional[str] = None, **params
+        self, user_id: IntOrStr | None = None, locale: str | None = None, **params
     ) -> LifeList:
         """Get taxa from a user's dynamic life list
 
@@ -406,11 +406,11 @@ class ObservationController(BaseController):
     def upload(
         self,
         observation_id: int,
-        photos: Optional[MultiFile] = None,
-        sounds: Optional[MultiFile] = None,
-        photo_ids: Optional[MultiIntOrStr] = None,
+        photos: MultiFile | None = None,
+        sounds: MultiFile | None = None,
+        photo_ids: MultiIntOrStr | None = None,
         **params,
-    ) -> List[Union[Photo, Sound]]:
+    ) -> list[Photo | Sound]:
         """Upload one or more local photo and/or sound files, and add them to an existing observation.
 
         You may also attach a previously uploaded photo by photo ID, e.g. if your photo contains
@@ -456,7 +456,7 @@ class ObservationController(BaseController):
             photo_ids=photo_ids,
             **params,
         )
-        response_objs: List[Union[Photo, Sound]] = []
+        response_objs: list[Photo | Sound] = []
         for response in responses:
             if 'photo' in response:
                 response_objs.append(Photo.from_json(response))
@@ -476,14 +476,14 @@ class ObservationPaginator(IDRangePaginator):
     def __init__(
         self,
         *args,
-        annotation_callback: Callable[[List[Annotation]], List[Annotation]],
+        annotation_callback: Callable[[list[Annotation]], list[Annotation]],
         order: str = 'asc',
         **kwargs,
     ):
         super().__init__(*args, order=order, **kwargs)
         self.annotation_callback = annotation_callback
 
-    def next_page(self) -> List[Observation]:
+    def next_page(self) -> list[Observation]:
         observations = super().next_page()
         # Use cached controlled_terms lookup to fill in missing annotation details
         for obs in observations:

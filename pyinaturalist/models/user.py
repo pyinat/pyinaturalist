@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Dict, List
 
 from pyinaturalist.constants import INAT_BASE_URL, JsonResponse, TableRow
 from pyinaturalist.models import (
@@ -26,7 +25,7 @@ class User(BaseModel):
     )
     created_at: datetime = datetime_now_field(doc='Date and time the user was registered')
     description: str = field(default=None, doc='User profile description')
-    faved_project_ids: List[int] = field(factory=list, doc='IDs of projects the user has favorited')
+    faved_project_ids: list[int] = field(factory=list, doc='IDs of projects the user has favorited')
     icon: str = field(default=None, doc='URL for small user icon')
     icon_url: str = field(default=None, doc='URL for medium user icon')
     identifications_count: int = field(default=0, doc='Number of identifications the user has made')
@@ -37,8 +36,8 @@ class User(BaseModel):
     name: str = field(default=None, doc='User real name or display name')
     observations_count: int = field(default=0, doc='Number of observations the user has made')
     orcid: str = field(default=None, doc='ORCID iD')
-    preferences: Dict = field(factory=dict, doc='User preferences')
-    roles: List[str] = field(factory=list, doc='User roles on inaturalist.org')
+    preferences: dict = field(factory=dict, doc='User preferences')
+    roles: list[str] = field(factory=list, doc='User roles on inaturalist.org')
     site_id: int = field(
         default=None, doc='Site ID for iNaturalist network members, or ``1`` for inaturalist.org'
     )
@@ -79,7 +78,7 @@ class User(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'login', 'name']
 
 
@@ -103,7 +102,7 @@ class UserCount(User):
             value.update(value.pop('user'))
         if 'observation_count' in value and 'count' not in value:
             value['count'] = value['observation_count']
-        return super(UserCount, cls).from_json(value)
+        return super().from_json(value)
 
     @property
     def _row(self) -> TableRow:
@@ -122,4 +121,4 @@ class UserCount(User):
 class UserCounts(BaseModelCollection):
     """:fa:`user` :fa:`list` A collection of users with an associated counts"""
 
-    data: List[UserCount] = field(factory=list, converter=UserCount.from_json_list)
+    data: list[UserCount] = field(factory=list, converter=UserCount.from_json_list)

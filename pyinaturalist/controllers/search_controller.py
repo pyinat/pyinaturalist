@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from pyinaturalist.constants import MultiInt, MultiStr
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.models import SearchResult
@@ -12,12 +10,12 @@ class SearchController(BaseController):
     def __call__(
         self,
         q: str,
-        sources: Optional[MultiStr] = None,
-        place_id: Optional[MultiInt] = None,
-        locale: Optional[str] = None,
-        preferred_place_id: Optional[int] = None,
+        sources: MultiStr | None = None,
+        place_id: MultiInt | None = None,
+        locale: str | None = None,
+        preferred_place_id: int | None = None,
         **params,
-    ) -> List[SearchResult]:
+    ) -> list[SearchResult]:
         """A unified text search endpoint for places, projects, taxa, and/or users
 
         .. rubric:: Notes

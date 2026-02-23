@@ -2,9 +2,10 @@
 # TODO: Improve Sphinx docs generated for controller attributes
 # TODO: Use a custom template or directive to generate summary of all controller methods
 from asyncio import AbstractEventLoop
+from collections.abc import Callable
 from inspect import ismethod
 from logging import getLogger
-from typing import Any, Callable, Dict, Optional, Type
+from typing import Any
 
 from pyinaturalist.auth import get_access_token
 from pyinaturalist.constants import RequestParams
@@ -58,11 +59,11 @@ class iNatClient:
 
     def __init__(
         self,
-        creds: Optional[Dict[str, str]] = None,
-        default_params: Optional[Dict[str, Any]] = None,
+        creds: dict[str, str] | None = None,
+        default_params: dict[str, Any] | None = None,
         dry_run: bool = False,
-        loop: Optional[AbstractEventLoop] = None,
-        session: Optional[ClientSession] = None,
+        loop: AbstractEventLoop | None = None,
+        session: ClientSession | None = None,
         **kwargs,
     ):
         self.creds = creds or {}
@@ -101,7 +102,7 @@ class iNatClient:
         )  #: Interface for :py:class:`user requests <.UserController>`
 
     def add_defaults(
-        self, request_function, kwargs: Optional[RequestParams] = None, auth: bool = False
+        self, request_function, kwargs: RequestParams | None = None, auth: bool = False
     ) -> RequestParams:
         """Add any applicable client settings to request parameters before sending a request.
         Explicit keyword arguments will override any client settings.
@@ -128,9 +129,9 @@ class iNatClient:
     def paginate(
         self,
         request_function: Callable,
-        model: Type[T],
+        model: type[T],
         auth: bool = False,
-        cls: Type[Paginator] = Paginator,
+        cls: type[Paginator] = Paginator,
         **kwargs,
     ) -> Paginator[T]:
         """Create a paginator for a request, with client settings applied

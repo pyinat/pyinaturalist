@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Dict, List, Optional
 
 from pyinaturalist.constants import (
     INAT_BASE_URL,
@@ -37,10 +36,10 @@ class ProjectObservationField(ObservationField):
         obs_field['project_observation_field_id'] = value['id']
         obs_field['position'] = value['position']
         obs_field['required'] = value['required']
-        return super(ProjectObservationField, cls).from_json(obs_field, **kwargs)
+        return super().from_json(obs_field, **kwargs)
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['project_observation_field_id', 'required']
 
 
@@ -61,10 +60,10 @@ class ProjectUser(User):
         """Merge outer project membership fields with inner user fields"""
         value = {**value, 'project_user_id': value['id']}
         value.update(value.pop('user', {}))
-        return super(ProjectUser, cls).from_json(value, **kwargs)
+        return super().from_json(value, **kwargs)
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['project_id', 'project_user_id', 'role']
 
 
@@ -86,11 +85,11 @@ class Project(BaseModel):
     )
     delegated_project_id: int = field(default=None)
     is_delegated_umbrella: bool = field(default=None)
-    last_post_at: Optional[datetime] = datetime_field(
+    last_post_at: datetime | None = datetime_field(
         doc='Date and time of the last project journal post'
     )
     location: Coordinates = coordinate_pair()
-    observation_requirements_updated_at: Optional[datetime] = datetime_field(
+    observation_requirements_updated_at: datetime | None = datetime_field(
         doc='Date and time of last update for observation requirements'
     )
     place_id: int = field(default=None, doc='Project place ID')
@@ -98,26 +97,26 @@ class Project(BaseModel):
         default=None,
         doc='Indicates if the project wants users to share hidden coordinates with the project admins',
     )
-    project_observation_rules: List[Dict] = field(factory=list, doc='Project observation rules')
+    project_observation_rules: list[dict] = field(factory=list, doc='Project observation rules')
     project_type: str = field(default=None, options=PROJECT_TYPES, doc='Project type')  # Enum
-    rule_preferences: List[Dict] = field(factory=list)
-    search_parameters: List[Dict] = field(factory=list, doc='Filters for observations to include')
-    site_features: List[Dict] = field(
+    rule_preferences: list[dict] = field(factory=list)
+    search_parameters: list[dict] = field(factory=list, doc='Filters for observations to include')
+    site_features: list[dict] = field(
         factory=list, doc='Details about if/when the project was featured on inaturalist.org'
     )
     slug: str = field(default=None, doc='URL slug')
     terms: str = field(default=None, doc='Project terms')
     title: str = field(default=None, doc='Project title')
     updated_at: DateTime = datetime_field(doc='Date and time the project was last updated')
-    user_ids: List[int] = field(factory=list)
+    user_ids: list[int] = field(factory=list)
 
     # Lazy-loaded model objects
     admins: property = LazyProperty(
-        ProjectUser.from_json_list, type=List[User], doc='Project admin users'
+        ProjectUser.from_json_list, type=list[User], doc='Project admin users'
     )
     project_observation_fields: property = LazyProperty(
         ProjectObservationField.from_json_list,
-        type=List[ProjectObservationField],
+        type=list[ProjectObservationField],
         doc='Observation fields used by the project',
     )
     user: property = LazyProperty(User.from_json, type=User, doc='User that created the project')
@@ -156,7 +155,7 @@ class Project(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'title']
 
 
@@ -165,7 +164,7 @@ class ProjectObservation(BaseModel):
     """:fa:`binoculars` Metadata about an observation that has been added to a project"""
 
     current_user_is_member: bool = field(default=None)
-    preferences: Dict = field(factory=dict)  # Example: {'allows_curator_coordinate_access': True}
+    preferences: dict = field(factory=dict)  # Example: {'allows_curator_coordinate_access': True}
     project: property = LazyProperty(
         Project.from_json, type=Project, doc='Project that the observation was added to'
     )
@@ -180,5 +179,5 @@ class ProjectObservation(BaseModel):
     # user_id: int = field(default=None)
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['project', 'user']

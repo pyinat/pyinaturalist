@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pyinaturalist.constants import IntOrStr, ListResponse, MultiInt, MultiIntOrStr
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.converters import ensure_list
@@ -20,7 +18,7 @@ from pyinaturalist.v1 import (
 class ProjectController(BaseController):
     """:fa:`users` Controller for Project requests"""
 
-    def __call__(self, project_id: int, **kwargs) -> Optional[Project]:
+    def __call__(self, project_id: int, **kwargs) -> Project | None:
         """Get a single project by ID
 
         Example:

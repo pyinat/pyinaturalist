@@ -1,5 +1,3 @@
-from typing import List
-
 from pyinaturalist.constants import DATETIME_SHORT_FORMAT, DateTime, TableRow
 from pyinaturalist.models import BaseModel, LazyProperty, User, datetime_field, define_model, field
 
@@ -17,7 +15,7 @@ class Message(BaseModel):
     read_at: DateTime = datetime_field(doc='When the message was read')
     created_at: DateTime = datetime_field(doc='When the message was sent')
     updated_at: DateTime = datetime_field(doc='When the message was last edited')
-    thread_flags: List[str] = field(factory=list)
+    thread_flags: list[str] = field(factory=list)
     thread_messages_count: int = field(default=None, doc='Number of messages in the thread')
     comments_count: int = field(
         default=None, doc='Number of comments on the observation this message relates to'
@@ -45,7 +43,7 @@ class Message(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'created_at', 'self.to_user', 'self.from_user', 'subject', 'truncated_body']
 
     def __str__(self) -> str:
