@@ -61,9 +61,11 @@ def patch_session(request):
     if 'enable_client_session' in request.keywords:
         yield
     else:
-        with patch('pyinaturalist.session.get_local_session', return_value=TestSession()), patch(
-            'pyinaturalist.auth.get_local_session', return_value=TestSession()
-        ), patch('pyinaturalist.client.ClientSession', TestSession):
+        with (
+            patch('pyinaturalist.session.get_local_session', return_value=TestSession()),
+            patch('pyinaturalist.auth.get_local_session', return_value=TestSession()),
+            patch('pyinaturalist.client.ClientSession', TestSession),
+        ):
             yield
 
 

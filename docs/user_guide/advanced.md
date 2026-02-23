@@ -124,21 +124,16 @@ Some persistent rate-limiting state is stored on-disk. To change the default pat
 The default rate-limiting backend is thread-safe, and persistent across application restarts. If
 you have a larger application running from multiple processes, you will need an additional locking
 mechanism to make sure these processes don't conflict with each other. This is available with
-{py:class}`.FileLockSQLiteBucket`, which can be passed as the session's `bucket_class`:
+the `use_file_lock` option:
 
 ```python
->>> from pyinaturalist import ClientSession, FileLockSQLiteBucket
->>> session = ClientSession(bucket_class=FileLockSQLiteBucket)
+>>> from pyinaturalist import ClientSession
+>>> session = ClientSession(use_file_lock=True)
 ```
 
 This requires installing one additional dependency, [py-filelock](https://github.com/tox-dev/py-filelock):
 ```bash
 pip install filelock
-```
-
-To change the default path used for the file lock:
-```python
->>> session = ClientSession(bucket_class=FileLockSQLiteBucket, lock_path='/tmp/ratelimit.lock')
 ```
 
 ## Logging

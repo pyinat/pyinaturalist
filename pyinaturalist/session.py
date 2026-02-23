@@ -9,7 +9,6 @@ from logging import DEBUG, INFO, getLogger
 from os import getenv
 from typing import Dict, Optional, Type
 
-import pyrate_limiter
 from requests import ConnectionError, PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
 from requests.utils import default_user_agent
@@ -22,10 +21,12 @@ from requests_cache import (
 )
 from requests_ratelimiter import (
     AbstractBucket,
-    BucketFullException,
+    Duration,
+    HostBucketFactory,
+    InMemoryBucket,
     Limiter,
     LimiterMixin,
-    RequestRate,
+    Rate,
     SQLiteBucket,
 )
 from urllib3.util import Retry
@@ -34,9 +35,7 @@ from pyinaturalist.constants import (
     CACHE_EXPIRATION,
     CACHE_FILE,
     CONNECT_TIMEOUT,
-    DEFAULT_LOCK_PATH,
     IGNORED_PARAMETERS,
-    MAX_DELAY,
     RATELIMIT_FILE,
     REQUEST_BURST_RATE,
     REQUEST_RETRIES,
@@ -50,6 +49,7 @@ from pyinaturalist.constants import (
     WRITE_TIMEOUT,
     FileOrPath,
     MultiInt,
+    PathOrStr,
     RequestParams,
 )
 from pyinaturalist.converters import ensure_file_obj
@@ -86,8 +86,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         burst: int = REQUEST_BURST_RATE,
         bucket_class: Type[AbstractBucket] = SQLiteBucket,
         backoff_factor: float = RETRY_BACKOFF,
-        ratelimit_path: Optional[FileOrPath] = RATELIMIT_FILE,
-        lock_path: Optional[FileOrPath] = DEFAULT_LOCK_PATH,
+        ratelimit_path: Optional[PathOrStr] = RATELIMIT_FILE,
+        use_file_lock: bool = False,
         max_retries: int = REQUEST_RETRIES,
         timeout: int = REQUEST_TIMEOUT,
         write_timeout: int = WRITE_TIMEOUT,
@@ -112,8 +112,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             backoff_factor: Factor for increasing delays between retries
             ratelimit_path: Path to SQLite database for rate-limiting;
                 defaults to the system default cache directory
-            lock_path: Path to file lock for multiprocess rate-limit database;
-                 defaults to the system default cache directory
+            use_file_lock: Use a file lock for the rate limit database; needed for multiprocess
+                usage.
             max_retries: Maximum number of times to retry a failed request
             timeout: Maximum number of seconds to wait for a response from the server
             write_timeout: Maximum number of seconds to wait for sending data (create/update)
@@ -130,10 +130,12 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
 
         # Extra args to pass to rate limiter backend
         bucket_kwargs = kwargs.pop('bucket_kwargs', {})
+        bucket_kwargs.setdefault('create_new_table', True)
         if ratelimit_path:
-            bucket_kwargs['path'] = ratelimit_path
-        if lock_path and bucket_class is FileLockSQLiteBucket:
-            bucket_kwargs['lock_path'] = lock_path
+            bucket_kwargs['db_path'] = str(ratelimit_path)
+        if bucket_class is FileLockSQLiteBucket or use_file_lock:
+            bucket_class = SQLiteBucket
+            bucket_kwargs['use_file_lock'] = True
 
         super().__init__(  # type: ignore  # false positive
             # Cache settings
@@ -152,20 +154,21 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             per_day=per_day,
             per_host=True,
             burst=burst,
-            max_delay=MAX_DELAY,
             **kwargs,
         )
 
-        # Separate rate limiter specific to forced refresh requests
-        self.refresh_limiter = Limiter(
-            RequestRate(1, 122),
-            bucket_class=bucket_class,
-            bucket_kwargs=bucket_kwargs,
+        # Separate rate limiter for forced refresh requests.
+        refresh_factory = HostBucketFactory(
+            bucket_class=InMemoryBucket,
+            rates=[Rate(1, Duration.SECOND * 122)],
         )
+        self.refresh_limiter = Limiter(refresh_factory)
 
         # Retry settings
         self.retries = Retry(
-            total=max_retries, backoff_factor=backoff_factor, status_forcelist=RETRY_STATUSES
+            total=max_retries,
+            backoff_factor=backoff_factor,
+            status_forcelist=RETRY_STATUSES,
         )
         adapter = HTTPAdapter(max_retries=self.retries)
         self.mount('https://', adapter)
@@ -388,14 +391,11 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         """
         v = 0
         while True:
-            try:
-                bucket = f'{endpoint}?v={v}'
-                self.refresh_limiter.try_acquire(bucket)
+            name = f'{endpoint}?v={v}'
+            if self.refresh_limiter.try_acquire(name, blocking=False):
                 break
-            except BucketFullException as e:
-                seconds = int(e.meta_info['remaining_time'])
-                logger.debug(f'{bucket} cannot be refreshed again for {seconds} seconds')
-                v += 1
+            logger.debug(f'{name} cannot be refreshed yet')
+            v += 1
 
         return {'refresh': True, 'v': v} if v > 0 else {'refresh': True}
 
@@ -436,21 +436,15 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             return response
 
 
-class FileLockSQLiteBucket(pyrate_limiter.FileLockSQLiteBucket):
-    """Bucket backed by a SQLite database and file lock. Suitable for usage from multiple processes
-    with no shared state. Requires installing [py-filelock](https://py-filelock.readthedocs.io).
+class FileLockSQLiteBucket(SQLiteBucket):
+    """Bucket backed by a SQLite database and file lock.
 
-    The file lock is reentrant and shared across buckets, allowing a process to access multiple
-    buckets at once.
-
-    This modified class allows setting a custom lock path.
+    .. deprecated::
+        Use ``ClientSession(use_file_lock=True)`` instead.
+        This class is kept for backwards-compatibility.
     """
 
-    def __init__(self, lock_path: FileOrPath = DEFAULT_LOCK_PATH, **kwargs):
-        from filelock import FileLock
-
-        super().__init__(**kwargs)
-        self._lock = FileLock(lock_path)
+    pass
 
 
 def delete(url: str, session: Optional[ClientSession] = None, **kwargs) -> Response:

@@ -31,7 +31,6 @@ MAX_IDS_PER_REQUEST = 30
 
 # Rate-limiting and retry settings
 CONNECT_TIMEOUT = 5
-MAX_DELAY = 60  # Maximum time to wait for rate-limiting before aborting
 MAX_FILESIZE = 20000000  # 20MB maximum file size for uploads
 REQUEST_BURST_RATE = 5
 REQUESTS_PER_SECOND = 1
@@ -69,7 +68,6 @@ CACHE_EXPIRATION = {
 CACHE_FILE = DATA_DIR / 'api_requests.db'
 IGNORED_PARAMETERS = ['Authorization', 'access_token', 'password', 'client_secret']
 RATELIMIT_FILE = DATA_DIR / 'api_ratelimit.db'
-DEFAULT_LOCK_PATH = DATA_DIR / 'api_ratelimit.lock'
 
 # Response formats supported by v0 GET /observations endpoint
 OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
@@ -287,6 +285,7 @@ IntOrStr = Union[int, str]
 JsonResponse = Dict[str, Any]
 ListResponse = List[Dict[str, Any]]
 ObsFieldValues = Union[Dict, List[Dict]]
+PathOrStr = Union[Path, str]
 RequestParams = Dict[str, Any]
 ResponseResult = Dict[str, Any]
 ResponseOrResults = Union[JsonResponse, Iterable[ResponseResult]]

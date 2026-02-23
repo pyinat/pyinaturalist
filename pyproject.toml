@@ -32,7 +32,7 @@ classifiers = [
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Typing :: Typed',
 ]
-requires-python = '>=3.8'
+requires-python = '>=3.10'
 dependencies = [
     'attrs>=21.2',
     'keyring>=22.3',
@@ -40,7 +40,7 @@ dependencies = [
     'python-dateutil>=2.0',
     'requests>=2.25',
     'requests-cache>=1.2',
-    'requests-ratelimiter>=0.6,<0.9',
+    'requests-ratelimiter>=0.9',
     'rich>=10.9',
 ]
 
