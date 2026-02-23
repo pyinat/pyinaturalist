@@ -271,7 +271,7 @@ def update_project(project_id: IntOrStr, **params) -> JsonResponse:
     .. rubric:: Notes
 
     * :fa:`lock` :ref:`Requires authentication <auth>`
-    * Undocumented endpoint; may be subject to braking changes in the future
+    * Undocumented endpoint; may be subject to breaking changes in the future
     * ``admin_attributes`` and ``project_observation_rules_attributes`` each accept a list of dicts
       in the formats shown below. These can be obtained from :py:func:`get_projects`, modified, and
       then passed to this function::

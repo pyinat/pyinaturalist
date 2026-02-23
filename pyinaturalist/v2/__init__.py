@@ -12,3 +12,9 @@ from pyinaturalist.v2.observations import (
     update_observation,
     upload,
 )
+from pyinaturalist.v2.taxa import (
+    get_taxa,
+    get_taxa_autocomplete,
+    get_taxa_by_id,
+    get_taxa_iconic,
+)

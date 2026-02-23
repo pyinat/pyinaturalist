@@ -40,8 +40,6 @@ def get_observations(**params) -> JsonResponse:
 
     * :fas:`lock-open` :ref:`Optional authentication <auth>` For private/obscured coordinates
       and original filenames
-    * :fa:`exclamation-triangle` **Provisional:** v2 endpoints are still in development, and may
-      change in future releases
     * API reference: :v2:`GET /observations <Observations/get_observations>`
     * See `iNaturalist API v2 documentation <https://api.inaturalist.org/v2/docs>`_ for details on
       selecting return fields using ``fields`` parameter
@@ -172,8 +170,6 @@ def upload(
     .. rubric:: Notes
 
     * :fa:`lock` :ref:`Requires authentication <auth>`
-    * :fa:`exclamation-triangle` **Provisional:** v2 endpoints are still in development, and may
-      change in future releases
     * API reference: :v2:`POST /observation_photos <ObservationPhotos/post_observation_photos>`
     * API reference: :v2:`POST /observation_sounds <ObservationSounds/post_observation_sounds>`
 
@@ -251,8 +247,6 @@ def create_observation(**params) -> JsonResponse:
     .. rubric:: Notes
 
     * :fa:`lock` :ref:`Requires authentication <auth>`
-    * :fa:`exclamation-triangle` **Provisional:** v2 endpoints are still in development, and may
-      change in future releases
     * API reference: :v2:`POST /observations <Observations/post_observations>`
 
     Example:
@@ -306,8 +300,6 @@ def update_observation(observation_uuid: str, **params) -> JsonResponse:
     .. rubric:: Notes
 
     * :fa:`lock` :ref:`Requires authentication <auth>`
-    * :fa:`exclamation-triangle` **Provisional:** v2 endpoints are still in development, and may
-      change in future releases
     * API reference: :v2:`PUT /observations/{uuid} <Observations/put_observations_uuid>`
 
     Example:
@@ -355,8 +347,6 @@ def delete_observation(observation_uuid: str, access_token: str | None = None, *
     .. rubric:: Notes
 
     * :fa:`lock` :ref:`Requires authentication <auth>`
-    * :fa:`exclamation-triangle` **Provisional:** v2 endpoints are still in development, and may
-      change in future releases
     * API reference: :v2:`DELETE /observations/{uuid} <Observations/delete_observations_uuid>`
 
     Example:

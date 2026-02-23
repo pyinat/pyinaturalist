@@ -9,6 +9,13 @@
   * Added `ClientSession` argument `use_file_lock`; this replaces `FileLockSQLiteBucket`, but the class is still available for backwards-compatibility.
 * Drop support for python 3.8 and 3.9 (removed upstream)
 
+### New endpoints
+* Add taxon endpoints for v2 API:
+  * `pyinaturalist.v2.get_taxa()`
+  * `pyinaturalist.v2.get_taxa_by_id()`
+  * `pyinaturalist.v2.get_taxa_autocomplete()`
+  * `pyinaturalist.v2.get_taxa_iconic()`
+
 ### Models
 * Add an `Observation.formatted_location` property
 
@@ -77,7 +84,10 @@ In addition, checking attributes on nested objects will not raise `AttributeErro
 ## 0.21.0 (2026-01-21)
 
 ### New endpoints
-* Add create/update/delete observation endpoints for v2 API (`pyinaturalist.v2.create_observation`, `update_observation()`, `delete_observation()`)
+* Add create/update/delete observation endpoints for v2 API:
+  * `pyinaturalist.v2.create_observation()`
+  * `pyinaturalist.v2.update_observation()`
+  * `pyinaturalist.v2.delete_observation()`
 * Add observation media upload for v2 API (`pyinaturalist.v2.upload()`)
 * Add support in v2 `get_observations()` for querying more than 30 observation IDs at once
 
