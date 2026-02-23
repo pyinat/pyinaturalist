@@ -2,10 +2,10 @@
 
 # ruff: noqa: E501
 import inspect
+from collections.abc import Callable, Iterable
 from functools import partial
 from inspect import Parameter, ismethod, signature
 from logging import getLogger
-from typing import Callable, Dict, Iterable, List, Optional, Type
 
 from requests import Session
 
@@ -23,9 +23,9 @@ def copy_doc_signature(
     *template_functions: TemplateFunction,
     add_common_args: bool = False,
     description_only: bool = False,
-    include_sections: Optional[Iterable[str]] = None,
+    include_sections: Iterable[str] | None = None,
     include_return_annotation: bool = True,
-    exclude_args: Optional[Iterable[str]] = None,
+    exclude_args: Iterable[str] | None = None,
 ) -> Callable:
     """Document a function with docstrings, function signatures, and type annotations from
     one or more template functions.
@@ -87,8 +87,8 @@ def copy_doc_signature(
 
 def copy_signatures(
     target_function: Callable,
-    template_functions: List[TemplateFunction],
-    exclude_args: Optional[Iterable[str]] = None,
+    template_functions: list[TemplateFunction],
+    exclude_args: Iterable[str] | None = None,
 ) -> Callable:
     """Copy function signatures from one or more template functions to a target function.
 
@@ -125,7 +125,7 @@ def copy_signatures(
     return target_function
 
 
-def _deduplicate_var_kwargs(params: Dict) -> Dict:
+def _deduplicate_var_kwargs(params: dict) -> dict:
     """Add variadic keyword args (e.g., ``**kwargs``) to the end of a function signature, accounting
     for any duplicates.
     """
@@ -153,10 +153,10 @@ def extend_init_signature(*template_functions: Callable) -> Callable:
     docstring and its ``__init__`` function signature, and extends them instead of replacing them.
     """
 
-    def wrapper(target_class: Type):
+    def wrapper(target_class: type):
         # Modify init signature + docstring
-        revision = copy_doc_signature(*template_functions, target_class.__init__)
-        target_class.__init__ = revision(target_class.__init__)
+        revision = copy_doc_signature(*template_functions, target_class.__init__)  # type: ignore[misc]
+        target_class.__init__ = revision(target_class.__init__)  # type: ignore[misc]
 
         # Include init docs in class docs
         target_class.__doc__ = target_class.__doc__ or ''
@@ -187,13 +187,13 @@ document_controller_description = partial(
 # ----------
 
 
-def _dry_run(dry_run: Optional[bool] = False):
+def _dry_run(dry_run: bool | None = False):
     """Args:
     dry_run: Just log the request instead of sending a real request
     """
 
 
-def _session(session: Optional[Session] = None):
+def _session(session: Session | None = None):
     """Args:
     session: An existing `Session object <https://docs.python-requests.org/en/latest/user/advanced/>`_ to use instead of creating a new one
     """

@@ -6,7 +6,7 @@ from datetime import datetime
 from logging import getLogger
 from os.path import expanduser
 from pathlib import Path
-from typing import Dict, Generic, List, Optional, Type, TypeVar
+from typing import Generic, TypeVar
 
 from attr import Factory, asdict, define, field, fields_dict
 
@@ -38,8 +38,8 @@ class BaseModel:
     id: int = field(default=None, converter=try_int, metadata={'doc': 'Unique record ID'})
     uuid: str = field(default=None, metadata={'doc': 'Unversally unique record ID'})
     __is_nested: bool = field(default=False, repr=False, init=False)
-    temp_attrs: List[str] = []
-    _populate_id_attrs: List[str] = []
+    temp_attrs: list[str] = []
+    _populate_id_attrs: list[str] = []
 
     @classmethod
     def copy(cls, obj: 'BaseModel') -> 'BaseModel':
@@ -51,7 +51,7 @@ class BaseModel:
         return cls(**kwargs)
 
     @classmethod
-    def from_json(cls: Type[T], value: JsonResponse, **kwargs) -> T:
+    def from_json(cls: type[T], value: JsonResponse, **kwargs) -> T:
         """Initialize a single model object from an API response or response result.
 
         Omits any invalid fields and ``None`` values, so default factories are used instead
@@ -65,7 +65,7 @@ class BaseModel:
             from pyinaturalist.models.lazy_property import LazyProperty
 
             for id_attr in cls._populate_id_attrs:
-                nested_attr = id_attr[:-3] if id_attr.endswith('_id') else id_attr
+                nested_attr = id_attr.removesuffix('_id')
                 if (
                     isinstance(getattr(cls, nested_attr, None), LazyProperty)
                     and (id_val := value.get(id_attr))
@@ -82,12 +82,12 @@ class BaseModel:
         return cls(**valid_json, **kwargs)
 
     @classmethod
-    def from_json_file(cls: Type[T], value: AnyFile) -> List[T]:
+    def from_json_file(cls: type[T], value: AnyFile) -> list[T]:
         """Initialize a collection of model objects from a JSON string, file path, or file-like object"""
         return cls.from_json_list(load_json(value))
 
     @classmethod
-    def from_json_list(cls: Type[T], value: ResponseOrResults, **kwargs) -> List[T]:
+    def from_json_list(cls: type[T], value: ResponseOrResults, **kwargs) -> list[T]:
         """Initialize a collection of model objects from an API response or response results"""
         return [cls.from_json(item, **kwargs) for item in ensure_list(value)]
 
@@ -113,11 +113,11 @@ class BaseModel:
         raise NotImplementedError
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         """Get the subset of attribute names to show in the model's string representation"""
         return [getattr(a, 'name', '') for a in self.__attrs_attrs__]
 
-    def to_dict(self, keys: Optional[List[str]] = None, recurse: bool = True) -> JsonResponse:
+    def to_dict(self, keys: list[str] | None = None, recurse: bool = True) -> JsonResponse:
         """Convert this object back to dict format
 
         Args:
@@ -210,8 +210,8 @@ class BaseModelCollection(BaseModel, UserList, Generic[T]):  # type: ignore [mis
     additional operations on contained items.
     """
 
-    data: List[T] = field(factory=list, init=False, repr=False)
-    _id_map: Dict[int, T] = field(default=None, init=False, repr=False)
+    data: list[T] = field(factory=list, init=False, repr=False)
+    _id_map: dict[int, T] = field(default=None, init=False, repr=False)
 
     @classmethod
     def copy(cls, obj):
@@ -219,22 +219,22 @@ class BaseModelCollection(BaseModel, UserList, Generic[T]):  # type: ignore [mis
         return cls(data=[deepcopy(item) for item in obj])
 
     @classmethod
-    def from_json(cls: Type[TC], value: JsonResponse, **kwargs) -> TC:
+    def from_json(cls: type[TC], value: JsonResponse, **kwargs) -> TC:
         if 'results' in value:
             value = value['results']
         if 'data' not in value:
             value = {'data': value}
-        return super(BaseModelCollection, cls).from_json(value)
+        return super().from_json(value)
 
     @classmethod
-    def from_json_list(cls: Type[TC], value: JsonResponse, **kwargs) -> TC:  # type: ignore
+    def from_json_list(cls: type[TC], value: JsonResponse, **kwargs) -> TC:  # type: ignore
         """For model collections, initializing from a list should return an instance of ``cls``
         instead of a builtin ``list``
         """
         return cls.from_json(value)
 
     @property
-    def id_map(self) -> Dict[int, T]:
+    def id_map(self) -> dict[int, T]:
         """A mapping of objects by unique identifier"""
         if self._id_map is None:
             self._id_map = {obj.id: obj for obj in self.data}
@@ -266,8 +266,7 @@ class BaseModelCollection(BaseModel, UserList, Generic[T]):  # type: ignore [mis
 
     def __rich_repr__(self):
         """Yield contained items so rich renders the collection as a list"""
-        for item in self.data:
-            yield item
+        yield from self.data
 
     def __str__(self) -> str:
         return '\n'.join([str(obj) for obj in self.data])

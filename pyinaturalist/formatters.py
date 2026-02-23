@@ -9,9 +9,10 @@ These functions will accept any of the following:
 """
 
 import json
+from collections.abc import Mapping
 from datetime import date, datetime, timedelta
 from logging import basicConfig, getLogger
-from typing import TYPE_CHECKING, List, Mapping, Type, Union
+from typing import TYPE_CHECKING
 
 from requests import PreparedRequest, Response
 from requests_cache import CachedResponse
@@ -169,7 +170,7 @@ def pprint(values: ResponseOrObjects):
         print(values)
 
 
-def pprint_tree(taxa: Union[Taxon, LifeList, List[Taxon]], **kwargs):
+def pprint_tree(taxa: Taxon | LifeList | list[Taxon], **kwargs):
     """Pretty-print a taxon and its descendants as a tree.
 
     Args:
@@ -185,7 +186,7 @@ def pprint_tree(taxa: Union[Taxon, LifeList, List[Taxon]], **kwargs):
     print(format_tree(taxa, **kwargs))
 
 
-def detect_type(value: ResponseResult) -> Type[BaseModel]:
+def detect_type(value: ResponseResult) -> type[BaseModel]:
     """Attempt to determine the model class corresponding to an API result"""
     for key, cls in UNIQUE_RESPONSE_ATTRS.items():
         if key in value:
@@ -194,7 +195,7 @@ def detect_type(value: ResponseResult) -> Type[BaseModel]:
     raise ValueError(f'Could not detect response type: {value}')
 
 
-def ensure_model_list(values: ResponseOrObjects) -> List[BaseModel]:
+def ensure_model_list(values: ResponseOrObjects) -> list[BaseModel]:
     """If the given values are raw JSON responses, attempt to detect their type and convert to
     model objects
     """
@@ -209,7 +210,7 @@ def ensure_model_list(values: ResponseOrObjects) -> List[BaseModel]:
     return [cls.from_json(value) for value in values]
 
 
-def format_table(values: ResponseOrObjects) -> Union[Table, str]:
+def format_table(values: ResponseOrObjects) -> Table | str:
     """Format model objects as a table.
 
     If the model doesn't have a table format defined, return a basic list of stringified objects.

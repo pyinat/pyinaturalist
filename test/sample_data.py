@@ -13,7 +13,7 @@ def load_sample_data(filename):
         return json.load(f)
 
 
-def load_all_sample_data() -> Dict[str, Dict]:
+def load_all_sample_data() -> dict[str, dict]:
     """Load all sample data files"""
     sample_data = {}
     for file_path in SAMPLE_DATA_DIR.glob('*.json'):

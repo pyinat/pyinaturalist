@@ -217,9 +217,7 @@ def process_enum_params(enum_params) -> tuple[dict, dict]:
     return constant_enum_params, variable_enum_params
 
 
-def write_enum_params(
-    constant_enum_params: dict, variable_enum_params: dict, output_path: Path
-):
+def write_enum_params(constant_enum_params: dict, variable_enum_params: dict, output_path: Path):
     """Write enum params to a Python file."""
     lines = ['# Auto-generated enum parameter values from OpenAPI spec', '']
 

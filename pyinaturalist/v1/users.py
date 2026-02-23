@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import Optional
 
 from pyinaturalist.constants import API_V1, IntOrStr, JsonResponse
 from pyinaturalist.converters import convert_all_timestamps, convert_generic_timestamps
@@ -71,7 +70,7 @@ def get_users_autocomplete(q: str, **params) -> JsonResponse:
     return users
 
 
-def get_current_user(access_token: Optional[str] = None, **params) -> JsonResponse:
+def get_current_user(access_token: str | None = None, **params) -> JsonResponse:
     """Get your own user profile
 
     .. rubric:: Notes

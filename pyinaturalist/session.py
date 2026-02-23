@@ -7,7 +7,6 @@ from importlib.metadata import version as pkg_version
 from json import JSONDecodeError
 from logging import DEBUG, INFO, getLogger
 from os import getenv
-from typing import Dict, Optional, Type
 
 from requests import ConnectionError, PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
@@ -78,20 +77,20 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         self,
         cache_file: FileOrPath = CACHE_FILE,
         cache_control: bool = True,
-        expire_after: Optional[ExpirationTime] = None,
-        urls_expire_after: Optional[ExpirationPatterns] = None,
+        expire_after: ExpirationTime | None = None,
+        urls_expire_after: ExpirationPatterns | None = None,
         per_second: float = REQUESTS_PER_SECOND,
         per_minute: float = REQUESTS_PER_MINUTE,
         per_day: float = REQUESTS_PER_DAY,
         burst: int = REQUEST_BURST_RATE,
-        bucket_class: Type[AbstractBucket] = SQLiteBucket,
+        bucket_class: type[AbstractBucket] = SQLiteBucket,
         backoff_factor: float = RETRY_BACKOFF,
-        ratelimit_path: Optional[PathOrStr] = RATELIMIT_FILE,
+        ratelimit_path: PathOrStr | None = RATELIMIT_FILE,
         use_file_lock: bool = False,
         max_retries: int = REQUEST_RETRIES,
         timeout: int = REQUEST_TIMEOUT,
         write_timeout: int = WRITE_TIMEOUT,
-        user_agent: Optional[str] = None,
+        user_agent: str | None = None,
         **kwargs,
     ):
         """Get a Session object, optionally with custom settings for caching and rate-limiting.
@@ -186,13 +185,13 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         self,
         method: str,
         url: str,
-        access_token: Optional[str] = None,
-        data: Optional[Dict] = None,
-        files: Optional[FileOrPath] = None,
-        headers: Optional[Dict] = None,
-        ids: Optional[MultiInt] = None,
-        json: Optional[Dict] = None,
-        params: Optional[RequestParams] = None,
+        access_token: str | None = None,
+        data: dict | None = None,
+        files: FileOrPath | None = None,
+        headers: dict | None = None,
+        ids: MultiInt | None = None,
+        json: dict | None = None,
+        params: RequestParams | None = None,
         allow_str_ids: bool = False,
         **kwargs,
     ) -> Request:
@@ -227,22 +226,22 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         self,
         method: str,
         url: str,
-        headers: Optional[Dict] = None,
-        json: Optional[Dict] = None,
-        access_token: Optional[str] = None,
+        headers: dict | None = None,
+        json: dict | None = None,
+        access_token: str | None = None,
         allow_redirects: bool = False,
         allow_str_ids: bool = False,
-        data: Optional[Dict] = None,
+        data: dict | None = None,
         dry_run: bool = False,
-        expire_after: Optional[ExpirationTime] = None,
-        files: Optional[FileOrPath] = None,
-        ids: Optional[MultiInt] = None,
+        expire_after: ExpirationTime | None = None,
+        files: FileOrPath | None = None,
+        ids: MultiInt | None = None,
         only_if_cached: bool = False,
         raise_for_status: bool = True,
         refresh: bool = False,
         force_refresh: bool = False,
         stream: bool = False,
-        timeout: Optional[int] = None,
+        timeout: int | None = None,
         verify: bool = True,
         **params: RequestParams,
     ) -> Response:
@@ -309,11 +308,11 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         self,
         request: AnyRequest,
         dry_run: bool = False,
-        expire_after: Optional[ExpirationTime] = None,
+        expire_after: ExpirationTime | None = None,
         refresh: bool = False,
         force_refresh: bool = False,
-        retries: Optional[Retry] = None,
-        timeout: Optional[int] = None,
+        retries: Retry | None = None,
+        timeout: int | None = None,
         **kwargs,
     ) -> Response:
         """Send a request with caching, rate-limiting, and retries
@@ -380,7 +379,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             logger.debug(format_response(response))
         return response
 
-    def get_refresh_params(self, endpoint) -> Dict:
+    def get_refresh_params(self, endpoint) -> dict:
         """In some cases, we need to be sure we have the most recent version of a resource, for example
         when updating projects. Normally we would handle this with cache headers, but the CDN cache does
         not respect these if the cached response is less than ~2 minutes old.
@@ -403,7 +402,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         self,
         request: PreparedRequest,
         response: Response,
-        retries: Optional[Retry] = None,
+        retries: Retry | None = None,
         **kwargs,
     ) -> Response:
         """Occasionally, the API may return invalid (truncated) JSON, requiring a retry. This method
@@ -447,25 +446,25 @@ class FileLockSQLiteBucket(SQLiteBucket):
     pass
 
 
-def delete(url: str, session: Optional[ClientSession] = None, **kwargs) -> Response:
+def delete(url: str, session: ClientSession | None = None, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.delete` with additional options specific to iNat API requests"""
     session = session or get_local_session()
     return session.request('DELETE', url, **kwargs)
 
 
-def get(url: str, session: Optional[ClientSession] = None, **kwargs) -> Response:
+def get(url: str, session: ClientSession | None = None, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.get` with additional options specific to iNat API requests"""
     session = session or get_local_session()
     return session.request('GET', url, **kwargs)
 
 
-def post(url: str, session: Optional[ClientSession] = None, **kwargs) -> Response:
+def post(url: str, session: ClientSession | None = None, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.post` with additional options specific to iNat API requests"""
     session = session or get_local_session()
     return session.request('POST', url, **kwargs)
 
 
-def put(url: str, session: Optional[ClientSession] = None, **kwargs) -> Response:
+def put(url: str, session: ClientSession | None = None, **kwargs) -> Response:
     """Wrapper around :py:func:`requests.put` with additional options specific to iNat API requests"""
     session = session or get_local_session()
     return session.request('PUT', url, **kwargs)
@@ -506,7 +505,7 @@ class MockResponse(CachedResponse):
     * Returns a ``defaultdict`` when calling ``json()``, to accommodate checking for arbitrary keys
     """
 
-    def __init__(self, request: Optional[PreparedRequest] = None, **kwargs):
+    def __init__(self, request: PreparedRequest | None = None, **kwargs):
         json_content = {
             'results': [],
             'total_results': 0,

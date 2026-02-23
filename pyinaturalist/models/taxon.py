@@ -1,8 +1,9 @@
 import re
+from collections.abc import Callable, Iterable
 from copy import deepcopy
 from itertools import chain, groupby
 from logging import getLogger
-from typing import Any, Callable, Dict, Iterable, List, Optional
+from typing import Any, Optional
 
 from pyinaturalist.constants import (
     GBIF_TAXON_BASE_URL,
@@ -48,7 +49,7 @@ class Taxon(BaseModel):
     """
 
     ancestry: str = field(default=None, doc='Slash-delimited string of ancestor IDs', repr=False)
-    ancestor_ids: List[int] = field(
+    ancestor_ids: list[int] = field(
         factory=list,
         converter=ensure_list,  # Handle arrays when converting from a dataframe
         doc='Taxon IDs of ancestors, from highest rank to lowest',
@@ -60,7 +61,7 @@ class Taxon(BaseModel):
         default=None, doc='Total number of species descended from this taxon'
     )
     created_at: DateTime = datetime_field(doc='Date and time the taxon was added to iNaturalist')
-    current_synonymous_taxon_ids: List[int] = field(
+    current_synonymous_taxon_ids: list[int] = field(
         factory=list, doc='Taxon IDs of taxa that are accepted synonyms'
     )
     extinct: bool = field(default=None, doc='Indicates if the taxon is extinct')
@@ -84,7 +85,7 @@ class Taxon(BaseModel):
     name: str = field(
         default=None, doc='Taxon name; contains full scientific name at species level and below'
     )
-    names: List[Dict] = field(
+    names: list[dict] = field(
         factory=list, doc='All regional common names; only returned if ``all_names`` is specified'
     )
     observations_count: int = field(
@@ -122,7 +123,7 @@ class Taxon(BaseModel):
     )
     conservation_statuses: property = LazyProperty(
         ConservationStatus.from_json_list,
-        type=List[ConservationStatus],
+        type=list[ConservationStatus],
         doc='Conservation statuses of the taxon in different locations',
     )
     default_photo: property = LazyProperty(Photo.from_json, type=Photo, doc='Taxon default photo')
@@ -133,11 +134,11 @@ class Taxon(BaseModel):
     )
     listed_taxa: property = LazyProperty(
         ListedTaxon.from_json_list,
-        type=List[ListedTaxon],
+        type=list[ListedTaxon],
         doc='Details about this taxon associated with a list',
     )
     taxon_photos: property = LazyProperty(
-        Photo.from_json_list, type=List[Photo], doc='All taxon photos shown on taxon info page'
+        Photo.from_json_list, type=list[Photo], doc='All taxon photos shown on taxon info page'
     )
 
     # Indicates this was inserted as an artificial tree root
@@ -151,7 +152,7 @@ class Taxon(BaseModel):
     english_common_name: str = field(default=None, doc='English common name')
     introduced: bool = field(default=None, doc='Indicates if the taxon is introduced in its range')
     native: bool = field(default=None, doc='Indicates if the taxon is native to its range')
-    preferred_common_names: List[Dict] = field(
+    preferred_common_names: list[dict] = field(
         factory=list, doc='All preferred common names by place/locale'
     )
     provisional: bool = field(default=None, doc='Indicates if the taxon is provisional')
@@ -192,7 +193,7 @@ class Taxon(BaseModel):
             self.rank_level = RANK_LEVELS.get(self.rank, UNRANKED)
 
     @classmethod
-    def from_sorted_json_list(cls, value: JsonResponse, **kwargs) -> List['Taxon']:
+    def from_sorted_json_list(cls, value: JsonResponse, **kwargs) -> list['Taxon']:
         """Sort Taxon objects by rank then by name"""
         taxa = cls.from_json_list(value, **kwargs)
         taxa.sort(key=_sort_rank_name)
@@ -226,7 +227,7 @@ class Taxon(BaseModel):
         return next((t for t in self.ancestors if t.rank == rank), None)
 
     @property
-    def child_ids(self) -> List[int]:
+    def child_ids(self) -> list[int]:
         """Taxon IDs of direct children, sorted by rank then name"""
         return [t.id for t in self.children]
 
@@ -300,7 +301,7 @@ class Taxon(BaseModel):
         return self.ancestors[-1] if self.ancestors else None
 
     @property
-    def taxonomy(self) -> Dict[str, str]:
+    def taxonomy(self) -> dict[str, str]:
         """Ancestor + current taxon as a ``{rank: name}`` dict"""
         return {t.rank: t.name for t in self.ancestors + [self]}
 
@@ -309,7 +310,7 @@ class Taxon(BaseModel):
         """Info URL on iNaturalist.org"""
         return f'{INAT_BASE_URL}/taxa/{self.id}'
 
-    def flatten(self, hide_root: bool = False) -> List['Taxon']:
+    def flatten(self, hide_root: bool = False) -> list['Taxon']:
         """Return this taxon and all its descendants as a flat list.
         ``Taxon.indent_level`` is set to indicate the tree depth of each taxon.
 
@@ -318,7 +319,7 @@ class Taxon(BaseModel):
                 :py:func:`make_tree`
         """
 
-        def flatten_tree(taxon: Taxon, level: int = 0) -> List[Taxon]:
+        def flatten_tree(taxon: Taxon, level: int = 0) -> list[Taxon]:
             taxon.indent_level = level
             level_taxa = [taxon] if level >= 0 else []
 
@@ -340,7 +341,7 @@ class Taxon(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'full_name']
 
 
@@ -348,14 +349,14 @@ class Taxon(BaseModel):
 Taxon.ancestors = LazyProperty(
     Taxon.from_sorted_json_list,
     name='ancestors',
-    type=List[Taxon],
+    type=list[Taxon],
     doc='Ancestor taxa, from highest rank to lowest',
     partial=True,
 )
 Taxon.children = LazyProperty(
     Taxon.from_sorted_json_list,
     name='children',
-    type=List[Taxon],
+    type=list[Taxon],
     doc='Child taxa, sorted by rank then name',
     partial=True,
 )
@@ -373,9 +374,7 @@ class TaxonCount(Taxon):
     descendant_obs_count: int = field(default=0, doc='Number of observations, including children')
 
     @classmethod
-    def from_json(
-        cls, value: JsonResponse, user_id: Optional[int] = None, **kwargs
-    ) -> 'TaxonCount':
+    def from_json(cls, value: JsonResponse, user_id: int | None = None, **kwargs) -> 'TaxonCount':
         """Flatten out count + taxon fields into a single-level dict before initializing"""
         if 'taxon' in value:
             value = value.copy()
@@ -383,7 +382,7 @@ class TaxonCount(Taxon):
         # In life lists, 'count' is aliased as 'direct_obs_count'
         if 'direct_obs_count' in value:
             value['count'] = value.pop('direct_obs_count')
-        return super(TaxonCount, cls).from_json(value)
+        return super().from_json(value)
 
     @property
     def _row(self) -> TableRow:
@@ -396,7 +395,7 @@ class TaxonCount(Taxon):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'full_name', 'count']
 
 
@@ -407,19 +406,19 @@ class TaxonCounts(BaseModelCollection):
     as well as :py:class:`.LifeList`.
     """
 
-    data: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
+    data: list[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
 
 
 @define_model_collection
 class LifeList(BaseModelCollection):
     """:fa:`dove` :fa:`list` A user's life list, based on the schema of ``GET /observations/taxonomy``"""
 
-    data: List[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
+    data: list[TaxonCount] = field(factory=list, converter=TaxonCount.from_json_list)
     count_without_taxon: int = field(default=0, doc='Number of observations without a taxon')
     user_id: int = field(default=None)
 
     @classmethod
-    def from_json(cls, value: JsonResponse, user_id: Optional[int] = None, **kwargs) -> 'LifeList':
+    def from_json(cls, value: JsonResponse, user_id: int | None = None, **kwargs) -> 'LifeList':
         count_without_taxon = value.get('count_without_taxon', 0) if isinstance(value, dict) else 0
         if 'results' in value:
             value = value['results']
@@ -429,7 +428,7 @@ class LifeList(BaseModelCollection):
             'user_id': user_id,
             'count_without_taxon': count_without_taxon,
         }
-        return super(LifeList, cls).from_json(life_list_json)
+        return super().from_json(life_list_json)
 
     def get_count(self, taxon_id: int, count_field='descendant_obs_count') -> int:
         """Get an observation count for the specified taxon and its descendants, and handle unlisted taxa.
@@ -452,9 +451,9 @@ DEFAULT_ROOT = TaxonCount(
 
 def make_tree(
     taxa: Iterable[Taxon],
-    include_ranks: Optional[List[str]] = None,
-    sort_key: Optional[TaxonSortKey] = None,
-    root_id: Optional[int] = None,
+    include_ranks: list[str] | None = None,
+    sort_key: TaxonSortKey | None = None,
+    root_id: int | None = None,
 ) -> Taxon:
     """Organize a list of taxa into a taxonomic tree, defined by ``children`` and ``ancestors``
     attributes. Expects exactly one root taxon.
@@ -475,7 +474,7 @@ def make_tree(
     root = _find_root(taxa, include_ranks, root_id)
 
     # Group taxa by parent ID, including any ungrafted children added directly to root
-    taxa_by_parent: Dict[int, List[Taxon]] = _sort_groupby(taxa, key=lambda x: x.parent_id or -1)
+    taxa_by_parent: dict[int, list[Taxon]] = _sort_groupby(taxa, key=lambda x: x.parent_id or -1)
     if len(root.children) > len(taxa_by_parent.get(root.id, [])):
         taxa_by_parent[root.id] = root.children
 
@@ -495,7 +494,7 @@ def make_tree(
     def included(taxon: Taxon) -> bool:
         return not include_ranks or taxon.rank in include_ranks
 
-    def get_included_children(taxon: Taxon) -> List[Taxon]:
+    def get_included_children(taxon: Taxon) -> list[Taxon]:
         """Get taxon children. If any child ranks are excluded, get the next level of descendants
         that are included."""
         immediate_children = taxa_by_parent.get(taxon.id, [])
@@ -509,8 +508,8 @@ def make_tree(
 
 def _find_root(
     taxa: Iterable[Taxon],
-    include_ranks: Optional[List[str]] = None,
-    root_id: Optional[int] = None,
+    include_ranks: list[str] | None = None,
+    root_id: int | None = None,
 ) -> Taxon:
     """Find the root taxon of a list of taxa, optionally filtering by rank.
     Handles ungrafted and multiple root taxa by adding under a new root node.
@@ -531,7 +530,7 @@ def _find_root(
         return _find_and_graft_root(taxa, include_ranks)
 
 
-def _find_and_graft_root(taxa: Iterable[Taxon], include_ranks: Optional[List[str]] = None) -> Taxon:
+def _find_and_graft_root(taxa: Iterable[Taxon], include_ranks: list[str] | None = None) -> Taxon:
     taxa_by_id = {t.id: t for t in taxa}
     rank_levels = [t.rank_level for t in taxa if not include_ranks or t.rank in include_ranks]
     if not rank_levels:

@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import List, Union
 
 from pyinaturalist.constants import (
     API_V0,
@@ -24,7 +23,7 @@ logger = getLogger(__name__)
     docs._bounding_box,
     docs._pagination,
 )
-def get_observations(**params) -> Union[List, str]:
+def get_observations(**params) -> list | str:
     """Get observation data, optionally in an alternative format
 
     .. rubric:: Notes

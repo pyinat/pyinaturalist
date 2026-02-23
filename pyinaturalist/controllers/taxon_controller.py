@@ -1,5 +1,3 @@
-from typing import Optional
-
 from attr import fields_dict
 
 from pyinaturalist.constants import MAX_IDS_PER_REQUEST, MultiInt
@@ -15,7 +13,7 @@ from pyinaturalist.v1 import get_taxa, get_taxa_autocomplete, get_taxa_by_id
 class TaxonController(BaseController):
     """:fa:`dove` Controller for Taxon requests"""
 
-    def __call__(self, taxon_id: int, **kwargs) -> Optional[Taxon]:
+    def __call__(self, taxon_id: int, **kwargs) -> Taxon | None:
         """Get a single taxon by ID
 
         Example:

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pyinaturalist.constants import IntOrStr, MultiIntOrStr
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.converters import ensure_list
@@ -11,7 +9,7 @@ from pyinaturalist.v1 import get_current_user, get_user_by_id, get_users_autocom
 class UserController(BaseController):
     """:fa:`user` Controller for User requests"""
 
-    def __call__(self, user_id: IntOrStr, **kwargs) -> Optional[User]:
+    def __call__(self, user_id: IntOrStr, **kwargs) -> User | None:
         """Get a single user by ID
 
         Example:
@@ -42,7 +40,7 @@ class UserController(BaseController):
         )
 
     def autocomplete(
-        self, q: Optional[str] = None, project_id: Optional[int] = None, **params
+        self, q: str | None = None, project_id: int | None = None, **params
     ) -> Paginator[User]:
         """Given a query string, return users with names or logins starting with the search term
 

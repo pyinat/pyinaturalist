@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any
 
 from pyinaturalist.constants import API_V1, JsonResponse
 from pyinaturalist.docs import document_request_params
@@ -50,7 +50,7 @@ def set_observation_field(
     return response.json()
 
 
-def delete_observation_field(observation_field_value_id: Union[int, str], **params) -> JsonResponse:
+def delete_observation_field(observation_field_value_id: int | str, **params) -> JsonResponse:
     """Delete an observation field value from an observation
 
     .. rubric:: Notes

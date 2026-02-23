@@ -1,5 +1,3 @@
-from typing import Dict, List, Optional, Union
-
 from pyinaturalist.constants import (
     INAT_BASE_URL,
     PLACE_CATEGORIES,
@@ -15,7 +13,7 @@ from pyinaturalist.models.base import ensure_list
 from pyinaturalist.models.user import User
 
 
-def convert_optional_lat_long(obj: Union[Dict, List, None, str]):
+def convert_optional_lat_long(obj: dict | list | None | str):
     return convert_lat_long(obj) or (0, 0)
 
 
@@ -29,7 +27,7 @@ class Place(BaseModel):
     """
 
     admin_level: int = field(default=None, doc='Administrative level, if any')
-    ancestor_place_ids: List[str] = field(
+    ancestor_place_ids: list[str] = field(
         factory=list, doc='IDs of places that this place is contained within'
     )
     bbox_area: float = field(default=None, doc='Bounding box area')
@@ -66,15 +64,15 @@ class Place(BaseModel):
     # universal_search_rank: int = field(default=None)
 
     @classmethod
-    def from_json(cls, value: JsonResponse, category: Optional[str] = None, **kwargs) -> 'Place':
+    def from_json(cls, value: JsonResponse, category: str | None = None, **kwargs) -> 'Place':
         value.setdefault('category', category)
-        place = super(Place, cls).from_json(value)
+        place = super().from_json(value)
         if ancestry := value.get('ancestry'):
             place.ancestry = ancestry
         return place
 
     @classmethod
-    def from_json_list(cls, value: ResponseOrResults, **kwargs) -> List['Place']:
+    def from_json_list(cls, value: ResponseOrResults, **kwargs) -> list['Place']:
         """Optionally use results from /places/nearby to set Place.category"""
         if not value:
             return []
@@ -89,7 +87,7 @@ class Place(BaseModel):
             ]
             return places
         else:
-            return super(Place, cls).from_json_list(value)
+            return super().from_json_list(value)
 
     @property
     def ancestry(self) -> str:
@@ -117,5 +115,5 @@ class Place(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'location', 'name']

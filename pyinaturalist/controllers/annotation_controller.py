@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import Dict, List
 
 from pyinaturalist.constants import API_V2, IntOrStr
 from pyinaturalist.controllers import BaseController
@@ -15,16 +14,16 @@ class AnnotationController(BaseController):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._term_lookup: Dict[int, ControlledTerm] = {}
+        self._term_lookup: dict[int, ControlledTerm] = {}
 
     @property
-    def term_lookup(self) -> Dict[int, ControlledTerm]:
+    def term_lookup(self) -> dict[int, ControlledTerm]:
         """Get a lookup table of controlled term IDs to term objects"""
         if not self._term_lookup:
             self._term_lookup = {term.id: term for term in self.all()}
         return self._term_lookup
 
-    def all(self, **params) -> List[ControlledTerm]:
+    def all(self, **params) -> list[ControlledTerm]:
         """List controlled terms and their possible values
 
         .. rubric:: Notes
@@ -44,7 +43,7 @@ class AnnotationController(BaseController):
         response = get_controlled_terms(**params)
         return ControlledTerm.from_json_list(response['results'])
 
-    def for_taxon(self, taxon_id: int, **params) -> List[ControlledTerm]:
+    def for_taxon(self, taxon_id: int, **params) -> list[ControlledTerm]:
         """List controlled terms that are valid for the specified taxon.
 
         .. rubric:: Notes
@@ -63,7 +62,7 @@ class AnnotationController(BaseController):
         response = get_controlled_terms_for_taxon(taxon_id, **params)
         return ControlledTerm.from_json_list(response['results'])
 
-    def lookup(self, annotations: List[Annotation]) -> List[Annotation]:
+    def lookup(self, annotations: list[Annotation]) -> list[Annotation]:
         """Fill in missing information for the specified annotations. If only term and value IDs are
         present, this will look up, cache, and add complete controlled term details.
 

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from pyinaturalist.constants import ID_CATEGORIES, TableRow
 from pyinaturalist.models import (
@@ -58,7 +57,7 @@ class Comment(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'username', 'created_at', 'truncated_body']
 
 
@@ -115,5 +114,5 @@ class Identification(Comment):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'username', 'taxon_name', 'created_at', 'truncated_body']

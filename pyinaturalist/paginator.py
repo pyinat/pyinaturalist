@@ -2,20 +2,13 @@
 
 from asyncio import AbstractEventLoop, get_running_loop
 from collections import deque
+from collections.abc import AsyncIterable, AsyncIterator, Callable, Iterable, Iterator
 from concurrent.futures import ThreadPoolExecutor
 from logging import getLogger
 from math import ceil
 from typing import (
     TYPE_CHECKING,
-    AsyncIterable,
-    AsyncIterator,
-    Callable,
     Generic,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Type,
 )
 
 from requests import Response
@@ -51,11 +44,11 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
     def __init__(
         self,
         request_function: Callable,
-        model: Type[T],
+        model: type[T],
         *request_args,
-        limit: Optional[int] = None,
-        per_page: Optional[int] = None,
-        loop: Optional[AbstractEventLoop] = None,
+        limit: int | None = None,
+        per_page: int | None = None,
+        loop: AbstractEventLoop | None = None,
         **request_kwargs,
     ):
         self.request_function = request_function
@@ -70,7 +63,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         self.page = 1
         self.results_fetched = 0
         self.total_limit = limit
-        self.total_results: Optional[int] = None
+        self.total_results: int | None = None
 
         if request_function is not None:
             log_kwargs = {
@@ -92,10 +85,9 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
     def __iter__(self) -> Iterator[T]:
         """Iterate over paginated results"""
         while not self.exhausted:
-            for result in self.next_page():
-                yield result
+            yield from self.next_page()
 
-    async def async_all(self) -> List[T]:
+    async def async_all(self) -> list[T]:
         """Get all results in a single list (non-blocking)"""
         return [result async for result in self]
 
@@ -104,16 +96,16 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         results = await self.async_all()
         return results[0] if results else None
 
-    def all(self) -> List[T]:
+    def all(self) -> list[T]:
         """Get all results in a single list"""
         return list(self)
 
-    def limit(self, limit: int) -> List[T]:
+    def limit(self, limit: int) -> list[T]:
         """Get at most ``limit`` results"""
         self.total_limit = limit
         return list(self)
 
-    def one(self) -> Optional[T]:
+    def one(self) -> T | None:
         """Get the first result from the query"""
         self.per_page = 1
         results = self.next_page()
@@ -133,11 +125,11 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             self.total_results = int(response['total_results'])
         return self.total_results
 
-    def next_page(self) -> List[T]:
+    def next_page(self) -> list[T]:
         """Get the next page of results, as model objects"""
         return self.model.from_json_list(self._next_page())
 
-    def _next_page(self) -> List[ResponseResult]:
+    def _next_page(self) -> list[ResponseResult]:
         """Get the next page of results, as raw JSON"""
         if self.exhausted:
             return []
@@ -174,7 +166,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         """Get any extra request parameters needed for pagination"""
         return {'page': self.page, 'per_page': self.per_page}
 
-    def _check_exhausted(self, page_results: Optional[List] = None) -> bool:
+    def _check_exhausted(self, page_results: list | None = None) -> bool:
         """Check all conditions that indicate no more results are available.
         (relevant conditions and error cases vary by API endpoint)
         """
@@ -190,7 +182,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         )
         return self.exhausted
 
-    def _deduplicate(self, results) -> List[T]:
+    def _deduplicate(self, results) -> list[T]:
         """Deduplicate results by ID"""
         unique_results = {result.id: result for result in results}
         self.total_results = len(unique_results)
@@ -236,7 +228,7 @@ class IDRangePaginator(Paginator):
     def __init__(self, *args, order: str = 'asc', **kwargs):
         super().__init__(*args, **kwargs)
         self.id_param = 'id_above' if order == 'asc' else 'id_below'
-        self.last_id: Optional[int] = None
+        self.last_id: int | None = None
         self.order = order
 
     def _get_pagination_kwargs(self):
@@ -247,7 +239,7 @@ class IDRangePaginator(Paginator):
             'order': self.order,
         }
 
-    def _next_page(self) -> List[ResponseResult]:
+    def _next_page(self) -> list[ResponseResult]:
         # Update params for next request, if there are more results
         results = super()._next_page()
         if not self.exhausted:
@@ -259,7 +251,7 @@ class IDPaginator(Paginator):
     """Paginator for ID-based endpoints that only accept a limited number of IDs per request"""
 
     def __init__(
-        self, *args, ids: Optional[Iterable[IntOrStr]] = None, ids_per_request: int = 1, **kwargs
+        self, *args, ids: Iterable[IntOrStr] | None = None, ids_per_request: int = 1, **kwargs
     ):
         super().__init__(*args, **kwargs)
         if ids_per_request == 1:
@@ -268,7 +260,7 @@ class IDPaginator(Paginator):
             self.id_batches = deque(list(_chunkify(ids, ids_per_request)))  # type: ignore
         self.total_results = len(ids)  # type: ignore
 
-    def _next_page(self) -> List[ResponseResult]:
+    def _next_page(self) -> list[ResponseResult]:
         """Get the next record by ID"""
         try:
             next_ids = self.id_batches.popleft()
@@ -286,7 +278,7 @@ class IDPaginator(Paginator):
         return results
 
 
-def _chunkify(iterable: Iterable, max_size: int) -> Iterator[List]:
+def _chunkify(iterable: Iterable, max_size: int) -> Iterator[list]:
     """Split an iterable into chunks of a max size"""
     iterable = list(iterable)
     for index in range(0, len(iterable), max_size):
@@ -310,11 +302,11 @@ class AutocompletePaginator(Paginator):
         super().__init__(*args, **kwargs)
         self.request_kwargs.pop('order_by', None)
 
-    def all(self) -> List[T]:
+    def all(self) -> list[T]:
         """Get all results in a single de-duplicated list"""
         return self._deduplicate(list(self))
 
-    def _check_exhausted(self, page_results: Optional[List] = None):
+    def _check_exhausted(self, page_results: list | None = None):
         """Also check for the odd case in which we get more results than requested"""
         self.exhausted = any(
             [
@@ -350,8 +342,7 @@ class JsonPaginatorMixin(MixinBase):
     def __iter__(self) -> Iterator[ResponseResult]:
         """Iterate over paginated results, and skip conversion to model objects"""
         while not self.exhausted:
-            for result in self._next_page():
-                yield result
+            yield from self._next_page()
 
     def all(self) -> JsonResponse:  # type: ignore
         results = super().all()
@@ -360,7 +351,7 @@ class JsonPaginatorMixin(MixinBase):
             'total_results': len(results),
         }
 
-    def _deduplicate(self, results) -> List[T]:
+    def _deduplicate(self, results) -> list[T]:
         """Deduplicate results by ID"""
         unique_results = {result['id']: result for result in results}
         self.total_results = len(unique_results)
@@ -388,7 +379,7 @@ def paginate_all(request_function: Callable, *args, method: str = 'page', **kwar
 class WrapperPaginator(Paginator):
     """Paginator class that wraps results that have already been fetched."""
 
-    def __init__(self, results: List[T], *args, **kwargs):
+    def __init__(self, results: list[T], *args, **kwargs):
         super().__init__(None, None, *args, **kwargs)  # type: ignore  # no request_function
         self.results = results
         self.results_fetched = self.total_results = len(results)

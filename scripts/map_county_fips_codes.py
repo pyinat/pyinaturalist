@@ -12,7 +12,7 @@ from csv import DictReader
 from itertools import groupby
 from os.path import dirname, isfile, join
 from time import sleep
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, TypeAlias
 
 from unidecode import unidecode
 
@@ -28,9 +28,9 @@ FIPS_CSV = join(DATA_DIR, 'us_county_fips_codes.csv')
 SEARCH_RESULTS_FILE = join(DATA_DIR, 'us_county_search.json')
 OUTPUT_FILE = join(DATA_DIR, 'us_county_place_ids.csv')
 
-FIPSDict = Dict[int, Dict[str, Any]]
-ResultsList = List[Dict[str, Any]]
-ResponseDict = Dict[int, ResultsList]
+FIPSDict: TypeAlias = dict[int, dict[str, Any]]
+ResultsList: TypeAlias = list[dict[str, Any]]
+ResponseDict: TypeAlias = dict[int, ResultsList]
 
 logging.basicConfig(level='INFO')
 
@@ -47,14 +47,14 @@ def get_counties() -> FIPSDict:
     }
 
 
-def load_search_results() -> Optional[ResponseDict]:
+def load_search_results() -> ResponseDict | None:
     if not isfile(SEARCH_RESULTS_FILE):
         return None
     with open(SEARCH_RESULTS_FILE) as f:
         return {int(k): v for k, v in json.load(f).items()}
 
 
-def search_counties(counties: FIPSDict, fips_codes: Optional[List[int]] = None) -> ResponseDict:
+def search_counties(counties: FIPSDict, fips_codes: list[int] | None = None) -> ResponseDict:
     """Search iNat for matching counties"""
     responses: ResponseDict = {}
     fips_codes = fips_codes or list(counties.keys())
@@ -83,7 +83,7 @@ def search_counties(counties: FIPSDict, fips_codes: Optional[List[int]] = None) 
 
 def match_responses(
     responses: ResponseDict, counties: FIPSDict
-) -> Tuple[Dict[int, int], ResponseDict]:
+) -> tuple[dict[int, int], ResponseDict]:
     """Split responses into matching results (FIPS code -> iNat place ID) and nonmatching
     results
     """
@@ -93,7 +93,7 @@ def match_responses(
     return matching_ids, unmatched
 
 
-def get_matching_result(results: ResultsList, county: Dict, fips_code: int) -> Optional[Dict]:
+def get_matching_result(results: ResultsList, county: dict, fips_code: int) -> dict | None:
     """Get a search result that looks like it matches the specified county"""
     for result in results or []:
         if is_match(result, county):
@@ -111,7 +111,7 @@ def normalize_name(name: str) -> str:
     return re.sub('[^a-zA-Z]+', '', name)
 
 
-def get_display_names(county: Dict) -> Tuple:
+def get_display_names(county: dict) -> tuple:
     """Get display names/search strings for the given county
     (or equivalent administrative division)
     """

@@ -1,5 +1,5 @@
 from io import BytesIO
-from typing import BinaryIO, List, Optional, Tuple
+from typing import BinaryIO
 
 import requests
 
@@ -45,7 +45,7 @@ class BaseMedia(BaseModel):
         return self.license_code in CC_LICENSES
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'license_code', 'url']
 
 
@@ -58,7 +58,7 @@ class Photo(BaseMedia):
     """
 
     observation_id: int = field(default=None, doc='Associated observation ID')
-    original_dimensions: Tuple[int, int] = field(
+    original_dimensions: tuple[int, int] = field(
         converter=format_dimensions, default=(0, 0), doc='Dimensions of original image'
     )
     url: str = field(default=None, doc='Image URL; see properties for URLs of specific image sizes')
@@ -89,7 +89,7 @@ class Photo(BaseMedia):
         """Flatten out potentially nested photo field before initializing"""
         if 'photo' in value:
             value.update(value.pop('photo'))
-        return super(Photo, cls).from_json(value, **kwargs)
+        return super().from_json(value, **kwargs)
 
     @property
     def dimensions_str(self) -> str:
@@ -102,12 +102,12 @@ class Photo(BaseMedia):
         return f'{PHOTO_INFO_BASE_URL}/{self.id}'
 
     @property
-    def large_url(self) -> Optional[str]:
+    def large_url(self) -> str | None:
         """Image URL (large size)"""
         return self.url_size('large')
 
     @property
-    def medium_url(self) -> Optional[str]:
+    def medium_url(self) -> str | None:
         """Image URL (medium size)"""
         return self.url_size('medium')
 
@@ -117,26 +117,26 @@ class Photo(BaseMedia):
         return f'image/{self.ext.replace("jpg", "jpeg")}'
 
     @property
-    def original_url(self) -> Optional[str]:
+    def original_url(self) -> str | None:
         """Image URL (original size)"""
         return self.url_size('original')
 
     @property
-    def small_url(self) -> Optional[str]:
+    def small_url(self) -> str | None:
         """Image URL (small size)"""
         return self.url_size('small')
 
     @property
-    def square_url(self) -> Optional[str]:
+    def square_url(self) -> str | None:
         """Image URL (thumbnail size)"""
         return self.url_size('square')
 
     @property
-    def thumbnail_url(self) -> Optional[str]:
+    def thumbnail_url(self) -> str | None:
         """Image URL (thumbnail size)"""
         return self.url_size('square')
 
-    def url_size(self, size: str) -> Optional[str]:
+    def url_size(self, size: str) -> str | None:
         size = size.replace('thumbnail', 'square').replace('thumb', 'square')
         if not self._url_format or size not in PHOTO_SIZES:
             return None
@@ -190,7 +190,7 @@ class IconPhoto(Photo):
         return cls(url=url)  # type: ignore  # A weird false positive as of mypy 0.950
 
     @property
-    def icon_url(self) -> Optional[str]:
+    def icon_url(self) -> str | None:
         """Image URL (32px icon size)"""
         return self.url_size('icon')
 
@@ -199,7 +199,7 @@ class IconPhoto(Photo):
         return self._url_format.format(size=ICON_SIZES.get(size, 'square'))
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['iconic_taxon_name', 'url']
 
 
@@ -226,7 +226,7 @@ class Sound(BaseMedia):
         """Flatten out potentially nested sound field before initializing"""
         if 'sound' in value:
             value.update(value.pop('sound'))
-        return super(Sound, cls).from_json(value, **kwargs)
+        return super().from_json(value, **kwargs)
 
     # Aliases
     @property

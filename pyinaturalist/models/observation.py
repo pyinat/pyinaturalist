@@ -1,7 +1,7 @@
 import math
 from datetime import datetime
 from itertools import chain
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from pyinaturalist.constants import (
     ALL_LICENSES,
@@ -52,7 +52,7 @@ class Application(BaseModel):
     url: str = field(default=None, doc='Application URL')
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'name', 'url']
 
 
@@ -84,7 +84,7 @@ class Flag(BaseModel):
         return self.user.login
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'flag', 'resolved', 'username']
 
 
@@ -114,7 +114,7 @@ class QualityMetric(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'metric', 'agree', 'username']
 
 
@@ -144,7 +144,7 @@ class Vote(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'vote_flag', 'username']
 
 
@@ -199,7 +199,7 @@ class Observation(BaseModel):
         doc='Indicates if coordinates are obscured (showing a broad approximate location on the map)',
     )
     observed_on: DateTime = datetime_field(doc='Date and time the organism was observed')
-    outlinks: List[Dict] = field(
+    outlinks: list[dict] = field(
         factory=list, doc='Linked observation pages on other sites (e.g., GBIF)'
     )
     out_of_range: bool = field(
@@ -209,37 +209,37 @@ class Observation(BaseModel):
         default=None, doc="Indicates if the owner's ID was selected from computer vision results"
     )
     place_guess: str = field(default=None, doc='Place name determined from observation coordinates')
-    place_ids: List[int] = field(
+    place_ids: list[int] = field(
         factory=list, doc='Place IDs associated with the observation coordinates'
     )
     positional_accuracy: int = field(
         default=None, doc='GPS accuracy in meters (real accuracy, if obscured)'
     )
-    preferences: Dict[str, Any] = field(
+    preferences: dict[str, Any] = field(
         factory=dict,
         doc='Any user observation preferences (related to community IDs, coordinate access, etc.)',
     )
     private_location: Coordinates = coordinate_pair(
         doc=':fa:`lock` Private location in ``(latitude, longitude)`` decimal degrees'
     )
-    private_place_ids: List[int] = field(
+    private_place_ids: list[int] = field(
         factory=list, doc=':fa:`lock` Place IDs associated with the private observation coordinates'
     )
     private_place_guess: str = field(
         default=None, doc=':fa:`lock` Place name determined from private observation coordinates'
     )
-    project_ids: List[int] = field(factory=list, doc='All associated project IDs')
-    project_ids_with_curator_id: List[int] = field(
+    project_ids: list[int] = field(factory=list, doc='All associated project IDs')
+    project_ids_with_curator_id: list[int] = field(
         factory=list, doc='Project IDs with a curator identification for this observation'
     )
-    project_ids_without_curator_id: List[int] = field(
+    project_ids_without_curator_id: list[int] = field(
         factory=list, doc='Project IDs without curator identification for this observation'
     )
     public_positional_accuracy: int = field(
         default=None, doc='GPS accuracy in meters (not accurate if obscured)'
     )
     quality_grade: str = field(default=None, options=QUALITY_GRADES, doc='Quality grade')
-    reviewed_by: List[int] = field(
+    reviewed_by: list[int] = field(
         factory=list, doc='IDs of users who have reviewed the observation'
     )
     site_id: int = field(
@@ -248,7 +248,7 @@ class Observation(BaseModel):
     species_guess: str = field(
         default=None, doc="Taxon name from observer's initial identification"
     )
-    tags: List[str] = field(factory=list, doc='Arbitrary user tags added to the observation')
+    tags: list[str] = field(factory=list, doc='Arbitrary user tags added to the observation')
     taxon_geoprivacy: str = field(default=None)
     updated_at: DateTime = datetime_field(doc='Date and time the observation was last updated')
     uri: str = field(default=None, doc='Link to observation details page')
@@ -258,46 +258,46 @@ class Observation(BaseModel):
 
     # Lazy-loaded model objects
     annotations: property = LazyProperty(
-        Annotation.from_json_list, type=List[Annotation], doc='Observation annotations'
+        Annotation.from_json_list, type=list[Annotation], doc='Observation annotations'
     )
     application: property = LazyProperty(
         Application.from_json, type=Application, doc='Application that created the observation'
     )
     comments: property = LazyProperty(
-        Comment.from_json_list, type=List[Comment], doc='Observation comments'
+        Comment.from_json_list, type=list[Comment], doc='Observation comments'
     )
     faves: property = LazyProperty(
-        Fave.from_json_list, type=List[Fave], doc='Users who have favorited the observation'
+        Fave.from_json_list, type=list[Fave], doc='Users who have favorited the observation'
     )
-    flags: property = LazyProperty(Flag.from_json_list, type=List[Flag], doc='Observation flags')
+    flags: property = LazyProperty(Flag.from_json_list, type=list[Flag], doc='Observation flags')
     identifications: property = LazyProperty(
-        Identification.from_json_list, type=List[Identification], doc='Observation identifications'
+        Identification.from_json_list, type=list[Identification], doc='Observation identifications'
     )
     ofvs: property = LazyProperty(
         ObservationFieldValue.from_json_list,
-        type=List[ObservationFieldValue],
+        type=list[ObservationFieldValue],
         doc='Observation field values',
     )
     photos: property = LazyProperty(
-        Photo.from_json_list, type=List[Photo], doc='Observation photos'
+        Photo.from_json_list, type=list[Photo], doc='Observation photos'
     )
     project_observations: property = LazyProperty(
         ProjectObservation.from_json_list,
-        type=List[ProjectObservation],
+        type=list[ProjectObservation],
         doc='Details on any projects that the observation has been added to',
     )
     quality_metrics: property = LazyProperty(
         QualityMetric.from_json_list,
-        type=List[QualityMetric],
+        type=list[QualityMetric],
         doc='Data quality assessment metrics',
     )
     sounds: property = LazyProperty(
-        Sound.from_json_list, type=List[Sound], doc='Observation sound files'
+        Sound.from_json_list, type=list[Sound], doc='Observation sound files'
     )
     taxon: property = LazyProperty(Taxon.from_json, type=Taxon, doc='Observation taxon')
     user: property = LazyProperty(User.from_json, type=User, doc='Observer')
     votes: property = LazyProperty(
-        Vote.from_json_list, type=List[Vote], doc='Votes on data quality assessment metrics'
+        Vote.from_json_list, type=list[Vote], doc='Votes on data quality assessment metrics'
     )
 
     # Additional attributes from API response that aren't needed; just left here for reference
@@ -355,7 +355,7 @@ class Observation(BaseModel):
         self.__attrs_init__(**kwargs)
 
     @property
-    def cumulative_ids(self) -> Tuple[int, int]:
+    def cumulative_ids(self) -> tuple[int, int]:
         """Calculate the cumulative community ID score (agreements/total), as shown on the observation UI
 
         Returns:
@@ -398,7 +398,7 @@ class Observation(BaseModel):
         return f'({coords[0]:.4f}, {coords[1]:.4f}){geoprivacy}'
 
     @property
-    def ident_taxon_ids(self) -> List[int]:
+    def ident_taxon_ids(self) -> list[int]:
         """Get all taxon IDs (including ancestors) from identifications"""
         ident_taxa = [
             ident.taxon for ident in self.identifications if ident.taxon and ident.current
@@ -422,7 +422,7 @@ class Observation(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['id', 'taxon', 'observed_on', 'username', 'place_guess']
 
 
@@ -430,33 +430,33 @@ class Observation(BaseModel):
 class Observations(BaseModelCollection):
     """:fa:`binoculars` A collection of observations"""
 
-    data: List[Observation] = field(factory=list, converter=Observation.from_json_list)
+    data: list[Observation] = field(factory=list, converter=Observation.from_json_list)
 
     @property
-    def identifiers(self) -> List[User]:
+    def identifiers(self) -> list[User]:
         """Get all unique identifiers"""
         unique_users = {i.user.id: i.user for obs in self.data for i in obs.identifications}
         return list(unique_users.values())
 
     @property
-    def observers(self) -> List[User]:
+    def observers(self) -> list[User]:
         """Get all unique observers"""
         unique_users = {obs.user.id: obs.user for obs in self.data}
         return list(unique_users.values())
 
     @property
-    def photos(self) -> List[Photo]:
+    def photos(self) -> list[Photo]:
         """Get default photo for each observation"""
         return [obs.default_photo for obs in self.data]
 
     @property
-    def taxa(self) -> List[Taxon]:
+    def taxa(self) -> list[Taxon]:
         """Get all unique taxa"""
         unique_taxa = {obs.taxon.id: obs.taxon for obs in self.data}
         return list(unique_taxa.values())
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['data']
 
 
@@ -511,7 +511,7 @@ class HistogramBin(BaseModel):
         }
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['label', 'count']
 
 
@@ -522,7 +522,7 @@ class Histogram(BaseModelCollection):
     Use with :py:func:`.pprint` for formatted output, or get as a ``{bin: count}`` dict via ``.raw``.
     """
 
-    data: List[HistogramBin] = field(factory=list, converter=HistogramBin.from_json_list)
+    data: list[HistogramBin] = field(factory=list, converter=HistogramBin.from_json_list)
 
     @classmethod
     def from_json(cls, value: JsonResponse, **kwargs) -> 'Histogram':
@@ -541,7 +541,7 @@ class Histogram(BaseModelCollection):
         return {b.label: b.count for b in self.data}
 
     @property
-    def _str_attrs(self) -> List[str]:
+    def _str_attrs(self) -> list[str]:
         return ['data']
 
 
