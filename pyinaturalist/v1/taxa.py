@@ -27,7 +27,7 @@ def get_taxa(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_taxa.json
+            .. literalinclude:: ../sample_data/v1/get_taxa.json
                 :language: JSON
 
     Returns:
@@ -71,7 +71,7 @@ def get_taxa_by_id(
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_taxa_by_id.py
+            .. literalinclude:: ../sample_data/v1/get_taxa_by_id.py
 
     Args:
         taxon_id: Get taxon with this ID. Multiple values are allowed.
@@ -132,13 +132,13 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_taxa_autocomplete.py
+            .. literalinclude:: ../sample_data/v1/get_taxa_autocomplete.py
 
         .. dropdown:: Example Response (formatted)
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_taxa_autocomplete_minified.py
+            .. literalinclude:: ../sample_data/v1/get_taxa_autocomplete_minified.py
 
     Returns:
         Response dict containing taxon records
@@ -160,7 +160,7 @@ def get_taxa_map_layers(taxon_id: int, **params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_taxa_map_layers.json
+            .. literalinclude:: ../sample_data/v1/get_taxa_map_layers.json
                 :language: JSON
 
     Args:
@@ -190,7 +190,7 @@ def get_life_list_metadata(user_id: IntOrStr, locale: str | None = None, **param
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_lifelist_metadata.json
+            .. literalinclude:: ../sample_data/v1/get_lifelist_metadata.json
                 :language: JSON
 
     Returns:

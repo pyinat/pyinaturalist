@@ -65,7 +65,7 @@ def test_get_observation_histogram(requests_mock):
 def test_get_observations(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations',
-        json=SAMPLE_DATA['get_observations_v1_page1'],
+        json=SAMPLE_DATA['get_observations_page1'],
         status_code=200,
     )
 
@@ -94,8 +94,8 @@ def test_get_observations__all_pages(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations',
         [
-            {'json': SAMPLE_DATA['get_observations_v1_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_v1_page2'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page2'], 'status_code': 200},
         ],
     )
 
@@ -300,7 +300,7 @@ def test_get_observation_taxon_summary__with_listed_taxon(requests_mock):
 def test_create_observation(requests_mock):
     requests_mock.post(
         f'{API_V1}/observations',
-        json=SAMPLE_DATA['create_observation_v1'],
+        json=SAMPLE_DATA['create_observation'],
         status_code=200,
     )
 

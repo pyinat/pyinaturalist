@@ -12,7 +12,7 @@ from test.sample_data import SAMPLE_DATA
 
 
 def test_iter(requests_mock):
-    page_1 = deepcopy(SAMPLE_DATA['get_observations_v1_page1'])
+    page_1 = deepcopy(SAMPLE_DATA['get_observations_page1'])
     page_1['total_results'] = 3
     requests_mock.get(
         f'{API_V1}/observations',
@@ -35,8 +35,8 @@ def test_iter__with_limit(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations',
         [
-            {'json': SAMPLE_DATA['get_observations_v1_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_v1_page2'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page2'], 'status_code': 200},
         ],
     )
 
@@ -51,8 +51,8 @@ async def test_async_iter(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations',
         [
-            {'json': SAMPLE_DATA['get_observations_v1_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_v1_page2'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page2'], 'status_code': 200},
         ],
     )
 
@@ -74,8 +74,8 @@ async def test_async_iter__custom_loop(mock_get_running_loop, requests_mock):
     requests_mock.get(
         f'{API_V1}/observations',
         [
-            {'json': SAMPLE_DATA['get_observations_v1_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_v1_page2'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page2'], 'status_code': 200},
         ],
     )
 
@@ -97,8 +97,8 @@ async def test_async_one(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations',
         [
-            {'json': SAMPLE_DATA['get_observations_v1_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_v1_page2'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page2'], 'status_code': 200},
         ],
     )
 
@@ -119,8 +119,8 @@ async def test_async_all(requests_mock):
     requests_mock.get(
         f'{API_V1}/observations',
         [
-            {'json': SAMPLE_DATA['get_observations_v1_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_v1_page2'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page2'], 'status_code': 200},
         ],
     )
 

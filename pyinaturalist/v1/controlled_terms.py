@@ -23,7 +23,7 @@ def get_controlled_terms(taxon_id: int | None = None, **params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_controlled_terms.json
+            .. literalinclude:: ../sample_data/v1/get_controlled_terms.json
                 :language: JSON
     Returns:
         A dict containing details on controlled terms and their values
@@ -56,7 +56,7 @@ def get_controlled_terms_for_taxon(taxon_id: int, **params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_controlled_terms_for_taxon.json
+            .. literalinclude:: ../sample_data/v1/get_controlled_terms_for_taxon.json
                 :language: JSON
     Args:
         taxon_id: Taxon ID to get controlled terms for

@@ -11,7 +11,7 @@ def test_get_user_by_id(requests_mock):
     user_id = 1
     requests_mock.get(
         f'{API_V1}/users/{user_id}',
-        json=load_sample_data('get_user_by_id.json'),
+        json=load_sample_data('v1/get_user_by_id.json'),
         status_code=200,
     )
 
@@ -24,7 +24,7 @@ def test_get_user_by_id(requests_mock):
 def test_get_users_autocomplete(requests_mock):
     requests_mock.get(
         f'{API_V1}/users/autocomplete',
-        json=load_sample_data('get_users_autocomplete.json'),
+        json=load_sample_data('v1/get_users_autocomplete.json'),
         status_code=200,
     )
 

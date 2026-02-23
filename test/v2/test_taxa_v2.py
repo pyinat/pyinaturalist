@@ -15,7 +15,7 @@ CLASS_THOUGH_PHYLUM = ['class', 'superclass', 'subphylum', 'phylum']
 def test_get_taxa__minimal(requests_mock):
     requests_mock.get(
         f'{API_V2}/taxa',
-        json=SAMPLE_DATA['get_taxa_v2_minimal'],
+        json=SAMPLE_DATA['get_taxa_minimal'],
         status_code=200,
     )
 
@@ -27,7 +27,7 @@ def test_get_taxa__minimal(requests_mock):
 def test_get_taxa__all_fields(requests_mock):
     requests_mock.get(
         f'{API_V2}/taxa',
-        json=SAMPLE_DATA['get_taxa_v2_full'],
+        json=SAMPLE_DATA['get_taxa_full'],
         status_code=200,
     )
 
@@ -40,7 +40,7 @@ def test_get_taxa__all_fields(requests_mock):
 def test_get_taxa__some_fields(requests_mock):
     requests_mock.post(
         f'{API_V2}/taxa',
-        json=SAMPLE_DATA['get_taxa_v2_full'],
+        json=SAMPLE_DATA['get_taxa_full'],
         status_code=200,
     )
 
@@ -68,8 +68,8 @@ def test_get_taxa__all_pages(requests_mock):
     requests_mock.get(
         f'{API_V2}/taxa',
         [
-            {'json': SAMPLE_DATA['get_taxa_v2_minimal'], 'status_code': 200},
-            {'json': {**SAMPLE_DATA['get_taxa_v2_minimal'], 'results': []}, 'status_code': 200},
+            {'json': SAMPLE_DATA['get_taxa_minimal'], 'status_code': 200},
+            {'json': {**SAMPLE_DATA['get_taxa_minimal'], 'results': []}, 'status_code': 200},
         ],
     )
 
@@ -99,7 +99,7 @@ def test_get_taxa_by_rank_range(mock_get, params, expected_ranks):
 def test_get_taxa_by_id__minimal(requests_mock):
     requests_mock.get(
         f'{API_V2}/taxa/70118',
-        json=SAMPLE_DATA['get_taxa_by_id_v2_minimal'],
+        json=SAMPLE_DATA['get_taxa_by_id_minimal'],
         status_code=200,
     )
 
@@ -111,7 +111,7 @@ def test_get_taxa_by_id__minimal(requests_mock):
 def test_get_taxa_by_id__all_fields(requests_mock):
     requests_mock.get(
         f'{API_V2}/taxa/70118',
-        json=SAMPLE_DATA['get_taxa_by_id_v2_full'],
+        json=SAMPLE_DATA['get_taxa_by_id_full'],
         status_code=200,
     )
 
@@ -123,7 +123,7 @@ def test_get_taxa_by_id__all_fields(requests_mock):
 def test_get_taxa_autocomplete(requests_mock):
     requests_mock.get(
         f'{API_V2}/taxa/autocomplete',
-        json=SAMPLE_DATA['get_taxa_v2_minimal'],
+        json=SAMPLE_DATA['get_taxa_minimal'],
         status_code=200,
     )
 
@@ -135,7 +135,7 @@ def test_get_taxa_autocomplete(requests_mock):
 def test_get_taxa_iconic(requests_mock):
     requests_mock.get(
         f'{API_V2}/taxa/iconic',
-        json=SAMPLE_DATA['get_taxa_iconic_v2_full'],
+        json=SAMPLE_DATA['get_taxa_iconic_full'],
         status_code=200,
     )
 

@@ -90,13 +90,13 @@ def get_observations(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observations_v2_minimal.py
+            .. literalinclude:: ../sample_data/v2/get_observations_minimal.py
 
         .. dropdown:: Example Response (all fields)
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observations_v2_full.py
+            .. literalinclude:: ../sample_data/v2/get_observations_full.py
 
     Returns:
         Response dict containing observation records
@@ -268,7 +268,7 @@ def create_observation(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/create_observation_v2.json
+            .. literalinclude:: ../sample_data/v2/create_observation.json
                 :language: JSON
 
     Returns:
@@ -404,7 +404,7 @@ def set_observation_field(
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/post_put_observation_field_value.json
+            .. literalinclude:: ../sample_data/v0/post_put_observation_field_value.json
                 :language: javascript
 
     Returns:

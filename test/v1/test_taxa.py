@@ -23,7 +23,7 @@ def test_get_taxa(requests_mock):
     params = {'q': 'vespi', 'rank': 'genus,subgenus,species'}
     requests_mock.get(
         f'{API_V1}/taxa?{urlencode(params)}',
-        json=load_sample_data('get_taxa.json'),
+        json=load_sample_data('v1/get_taxa.json'),
         status_code=200,
     )
 
@@ -65,7 +65,7 @@ def test_get_taxa_by_id(requests_mock):
     taxon_id = 70118
     requests_mock.get(
         f'{API_V1}/taxa/{taxon_id}',
-        json=load_sample_data('get_taxa_by_id.json'),
+        json=load_sample_data('v1/get_taxa_by_id.json'),
         status_code=200,
     )
 
@@ -88,7 +88,7 @@ def test_get_taxa_by_id__invalid_inputs(taxon_id):
 def test_get_taxa_autocomplete(requests_mock):
     requests_mock.get(
         f'{API_V1}/taxa/autocomplete',
-        json=load_sample_data('get_taxa_autocomplete.json'),
+        json=load_sample_data('v1/get_taxa_autocomplete.json'),
         status_code=200,
     )
 
@@ -107,7 +107,7 @@ def test_get_taxa_autocomplete(requests_mock):
 def test_get_taxa_map_layers(requests_mock):
     requests_mock.get(
         f'{API_V1}/taxa/47588/map_layers',
-        json=load_sample_data('get_taxa_map_layers.json'),
+        json=load_sample_data('v1/get_taxa_map_layers.json'),
         status_code=200,
     )
 

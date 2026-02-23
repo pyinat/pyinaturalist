@@ -38,41 +38,41 @@ def get_observations(**params) -> list | str:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observations.atom
+            .. literalinclude:: ../sample_data/v0/get_observations.atom
                 :language: xml
 
         .. dropdown:: Example Response (csv)
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observations.csv
+            .. literalinclude:: ../sample_data/v0/get_observations.csv
 
         .. dropdown:: Example Response (dwc)
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observations.dwc
+            .. literalinclude:: ../sample_data/v0/get_observations.dwc
                 :language: xml
 
         .. dropdown:: Example Response (json)
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observations.json
+            .. literalinclude:: ../sample_data/v0/get_observations.json
                 :language: json
 
         .. dropdown:: Example Response (kml)
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observations.kml
+            .. literalinclude:: ../sample_data/v0/get_observations.kml
                 :language: xml
 
         .. dropdown:: Example Response (widget)
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observations.js
+            .. literalinclude:: ../sample_data/v0/get_observations.js
                 :language: javascript
 
     Returns:
@@ -115,14 +115,14 @@ def create_observation(**params) -> ListResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/create_observation_result.json
+            .. literalinclude:: ../sample_data/v0/create_observation_result.json
                 :language: javascript
 
         .. dropdown:: Example Response (failure)
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/create_observation_fail.json
+            .. literalinclude:: ../sample_data/v0/create_observation_fail.json
                 :language: javascript
 
     Returns:
@@ -182,7 +182,7 @@ def update_observation(observation_id: int, **params) -> ListResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/update_observation_result.json
+            .. literalinclude:: ../sample_data/v1/update_observation_result.json
                 :language: javascript
 
     Returns:
@@ -230,7 +230,7 @@ def upload_photos(observation_id: int, photos: MultiFile, **params) -> ListRespo
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/post_observation_photos_list.json
+            .. literalinclude:: ../sample_data/v0/post_observation_photos_list.json
                 :language: javascript
 
     Args:
@@ -274,7 +274,7 @@ def upload_sounds(observation_id: int, sounds: MultiFile, **params) -> ListRespo
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/post_observation_sounds_list.json
+            .. literalinclude:: ../sample_data/v0/post_observation_sounds_list.json
                 :language: javascript
 
         Multiple sounds can be uploaded at once:

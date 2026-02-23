@@ -26,7 +26,7 @@ def get_message_by_id(message_id: MultiInt, **params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_messages.json
+            .. literalinclude:: ../sample_data/v1/get_messages.json
 
     Returns:
         Response dict containing user record
@@ -54,7 +54,7 @@ def get_messages(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_messages.json
+            .. literalinclude:: ../sample_data/v1/get_messages.json
 
     Returns:
         Response dict containing user record
