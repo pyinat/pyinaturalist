@@ -231,7 +231,10 @@ def test_send__write_timeout(
     session = ClientSession()
     request = Request(method=method, url='http://test.com').prepare()
     session.send(request)
-    mock_requests_send.assert_called_with(request, timeout=(5, expected_timeout))
+    if method in ('POST', 'PUT'):
+        mock_requests_send.assert_called_with(request, timeout=(expected_timeout, expected_timeout))
+    else:
+        mock_requests_send.assert_called_with(request, timeout=(5, expected_timeout))
 
 
 @patch('pyinaturalist.session.format_response')
@@ -248,7 +251,7 @@ def test_send__override_session_timeout(mock_limiter, mock_requests_send, mock_f
     # write timeout
     request = Request(method='POST', url='http://test.com').prepare()
     session.send(request)
-    mock_requests_send.assert_called_with(request, timeout=(5, 66))
+    mock_requests_send.assert_called_with(request, timeout=(66, 66))
 
 
 @patch('pyinaturalist.session.format_response')

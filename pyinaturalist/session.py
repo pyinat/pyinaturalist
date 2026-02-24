@@ -337,19 +337,22 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         if dry_run or is_dry_run_enabled(request.method):
             return MockResponse(request)
 
-        # Set a longer timeout for write operations
-        if not timeout:
-            timeout = self.write_timeout if request.method in ['POST', 'PUT'] else self.read_timeout
+        # For write operations, use a longer timeout, and use it for both the connect and read timeouts.
+        # During the body-send phase, urllib3 applies the connect timeout to socket write operations.
+        # So effectively, "connect timeout" is actually "connect+send" for file uploads. UGH.
+        is_write = not timeout and request.method in ['POST', 'PUT']
+        connect_timeout = self.write_timeout if is_write else CONNECT_TIMEOUT
+        read_timeout = self.write_timeout if is_write else (timeout or self.read_timeout)
+        request_timeout = (connect_timeout, read_timeout)
 
         # Send the request and validate the response
-        read_timeout = timeout or self.read_timeout
         try:
             response = super().send(
                 request,
                 expire_after=expire_after,
                 refresh=refresh,
                 force_refresh=force_refresh,
-                timeout=(CONNECT_TIMEOUT, read_timeout),
+                timeout=request_timeout,
                 **kwargs,
             )
         # Handle write timeouts, which are not captured by urllib3 retry handling;
