@@ -44,6 +44,45 @@ def test_autocomplete(requests_mock):
     assert results[0].id == 52747
 
 
+def test_autocomplete__full_records(requests_mock):
+    autocomplete_results = deepcopy(SAMPLE_DATA['get_taxa_autocomplete'])
+    autocomplete_results['results'] = [autocomplete_results['results'][0]]
+    autocomplete_results['total_results'] = 1
+    autocomplete_results['per_page'] = 1
+
+    full_taxon = deepcopy(SAMPLE_DATA['get_taxa_by_id'])
+    full_taxon['results'][0]['id'] = 52747
+    full_taxon['results'][0].pop('matched_term', None)
+
+    requests_mock.get(
+        f'{API_V1}/taxa/autocomplete',
+        json=autocomplete_results,
+        status_code=200,
+    )
+    requests_mock.get(
+        f'{API_V1}/taxa/52747',
+        json=full_taxon,
+        status_code=200,
+    )
+
+    taxon = iNatClient().taxa.autocomplete(q='vespi', full_records=True).one()
+    assert isinstance(taxon, Taxon)
+    assert taxon.id == 52747
+    assert taxon.matched_term == 'Vespidae'
+    assert len(taxon.ancestors) > 0
+
+
+def test_autocomplete__full_records__empty_results(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/taxa/autocomplete',
+        json={'results': [], 'total_results': 0, 'per_page': 0},
+        status_code=200,
+    )
+
+    results = iNatClient().taxa.autocomplete(q='xyzzy', full_records=True).all()
+    assert results == []
+
+
 def test_search(requests_mock):
     requests_mock.get(
         f'{API_V1}/taxa',

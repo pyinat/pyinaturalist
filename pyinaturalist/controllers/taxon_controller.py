@@ -6,7 +6,7 @@ from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import copy_doc_signature
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.models import Taxon
-from pyinaturalist.paginator import IDPaginator, Paginator
+from pyinaturalist.paginator import IDPaginator, Paginator, WrapperPaginator
 from pyinaturalist.v1 import get_taxa, get_taxa_autocomplete, get_taxa_by_id
 
 
@@ -55,7 +55,7 @@ class TaxonController(BaseController):
         )
 
     @copy_doc_signature(docs._taxon_params)
-    def autocomplete(self, **params) -> Paginator[Taxon]:
+    def autocomplete(self, full_records: bool = False, **params) -> Paginator[Taxon]:
         """Given a query string, return taxa with names starting with the search term
 
         .. rubric:: Notes
@@ -65,8 +65,37 @@ class TaxonController(BaseController):
 
         Example:
             >>> client.taxa.autocomplete(q='vespi')
+
+        Args:
+            full_records: Fetch full taxon records by ID for each autocomplete match
         """
-        return self.client.paginate(get_taxa_autocomplete, Taxon, **params)
+        if not full_records:
+            return self.client.paginate(get_taxa_autocomplete, Taxon, **params)
+        return self._autocomplete_full(**params)
+
+    def _autocomplete_full(self, **params) -> Paginator[Taxon]:
+        """Fetch autocomplete matches, then replace each result with the full taxon record."""
+        params = self.client.add_defaults(get_taxa_autocomplete, params)
+        autocomplete_response = get_taxa_autocomplete(**params)
+        autocomplete_results = autocomplete_response.get('results', [])
+        taxon_ids = [result['id'] for result in autocomplete_results]
+        if not taxon_ids:
+            return WrapperPaginator([])
+
+        # Only pass params relevant to get_taxa_by_id; autocomplete-specific params
+        # like q, rank, is_active, etc. are not valid for the by-id endpoint.
+        by_id_keys = {'locale', 'preferred_place_id', 'all_names', 'session', 'dry_run'}
+        by_id_params = {k: v for k, v in params.items() if k in by_id_keys}
+        full_response = get_taxa_by_id(taxon_ids, **by_id_params)
+        full_results_by_id = {r['id']: r for r in full_response.get('results', [])}
+
+        def merge(result: dict) -> dict:
+            merged = {**full_results_by_id.get(result['id'], result)}
+            if matched_term := result.get('matched_term'):
+                merged.setdefault('matched_term', matched_term)
+            return merged
+
+        return WrapperPaginator(Taxon.from_json_list([merge(r) for r in autocomplete_results]))
 
     @copy_doc_signature(docs._taxon_params, docs._taxon_id_params)
     def search(self, **params) -> Paginator[Taxon]:
