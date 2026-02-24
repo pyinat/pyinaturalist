@@ -49,7 +49,7 @@ def get_projects(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_projects.py
+            .. literalinclude:: ../sample_data/v1/get_projects.py
 
     Returns:
         Response dict containing project records
@@ -88,7 +88,7 @@ def get_projects_by_id(
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_projects_by_id.py
+            .. literalinclude:: ../sample_data/v1/get_projects_by_id.py
 
     Args:
         project_id: Get projects with this ID. Multiple values are allowed.
@@ -139,7 +139,7 @@ def add_project_observation(
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/add_project_observation.json
+            .. literalinclude:: ../sample_data/v1/add_project_observation.json
                 :language: JSON
 
     Returns:

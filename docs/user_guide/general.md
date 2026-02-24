@@ -105,7 +105,7 @@ iNaturalist.org:
 And here is what that same observation looks like in JSON:
 :::{dropdown} Observation response JSON
 :icon: code-square
-```{literalinclude} ../sample_data/get_observation_2.json
+```{literalinclude} ../sample_data/v1/get_observation_2.json
 ```
 :::
 

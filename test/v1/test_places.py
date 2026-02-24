@@ -15,12 +15,12 @@ def test_get_places_by_id(requests_mock):
     response = get_places_by_id([93735, 89191])
     result = response['results'][0]
 
-    assert response['total_results'] == len(response['results']) == 2
-    assert result['id'] == 93735
-    assert result['name'] == 'Springbok'
-    assert result['bbox_area'] == 0.000993854049
-    assert result['location'] == [-29.665119, 17.88583]
-    assert len(result['ancestor_place_ids']) == 4
+    assert response['total_results'] == len(response['results']) == 1
+    assert result['id'] == 89191
+    assert result['name'] == 'Conservation Area Riversdale'
+    assert result['bbox_area'] == 8.645461408068031e-06
+    assert result['location'] == [-43.3254578926, 172.2325124165]
+    assert len(result['ancestor_place_ids']) == 5
 
 
 @pytest.mark.parametrize('place_id', ['asdf', [None], [1, 'not a number']])

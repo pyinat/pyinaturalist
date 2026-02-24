@@ -1,0 +1,570 @@
+{
+  "total_results": 7,
+  "page": 1,
+  "per_page": 30,
+  "results": [
+    {
+      "id": 17,
+      "ontology_uri": "",
+      "uri": "",
+      "is_value": false,
+      "multivalued": false,
+      "uuid": "60901c4f-7b6d-4df9-a014-8ed66533d2dc",
+      "values": [
+        {
+          "id": 18,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "126bf41d-c387-4b98-90be-c693bd41f429",
+          "label": "Alive"
+        },
+        {
+          "id": 19,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "04f8af94-a893-48d5-b43a-ba13956e7c5d",
+          "label": "Dead"
+        },
+        {
+          "id": 20,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "1e75ade7-f1c2-4ef7-994b-c5b07d52713e",
+          "label": "Cannot Be Determined"
+        }
+      ],
+      "taxon_ids": [
+        1
+      ],
+      "excepted_taxon_ids": [
+        43583
+      ],
+      "label": "Alive or Dead"
+    },
+    {
+      "id": 33,
+      "ontology_uri": "",
+      "uri": "",
+      "is_value": false,
+      "multivalued": false,
+      "uuid": "8e8fdbf3-1231-4d85-a52c-32b587d911d2",
+      "values": [
+        {
+          "id": 34,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "ea244ff4-e33c-4079-afc1-4d497dd996c6",
+          "taxon_ids": [
+            26036,
+            20978
+          ],
+          "label": "Not Established"
+        }
+      ],
+      "taxon_ids": [
+        26036,
+        20978
+      ],
+      "label": "Established"
+    },
+    {
+      "id": 1,
+      "ontology_uri": "",
+      "uri": "",
+      "is_value": false,
+      "multivalued": false,
+      "uuid": "f895e9ce-fb2d-4a63-a486-ac424f497e02",
+      "values": [
+        {
+          "id": 2,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "48722062-360d-4b6e-b72c-129c7066b3fa",
+          "taxon_ids": [
+            1
+          ],
+          "label": "Adult"
+        },
+        {
+          "id": 3,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "b3b6e6d0-cbce-4886-bb2b-55bd99d44586",
+          "taxon_ids": [
+            47792,
+            50190
+          ],
+          "label": "Teneral"
+        },
+        {
+          "id": 4,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "c883d7b5-4eb5-4ad1-8cbc-56f5e2555869",
+          "taxon_ids": [
+            47208,
+            48763,
+            49369,
+            47157,
+            47822,
+            47201,
+            62164,
+            47864,
+            83204,
+            83202,
+            47794
+          ],
+          "label": "Pupa"
+        },
+        {
+          "id": 5,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "0f0c03c2-4741-46db-a19a-7cac8a96d667",
+          "taxon_ids": [
+            47793,
+            81769,
+            56834,
+            47744,
+            47792,
+            47651,
+            47504,
+            48011,
+            48112,
+            53795,
+            47198,
+            83187,
+            83201,
+            83200
+          ],
+          "label": "Nymph"
+        },
+        {
+          "id": 6,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "8ff477bd-0949-4a7a-9c67-64a8e3786876",
+          "taxon_ids": [
+            20978,
+            47208,
+            47822,
+            47201,
+            47157,
+            49369,
+            47864,
+            48763,
+            47794,
+            83204,
+            83202,
+            62164
+          ],
+          "label": "Larva"
+        },
+        {
+          "id": 7,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "fe58aedb-4375-4096-a61f-1cd718cf319f",
+          "excepted_taxon_ids": [
+            848317
+          ],
+          "taxon_ids": [
+            48460
+          ],
+          "label": "Egg"
+        },
+        {
+          "id": 8,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "3245d167-ffff-44ce-a366-cfc8f711d73f",
+          "taxon_ids": [
+            1
+          ],
+          "excepted_taxon_ids": [
+            184884
+          ],
+          "label": "Juvenile"
+        },
+        {
+          "id": 16,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": true,
+          "uuid": "6ff4f9f8-7bc0-4d50-bee5-7072d11a04ef",
+          "taxon_ids": [
+            48011
+          ],
+          "label": "Subimago"
+        }
+      ],
+      "taxon_ids": [
+        1
+      ],
+      "excepted_taxon_ids": [
+        43583
+      ],
+      "label": "Life Stage"
+    },
+    {
+      "id": 36,
+      "ontology_uri": "",
+      "uri": "",
+      "is_value": false,
+      "multivalued": true,
+      "uuid": "ee2d3174-905d-49c4-b35c-8ff153d28061",
+      "values": [
+        {
+          "id": 37,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "a8d02775-09f3-4a1c-8d9e-ee0a6918c955",
+          "label": "Breaking Leaf Buds"
+        },
+        {
+          "id": 38,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "a269b16d-1f24-4ede-9a2d-d61d4d21ac6a",
+          "label": "Green Leaves"
+        },
+        {
+          "id": 39,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "bc565db9-1823-48e4-b9fd-9dcbdf17a98f",
+          "label": "Colored Leaves"
+        },
+        {
+          "id": 40,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": true,
+          "uuid": "07b6d924-89a8-4ebd-8883-9d5c37164bbd",
+          "label": "No Live Leaves"
+        }
+      ],
+      "taxon_ids": [
+        211194
+      ],
+      "label": "Leaves"
+    },
+    {
+      "id": 22,
+      "ontology_uri": "",
+      "uri": "",
+      "is_value": false,
+      "multivalued": true,
+      "uuid": "ba9ab5e7-fd7f-48f8-a77b-c87fb09ecce0",
+      "values": [
+        {
+          "id": 23,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "353bfdb9-d715-49cd-94e5-39f03a656256",
+          "taxon_ids": [
+            3
+          ],
+          "label": "Feather"
+        },
+        {
+          "id": 24,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "bbea7208-b82f-4910-b7ab-e27d9d5f049a",
+          "taxon_ids": [
+            1
+          ],
+          "label": "Organism"
+        },
+        {
+          "id": 25,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "edae8df7-04f1-49d4-bee6-2e4af13666f1",
+          "taxon_ids": [
+            1
+          ],
+          "label": "Scat"
+        },
+        {
+          "id": 29,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "1df4ce93-4051-486f-88c5-040036f8661c",
+          "excepted_taxon_ids": [
+            47167,
+            54743,
+            48341,
+            47380,
+            2,
+            47549,
+            51508,
+            47534,
+            85493,
+            47115,
+            47118,
+            47792,
+            48717,
+            48708,
+            55013,
+            55115,
+            48112,
+            48445,
+            48427,
+            48419,
+            48222
+          ],
+          "taxon_ids": [
+            48460
+          ],
+          "label": "Gall"
+        },
+        {
+          "id": 26,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "42303c00-66d9-4efb-8f0d-1816f4ce702c",
+          "taxon_ids": [
+            1
+          ],
+          "label": "Track"
+        },
+        {
+          "id": 27,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "bdfa96f2-7cd2-40f6-b83e-6d1d9e3b9da7",
+          "taxon_ids": [
+            355675
+          ],
+          "label": "Bone"
+        },
+        {
+          "id": 28,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "83c4ec31-0eec-4b60-bbea-3f3f2772d0e4",
+          "taxon_ids": [
+            26036,
+            47120
+          ],
+          "label": "Molt"
+        },
+        {
+          "id": 30,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "51c76cea-c557-4b06-bf28-efd0ebd4f477",
+          "taxon_ids": [
+            1
+          ],
+          "excepted_taxon_ids": [
+            848320
+          ],
+          "label": "Egg"
+        },
+        {
+          "id": 31,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "dd1ee258-3dd8-479a-b4f7-8deb769353be",
+          "taxon_ids": [
+            40151
+          ],
+          "excepted_taxon_ids": [
+            43583
+          ],
+          "label": "Hair"
+        },
+        {
+          "id": 32,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "90d81ff5-d9b0-44b8-b645-55b8dbd75ae3",
+          "excepted_taxon_ids": [
+            47792,
+            81769,
+            47793,
+            48011,
+            48112,
+            49369,
+            47864,
+            48763,
+            53795,
+            47651,
+            47504,
+            83187,
+            47794,
+            83204,
+            83202,
+            83201,
+            62164,
+            83200,
+            56834,
+            47744,
+            55699,
+            461443,
+            48301
+          ],
+          "taxon_ids": [
+            47158
+          ],
+          "label": "Leafmine"
+        },
+        {
+          "id": 35,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "9be7240c-b7e1-4b29-9ed5-7c336aa1c14b",
+          "taxon_ids": [
+            1
+          ],
+          "excepted_taxon_ids": [
+            43583
+          ],
+          "label": "Construction"
+        }
+      ],
+      "excepted_taxon_ids": [
+        43583,
+        47126
+      ],
+      "taxon_ids": [
+        48460
+      ],
+      "label": "Evidence of Presence"
+    },
+    {
+      "id": 12,
+      "ontology_uri": "",
+      "uri": "",
+      "is_value": false,
+      "multivalued": true,
+      "uuid": "e997f5f1-1e22-4f1e-bb51-425d70d07b1a",
+      "values": [
+        {
+          "id": 13,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "84aa676e-2921-42cf-ae01-034a98425b5c",
+          "taxon_ids": [
+            47125
+          ],
+          "label": "Flowers"
+        },
+        {
+          "id": 14,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "503cef8b-770b-4c2d-a0b0-e0ea9f7df465",
+          "taxon_ids": [
+            47125
+          ],
+          "label": "Fruits or Seeds"
+        },
+        {
+          "id": 15,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "9c9d28a1-4ad3-408e-9f2b-30af803f5eb9",
+          "taxon_ids": [
+            47125
+          ],
+          "label": "Flower Buds"
+        },
+        {
+          "id": 21,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": true,
+          "uuid": "943f8dac-764a-4736-86b5-2f419bbd368b",
+          "taxon_ids": [
+            47125
+          ],
+          "label": "No Flowers or Fruits"
+        }
+      ],
+      "taxon_ids": [
+        47126
+      ],
+      "label": "Flowers and Fruits"
+    },
+    {
+      "ontology_uri": "",
+      "uri": "",
+      "is_value": false,
+      "multivalued": false,
+      "uuid": "6a659546-c3aa-45ff-8f6c-0706f2361cfe",
+      "id": 9,
+      "values": [
+        {
+          "id": 10,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "3288a7bd-6ca7-413e-9890-5c4c541331de",
+          "label": "Female"
+        },
+        {
+          "id": 11,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "207a8f33-ee23-44c9-88a5-e6a036a7d950",
+          "label": "Male"
+        },
+        {
+          "id": 20,
+          "ontology_uri": "",
+          "uri": "",
+          "blocking": false,
+          "uuid": "1e75ade7-f1c2-4ef7-994b-c5b07d52713e",
+          "label": "Cannot Be Determined"
+        }
+      ],
+      "excepted_taxon_ids": [
+        47170,
+        333586,
+        131236,
+        63081,
+        47113,
+        67333,
+        151817,
+        43583
+      ],
+      "taxon_ids": [
+        48460
+      ],
+      "label": "Sex"
+    }
+  ]
+}

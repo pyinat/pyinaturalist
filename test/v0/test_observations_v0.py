@@ -21,7 +21,7 @@ from test.conftest import load_sample_data
 
 def get_observations_response(response_format):
     response_format = response_format.replace('widget', 'js')
-    return load_sample_data(f'get_observations.{response_format}')
+    return load_sample_data(f'v0/get_observations.{response_format}')
 
 
 @pytest.mark.parametrize('response_format', OBSERVATION_FORMATS)
@@ -61,7 +61,7 @@ def test_get_observations__invalid_format(response_format):
 def test_create_observation(requests_mock):
     requests_mock.post(
         f'{API_V0}/observations.json',
-        json=load_sample_data('create_observation_result.json'),
+        json=load_sample_data('v0/create_observation_result.json'),
         status_code=200,
     )
 
@@ -80,7 +80,7 @@ def test_create_observation__with_datetime(post, requests_mock):
     """
     requests_mock.post(
         f'{API_V0}/observations.json',
-        json=load_sample_data('create_observation_result.json'),
+        json=load_sample_data('v0/create_observation_result.json'),
         status_code=200,
     )
 
@@ -120,7 +120,7 @@ def test_create_observation_fail(requests_mock):
 
     requests_mock.post(
         f'{API_V0}/observations.json',
-        json=load_sample_data('create_observation_fail.json'),
+        json=load_sample_data('v0/create_observation_fail.json'),
         status_code=422,
     )
 
@@ -133,7 +133,7 @@ def test_create_observation_fail(requests_mock):
 def test_update_observation(requests_mock):
     requests_mock.put(
         f'{API_V0}/observations/17932425.json',
-        json=load_sample_data('update_observation_result.json'),
+        json=load_sample_data('v1/update_observation_result.json'),
         status_code=200,
     )
 
@@ -212,7 +212,7 @@ def test_update_observation_not_mine(requests_mock):
 def test_upload_photos(requests_mock):
     requests_mock.post(
         f'{API_V0}/observation_photos',
-        json=load_sample_data('post_observation_photos.json'),
+        json=load_sample_data('v0/post_observation_photos.json'),
         status_code=200,
     )
 
@@ -225,7 +225,7 @@ def test_upload_photos(requests_mock):
 def test_upload_sounds(requests_mock):
     requests_mock.post(
         f'{API_V0}/observation_sounds',
-        json=load_sample_data('post_observation_sounds.json'),
+        json=load_sample_data('v0/post_observation_sounds.json'),
         status_code=200,
     )
 

@@ -25,7 +25,7 @@ def search(q: str, **params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_search.py
+            .. literalinclude:: ../sample_data/v1/get_search.py
 
     Returns:
         Response dict containing search results

@@ -7,8 +7,8 @@ from pathlib import Path
 
 SPECS_DIR = Path(__file__).parent / 'specs'
 SPECS_DIR.mkdir(exist_ok=True)
-SPEC_PATH = SPECS_DIR / 'openapi_spec_v2.json'
-OUTPUT_PATH = SPECS_DIR / 'openapi_model_fields.json'
+SPEC_V2_PATH = SPECS_DIR / 'openapi_spec_v2.json'
+OUTPUT_V2_PATH = SPECS_DIR / 'openapi_model_fields_v2.json'
 
 MODELS = [
     'Annotation',
@@ -116,7 +116,7 @@ def resolve_ref(ref: str, spec: dict) -> dict:
 
 
 def main():
-    spec = json.loads(SPEC_PATH.read_text())
+    spec = json.loads(SPEC_V2_PATH.read_text())
     schemas = spec['components']['schemas']
 
     all_fields = {}
@@ -127,9 +127,9 @@ def main():
             continue
         all_fields[to_snake_case(model_name)] = extract_fields(schema, spec)
 
-    with open(OUTPUT_PATH, 'w') as f:
+    with open(OUTPUT_V2_PATH, 'w') as f:
         json.dump(all_fields, f, indent=2)
-    print(f'Written to {OUTPUT_PATH}')
+    print(f'Written to {OUTPUT_V2_PATH}')
 
 
 if __name__ == '__main__':

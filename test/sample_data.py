@@ -16,7 +16,7 @@ def load_sample_data(filename):
 def load_all_sample_data() -> dict[str, dict]:
     """Load all sample data files"""
     sample_data = {}
-    for file_path in SAMPLE_DATA_DIR.glob('*.json'):
+    for file_path in SAMPLE_DATA_DIR.glob('**/*.json'):
         name = file_path.stem
         with open(file_path, encoding='utf-8') as f:
             sample_data[name] = json.load(f)
@@ -29,12 +29,12 @@ def load_all_sample_data() -> dict[str, dict]:
 SAMPLE_DATA = load_all_sample_data()
 
 j_observation_1 = SAMPLE_DATA['get_observation']['results'][0]
-j_observation_2 = SAMPLE_DATA['get_observations_v1_page1']['results'][0]
+j_observation_2 = SAMPLE_DATA['get_observations_page1']['results'][0]
 j_observation_3_ofvs = SAMPLE_DATA['get_observation_with_ofvs']['results'][0]
 j_observation_4_sounds = SAMPLE_DATA['get_observation_with_sounds']['results'][0]
 j_observation_5_annotations = SAMPLE_DATA['get_observations_by_id']['results'][0]
 j_observation_6_metrics = SAMPLE_DATA['get_observation_with_quality_metrics']
-j_observation_v2 = SAMPLE_DATA['get_observations_v2_full']['results'][0]
+j_observation_v2 = SAMPLE_DATA['get_observations_full']['results'][0]
 j_observation_identifiers = SAMPLE_DATA['get_observation_identifiers_node_page1']
 j_observation_observers = SAMPLE_DATA['get_observation_observers_node_page1']
 j_taxon_1 = SAMPLE_DATA['get_taxa_by_id']['results'][0]
@@ -81,7 +81,7 @@ j_quality_metric_1 = j_observation_6_metrics['quality_metrics'][0]
 j_photo_1 = j_taxon_1['taxon_photos'][0]['photo']
 j_photo_2_partial = j_taxon_1['default_photo']
 j_photo_3_nested = SAMPLE_DATA['upload_photos_and_sounds'][1]
-j_place_1 = SAMPLE_DATA['get_places_by_id']['results'][1]
+j_place_1 = SAMPLE_DATA['get_places_by_id']['results'][0]
 j_place_2 = SAMPLE_DATA['get_places_autocomplete']['results'][0]
 j_places_nearby = SAMPLE_DATA['get_places_nearby']['results']
 j_places_nearby['standard'] = j_places_nearby['standard'][:3]

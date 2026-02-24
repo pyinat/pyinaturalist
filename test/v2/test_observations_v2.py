@@ -21,7 +21,7 @@ from test.sample_data import SAMPLE_DATA
 def test_get_observations__minimal(requests_mock):
     requests_mock.get(
         f'{API_V2}/observations',
-        json=SAMPLE_DATA['get_observations_v2_minimal'],
+        json=SAMPLE_DATA['get_observations_minimal'],
         status_code=200,
     )
 
@@ -35,7 +35,7 @@ def test_get_observations__minimal(requests_mock):
 def test_get_observations__all_fields(requests_mock):
     requests_mock.get(
         f'{API_V2}/observations',
-        json=SAMPLE_DATA['get_observations_v2_full'],
+        json=SAMPLE_DATA['get_observations_full'],
         status_code=200,
     )
 
@@ -48,7 +48,7 @@ def test_get_observations__all_fields(requests_mock):
 def test_get_observations__some_fields(requests_mock):
     requests_mock.post(
         f'{API_V2}/observations',
-        json=SAMPLE_DATA['get_observations_v2_full'],
+        json=SAMPLE_DATA['get_observations_full'],
         status_code=200,
     )
 
@@ -71,8 +71,8 @@ def test_get_observations__all_pages(requests_mock):
     requests_mock.get(
         f'{API_V2}/observations',
         [
-            {'json': SAMPLE_DATA['get_observations_v1_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_v1_page2'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page2'], 'status_code': 200},
         ],
     )
 
@@ -84,8 +84,8 @@ def test_get_observations__all_pages__post(requests_mock):
     requests_mock.post(
         f'{API_V2}/observations',
         [
-            {'json': SAMPLE_DATA['get_observations_v1_page1'], 'status_code': 200},
-            {'json': SAMPLE_DATA['get_observations_v1_page2'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page1'], 'status_code': 200},
+            {'json': SAMPLE_DATA['get_observations_page2'], 'status_code': 200},
         ],
     )
 
@@ -132,12 +132,12 @@ def test_upload(requests_mock):
     """Test uploading photos and sounds to an observation"""
     requests_mock.post(
         f'{API_V2}/observation_photos',
-        json=SAMPLE_DATA['post_observation_media_v2'],
+        json=SAMPLE_DATA['post_observation_media'],
         status_code=200,
     )
     requests_mock.post(
         f'{API_V2}/observation_sounds',
-        json=SAMPLE_DATA['post_observation_media_v2'],
+        json=SAMPLE_DATA['post_observation_media'],
         status_code=200,
     )
 
@@ -155,7 +155,7 @@ def test_upload__with_photo_ids(requests_mock):
     """Test attaching existing photos to an observation"""
     requests_mock.post(
         f'{API_V2}/observation_photos',
-        json=SAMPLE_DATA['post_observation_media_v2'],
+        json=SAMPLE_DATA['post_observation_media'],
         status_code=200,
     )
 

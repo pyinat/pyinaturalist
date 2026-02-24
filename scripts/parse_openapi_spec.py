@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Utilities to parse some relevant schema details from the OpenAPI spec
+"""Utilities to parse relevant schema details from iNat OpenAPI specs
 
 Extra dependencies:
     ``pip install prance[osv] rich``
@@ -13,15 +13,21 @@ import requests
 from prance import ResolvingParser
 from rich import print
 
+from pyinaturalist.constants import PathOrStr
+
 SPECS_DIR = Path(__file__).parent / 'specs'
 SPECS_DIR.mkdir(exist_ok=True)
 SPEC_V1_URL = 'https://api.inaturalist.org/v1/swagger.json'
-SPEC_V1_FILE = SPECS_DIR / 'openapi_spec_v1.json'
+SPEC_V1_PATH = SPECS_DIR / 'openapi_spec_v1.json'
+REQUEST_MODELS_V1_PATH = SPECS_DIR / 'openapi_request_models_v1.py'
+RESPONSE_MODELS_V1_PATH = SPECS_DIR / 'openapi_response_models_v1.py'
+ENUMS_V1_PATH = SPECS_DIR / 'openapi_enums_v1.py'
+
 SPEC_V2_URL = 'https://api.inaturalist.org/v2/docs/swagger-ui-init.js'
-SPEC_V2_FILE = SPECS_DIR / 'openapi_spec_v2.json'
-REQUEST_MODELS_FILE = SPECS_DIR / 'openapi_request_models.py'
-RESPONSE_MODELS_FILE = SPECS_DIR / 'openapi_response_models.py'
-ENUMS_FILE = SPECS_DIR / 'openapi_enums.py'
+SPEC_V2_PATH = SPECS_DIR / 'openapi_spec_v2.json'
+REQUEST_MODELS_V2_PATH = SPECS_DIR / 'openapi_request_models_v2.py'
+RESPONSE_MODELS_V2_PATH = SPECS_DIR / 'openapi_response_models_v2.py'
+ENUMS_V2_PATH = SPECS_DIR / 'openapi_enums_v2.py'
 
 STRING_FORMATS = {'date-time': 'datetime', 'date': 'date', 'binary': 'bytes'}
 PRIMITIVE_TYPES = {'integer': 'int', 'number': 'float', 'boolean': 'bool', 'object': 'dict'}
@@ -36,8 +42,8 @@ def download_v1_spec(force=False):
     """Download the V1 OpenAPI spec, fix some issues that throw validation errors in osv/ssv,
     and write a modified copy with fully resolved references
     """
-    if SPEC_V1_FILE.is_file() and not force:
-        print(f'Using previously downloaded OpenAPI spec: {SPEC_V1_FILE}')
+    if SPEC_V1_PATH.is_file() and not force:
+        print(f'Using previously downloaded OpenAPI spec: {SPEC_V1_PATH}')
         return
 
     print(f'Downloading OpenAPI spec: {SPEC_V1_URL}')
@@ -64,14 +70,14 @@ def download_v1_spec(force=False):
                     if not (param_name(p) in seen or seen.add(param_name(p)))
                 ]
 
-    SPEC_V1_FILE.write_text(json.dumps(spec, indent=2))
-    print(f'Modified and written to: {SPEC_V1_FILE}')
+    SPEC_V1_PATH.write_text(json.dumps(spec, indent=2))
+    print(f'Modified and written to: {SPEC_V1_PATH}')
 
 
 def download_v2_spec(force: bool = False) -> None:
     """Download and extract the v2 OpenAPI spec from the embedded swagger-ui-init.js page"""
-    if SPEC_V2_FILE.is_file() and not force:
-        print(f'Using previously downloaded OpenAPI v2 spec: {SPEC_V2_FILE}')
+    if SPEC_V2_PATH.is_file() and not force:
+        print(f'Using previously downloaded OpenAPI v2 spec: {SPEC_V2_PATH}')
         return
 
     print(f'Downloading v2 swagger-ui-init.js: {SPEC_V2_URL}')
@@ -82,13 +88,13 @@ def download_v2_spec(force: bool = False) -> None:
         raise ValueError('Could not find swaggerDoc in swagger-ui-init.js')
 
     spec, _ = json.JSONDecoder().raw_decode(js, match.start(1))
-    SPEC_V2_FILE.write_text(json.dumps(spec, indent=2))
-    print(f'Extracted and written to: {SPEC_V2_FILE}')
+    SPEC_V2_PATH.write_text(json.dumps(spec, indent=2))
+    print(f'Extracted and written to: {SPEC_V2_PATH}')
 
 
-def parse_spec():
+def parse_spec(spec_file: PathOrStr) -> dict:
     """Get path definitions from a parsed OpenAPI spec with all references resolved"""
-    parser = ResolvingParser(str(SPEC_V1_FILE))
+    parser = ResolvingParser(str(spec_file))
     return parser.specification['paths']
 
 
@@ -129,6 +135,43 @@ def generate_class(name: str, schema: dict) -> str:
     return '\n'.join(lines)
 
 
+def _classify_schemas_v1(spec: dict) -> tuple[set[str], set[str]]:
+    """Return (request_schemas, response_schemas) via flood-fill from endpoint refs.
+
+    Works on the raw V1 Swagger 2.0 spec, where schemas live in 'definitions'
+    and refs use '#/definitions/' prefixes.
+    """
+    schemas = spec['definitions']
+
+    def refs_in(obj) -> set[str]:
+        return set(re.findall(r'#/definitions/(\w+)', json.dumps(obj)))
+
+    def expand(seeds: set[str]) -> set[str]:
+        reachable = set(seeds)
+        while frontier := {r for n in reachable for r in refs_in(schemas.get(n, {}))} - reachable:
+            reachable |= frontier
+        return reachable
+
+    operations = [
+        op for methods in spec['paths'].values() for op in methods.values() if isinstance(op, dict)
+    ]
+    request_seeds = {
+        ref
+        for op in operations
+        for param in op.get('parameters', [])
+        if isinstance(param, dict) and param.get('in') == 'body'
+        for ref in refs_in(param.get('schema', {}))
+    }
+    response_seeds = {
+        ref
+        for op in operations
+        for resp in op.get('responses', {}).values()
+        if isinstance(resp, dict)
+        for ref in refs_in(resp.get('schema', {}))
+    }
+    return expand(request_seeds), expand(response_seeds)
+
+
 def _classify_schemas(spec: dict) -> tuple[set[str], set[str]]:
     """Return (request_schemas, response_schemas) via closure from endpoint refs.
 
@@ -164,28 +207,45 @@ def _write_models(schemas: dict, names: set[str], output_path: Path) -> None:
     print(f'Generated {len(included)} model classes -> {output_path}')
 
 
-def generate_models() -> None:
-    """Generate Python class stubs from the v2 OpenAPI spec's schema definitions."""
-    spec = json.loads(SPEC_V2_FILE.read_text())
-    schemas = spec['components']['schemas']
-    request_schemas, response_schemas = _classify_schemas(spec)
+def generate_models_v1() -> None:
+    """Generate Python class stubs from the v1 OpenAPI spec's schema definitions."""
+    spec = json.loads(SPEC_V1_PATH.read_text())
+    schemas = spec['definitions']
+    request_schemas, response_schemas = _classify_schemas_v1(spec)
 
-    _write_models(schemas, request_schemas, REQUEST_MODELS_FILE)
-    _write_models(schemas, response_schemas, RESPONSE_MODELS_FILE)
+    _write_models(schemas, request_schemas, REQUEST_MODELS_V1_PATH)
+    _write_models(schemas, response_schemas, RESPONSE_MODELS_V1_PATH)
 
     omitted = sorted(set(schemas.keys()) - request_schemas - response_schemas)
     print(f'Omitted {len(omitted)} unreferenced schemas: {omitted}')
 
 
-def get_enum_params(endpoints) -> list[tuple[str, str, str]]:
-    """Find all request parameters with multiple-choice (enumerated) options"""
+def generate_models_v2():
+    """Generate Python class stubs from the v2 OpenAPI spec's schema definitions."""
+    spec = json.loads(SPEC_V2_PATH.read_text())
+    schemas = spec['components']['schemas']
+    request_schemas, response_schemas = _classify_schemas(spec)
+
+    _write_models(schemas, request_schemas, REQUEST_MODELS_V2_PATH)
+    _write_models(schemas, response_schemas, RESPONSE_MODELS_V2_PATH)
+
+    omitted = sorted(set(schemas.keys()) - request_schemas - response_schemas)
+    print(f'Omitted {len(omitted)} unreferenced schemas: {omitted}')
+
+
+def get_enum_params(endpoints) -> list[tuple[str, str, list]]:
+    """Find all request parameters with multiple-choice (enumerated) options.
+
+    Handles both V1 (enum directly on param) and V2 (enum nested in param['schema']).
+    """
     return sorted(
         [
-            (path, param['name'], param['enum'])
+            (path, param['name'], param.get('enum') or param.get('schema', {}).get('enum'))
             for path, resource in endpoints.items()
             for endpoint in resource.values()
+            if isinstance(endpoint, dict)
             for param in endpoint.get('parameters', [])
-            if 'enum' in param
+            if 'enum' in param or 'enum' in param.get('schema', {})
         ]
     )
 
@@ -242,14 +302,28 @@ def write_enum_params(constant_enum_params: dict, variable_enum_params: dict, ou
     print(f'Generated enum params -> {output_path}')
 
 
+def generate_enums_v1():
+    v1_endpoints = parse_spec(SPEC_V1_PATH)
+    v1_enum_params = get_enum_params(v1_endpoints)
+    constant_enum_params, variable_enum_params = process_enum_params(v1_enum_params)
+    write_enum_params(constant_enum_params, variable_enum_params, ENUMS_V1_PATH)
+
+
+def generate_enums_v2() -> None:
+    spec = json.loads(SPEC_V2_PATH.read_text())
+    v2_enum_params = get_enum_params(spec['paths'])
+    constant_enum_params, variable_enum_params = process_enum_params(v2_enum_params)
+    write_enum_params(constant_enum_params, variable_enum_params, ENUMS_V2_PATH)
+
+
 def main():
     download_v1_spec()
+    generate_enums_v1()
+    generate_models_v1()
+
     download_v2_spec()
-    endpoints = parse_spec()
-    enum_params = get_enum_params(endpoints)
-    constant_enum_params, variable_enum_params = process_enum_params(enum_params)
-    write_enum_params(constant_enum_params, variable_enum_params, ENUMS_FILE)
-    generate_models()
+    generate_enums_v2()
+    generate_models_v2()
 
 
 if __name__ == '__main__':

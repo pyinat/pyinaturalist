@@ -21,7 +21,7 @@ def get_identifications_by_id(identification_id: MultiInt, **params) -> JsonResp
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_identifications.py
+            .. literalinclude:: ../sample_data/v1/get_identifications.py
 
     Args:
         identification_id: Get taxa with this ID. Multiple values are allowed.
@@ -57,7 +57,7 @@ def get_identifications(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_identifications.py
+            .. literalinclude:: ../sample_data/v1/get_identifications.py
 
     Returns:
         Response dict containing identification records

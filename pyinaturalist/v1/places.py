@@ -25,7 +25,7 @@ def get_places_by_id(place_id: MultiInt, **params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_places_by_id.py
+            .. literalinclude:: ../sample_data/v1/get_places_by_id.py
 
     Args:
         place_id: Get a place with this ID. Multiple values are allowed.
@@ -74,7 +74,7 @@ def get_places_nearby(
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_places_nearby.py
+            .. literalinclude:: ../sample_data/v1/get_places_nearby.py
 
     Returns:
         Response dict containing place records, divided into 'standard' and 'community' places.
@@ -108,7 +108,7 @@ def get_places_autocomplete(q: str | None = None, **params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_places_autocomplete.py
+            .. literalinclude:: ../sample_data/v1/get_places_autocomplete.py
 
     Returns:
         Response dict containing place records

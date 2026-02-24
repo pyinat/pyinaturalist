@@ -1,0 +1,41 @@
+{
+  "total_results": 1,
+  "page": 1,
+  "per_page": 1,
+  "results": [
+    {
+      "id": 1,
+      "uuid": "c1d8c72b-4b03-48a3-ac78-b3310ffdc8e0",
+      "created_at": "2008-03-20T21:15:42+00:00",
+      "description": "I'm a naturalist! I co-founded iNat, but <a href=\"https://kueda.net/blog/2026/01/06/why-i-left-inat/\">I quit in 2025</a>. You can keep up with what I'm doing on <a rel=\"me\" href=\"https://kueda.net\">kueda.net</a>,  <a rel=\"me\" href=\"https://sfba.social/@kueda\">Mastodon</a>, <a rel=\"me\" href=\"https://bsky.app/profile/kueda.net\">Bluesky</a>, and yes, even <a rel=\"me\" href=\"https://www.patreon.com/kueda\">Patreon</a>.\n\nA little about me: I've been fascinated by nature for as long as I can recall.  I used to horrify my mom by waltzing into the house holding snakes and salamanders to show her.  Eventually, I translated that love into a degree in biology.  Since then, I've worked as a GIS technician, web developer, and wildlife technician.  iNaturalist grew out of the belief that I might not be alone in my desire to combine nature and the Web. iNat has rendered that belief unnecessary.\n\nIf you'd like to learn more about the origins of iNat, <a href=\"https://www.commonwealthclub.org/events/archive/podcast/snake-seeker-and-smartphone-can-tech-save-biodiversity-8613\">check out this recording of a description I gave in 2013</a> (starts around 7:40). iNat started as a masters final project at the UC Berkeley School of Information, and they still host our <a href=\"https://www.ischool.berkeley.edu/projects/2008/inaturalistorg\">slides and report from that project</a>.\n\nIf you want me to join your project, you'll have to describe to me what it does that can't be done at https://www.inaturalist.org/observations. If it's just another combination of place and taxon except with your logo on it, I'll pass.\n\nIf you'd like me to check out an observation / journal post / whatever, please explain why and don't just @ mention me, e.g. \"Hey @kueda, what do you think of this?\" instead of just \"@kueda.\" The latter makes me feel like some kind of pet or robot that you're summoning.\n\nIf you want to use one of my photos in a publication, please abide by the license I have applied to it on iNat. If you're seeking my explicit permission to use my photo in a scientific publication, as of 2021 I will only grant it if your paper will be open access and free for anyone to read in its entirety because I think if you're going to use content that was given away freely to make something else, you should give away the thing you made in the same spirit. And I just don't believe scientific information is property. I know not everyone can afford open access publication fees which is partly why I don't enact those beliefs in my license choices. For commercial field guides, please get in touch.\n\nElsewhere:\n\n* <a href=\"http://bugguide.net/bgimage/user/17693\">BugGuide contributions</a>\n* <a href=\"http://mothphotographersgroup.msstate.edu/contrib_living.php?init=KeUe\">Moth Photographers Group photos</a> (I don't have any control over these, I think they just pick stuff they want from BugGuide after obtaining the photographer's permission)\n* <a href=\"http://tolweb.org/onlinecontributors/app;jsessionid=792468F9D5A89B90B37A359A6893624F?page=ContributorImagesPage&service=external&sp=3565\">Tree of Life contributions</a>\n* <a href=\"http://www.goodreads.com/review/list/216786-ken-ichi?shelf=guides\">my field guides</a> on Goodreads\n* <a href=\"http://ebird.org/ebird/profile/MTMzMTgw\">my pitiful eBird profile page</a>\n* <a rel=\"me\" href=\"https://sfba.social/@kueda\">Mastodon</a>",
+      "icon": "https://static.inaturalist.org/attachments/users/icons/1/thumb.jpg?1475527316",
+      "icon_url": "https://static.inaturalist.org/attachments/users/icons/1/medium.jpg?1475527316",
+      "identifications_count": 121474,
+      "journal_posts_count": 93,
+      "annotated_observations_count": 23752,
+      "last_active": "2026-02-23",
+      "login": "kueda",
+      "monthly_supporter": null,
+      "name": "Ken-ichi Ueda",
+      "observations_count": 54986,
+      "orcid": "https://orcid.org/0000-0003-0145-6846",
+      "roles": [
+        "curator",
+        "app owner"
+      ],
+      "site": {
+        "id": 1,
+        "icon_url": "https://static.inaturalist.org/sites/1-logo_square.png",
+        "locale": null,
+        "name": "iNaturalist",
+        "place_id": null,
+        "site_name_short": "iNat",
+        "url": "https://www.inaturalist.org"
+      },
+      "spam": false,
+      "species_count": 11538,
+      "suspended": false,
+      "updated_at": "2026-02-23T23:37:54+00:00"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "total_results": 1,
+  "page": 1,
+  "per_page": 1,
+  "results": [
+    {
+      "id": 8348,
+      "admins": [
+        {
+          "id": 144092,
+          "project_id": 8348,
+          "role": "manager",
+          "user": {
+            "id": 84403,
+            "created_at": "2015-03-20T22:53:09+00:00",
+            "icon": "https://static.inaturalist.org/attachments/users/icons/84403/thumb.jpg?1475546770",
+            "icon_url": "https://static.inaturalist.org/attachments/users/icons/84403/medium.jpg?1475546770",
+            "identifications_count": 0,
+            "journal_posts_count": 0,
+            "login": "ebmartin",
+            "name": "Elena Martin",
+            "observations_count": 50,
+            "orcid": null,
+            "roles": [],
+            "site_id": 1,
+            "spam": false,
+            "species_count": 29,
+            "suspended": false
+          },
+          "user_id": 84403
+        }
+      ],
+      "banner_color": null,
+      "created_at": "2016-07-26T16:08:47-07:00",
+      "description": "The purpose of this project is to document the native and invasive species (including plants, animals and fungus) present on the Tucson High campus. This is an on-going, open project, with the goal of helping students learn the difference between native and non-native species. ",
+      "flags": [],
+      "header_image_contain": false,
+      "header_image_file_name": null,
+      "header_image_url": null,
+      "hide_title": false,
+      "icon": "https://static.inaturalist.org/projects/8348-icon-span2.JPG?1505526661",
+      "icon_file_name": "IMG_1263.JPG",
+      "is_umbrella": false,
+      "latitude": "32.2264416406",
+      "location": "32.2264416406,-110.9617278383",
+      "longitude": "-110.9617278383",
+      "observation_requirements_updated_at": null,
+      "place_id": 96103,
+      "prefers_user_trust": false,
+      "project_observation_fields": [],
+      "project_observation_rules": [],
+      "project_type": "",
+      "rule_preferences": [
+        {
+          "field": "quality_grade",
+          "value": "research,needs_id"
+        }
+      ],
+      "search_parameters": [
+        {
+          "field": "quality_grade",
+          "value": [
+            "research",
+            "needs_id"
+          ],
+          "value_keyword": [
+            "research",
+            "needs_id"
+          ]
+        },
+        {
+          "field": "place_id",
+          "value": [
+            96103
+          ],
+          "value_number": [
+            96103
+          ]
+        }
+      ],
+      "site_features": [],
+      "slug": "tucson-high-native-and-invasive-species-inventory",
+      "terms": null,
+      "title": "Tucson High Native and Invasive Species Inventory",
+      "updated_at": "2024-12-07T15:01:08-07:00",
+      "user": {
+        "id": 84403,
+        "created_at": "2015-03-20T22:53:09+00:00",
+        "icon": "https://static.inaturalist.org/attachments/users/icons/84403/thumb.jpg?1475546770",
+        "icon_url": "https://static.inaturalist.org/attachments/users/icons/84403/medium.jpg?1475546770",
+        "identifications_count": 0,
+        "journal_posts_count": 0,
+        "login": "ebmartin",
+        "name": "Elena Martin",
+        "observations_count": 50,
+        "orcid": null,
+        "roles": [],
+        "site_id": 1,
+        "spam": false,
+        "species_count": 29,
+        "suspended": false
+      },
+      "user_id": 84403,
+      "user_ids": [
+        84403,
+        311743
+      ]
+    }
+  ]
+}

@@ -44,13 +44,13 @@ def test_get_projects_by_id(requests_mock):
     response = get_projects_by_id([8348, 6432])
     first_result = response['results'][0]
 
-    assert response['total_results'] == len(response['results']) == 2
+    assert response['total_results'] == len(response['results']) == 1
     assert first_result['id'] == 8348
     assert first_result['title'] == 'Tucson High Native and Invasive Species Inventory'
     assert first_result['place_id'] == 96103
     assert first_result['location'] == [32.2264416406, -110.9617278383]
     assert first_result['created_at'] == datetime(2016, 7, 26, 23, 8, 47, tzinfo=tzutc())
-    assert first_result['updated_at'] == datetime(2017, 9, 16, 1, 51, 1, tzinfo=tzutc())
+    assert first_result['updated_at'] == datetime.fromisoformat('2024-12-07T15:01:08-07:00')
 
 
 def test_add_project_observation(requests_mock):

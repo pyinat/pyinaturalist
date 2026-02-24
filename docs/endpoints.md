@@ -17,6 +17,10 @@ For all available endpoints, see: <http://api.inaturalist.org/v2/docs/>
 | POST   | /observation_photos                | {py:func}`~pyinaturalist.v2.observations.upload`                |
 | POST   | /observation_sounds                | {py:func}`~pyinaturalist.v2.observations.upload`                |
 | POST   | /observation_field_values/{uuid}   | {py:func}`~pyinaturalist.v2.observations.set_observation_field` |
+| GET    | /taxa                              | {py:func}`~pyinaturalist.v2.taxa.get_taxa`                      |
+| GET    | /taxa/{id}                         | {py:func}`~pyinaturalist.v2.taxa.get_taxa_by_id`                |
+| GET    | /taxa/autocomplete                 | {py:func}`~pyinaturalist.v2.taxa.get_taxa_autocomplete`         |
+| GET    | /taxa/iconic                       | {py:func}`~pyinaturalist.v2.taxa.get_taxa_iconic`               |
 
 ## v1 API
 For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>

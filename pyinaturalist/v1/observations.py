@@ -77,7 +77,7 @@ def get_observations(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observations_node.py
+            .. literalinclude:: ../sample_data/v1/get_observations.py
 
     Returns:
         Response dict containing observation records
@@ -116,7 +116,7 @@ def get_observations_by_id(
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observations_by_id.py
+            .. literalinclude:: ../sample_data/v1/get_observations_by_id.py
 
     Args:
         observation_id: Get an observation with this ID. Multiple IDs are allowed.
@@ -166,20 +166,20 @@ def get_observation_histogram(**params) -> HistogramResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observation_histogram_month_of_year.py
+            .. literalinclude:: ../sample_data/v1/get_observation_histogram_month_of_year.py
 
         .. dropdown:: Example Response (observations per month)
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observation_histogram_month.py
+            .. literalinclude:: ../sample_data/v1/get_observation_histogram_month.py
                 :lines: 3-
 
         .. dropdown:: Example Response (observations per day)
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observation_histogram_day.py
+            .. literalinclude:: ../sample_data/v1/get_observation_histogram_day.py
                 :lines: 3-
 
     Returns:
@@ -211,7 +211,7 @@ def get_observation_identifiers(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observation_identifiers_ex_results.json
+            .. literalinclude:: ../sample_data/v1/get_observation_identifiers_ex_results.json
                 :language: JSON
 
     Returns:
@@ -246,7 +246,7 @@ def get_observation_observers(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observation_observers_ex_results.json
+            .. literalinclude:: ../sample_data/v1/get_observation_observers_ex_results.json
                 :language: JSON
 
     Returns:
@@ -275,7 +275,7 @@ def get_observation_popular_field_values(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observation_popular_field_values.py
+            .. literalinclude:: ../sample_data/v1/get_observation_popular_field_values.py
 
     Returns:
         Response dict. Each record contains a ``count``, a ``month_of_year`` histogram, a
@@ -310,7 +310,7 @@ def get_observation_species_counts(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observation_species_counts.py
+            .. literalinclude:: ../sample_data/v1/get_observation_species_counts.py
 
     Returns:
         Response dict containing taxon records with counts
@@ -338,7 +338,7 @@ def get_observation_taxonomy(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observation_taxonomy.json
+            .. literalinclude:: ../sample_data/v1/get_observation_taxonomy.json
                 :language: JSON
 
     Returns:
@@ -365,7 +365,7 @@ def get_observation_taxon_summary(observation_id: int, **params) -> JsonResponse
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observation_taxon_summary.py
+            .. literalinclude:: ../sample_data/v1/get_observation_taxon_summary.py
 
     Returns:
         Response dict containing taxon summary, optionally with conservation status and listed taxon
@@ -406,7 +406,7 @@ def create_observation(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/create_observation_v1.json
+            .. literalinclude:: ../sample_data/v1/create_observation.json
                 :language: JSON
 
     Returns:
@@ -448,7 +448,7 @@ def update_observation(observation_id: int, **params) -> ListResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/update_observation_result.json
+            .. literalinclude:: ../sample_data/v1/update_observation_result.json
                 :language: javascript
 
     Returns:
@@ -505,7 +505,7 @@ def upload(
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/upload_photos_and_sounds.json
+            .. literalinclude:: ../sample_data/v1/upload_photos_and_sounds.json
                 :language: JSON
 
     Args:

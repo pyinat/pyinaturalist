@@ -28,7 +28,7 @@ def get_observation_fields(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_observation_fields.py
+            .. literalinclude:: ../sample_data/v0/get_observation_fields.py
 
     Returns:
         Observation fields
@@ -80,7 +80,7 @@ def put_observation_field_values(
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/post_put_observation_field_value.json
+            .. literalinclude:: ../sample_data/v0/post_put_observation_field_value.json
                 :language: javascript
 
     Returns:

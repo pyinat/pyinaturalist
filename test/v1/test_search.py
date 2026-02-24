@@ -9,7 +9,7 @@ def test_search(requests_mock):
     """Simulate /search results with one of each record type"""
     requests_mock.get(
         f'{API_V1}/search',
-        json=load_sample_data('get_search.json'),
+        json=load_sample_data('v1/get_search.json'),
         status_code=200,
     )
     response = search([8348, 6432])

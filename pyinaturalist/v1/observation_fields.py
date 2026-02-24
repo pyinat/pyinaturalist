@@ -35,7 +35,7 @@ def set_observation_field(
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/post_put_observation_field_value.json
+            .. literalinclude:: ../sample_data/v0/post_put_observation_field_value.json
                 :language: javascript
 
     Returns:

@@ -10,16 +10,16 @@ def test_get_controlled_terms(requests_mock):
         status_code=200,
     )
     response = get_controlled_terms()
-    assert len(response['results']) == 4
+    assert len(response['results']) == 7
     first_result = response['results'][0]
 
-    assert first_result['id'] == 12
-    assert first_result['multivalued'] is True
-    assert first_result['label'] == 'Plant Phenology'
-    assert len(first_result['values']) == 4
+    assert first_result['id'] == 17
+    assert first_result['multivalued'] is False
+    assert first_result['label'] == 'Alive or Dead'
+    assert len(first_result['values']) == 3
     assert first_result['values'][0]
-    assert first_result['values'][0]['id'] == 21
-    assert first_result['values'][0]['label'] == 'No Evidence of Flowering'
+    assert first_result['values'][0]['id'] == 18
+    assert first_result['values'][0]['label'] == 'Alive'
 
 
 def test_get_controlled_terms_for_taxon(requests_mock):

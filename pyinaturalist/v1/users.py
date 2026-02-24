@@ -28,7 +28,7 @@ def get_user_by_id(user_id: IntOrStr, **params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_user_by_id.py
+            .. literalinclude:: ../sample_data/v1/get_user_by_id.py
 
     Returns:
         Response dict containing user record
@@ -59,7 +59,7 @@ def get_users_autocomplete(q: str, **params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_users_autocomplete.py
+            .. literalinclude:: ../sample_data/v1/get_users_autocomplete.py
 
     Returns:
         Response dict containing user records

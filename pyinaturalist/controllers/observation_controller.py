@@ -187,7 +187,7 @@ class ObservationController(BaseController):
 
                 >>> hist.raw
 
-                .. literalinclude:: ../sample_data/get_observation_histogram_month_of_year.py
+                .. literalinclude:: ../sample_data/v1/get_observation_histogram_month_of_year.py
 
             .. dropdown:: Example Response (observations per month)
                 :color: primary
@@ -195,7 +195,7 @@ class ObservationController(BaseController):
 
                 >>> hist.raw
 
-                .. literalinclude:: ../sample_data/get_observation_histogram_month.py
+                .. literalinclude:: ../sample_data/v1/get_observation_histogram_month.py
                     :lines: 3-
 
             .. dropdown:: Example Response (observations per day)
@@ -204,7 +204,7 @@ class ObservationController(BaseController):
 
                 >>> hist.raw
 
-                .. literalinclude:: ../sample_data/get_observation_histogram_day.py
+                .. literalinclude:: ../sample_data/v1/get_observation_histogram_day.py
                     :lines: 3-
 
         """
@@ -434,7 +434,7 @@ class ObservationController(BaseController):
                 :color: primary
                 :icon: code-square
 
-                .. literalinclude:: ../sample_data/upload_photos_and_sounds.json
+                .. literalinclude:: ../sample_data/v1/upload_photos_and_sounds.json
                     :language: JSON
 
         Args:

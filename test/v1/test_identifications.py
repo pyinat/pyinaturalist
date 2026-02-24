@@ -10,7 +10,7 @@ from test.conftest import load_sample_data
 def test_get_identifications(requests_mock):
     requests_mock.get(
         f'{API_V1}/identifications',
-        json=load_sample_data('get_identifications.json'),
+        json=load_sample_data('v1/get_identifications.json'),
         status_code=200,
     )
     response = get_identifications()
@@ -27,7 +27,7 @@ def test_get_identifications(requests_mock):
 
 def test_get_identifications_by_id(requests_mock):
     # Not much to test here, pretty much exactly the same as get_identifications()
-    mock_response = load_sample_data('get_identifications.json')
+    mock_response = load_sample_data('v1/get_identifications.json')
     mock_response['results'] = [mock_response['results'][0]]
     requests_mock.get(
         f'{API_V1}/identifications/155554373',

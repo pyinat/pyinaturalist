@@ -36,14 +36,14 @@ def get_taxa(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_taxa_v2_minimal.json
+            .. literalinclude:: ../sample_data/v2/get_taxa_minimal.json
                 :language: JSON
 
         .. dropdown:: Example Response (all fields)
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_taxa_v2_full.json
+            .. literalinclude:: ../sample_data/v2/get_taxa_full.json
                 :language: JSON
 
     Returns:
@@ -89,14 +89,14 @@ def get_taxa_by_id(
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_taxa_by_id_v2_minimal.json
+            .. literalinclude:: ../sample_data/v2/get_taxa_by_id_minimal.json
                 :language: JSON
 
         .. dropdown:: Example Response (all fields)
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_taxa_by_id_v2_full.json
+            .. literalinclude:: ../sample_data/v2/get_taxa_by_id_full.json
                 :language: JSON
 
     Args:
@@ -178,7 +178,7 @@ def get_taxa_iconic(**params) -> JsonResponse:
             :color: primary
             :icon: code-square
 
-            .. literalinclude:: ../sample_data/get_taxa_iconic_v2_full.json
+            .. literalinclude:: ../sample_data/v2/get_taxa_iconic_full.json
                 :language: JSON
 
     Returns:

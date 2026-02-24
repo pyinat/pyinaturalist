@@ -135,6 +135,7 @@
           "introduced": false,
           "native": false,
           "endemic": false,
+          "provisional": false,
           "created_at": "2012-10-24T02:26:19+00:00",
           "default_photo": {
             "id": 94598999,
@@ -152,9 +153,9 @@
           },
           "taxon_changes_count": 0,
           "taxon_schemes_count": 1,
-          "observations_count": 10711,
+          "observations_count": 11393,
           "photos_locked": false,
-          "universal_search_rank": 10711,
+          "universal_search_rank": 11393,
           "flag_counts": {
             "resolved": 0,
             "unresolved": 0
@@ -174,26 +175,26 @@
           "suspended": false,
           "created_at": "2021-06-30T12:45:12+00:00",
           "site_id": 1,
-          "preferences": {},
           "login_autocomplete": "birdystrong",
           "login_exact": "birdystrong",
           "name": "BirdyStrong",
           "name_autocomplete": "BirdyStrong",
           "orcid": null,
           "icon": "https://static.inaturalist.org/attachments/users/icons/4661597/thumb.jpg?1630611040",
-          "observations_count": 2035,
-          "identifications_count": 1979,
+          "observations_count": 2204,
+          "identifications_count": 2140,
           "journal_posts_count": 0,
-          "activity_count": 4014,
-          "species_count": 1087,
-          "annotated_observations_count": 897,
-          "universal_search_rank": 2035,
+          "activity_count": 4344,
+          "species_count": 1158,
+          "annotated_observations_count": 1076,
+          "universal_search_rank": 2204,
           "roles": [],
-          "icon_url": "https://static.inaturalist.org/attachments/users/icons/4661597/medium.jpg?1630611040"
+          "icon_url": "https://static.inaturalist.org/attachments/users/icons/4661597/medium.jpg?1630611040",
+          "preferences": {}
         },
         "captive": false,
         "created_time_zone": "America/New_York",
-        "updated_at": "2025-09-19T18:19:00-04:00",
+        "updated_at": "2025-09-19T20:28:58-04:00",
         "observed_time_zone": "America/New_York",
         "time_zone_offset": "-05:00",
         "uri": "https://www.inaturalist.org/observations/315109880",
@@ -223,7 +224,72 @@
         ],
         "tags": [],
         "ofvs": [],
-        "annotations": [],
+        "annotations": [
+          {
+            "uuid": "ad594147-38db-4acf-b7cc-4ccbb9503de4",
+            "controlled_attribute_id": 1,
+            "controlled_value_id": 2,
+            "concatenated_attr_val": "1|2",
+            "user_id": 4661597,
+            "votes": [],
+            "vote_score": 0,
+            "user": {
+              "id": 4661597,
+              "login": "birdystrong",
+              "spam": false,
+              "suspended": false,
+              "created_at": "2021-06-30T12:45:12+00:00",
+              "login_autocomplete": "birdystrong",
+              "login_exact": "birdystrong",
+              "name": "BirdyStrong",
+              "name_autocomplete": "BirdyStrong",
+              "orcid": null,
+              "icon": "https://static.inaturalist.org/attachments/users/icons/4661597/thumb.jpg?1630611040",
+              "observations_count": 2204,
+              "identifications_count": 2140,
+              "journal_posts_count": 0,
+              "activity_count": 4344,
+              "species_count": 1158,
+              "annotated_observations_count": 1076,
+              "universal_search_rank": 2204,
+              "roles": [],
+              "site_id": 1,
+              "icon_url": "https://static.inaturalist.org/attachments/users/icons/4661597/medium.jpg?1630611040"
+            }
+          },
+          {
+            "uuid": "b3dd1dbb-023c-4596-98f3-fc2a6b91069d",
+            "controlled_attribute_id": 17,
+            "controlled_value_id": 18,
+            "concatenated_attr_val": "17|18",
+            "user_id": 4661597,
+            "votes": [],
+            "vote_score": 0,
+            "user": {
+              "id": 4661597,
+              "login": "birdystrong",
+              "spam": false,
+              "suspended": false,
+              "created_at": "2021-06-30T12:45:12+00:00",
+              "login_autocomplete": "birdystrong",
+              "login_exact": "birdystrong",
+              "name": "BirdyStrong",
+              "name_autocomplete": "BirdyStrong",
+              "orcid": null,
+              "icon": "https://static.inaturalist.org/attachments/users/icons/4661597/thumb.jpg?1630611040",
+              "observations_count": 2204,
+              "identifications_count": 2140,
+              "journal_posts_count": 0,
+              "activity_count": 4344,
+              "species_count": 1158,
+              "annotated_observations_count": 1076,
+              "universal_search_rank": 2204,
+              "roles": [],
+              "site_id": 1,
+              "icon_url": "https://static.inaturalist.org/attachments/users/icons/4661597/medium.jpg?1630611040"
+            }
+          }
+        ],
         "sounds": [],
         "ident_taxon_ids": [
           48460,
@@ -281,13 +347,13 @@
               "name_autocomplete": "BirdyStrong",
               "orcid": null,
               "icon": "https://static.inaturalist.org/attachments/users/icons/4661597/thumb.jpg?1630611040",
-              "observations_count": 2035,
-              "identifications_count": 1979,
+              "observations_count": 2204,
+              "identifications_count": 2140,
               "journal_posts_count": 0,
-              "activity_count": 4014,
-              "species_count": 1087,
-              "annotated_observations_count": 897,
-              "universal_search_rank": 2035,
+              "activity_count": 4344,
+              "species_count": 1158,
+              "annotated_observations_count": 1076,
+              "universal_search_rank": 2204,
               "roles": [],
               "site_id": 1,
               "icon_url": "https://static.inaturalist.org/attachments/users/icons/4661597/medium.jpg?1630611040"
@@ -339,6 +405,7 @@
               "ancestry": "48460/1/47120/372739/47158/184884/47157/49531/49530/123033/123091",
               "min_species_ancestry": "48460,1,47120,372739,47158,184884,47157,49531,49530,123033,123091,176688",
               "extinct": false,
+              "provisional": false,
               "created_at": "2012-10-24T02:26:19+00:00",
               "default_photo": {
                 "id": 94598999,
@@ -356,9 +423,9 @@
               },
               "taxon_changes_count": 0,
               "taxon_schemes_count": 1,
-              "observations_count": 10711,
+              "observations_count": 11393,
               "photos_locked": false,
-              "universal_search_rank": 10711,
+              "universal_search_rank": 11393,
               "flag_counts": {
                 "resolved": 0,
                 "unresolved": 0
@@ -383,6 +450,7 @@
                   "parent_id": 48460,
                   "ancestry": "48460",
                   "extinct": false,
+                  "provisional": false,
                   "default_photo": {
                     "id": 80678745,
                     "license_code": "cc0",
@@ -399,9 +467,9 @@
                   },
                   "taxon_changes_count": 7,
                   "taxon_schemes_count": 2,
-                  "observations_count": 153692124,
+                  "observations_count": 166971109,
                   "flag_counts": {
-                    "resolved": 15,
+                    "resolved": 16,
                     "unresolved": 1
                   },
                   "current_synonymous_taxon_ids": null,
@@ -427,6 +495,7 @@
                   "parent_id": 1,
                   "ancestry": "48460/1",
                   "extinct": false,
+                  "provisional": false,
                   "default_photo": {
                     "id": 294541916,
                     "license_code": null,
@@ -443,7 +512,7 @@
                   },
                   "taxon_changes_count": 2,
                   "taxon_schemes_count": 2,
-                  "observations_count": 86686184,
+                  "observations_count": 93219459,
                   "flag_counts": {
                     "resolved": 6,
                     "unresolved": 0
@@ -472,6 +541,7 @@
                   "parent_id": 47120,
                   "ancestry": "48460/1/47120",
                   "extinct": false,
+                  "provisional": false,
                   "default_photo": {
                     "id": 59424799,
                     "license_code": "cc-by-nc",
@@ -488,7 +558,7 @@
                   },
                   "taxon_changes_count": 0,
                   "taxon_schemes_count": 2,
-                  "observations_count": 75600875,
+                  "observations_count": 81106791,
                   "flag_counts": {
                     "resolved": 0,
                     "unresolved": 0
@@ -518,6 +588,7 @@
                   "parent_id": 372739,
                   "ancestry": "48460/1/47120/372739",
                   "extinct": false,
+                  "provisional": false,
                   "default_photo": {
                     "id": 18333696,
                     "license_code": "cc-by",
@@ -534,7 +605,7 @@
                   },
                   "taxon_changes_count": 3,
                   "taxon_schemes_count": 2,
-                  "observations_count": 75405426,
+                  "observations_count": 80868268,
                   "flag_counts": {
                     "resolved": 44,
                     "unresolved": 0
@@ -565,6 +636,7 @@
                   "parent_id": 47158,
                   "ancestry": "48460/1/47120/372739/47158",
                   "extinct": false,
+                  "provisional": false,
                   "default_photo": {
                     "id": 14350736,
                     "license_code": "cc-by-nc",
@@ -581,10 +653,10 @@
                   },
                   "taxon_changes_count": 4,
                   "taxon_schemes_count": 2,
-                  "observations_count": 75073982,
+                  "observations_count": 80521503,
                   "flag_counts": {
-                    "resolved": 4,
-                    "unresolved": 1
+                    "resolved": 5,
+                    "unresolved": 0
                   },
                   "current_synonymous_taxon_ids": null,
                   "atlas_id": null,
@@ -613,6 +685,7 @@
                   "parent_id": 184884,
                   "ancestry": "48460/1/47120/372739/47158/184884",
                   "extinct": false,
+                  "provisional": false,
                   "default_photo": {
                     "id": 36127,
                     "license_code": "cc-by-nc",
@@ -629,10 +702,10 @@
                   },
                   "taxon_changes_count": 5,
                   "taxon_schemes_count": 2,
-                  "observations_count": 31070689,
+                  "observations_count": 33279364,
                   "flag_counts": {
                     "resolved": 18,
-                    "unresolved": 0
+                    "unresolved": 1
                   },
                   "current_synonymous_taxon_ids": null,
                   "atlas_id": null,
@@ -661,6 +734,7 @@
                   "parent_id": 47157,
                   "ancestry": "48460/1/47120/372739/47158/184884/47157",
                   "extinct": false,
+                  "provisional": false,
                   "default_photo": {
                     "id": 8802700,
                     "license_code": "cc-by-nc",
@@ -677,7 +751,7 @@
                   },
                   "taxon_changes_count": 0,
                   "taxon_schemes_count": 1,
-                  "observations_count": 3590701,
+                  "observations_count": 3846757,
                   "flag_counts": {
                     "resolved": 0,
                     "unresolved": 0
@@ -710,6 +784,7 @@
                   "parent_id": 49531,
                   "ancestry": "48460/1/47120/372739/47158/184884/47157/49531",
                   "extinct": false,
+                  "provisional": false,
                   "default_photo": {
                     "id": 50987789,
                     "license_code": "cc-by-nc",
@@ -726,7 +801,7 @@
                   },
                   "taxon_changes_count": 0,
                   "taxon_schemes_count": 2,
-                  "observations_count": 3533646,
+                  "observations_count": 3784455,
                   "flag_counts": {
                     "resolved": 3,
                     "unresolved": 0
@@ -760,6 +835,7 @@
                   "parent_id": 49530,
                   "ancestry": "48460/1/47120/372739/47158/184884/47157/49531/49530",
                   "extinct": false,
+                  "provisional": false,
                   "default_photo": {
                     "id": 3201702,
                     "license_code": null,
@@ -776,7 +852,7 @@
                   },
                   "taxon_changes_count": 2,
                   "taxon_schemes_count": 2,
-                  "observations_count": 1701399,
+                  "observations_count": 1813325,
                   "flag_counts": {
                     "resolved": 3,
                     "unresolved": 0
@@ -810,6 +886,7 @@
                   "parent_id": 123033,
                   "ancestry": "48460/1/47120/372739/47158/184884/47157/49531/49530/123033",
                   "extinct": false,
+                  "provisional": false,
                   "default_photo": {
                     "id": 82929,
                     "license_code": "cc-by-nc-nd",
@@ -826,7 +903,7 @@
                   },
                   "taxon_changes_count": 2,
                   "taxon_schemes_count": 1,
-                  "observations_count": 257696,
+                  "observations_count": 268307,
                   "flag_counts": {
                     "resolved": 0,
                     "unresolved": 0
@@ -865,6 +942,7 @@
               "ancestry": "48460/1/47120/372739/47158/184884/47157/49531/49530/123033/123091",
               "min_species_ancestry": "48460,1,47120,372739,47158,184884,47157,49531,49530,123033,123091,176688",
               "extinct": false,
+              "provisional": false,
               "created_at": "2012-10-24T02:26:19+00:00",
               "default_photo": {
                 "id": 94598999,
@@ -882,9 +960,9 @@
               },
               "taxon_changes_count": 0,
               "taxon_schemes_count": 1,
-              "observations_count": 10711,
+              "observations_count": 11393,
               "photos_locked": false,
-              "universal_search_rank": 10711,
+              "universal_search_rank": 11393,
               "flag_counts": {
                 "resolved": 0,
                 "unresolved": 0

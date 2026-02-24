@@ -76,4 +76,4 @@ def test_taxon__populate(requests_mock):
     assert taxon.matched_term == 'nicroph'
     assert taxon.names[0]['name'] == 'Nicrophorus vespilloides'
     assert taxon.conservation_status.authority == 'IUCN'
-    assert len(taxon.ancestors) == 12
+    assert len(taxon.ancestors) == 13
