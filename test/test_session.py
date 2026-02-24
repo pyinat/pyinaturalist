@@ -261,7 +261,24 @@ def test_send__override_request_timeout(mock_limiter, mock_requests_send, mock_f
     session = ClientSession()
     request = Request(method='POST', url='http://test.com').prepare()
     session.send(request, timeout=10)
-    mock_requests_send.assert_called_with(request, timeout=(5, 10))
+    mock_requests_send.assert_called_with(request, timeout=(10, 10))
+
+
+@pytest.mark.parametrize('method', ['GET', 'POST'])
+@patch('pyinaturalist.session.format_response')
+@patch('requests.sessions.Session.send')
+@patch('requests_ratelimiter.requests_ratelimiter.Limiter')
+def test_send__disable_timeout(mock_limiter, mock_requests_send, mock_format, method):
+    # timeout=None on the session disables all timeouts
+    session = ClientSession(timeout=None)
+    request = Request(method=method, url='http://test.com').prepare()
+    session.send(request)
+    mock_requests_send.assert_called_with(request, timeout=None)
+
+    # timeout=None passed per-request also disables the timeout
+    session2 = ClientSession()
+    session2.send(request, timeout=None)
+    mock_requests_send.assert_called_with(request, timeout=None)
 
 
 @patch.object(urllib3.util.retry.time, 'sleep')

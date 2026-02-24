@@ -65,6 +65,12 @@ Combine ID-only and nested-object API response values on the following models:
 
 In addition, checking attributes on nested objects will not raise `AttributeError` if missing from the API response. This means that instead of checking, for example, `id = Project.user.id if Project.user else Project.user_id`, just check `Project.user.id`.
 
+### Timeout and retry behavior
+* Add a separate `write_timeout` parameter for `ClientSession`, to be used for create/update endpoints; default to 60 seconds
+* For create/update endpoints, use write timeout as connect (socket) timeout
+* Extend retry behavior to apply to write timeouts
+* Support `ClientSession(timeout=None)` to disable all timeouts (connect, read, and write)
+
 ### Bugfixes
 * Fix displaying images in Jupyter with `Photo.show()`
 * Fix corner case resulting in `observed_on` not being converted to `datetime`
@@ -76,9 +82,7 @@ In addition, checking attributes on nested objects will not raise `AttributeErro
 ## 0.21.1 (2026-02-13)
 * Update `v2.create_observation()` and `update_observation()` to accept multiple observation field values, consistent with v0 and v1 APIs.
 * When paginating observations by ID ranges, allow reversing the order with `order='desc'`
-* Add a separate `write_timeout` parameter for `ClientSession`, to be used for create/update endpoints; default to 60 seconds
 * Add `force_refresh` option to bypass the cache (applies to most API functions)
-* Extend retry behavior to apply to write timeouts
 * Add additional response info to debug logging
 
 ## 0.21.0 (2026-01-21)

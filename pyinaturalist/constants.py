@@ -42,6 +42,7 @@ REQUEST_RETRIES = 5  # Maximum number of retries for a failed request
 RETRY_BACKOFF = 0.5  # Exponential backoff factor for retries
 RETRY_STATUSES = (500, 502, 503, 504)
 WRITE_TIMEOUT = 60
+UNSET = object()  # Sentinel value to distinguish between None and not specified
 
 # HTTP methods that apply to write-only dry-run mode
 WRITE_HTTP_METHODS = ['PATCH', 'POST', 'PUT', 'DELETE']

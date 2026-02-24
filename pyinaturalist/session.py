@@ -44,6 +44,7 @@ from pyinaturalist.constants import (
     REQUESTS_PER_SECOND,
     RETRY_BACKOFF,
     RETRY_STATUSES,
+    UNSET,
     WRITE_HTTP_METHODS,
     WRITE_TIMEOUT,
     FileOrPath,
@@ -88,8 +89,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         ratelimit_path: PathOrStr | None = RATELIMIT_FILE,
         use_file_lock: bool = False,
         max_retries: int = REQUEST_RETRIES,
-        timeout: int = REQUEST_TIMEOUT,
-        write_timeout: int = WRITE_TIMEOUT,
+        timeout: int | None = REQUEST_TIMEOUT,
+        write_timeout: int | None = WRITE_TIMEOUT,
         user_agent: str | None = None,
         **kwargs,
     ):
@@ -114,8 +115,10 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             use_file_lock: Use a file lock for the rate limit database; needed for multiprocess
                 usage.
             max_retries: Maximum number of times to retry a failed request
-            timeout: Maximum number of seconds to wait for a response from the server
-            write_timeout: Maximum number of seconds to wait for sending data (create/update)
+            timeout: Maximum number of seconds to wait for a response from the server;
+                 Set to ``None`` to disable all timeouts
+            write_timeout: Maximum number of seconds to wait for sending data (create/update);
+                ignored if ``timeout=None``
             user_agent: Additional User-Agent info to pass to API requests
             kwargs: Additional keyword arguments for :py:class:`~requests_cache.session.CachedSession`
                 and/or :py:class:`~requests_ratelimiter.requests_ratelimiter.LimiterSession`
@@ -312,7 +315,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         refresh: bool = False,
         force_refresh: bool = False,
         retries: Retry | None = None,
-        timeout: int | None = None,
+        timeout: int | None = UNSET,  # type: ignore [assignment]
         **kwargs,
     ) -> Response:
         """Send a request with caching, rate-limiting, and retries
@@ -330,20 +333,13 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         """
         if not isinstance(request, PreparedRequest):
             request = super().prepare_request(request)
+        request_timeout = self._resolve_timeout(timeout, request.method)
         if logger.level <= INFO:
-            logger.info(format_request(request, dry_run))
+            logger.info(format_request(request, dry_run, timeout=request_timeout))
 
         # Make a mock request, if specified
         if dry_run or is_dry_run_enabled(request.method):
             return MockResponse(request)
-
-        # For write operations, use a longer timeout, and use it for both the connect and read timeouts.
-        # During the body-send phase, urllib3 applies the connect timeout to socket write operations.
-        # So effectively, "connect timeout" is actually "connect+send" for file uploads. UGH.
-        is_write = not timeout and request.method in ['POST', 'PUT']
-        connect_timeout = self.write_timeout if is_write else CONNECT_TIMEOUT
-        read_timeout = self.write_timeout if is_write else (timeout or self.read_timeout)
-        request_timeout = (connect_timeout, read_timeout)
 
         # Send the request and validate the response
         try:
@@ -400,6 +396,22 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             v += 1
 
         return {'refresh': True, 'v': v} if v > 0 else {'refresh': True}
+
+    def _resolve_timeout(self, timeout: int | None, method: str) -> tuple[int, int] | None:
+        """Determine timeout settings for a given request based on all relevant settings"""
+        # A timeout of None disables the timeout entirely.
+        if timeout is None or self.read_timeout is None:
+            return None
+
+        # For write operations, use a longer timeout, and use it for both the connect and read timeouts.
+        # During the body-send phase, urllib3 applies the connect timeout to socket write operations.
+        # So effectively, "connect timeout" is actually "connect+send" for file uploads. UGH.
+        is_write = method in ['POST', 'PUT']
+        if timeout is UNSET:
+            timeout = self.write_timeout if is_write else self.read_timeout
+        connect_timeout = timeout if is_write else CONNECT_TIMEOUT
+
+        return (connect_timeout, timeout)  # type: ignore [return-value]
 
     def _validate_json(
         self,
