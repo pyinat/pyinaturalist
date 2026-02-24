@@ -5,13 +5,7 @@
   "results": [
     {
       "id": 89191,
-      "uuid": "3f7e6fbd-cec4-4d18-906e-7ce6e8ced86f",
-      "slug": "conservation-area-riversdale",
-      "name": "Conservation Area Riversdale",
-      "display_name": "Conservation Area Riversdale, CA, NZ",
-      "place_type": 100,
       "admin_level": null,
-      "bbox_area": 8.645461408068031e-06,
       "ancestor_place_ids": [
         97393,
         6803,
@@ -19,6 +13,35 @@
         40475,
         89191
       ],
+      "bbox_area": 8.645461408068031e-06,
+      "bounding_box_geojson": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              172.2294473327,
+              -43.3261061663
+            ],
+            [
+              172.2294473327,
+              -43.3245995335
+            ],
+            [
+              172.2351855996,
+              -43.3245995335
+            ],
+            [
+              172.2351855996,
+              -43.3261061663
+            ],
+            [
+              172.2294473327,
+              -43.3261061663
+            ]
+          ]
+        ]
+      },
+      "display_name": "Conservation Area Riversdale, CA, NZ",
       "geometry_geojson": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -320,34 +343,11 @@
           ]
         ]
       },
-      "bounding_box_geojson": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              172.2294473327,
-              -43.3261061663
-            ],
-            [
-              172.2294473327,
-              -43.3245995335
-            ],
-            [
-              172.2351855996,
-              -43.3245995335
-            ],
-            [
-              172.2351855996,
-              -43.3261061663
-            ],
-            [
-              172.2294473327,
-              -43.3261061663
-            ]
-          ]
-        ]
-      },
-      "location": "-43.3254578926,172.2325124165"
+      "location": "-43.3254578926,172.2325124165",
+      "name": "Conservation Area Riversdale",
+      "place_type": 100,
+      "slug": "conservation-area-riversdale",
+      "uuid": "3f7e6fbd-cec4-4d18-906e-7ce6e8ced86f"
     }
   ]
 }

@@ -76,7 +76,7 @@ def test_get_taxa_by_id(requests_mock):
     assert result['name'] == 'Nicrophorus vespilloides'
     assert result['rank'] == 'species'
     assert result['is_active'] is True
-    assert len(result['ancestors']) == 12
+    assert len(result['ancestors']) == 13
 
 
 @pytest.mark.parametrize('taxon_id', ['asdf', [None], [1, 'not a number']])

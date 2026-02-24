@@ -261,8 +261,8 @@ def test_annotation__str_without_labels():
 def test_controlled_term__converters():
     controlled_term = ControlledTerm.from_json(j_controlled_term_1)
     value = controlled_term.values[0]
-    assert controlled_term.taxon_ids == [47126]
-    assert isinstance(value, ControlledTermValue) and value.id == 21
+    assert controlled_term.taxon_ids == [1]
+    assert isinstance(value, ControlledTermValue) and value.id == 18
 
 
 def test_controlled_term__empty():
@@ -273,32 +273,27 @@ def test_controlled_term__empty():
 
 def test_controlled_term__properties():
     controlled_term = ControlledTerm.from_json(j_controlled_term_1)
-    assert controlled_term.value_labels == (
-        'No Evidence of Flowering, Flowering, Fruiting, Flower Budding'
-    )
+    assert controlled_term.value_labels == 'Alive, Dead, Cannot Be Determined'
 
 
 def test_controlled_term__get_value_by_id():
     controlled_term = ControlledTerm.from_json(j_controlled_term_1)
-    value = controlled_term.get_value_by_id(13)
-    assert value.label == 'Flowering'
+    value = controlled_term.get_value_by_id(18)
+    assert value.label == 'Alive'
     assert controlled_term.get_value_by_id(999) is None
 
 
 def test_controlled_term__str():
     controlled_term = ControlledTerm.from_json(j_controlled_term_1)
     assert str(controlled_term) == (
-        'ControlledTerm(id=12, label=Plant Phenology, '
-        'value_labels=No Evidence of Flowering, Flowering, Fruiting, Flower Budding)'
+        'ControlledTerm(id=17, label=Alive or Dead, value_labels=Alive, Dead, Cannot Be Determined)'
     )
 
 
 def test_controlled_term__value():
     controlled_term_value = ControlledTermValue.from_json(j_controlled_term_value_1)
-    assert controlled_term_value.taxon_ids == [47125]
-    assert (
-        str(controlled_term_value) == 'ControlledTermValue(id=21, label=No Evidence of Flowering)'
-    )
+    assert controlled_term_value.taxon_ids == []
+    assert str(controlled_term_value) == 'ControlledTermValue(id=18, label=Alive)'
 
 
 def test_controlled_term_counts():
@@ -815,7 +810,7 @@ def test_photo__urls(size):
     assert (
         photo.url_size(size)
         == getattr(photo, f'{size}_url')
-        == f'https://static.inaturalist.org/photos/38359335/{size}.jpg?1557348751'
+        == f'https://inaturalist-open-data.s3.amazonaws.com/photos/38359335/{size}.jpg'
     )
     assert photo.url_size('embiggened') is None
 
@@ -824,7 +819,7 @@ def test_photo__str():
     photo = Photo.from_json(j_photo_1)
     assert str(photo) == (
         'Photo(id=38359335, license_code=CC-BY-NC, '
-        'url=https://static.inaturalist.org/photos/38359335/square.jpg?1557348751)'
+        'url=https://inaturalist-open-data.s3.amazonaws.com/photos/38359335/square.jpg)'
     )
 
 
@@ -1051,7 +1046,7 @@ def test_taxon_ancestor_shortcuts():
     assert taxon.phylum.id == 47120 and taxon.phylum.name == 'Arthropoda'
     assert taxon.class_.id == 47158 and taxon.class_.name == 'Insecta'
     assert taxon.order.id == 47208 and taxon.order.name == 'Coleoptera'
-    assert taxon.family.id == 53849 and taxon.family.name == 'Silphidae'
+    assert taxon.family.id == 47951 and taxon.family.name == 'Staphylinidae'
     assert taxon.genus.id == 53850 and taxon.genus.name == 'Nicrophorus'
 
 
@@ -1089,8 +1084,8 @@ def test_taxon__conservation_status_aliases():
 def test_taxon__conservation_statuses():
     css = Taxon.from_json(j_taxon_6_cs_statuses).conservation_statuses[0]
     assert isinstance(css, ConservationStatus)
-    assert css.status == 'EN'
-    assert isinstance(css.updater, User) and css.user.id == 383144
+    assert css.status == 'ENDANGERED'
+    assert not css.updater
     assert isinstance(css.user, User) and css.user.id == 383144
 
 
@@ -1106,12 +1101,12 @@ def test_taxon__listed_taxa():
     listed_taxon = taxon.listed_taxa[0]
     assert isinstance(listed_taxon, ListedTaxon)
     assert listed_taxon.taxon_id == taxon.id
-    assert listed_taxon.list.id == 299
-    assert listed_taxon.list.title == 'United States Check List'
-    assert taxon.listed_taxa_count == 4
+    assert listed_taxon.list.id == 313166
+    assert listed_taxon.list.title == 'Europe Check List'
+    assert taxon.listed_taxa_count == 10
     assert str(listed_taxon) == (
-        'ListedTaxon(id=5577060, taxon_id=70118, place=Place(id=1, location=(0, 0), '
-        'name=United States), establishment_means=native, observations_count=0)'
+        'ListedTaxon(id=8171118, taxon_id=70118, place=Place(id=97391, location=(0, 0), '
+        'name=Europe), establishment_means=native, observations_count=0)'
     )
 
 
@@ -1192,8 +1187,9 @@ def test_taxon__taxonomy():
         'suborder': 'Polyphaga',
         'infraorder': 'Staphyliniformia',
         'superfamily': 'Staphylinoidea',
-        'family': 'Silphidae',
-        'subfamily': 'Nicrophorinae',
+        'family': 'Staphylinidae',
+        'subfamily': 'Silphinae',
+        'tribe': 'Nicrophorini',
         'genus': 'Nicrophorus',
         'species': 'Nicrophorus vespilloides',
     }
@@ -1480,7 +1476,7 @@ def test_flatten__hide_root__multiple_roots():
 
 def test_user__converters():
     user = User.from_json(j_user_1)
-    assert user.identifications_count == 95624
+    assert user.identifications_count == 121474
 
 
 def test_user__empty():

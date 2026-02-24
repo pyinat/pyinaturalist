@@ -16,13 +16,13 @@ def test_all(requests_mock):
         status_code=200,
     )
     terms = iNatClient().annotations.all()
-    assert len(terms) == 4
-    assert terms[0].id == 12
-    assert terms[0].multivalued is True
-    assert terms[0].label == 'Plant Phenology'
-    assert len(terms[0].values) == 4
-    assert terms[0].values[0].id == 21
-    assert terms[0].values[0].label == 'No Evidence of Flowering'
+    assert len(terms) == 7
+    assert terms[0].id == 17
+    assert terms[0].multivalued is False
+    assert terms[0].label == 'Alive or Dead'
+    assert len(terms[0].values) == 3
+    assert terms[0].values[0].id == 18
+    assert terms[0].values[0].label == 'Alive'
 
 
 def test_for_taxon(requests_mock):
@@ -66,7 +66,7 @@ def test_lookup__doesnt_exist(requests_mock):
     annotations = [Annotation(controlled_attribute_id=id) for id in [12, 999]]
     annotations = client.annotations.lookup(annotations)
     assert len(annotations) == 2
-    assert annotations[0].term == 'Plant Phenology'
+    assert annotations[0].term == 'Flowers and Fruits'
     assert annotations[1].term == '999'  # Unable to look up; use ID as placeholder
 
 

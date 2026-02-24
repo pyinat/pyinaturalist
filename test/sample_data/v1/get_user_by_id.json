@@ -15,15 +15,16 @@
       "name_autocomplete": "Ken-ichi Ueda",
       "orcid": "https://orcid.org/0000-0003-0145-6846",
       "icon": "https://static.inaturalist.org/attachments/users/icons/1/thumb.jpg?1475527316",
-      "observations_count": 40947,
-      "identifications_count": 95624,
-      "journal_posts_count": 86,
-      "activity_count": 136657,
-      "species_count": 8831,
-      "universal_search_rank": 40947,
+      "observations_count": 54986,
+      "identifications_count": 121474,
+      "journal_posts_count": 93,
+      "activity_count": 176553,
+      "species_count": 11538,
+      "annotated_observations_count": 23752,
+      "universal_search_rank": 54986,
       "roles": [
-        "admin",
-        "curator"
+        "curator",
+        "app owner"
       ],
       "site_id": 1,
       "icon_url": "https://static.inaturalist.org/attachments/users/icons/1/medium.jpg?1475527316"
