@@ -12,7 +12,7 @@ import json
 from collections.abc import Mapping
 from datetime import date, datetime, timedelta
 from logging import basicConfig, getLogger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from requests import PreparedRequest, Response
 from requests_cache import CachedResponse
@@ -238,12 +238,15 @@ def format_table(values: ResponseOrObjects) -> Table | str:
     return table
 
 
-def format_request(request: PreparedRequest, dry_run: bool = False) -> str:
+def format_request(request: PreparedRequest, dry_run: bool = False, timeout: Any = None) -> str:
     """Format HTTP request info"""
     headers = _format_headers(request.headers)
     body = _format_body(request.body)
     dry_run_str = ' (DRY RUN) ' if dry_run else ''
-    return f'Request:{dry_run_str}\n{request.method} {request.url}\n{headers}\n{body}'
+    timeout_str = f'timeout={timeout}\n' if timeout else ''
+    return (
+        f'Request:{dry_run_str}\n{request.method} {request.url}\n{headers}\n{timeout_str}\n{body}'
+    )
 
 
 def format_response(response: Response) -> str:

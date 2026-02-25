@@ -28,7 +28,9 @@ from requests_ratelimiter import (
     Rate,
     SQLiteBucket,
 )
-from urllib3.util import Retry
+from urllib3.util import Retry, Timeout
+from urllib3.util.timeout import _DEFAULT_TIMEOUT as _UNSET
+from urllib3.util.timeout import _TYPE_TIMEOUT as TimeoutType
 
 from pyinaturalist.constants import (
     CACHE_EXPIRATION,
@@ -88,8 +90,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         ratelimit_path: PathOrStr | None = RATELIMIT_FILE,
         use_file_lock: bool = False,
         max_retries: int = REQUEST_RETRIES,
-        timeout: int = REQUEST_TIMEOUT,
-        write_timeout: int = WRITE_TIMEOUT,
+        timeout: float | None = REQUEST_TIMEOUT,
+        write_timeout: float | None = WRITE_TIMEOUT,
         user_agent: str | None = None,
         **kwargs,
     ):
@@ -114,8 +116,10 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             use_file_lock: Use a file lock for the rate limit database; needed for multiprocess
                 usage.
             max_retries: Maximum number of times to retry a failed request
-            timeout: Maximum number of seconds to wait for a response from the server
-            write_timeout: Maximum number of seconds to wait for sending data (create/update)
+            timeout: Maximum number of seconds to wait for a response from the server;
+                 Set to ``None`` to disable all timeouts
+            write_timeout: Maximum number of seconds to wait for sending data (create/update);
+                ignored if ``timeout=None``
             user_agent: Additional User-Agent info to pass to API requests
             kwargs: Additional keyword arguments for :py:class:`~requests_cache.session.CachedSession`
                 and/or :py:class:`~requests_ratelimiter.requests_ratelimiter.LimiterSession`
@@ -241,7 +245,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         refresh: bool = False,
         force_refresh: bool = False,
         stream: bool = False,
-        timeout: int | None = None,
+        timeout: TimeoutType | Timeout = _UNSET,
         verify: bool = True,
         **params: RequestParams,
     ) -> Response:
@@ -304,7 +308,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             response.raise_for_status()
         return response
 
-    def send(  # type: ignore  # Adds kwargs not present in Session.send()
+    def send(  # type: ignore[override]
         self,
         request: AnyRequest,
         dry_run: bool = False,
@@ -312,7 +316,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         refresh: bool = False,
         force_refresh: bool = False,
         retries: Retry | None = None,
-        timeout: int | None = None,
+        timeout: TimeoutType | Timeout = _UNSET,
         **kwargs,
     ) -> Response:
         """Send a request with caching, rate-limiting, and retries
@@ -330,26 +334,24 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         """
         if not isinstance(request, PreparedRequest):
             request = super().prepare_request(request)
+        if timeout is _UNSET:
+            timeout = RequestTimeout(request.method, self.read_timeout, self.write_timeout)
+
         if logger.level <= INFO:
-            logger.info(format_request(request, dry_run))
+            logger.info(format_request(request, dry_run, timeout=timeout))
 
         # Make a mock request, if specified
         if dry_run or is_dry_run_enabled(request.method):
             return MockResponse(request)
 
-        # Set a longer timeout for write operations
-        if not timeout:
-            timeout = self.write_timeout if request.method in ['POST', 'PUT'] else self.read_timeout
-
         # Send the request and validate the response
-        read_timeout = timeout or self.read_timeout
         try:
             response = super().send(
                 request,
                 expire_after=expire_after,
                 refresh=refresh,
                 force_refresh=force_refresh,
-                timeout=(CONNECT_TIMEOUT, read_timeout),
+                timeout=timeout,  # type: ignore[arg-type]
                 **kwargs,
             )
         # Handle write timeouts, which are not captured by urllib3 retry handling;
@@ -359,10 +361,10 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             logger.debug('Write timed out:', exc_info=True)
             logger.warning('Write timed out; retrying...')
 
-            # use the same retry object to share the same retry state and limits
+            # Reuse the same retry object to share retry state and limits
             retries = retries or self.retries
             retries = retries.increment(request.method, request.url, error=e)
-            # wait with configured backoff before retrying
+            # Wait with configured backoff before retrying
             retries.sleep()
             return self.send(request, retries=retries, timeout=timeout, **kwargs)
 
@@ -433,6 +435,28 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         else:
             response.json = lambda **kwargs: response_json  # type: ignore
             return response
+
+
+class RequestTimeout(Timeout):
+    """Timeout class that adjusts timeouts for write operations"""
+
+    def __init__(
+        self,
+        method: str,
+        read_timeout: TimeoutType,
+        write_timeout: TimeoutType,
+    ):
+        # A None read_timeout or explicit None request_timeout disables timeouts entirely
+        if read_timeout is None:
+            super().__init__(connect=None, read=None)
+            return
+
+        # During the body-send phase, urllib3 applies the connect timeout to socket write operations;
+        # so effectively, "connect timeout" is actually "connect+send" for file uploads.
+        is_write = method in ('POST', 'PUT')
+        request_timeout = write_timeout if is_write else read_timeout
+        connect_timeout = request_timeout if is_write else CONNECT_TIMEOUT
+        super().__init__(connect=connect_timeout, read=request_timeout)
 
 
 class FileLockSQLiteBucket(SQLiteBucket):

@@ -20,6 +20,7 @@ from pyinaturalist.session import (
     ClientSession,
     FileLockSQLiteBucket,
     MockResponse,
+    RequestTimeout,
     clear_cache,
     delete,
     get,
@@ -202,14 +203,21 @@ def test_session__custom_rate():
     assert per_second_rate.limit / per_second_rate.interval * Duration.SECOND == 5
 
 
+def _assert_timeout(mock_send, connect, read):
+    """Assert that the last mock send call used a Timeout with the given connect/read values"""
+    timeout = mock_send.call_args.kwargs['timeout']
+    assert isinstance(timeout, RequestTimeout)
+    assert timeout.connect_timeout == connect
+    assert timeout.read_timeout == read
+
+
 @patch('pyinaturalist.session.format_response')
 @patch('requests.sessions.Session.send')
-@patch('requests_ratelimiter.requests_ratelimiter.Limiter')
-def test_send__defaults(mock_limiter, mock_requests_send, mock_format):
+def test_send__defaults(mock_requests_send, mock_format):
     session = ClientSession()
     request = Request(method='GET', url='http://test.com').prepare()
     session.send(request)
-    mock_requests_send.assert_called_with(request, timeout=(CONNECT_TIMEOUT, REQUEST_TIMEOUT))
+    _assert_timeout(mock_requests_send, connect=CONNECT_TIMEOUT, read=REQUEST_TIMEOUT)
 
 
 @pytest.mark.parametrize(
@@ -224,41 +232,55 @@ def test_send__defaults(mock_limiter, mock_requests_send, mock_format):
 )
 @patch('pyinaturalist.session.format_response')
 @patch('requests.sessions.Session.send')
-@patch('requests_ratelimiter.requests_ratelimiter.Limiter')
-def test_send__write_timeout(
-    mock_limiter, mock_requests_send, mock_format, method, expected_timeout
-):
+def test_send__write_timeout(mock_requests_send, mock_format, method, expected_timeout):
     session = ClientSession()
     request = Request(method=method, url='http://test.com').prepare()
     session.send(request)
-    mock_requests_send.assert_called_with(request, timeout=(5, expected_timeout))
+    if method in ('POST', 'PUT'):
+        _assert_timeout(mock_requests_send, connect=expected_timeout, read=expected_timeout)
+    else:
+        _assert_timeout(mock_requests_send, connect=5, read=expected_timeout)
 
 
 @patch('pyinaturalist.session.format_response')
 @patch('requests.sessions.Session.send')
-@patch('requests_ratelimiter.requests_ratelimiter.Limiter')
-def test_send__override_session_timeout(mock_limiter, mock_requests_send, mock_format):
+def test_send__override_session_timeout(mock_requests_send, mock_format):
     session = ClientSession(timeout=33, write_timeout=66)
 
     # read timeout
     request = Request(method='GET', url='http://test.com').prepare()
     session.send(request)
-    mock_requests_send.assert_called_with(request, timeout=(5, 33))
+    _assert_timeout(mock_requests_send, connect=5, read=33)
 
     # write timeout
     request = Request(method='POST', url='http://test.com').prepare()
     session.send(request)
-    mock_requests_send.assert_called_with(request, timeout=(5, 66))
+    _assert_timeout(mock_requests_send, connect=66, read=66)
 
 
 @patch('pyinaturalist.session.format_response')
 @patch('requests.sessions.Session.send')
-@patch('requests_ratelimiter.requests_ratelimiter.Limiter')
-def test_send__override_request_timeout(mock_limiter, mock_requests_send, mock_format):
+def test_send__override_request_timeout(mock_requests_send, mock_format):
     session = ClientSession()
     request = Request(method='POST', url='http://test.com').prepare()
     session.send(request, timeout=10)
-    mock_requests_send.assert_called_with(request, timeout=(5, 10))
+    assert mock_requests_send.call_args.kwargs['timeout'] == 10
+
+
+@pytest.mark.parametrize('method', ['GET', 'POST'])
+@patch('pyinaturalist.session.format_response')
+@patch('requests.sessions.Session.send')
+def test_send__disable_timeout(mock_requests_send, mock_format, method):
+    # timeout=None on the session disables all timeouts
+    session = ClientSession(timeout=None)
+    request = Request(method=method, url='http://test.com').prepare()
+    session.send(request)
+    _assert_timeout(mock_requests_send, connect=None, read=None)
+
+    # timeout=None passed per-request also disables the timeout
+    session2 = ClientSession()
+    session2.send(request, timeout=None)
+    assert mock_requests_send.call_args.kwargs['timeout'] is None
 
 
 @patch.object(urllib3.util.retry.time, 'sleep')
