@@ -28,7 +28,9 @@ from requests_ratelimiter import (
     Rate,
     SQLiteBucket,
 )
-from urllib3.util import Retry
+from urllib3.util import Retry, Timeout
+from urllib3.util.timeout import _DEFAULT_TIMEOUT as _UNSET
+from urllib3.util.timeout import _TYPE_TIMEOUT as TimeoutType
 
 from pyinaturalist.constants import (
     CACHE_EXPIRATION,
@@ -44,7 +46,6 @@ from pyinaturalist.constants import (
     REQUESTS_PER_SECOND,
     RETRY_BACKOFF,
     RETRY_STATUSES,
-    UNSET,
     WRITE_HTTP_METHODS,
     WRITE_TIMEOUT,
     FileOrPath,
@@ -89,8 +90,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         ratelimit_path: PathOrStr | None = RATELIMIT_FILE,
         use_file_lock: bool = False,
         max_retries: int = REQUEST_RETRIES,
-        timeout: int | None = REQUEST_TIMEOUT,
-        write_timeout: int | None = WRITE_TIMEOUT,
+        timeout: float | None = REQUEST_TIMEOUT,
+        write_timeout: float | None = WRITE_TIMEOUT,
         user_agent: str | None = None,
         **kwargs,
     ):
@@ -244,7 +245,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         refresh: bool = False,
         force_refresh: bool = False,
         stream: bool = False,
-        timeout: int | None = None,
+        timeout: TimeoutType | Timeout = _UNSET,
         verify: bool = True,
         **params: RequestParams,
     ) -> Response:
@@ -307,7 +308,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             response.raise_for_status()
         return response
 
-    def send(  # type: ignore  # Adds kwargs not present in Session.send()
+    def send(  # type: ignore[override]
         self,
         request: AnyRequest,
         dry_run: bool = False,
@@ -315,7 +316,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         refresh: bool = False,
         force_refresh: bool = False,
         retries: Retry | None = None,
-        timeout: int | None = UNSET,  # type: ignore [assignment]
+        timeout: TimeoutType | Timeout = _UNSET,
         **kwargs,
     ) -> Response:
         """Send a request with caching, rate-limiting, and retries
@@ -333,9 +334,11 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         """
         if not isinstance(request, PreparedRequest):
             request = super().prepare_request(request)
-        request_timeout = self._resolve_timeout(timeout, request.method)
+        if timeout is _UNSET:
+            timeout = RequestTimeout(request.method, self.read_timeout, self.write_timeout)
+
         if logger.level <= INFO:
-            logger.info(format_request(request, dry_run, timeout=request_timeout))
+            logger.info(format_request(request, dry_run, timeout=timeout))
 
         # Make a mock request, if specified
         if dry_run or is_dry_run_enabled(request.method):
@@ -348,7 +351,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
                 expire_after=expire_after,
                 refresh=refresh,
                 force_refresh=force_refresh,
-                timeout=request_timeout,
+                timeout=timeout,  # type: ignore[arg-type]
                 **kwargs,
             )
         # Handle write timeouts, which are not captured by urllib3 retry handling;
@@ -358,10 +361,10 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             logger.debug('Write timed out:', exc_info=True)
             logger.warning('Write timed out; retrying...')
 
-            # use the same retry object to share the same retry state and limits
+            # Reuse the same retry object to share retry state and limits
             retries = retries or self.retries
             retries = retries.increment(request.method, request.url, error=e)
-            # wait with configured backoff before retrying
+            # Wait with configured backoff before retrying
             retries.sleep()
             return self.send(request, retries=retries, timeout=timeout, **kwargs)
 
@@ -396,22 +399,6 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             v += 1
 
         return {'refresh': True, 'v': v} if v > 0 else {'refresh': True}
-
-    def _resolve_timeout(self, timeout: int | None, method: str) -> tuple[int, int] | None:
-        """Determine timeout settings for a given request based on all relevant settings"""
-        # A timeout of None disables the timeout entirely.
-        if timeout is None or self.read_timeout is None:
-            return None
-
-        # For write operations, use a longer timeout, and use it for both the connect and read timeouts.
-        # During the body-send phase, urllib3 applies the connect timeout to socket write operations.
-        # So effectively, "connect timeout" is actually "connect+send" for file uploads. UGH.
-        is_write = method in ['POST', 'PUT']
-        if timeout is UNSET:
-            timeout = self.write_timeout if is_write else self.read_timeout
-        connect_timeout = timeout if is_write else CONNECT_TIMEOUT
-
-        return (connect_timeout, timeout)  # type: ignore [return-value]
 
     def _validate_json(
         self,
@@ -448,6 +435,28 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         else:
             response.json = lambda **kwargs: response_json  # type: ignore
             return response
+
+
+class RequestTimeout(Timeout):
+    """Timeout class that adjusts timeouts for write operations"""
+
+    def __init__(
+        self,
+        method: str,
+        read_timeout: TimeoutType,
+        write_timeout: TimeoutType,
+    ):
+        # A None read_timeout or explicit None request_timeout disables timeouts entirely
+        if read_timeout is None:
+            super().__init__(connect=None, read=None)
+            return
+
+        # During the body-send phase, urllib3 applies the connect timeout to socket write operations;
+        # so effectively, "connect timeout" is actually "connect+send" for file uploads.
+        is_write = method in ('POST', 'PUT')
+        request_timeout = write_timeout if is_write else read_timeout
+        connect_timeout = request_timeout if is_write else CONNECT_TIMEOUT
+        super().__init__(connect=connect_timeout, read=request_timeout)
 
 
 class FileLockSQLiteBucket(SQLiteBucket):

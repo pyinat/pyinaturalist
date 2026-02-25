@@ -4,6 +4,7 @@
 - Wraps urllib3's socket with a client-side throttle at 100 KB/s
 - Uploads a 1 MB file via ClientSession (~10 seconds at that rate)
 """
+
 import contextlib
 import io
 import logging
@@ -11,8 +12,8 @@ import os
 import socket
 import threading
 import time
-from http.server import BaseHTTPRequestHandler, HTTPServer
 from collections.abc import Generator
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import urllib3.util.connection
 from requests_ratelimiter import InMemoryBucket
