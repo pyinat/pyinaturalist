@@ -13,6 +13,7 @@ from pyinaturalist.controllers import (
     AnnotationController,
     IdentificationController,
     ObservationController,
+    ObservationFieldController,
     PlaceController,
     ProjectController,
     SearchController,
@@ -41,6 +42,7 @@ class iNatClient:
     * :fa:`tag` :py:class:`annotations <.AnnotationController>`
     * :fa:`fingerprint` :py:class:`identifications <.IdentificationController>`
     * :fa:`binoculars` :py:class:`observations <.ObservationController>`
+    * :fa:`tag` :py:class:`observation_fields <.ObservationFieldController>`
     * :fa:`location-dot` :py:class:`places <.PlaceController>`
     * :fa:`users` :py:class:`projects <.ProjectController>`
     * :fa:`search` :py:class:`search <.SearchController>`
@@ -85,6 +87,9 @@ class iNatClient:
         self.observations = ObservationController(
             self
         )  #: Interface for :py:class:`observation requests <.ObservationController>`
+        self.observation_fields = ObservationFieldController(
+            self
+        )  #: Interface for :py:class:`observation field requests <.ObservationFieldController>`
         self.places = PlaceController(
             self
         )  #: Interface for :py:class:`place requests <.PlaceController>`
