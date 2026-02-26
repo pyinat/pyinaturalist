@@ -1,6 +1,5 @@
 # Contributing Guide
-Contributions are welcome, and they are greatly appreciated! Every
-little bit helps, and credit will always be given.
+If you use this project and want to help improve it, contributions are very welcome!
 
 ## Installation
 To set up for local development (requires [uv](https://docs.astral.sh/uv)):
@@ -12,8 +11,20 @@ $ uv sync --all-extras --all-groups
 
 ## Contribution Guidelines
 
+### AI Policy
+AI-assisted contributions are acceptable if:
+* Contents are fully **reviewed, tested, and understood by a human**
+* Any user-facing documentation is human-written (excluding minor edits/docstring boilerplate)
+* You are a user of this project, or of iNaturalist, or are otherwise involved in biodiversity data
+  and citized science
+
+The general principle is that low-effort, fully automated contributions add a maintenance burden for
+me (a limited and squishy mortal being) that is out of proportion with the utility these PRs provide,
+especially if they are submitted solely for contribution stats.
+
 ### Pull Requests
 Here are some general guidelines for submitting a pull request:
+- Use the PR template
 - If the changes are trivial, just submit a PR and briefly explain the changes in the description.
 - Otherwise, please submit an issue describing the proposed change prior to submitting a PR.
 - Make sure the code is tested, documented, and type-annotated (as described in sections below).
@@ -30,12 +41,12 @@ For PRs, GitHub Actions will run these tests for each supported python version.
 
 You can use [nox](https://nox.thea.codes) to do this locally, if needed:
 ```bash
-nox -e test
+uv run nox -e test
 ```
 
 Or to run tests for a specific python version:
 ```bash
-nox -e test-3.10
+uv run nox -e test-3.10
 ```
 
 See `nox --list` for a full list of available commands.
@@ -84,7 +95,7 @@ Code checking and formatting tools used include:
 
 All of these will be run by GitHub Actions on pull requests. You can also run them locally with:
 ```bash
-nox -e lint
+prek run -a
 ```
 
 #### Pre-Commit Hooks
