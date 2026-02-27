@@ -77,27 +77,23 @@ class TaxonController(BaseController):
 
     def _autocomplete_full(self, **params) -> Paginator[Taxon]:
         """Fetch autocomplete matches, then replace each result with the full taxon record."""
-        params = self.client.add_defaults(get_taxa_autocomplete, params)
-        autocomplete_response = get_taxa_autocomplete(**params)
-        autocomplete_results = autocomplete_response.get('results', [])
-        taxon_ids = [result['id'] for result in autocomplete_results]
-        if not taxon_ids:
+        autocomplete_taxa = self.autocomplete(**params).all()
+        if not autocomplete_taxa:
             return WrapperPaginator([])
 
-        # Only pass params relevant to get_taxa_by_id; autocomplete-specific params
-        # like q, rank, is_active, etc. are not valid for the by-id endpoint.
-        by_id_keys = {'locale', 'preferred_place_id', 'all_names', 'session', 'dry_run'}
-        by_id_params = {k: v for k, v in params.items() if k in by_id_keys}
-        full_response = get_taxa_by_id(taxon_ids, **by_id_params)
-        full_results_by_id = {r['id']: r for r in full_response.get('results', [])}
+        matched_terms = {t.id: t.matched_term for t in autocomplete_taxa}
+        taxon_ids = [t.id for t in autocomplete_taxa]
+        full_taxa_by_id = {t.id: t for t in self.from_ids(taxon_ids).all()}
 
-        def merge(result: dict) -> dict:
-            merged = {**full_results_by_id.get(result['id'], result)}
-            if matched_term := result.get('matched_term'):
-                merged.setdefault('matched_term', matched_term)
-            return merged
-
-        return WrapperPaginator(Taxon.from_json_list([merge(r) for r in autocomplete_results]))
+        results = []
+        for taxon_id in taxon_ids:
+            taxon = full_taxa_by_id.get(taxon_id)
+            if taxon is None:
+                continue
+            if taxon.matched_term is None and (term := matched_terms.get(taxon_id)):
+                taxon.matched_term = term
+            results.append(taxon)
+        return WrapperPaginator(results)
 
     @copy_doc_signature(docs._taxon_params, docs._taxon_id_params)
     def search(self, **params) -> Paginator[Taxon]:

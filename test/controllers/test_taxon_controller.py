@@ -42,9 +42,12 @@ def test_autocomplete(requests_mock):
         status_code=200,
     )
 
-    results = iNatClient().taxa.autocomplete(q='vespi').all()
-    assert len(results) == 10 and isinstance(results[0], Taxon)
-    assert results[0].id == 52747
+    results = iNatClient().taxa.autocomplete(q='vespi')
+    assert isinstance(results, Paginator)
+    assert not isinstance(results, WrapperPaginator)
+    all_results = results.all()
+    assert len(all_results) == 10 and isinstance(all_results[0], Taxon)
+    assert all_results[0].id == 52747
 
 
 def test_autocomplete__full_records(requests_mock):
@@ -82,7 +85,7 @@ def test_autocomplete__full_records__empty_results(requests_mock):
         status_code=200,
     )
 
-    results = iNatClient().taxa.autocomplete(q='xyzzy', full_records=True).all()
+    results = iNatClient().taxa.autocomplete(q='raven', full_records=True).all()
     assert results == []
 
 
