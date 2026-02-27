@@ -17,13 +17,28 @@ from typing import Any
 from pyinaturalist.constants import (
     AnyDate,
     AnyDateTime,
+    CommunityIDStatus,
     DateOrStr,
+    GeoprivacyLevel,
+    HistogramDateField,
+    HistogramInterval,
+    Inbox,
     IntOrStr,
+    MultiCCLicense,
+    MultiConservationStatus,
     MultiFile,
+    MultiGeoprivacyLevel,
+    MultiIconicTaxon,
+    MultiIDCategory,
     MultiInt,
     MultiIntOrStr,
+    MultiProjectType,
+    MultiQualityGrade,
+    MultiSearchProperty,
+    MultiSource,
     MultiStr,
     ObsFieldValues,
+    OrderDirection,
 )
 
 # Identifications
@@ -42,9 +57,9 @@ def _identification_params(
     user_id: MultiIntOrStr | None = None,
     user_login: MultiStr | None = None,
     current: bool | None = None,
-    category: MultiStr | None = None,
+    category: MultiIDCategory | None = None,
     place_id: MultiInt | None = None,
-    quality_grade: MultiStr | None = None,
+    quality_grade: MultiQualityGrade | None = None,
     taxon_id: MultiInt | None = None,
     observation_taxon_id: MultiInt | None = None,
     iconic_taxon_id: MultiInt | None = None,
@@ -106,7 +121,7 @@ def _identification_params(
 
 def _message_params(
     page: int | None = None,
-    box: str | None = None,
+    box: Inbox | None = None,
     q: str | None = None,
     user_id: int | None = None,
     threads: bool = False,
@@ -139,15 +154,15 @@ def _observation_common(
     day: MultiInt | None = None,
     month: MultiInt | None = None,
     year: MultiInt | None = None,
-    license: MultiStr | None = None,
+    license: MultiCCLicense | None = None,
     list_id: int | None = None,
-    photo_license: MultiStr | None = None,
+    photo_license: MultiCCLicense | None = None,
     out_of_range: bool | None = None,
-    quality_grade: str | None = None,
+    quality_grade: MultiQualityGrade | None = None,
     id: MultiInt | None = None,
     taxon_id: MultiInt | None = None,
     taxon_name: MultiStr | None = None,
-    iconic_taxa: MultiStr | None = None,
+    iconic_taxa: MultiIconicTaxon | None = None,
     updated_since: AnyDateTime | None = None,
 ):
     """Args:
@@ -189,7 +204,7 @@ def _observation_v1(
     threatened: bool | None = None,
     verifiable: bool | None = None,
     not_id: MultiInt | None = None,
-    sound_license: MultiStr | None = None,
+    sound_license: MultiCCLicense | None = None,
     observation_fields: list | dict | None = None,
     ofv_datatype: MultiStr | None = None,
     place_id: MultiInt | None = None,
@@ -214,22 +229,22 @@ def _observation_v1(
     apply_project_rules_for: str | None = None,
     cs: str | None = None,
     csa: str | None = None,
-    csi: MultiStr | None = None,
-    geoprivacy: MultiStr | None = None,
-    taxon_geoprivacy: MultiStr | None = None,
+    csi: MultiConservationStatus | None = None,
+    geoprivacy: MultiGeoprivacyLevel | None = None,
+    taxon_geoprivacy: MultiGeoprivacyLevel | None = None,
     max_rank: str | None = None,
     min_rank: str | None = None,
     hrank: str | None = None,
     lrank: str | None = None,
     id_above: int | None = None,
     id_below: int | None = None,
-    identifications: str | None = None,
+    identifications: CommunityIDStatus | None = None,
     lat: float | None = None,
     lng: float | None = None,
     radius: float | None = None,
     not_in_project: IntOrStr | None = None,
     not_matching_project_rules_for: IntOrStr | None = None,
-    search_on: str | None = None,
+    search_on: MultiSearchProperty | None = None,
     viewer_id: int | None = None,
     reviewed: bool | None = None,
     locale: str | None = None,
@@ -354,8 +369,8 @@ def _observation_v2(
 
 
 def _observation_histogram(
-    date_field: str = 'observed',
-    interval: str = 'month_of_year',
+    date_field: HistogramDateField = 'observed',
+    interval: HistogramInterval = 'month_of_year',
 ):
     """Args:
     date_field: Histogram basis: either when the observation was created or observed
@@ -384,7 +399,7 @@ def _create_observation(
     longitude: float | None = None,
     map_scale: int | None = None,
     positional_accuracy: int | None = None,
-    geoprivacy: str | None = None,
+    geoprivacy: GeoprivacyLevel | None = None,
     observation_fields: ObsFieldValues | None = None,
     observation_field_values_attributes: ObsFieldValues | None = None,
     flickr_photos: MultiInt | None = None,
@@ -500,7 +515,7 @@ def _projects_params(
     place_id: MultiInt | None = None,
     site_id: int | None = None,
     rule_details: bool | None = None,
-    type: MultiStr | None = None,
+    type: MultiProjectType | None = None,
     member_id: int | None = None,
     has_params: bool | None = None,
     has_posts: bool | None = None,
@@ -601,7 +616,7 @@ def _project_update_params(
 
 def _search_params(
     q: str,
-    sources: MultiStr | None = None,  # enum
+    sources: MultiSource | None = None,  # enum
     place_id: MultiInt | None = None,
     locale: str | None = None,
     preferred_place_id: int | None = None,
@@ -717,7 +732,7 @@ def _project_id(project_id: int | None = None):
 def _pagination(
     page: int | None = None,
     per_page: int | None = None,
-    order: str | None = None,
+    order: OrderDirection | None = None,
     order_by: str | None = None,
     count_only: bool | None = None,
     reverse: bool | None = None,
