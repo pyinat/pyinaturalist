@@ -9,6 +9,10 @@
   * Added `ClientSession` argument `use_file_lock`; this replaces `FileLockSQLiteBucket`, but the class is still available for backwards-compatibility.
 * Drop support for python 3.8 and 3.9 (removed upstream)
 
+### Modified endpoints
+* Add `exact_match` option for `iNatClient.taxa.autocomplete()`
+* Add `full_records` option for `iNatClient.taxa.autocomplete()`
+
 ### New endpoints
 * Add taxon endpoints for v2 API:
   * `pyinaturalist.v2.get_taxa()`

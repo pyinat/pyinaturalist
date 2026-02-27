@@ -1,8 +1,11 @@
 from copy import deepcopy
 
+import pytest
+
 from pyinaturalist.client import iNatClient
 from pyinaturalist.constants import API_V1
 from pyinaturalist.models import Taxon
+from pyinaturalist.paginator import Paginator, WrapperPaginator
 from test.sample_data import SAMPLE_DATA
 
 
@@ -39,9 +42,98 @@ def test_autocomplete(requests_mock):
         status_code=200,
     )
 
-    results = iNatClient().taxa.autocomplete(q='vespi').all()
-    assert len(results) == 10 and isinstance(results[0], Taxon)
-    assert results[0].id == 52747
+    results = iNatClient().taxa.autocomplete(q='vespi')
+    assert isinstance(results, Paginator)
+    assert not isinstance(results, WrapperPaginator)
+    all_results = results.all()
+    assert len(all_results) == 10 and isinstance(all_results[0], Taxon)
+    assert all_results[0].id == 52747
+
+
+def test_autocomplete__full_records(requests_mock):
+    autocomplete_results = deepcopy(SAMPLE_DATA['get_taxa_autocomplete'])
+    autocomplete_results['results'] = [autocomplete_results['results'][0]]
+    autocomplete_results['total_results'] = 1
+    autocomplete_results['per_page'] = 1
+
+    full_taxon = deepcopy(SAMPLE_DATA['get_taxa_by_id'])
+    full_taxon['results'][0]['id'] = 52747
+    full_taxon['results'][0].pop('matched_term', None)
+
+    requests_mock.get(
+        f'{API_V1}/taxa/autocomplete',
+        json=autocomplete_results,
+        status_code=200,
+    )
+    requests_mock.get(
+        f'{API_V1}/taxa/52747',
+        json=full_taxon,
+        status_code=200,
+    )
+
+    taxon = iNatClient().taxa.autocomplete(q='vespi', full_records=True).one()
+    assert isinstance(taxon, Taxon)
+    assert taxon.id == 52747
+    assert taxon.matched_term == 'Vespidae'
+    assert len(taxon.ancestors) > 0
+
+
+def test_autocomplete__full_records__empty_results(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/taxa/autocomplete',
+        json={'results': [], 'total_results': 0, 'per_page': 0},
+        status_code=200,
+    )
+
+    results = iNatClient().taxa.autocomplete(q='raven', full_records=True).all()
+    assert results == []
+
+
+@pytest.mark.parametrize(
+    'q, expected_count',
+    [
+        ('Vespidae', 1),  # matches matched_term
+        ('Hornets, Paper Wasps, Potter Wasps, and Allies', 1),  # matches preferred_common_name
+        ('nonexistent exact name', 0),  # no matches
+    ],
+)
+def test_autocomplete_exact_match(requests_mock, q, expected_count):
+    autocomplete_results = deepcopy(SAMPLE_DATA['get_taxa_autocomplete'])
+    autocomplete_results['results'] = [autocomplete_results['results'][0]]  # only ID 52747
+    autocomplete_results['total_results'] = 1
+    autocomplete_results['per_page'] = 1
+
+    full_taxon = deepcopy(SAMPLE_DATA['get_taxa_by_id'])
+    full_taxon['results'][0]['id'] = 52747
+    full_taxon['results'][0]['preferred_common_name'] = (
+        'Hornets, Paper Wasps, Potter Wasps, and Allies'
+    )
+    full_taxon['results'][0].pop('matched_term', None)
+
+    requests_mock.get(f'{API_V1}/taxa/autocomplete', json=autocomplete_results, status_code=200)
+
+    results = iNatClient().taxa.autocomplete(q=q, exact_match=True)
+    assert len(results.all()) == expected_count
+
+
+def test_autocomplete__exact_match_and_full_records(requests_mock):
+    autocomplete_results = deepcopy(SAMPLE_DATA['get_taxa_autocomplete'])
+    autocomplete_results['results'] = [autocomplete_results['results'][0]]  # only ID 52747
+    autocomplete_results['total_results'] = 1
+    autocomplete_results['per_page'] = 1
+
+    full_taxon = deepcopy(SAMPLE_DATA['get_taxa_by_id'])
+    full_taxon['results'][0]['id'] = 52747
+    full_taxon['results'][0].pop('matched_term', None)
+
+    requests_mock.get(f'{API_V1}/taxa/autocomplete', json=autocomplete_results, status_code=200)
+    requests_mock.get(f'{API_V1}/taxa/52747', json=full_taxon, status_code=200)
+
+    taxon = iNatClient().taxa.autocomplete(q='Vespidae', exact_match=True, full_records=True).one()
+    assert isinstance(taxon, Taxon)
+    assert taxon.id == 52747
+    assert taxon.matched_term == 'Vespidae'
+    assert len(taxon.ancestors) > 0
 
 
 def test_search(requests_mock):
