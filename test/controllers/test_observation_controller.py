@@ -426,3 +426,60 @@ def test_update__observation_without_id():
             observation=Observation(species_guess='Mallard'),
             access_token='token',
         )
+
+
+def test_observation_helper__invalid_special_values():
+    controller = iNatClient().observations
+
+    assert controller._extract_id(Observation(id=123)) == 123
+    assert controller._extract_ofv_field_id(ObservationFieldValue(field_id=297, value='2')) == 297
+    assert controller._location_to_params([45.0]) == {}
+    assert controller._taxon_to_params({'name': 'Mallard'}) == {}
+    assert controller._ofvs_to_params([{'value': '2'}]) == {}
+
+
+def test_merge_observation_params__require_id_without_observation():
+    controller = iNatClient().observations
+
+    with pytest.raises(ValueError, match='Must provide observation_id'):
+        controller._merge_observation_params(None, {}, require_observation_id=True)
+
+    assert controller._merge_observation_params(None, {'species_guess': 'Mallard'}) == {
+        'species_guess': 'Mallard'
+    }
+
+
+def test_observation_to_params__invalid_special_key_is_ignored():
+    class DummyObservation:
+        def to_dict(self):
+            return {'location': [45.0], 'species_guess': 'Mallard'}
+
+    params, ignored = iNatClient().observations._observation_to_params(DummyObservation())
+    assert params['species_guess'] == 'Mallard'
+    assert ignored == ['location']
+
+
+def test_merge_observation_params__logs_ignored_read_only_attribute(caplog):
+    observation = Observation(
+        species_guess='Mallard',
+        created_at=None,
+        identifications_count=None,
+    )
+
+    with caplog.at_level('WARNING', logger='pyinaturalist.controllers.observation_controller'):
+        merged = iNatClient().observations._merge_observation_params(observation, {})
+
+    assert merged['species_guess'] == 'Mallard'
+    assert 'Read-only observation attributes ignored:' in caplog.text
+    assert 'uri' in caplog.text
+
+
+@patch('pyinaturalist.controllers.observation_controller.delete_observation')
+def test_delete__multiple_ids(mock_delete_observation):
+    iNatClient().observations.delete([123, 456], access_token='token')
+
+    assert mock_delete_observation.call_count == 2
+    first_call = mock_delete_observation.call_args_list[0][1]
+    second_call = mock_delete_observation.call_args_list[1][1]
+    assert first_call['observation_id'] == 123
+    assert second_call['observation_id'] == 456
