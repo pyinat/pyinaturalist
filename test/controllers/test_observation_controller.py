@@ -385,6 +385,21 @@ def test_create__from_observation_object(mock_create_observation, caplog):
     assert 'identifications' in caplog.text
 
 
+@patch('pyinaturalist.controllers.observation_controller.create_observation')
+def test_create__from_observation_object_with_ofvs(mock_create_observation):
+    mock_create_observation.return_value = SAMPLE_DATA['create_observation']
+    observation = Observation.from_json(SAMPLE_DATA['get_observation_with_ofvs']['results'][0])
+
+    result = iNatClient().observations.create(observation=observation, access_token='token')
+    assert isinstance(result, Observation)
+
+    request_params = mock_create_observation.call_args[1]
+    assert request_params['observation_fields'][1685] == '119900'
+    assert request_params['observation_fields'][3856] == '100'
+    assert request_params['observation_fields'][6508] == '2022-11-9 11:20:42'
+    assert request_params['observation_fields'][3857] == '400'
+
+
 @patch('pyinaturalist.controllers.observation_controller.update_observation')
 def test_update__from_observation_object(mock_update_observation):
     mock_update_observation.return_value = SAMPLE_DATA['create_observation']
@@ -402,7 +417,7 @@ def test_update__from_observation_object(mock_update_observation):
 
 def test_create__invalid_observation_object():
     with pytest.raises(TypeError, match='Expected Observation object'):
-        iNatClient().observations.create(observation={'species_guess': 'Mallard'})  # type: ignore[arg-type]
+        iNatClient().observations.create(observation={'species_guess': 'Mallard'})
 
 
 def test_update__observation_without_id():

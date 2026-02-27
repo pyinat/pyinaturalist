@@ -368,6 +368,64 @@ class ObservationController(BaseController):
         return getattr(value, 'id', None)
 
     @classmethod
+    def _extract_ofv_field_id(cls, ofv: Any) -> int | None:
+        if isinstance(ofv, dict):
+            return (
+                ofv.get('observation_field_id')
+                or ofv.get('field_id')
+                or cls._extract_id(ofv.get('observation_field'))
+            )
+        return (
+            getattr(ofv, 'observation_field_id', None)
+            or getattr(ofv, 'field_id', None)
+            or cls._extract_id(getattr(ofv, 'observation_field', None))
+        )
+
+    @staticmethod
+    def _extract_ofv_value(ofv: Any) -> Any:
+        return ofv.get('value') if isinstance(ofv, dict) else getattr(ofv, 'value', None)
+
+    @classmethod
+    def _location_to_params(cls, value: Any) -> dict[str, Any]:
+        coords = ensure_list(value)
+        if len(coords) == 2 and cls._has_value(coords[0]) and cls._has_value(coords[1]):
+            lat, lng = coords
+            return {'latitude': lat, 'longitude': lng}
+        return {}
+
+    @classmethod
+    def _taxon_to_params(cls, value: Any) -> dict[str, Any]:
+        if taxon_id := cls._extract_id(value):
+            return {'taxon_id': taxon_id}
+        return {}
+
+    @classmethod
+    def _ofvs_to_params(cls, value: Any) -> dict[str, Any]:
+        ofv_params = {}
+        for ofv in ensure_list(value):
+            field_id = cls._extract_ofv_field_id(ofv)
+            field_value = cls._extract_ofv_value(ofv)
+            if cls._has_value(field_id) and cls._has_value(field_value):
+                ofv_params[field_id] = field_value
+        return {'observation_fields': ofv_params} if ofv_params else {}
+
+    @classmethod
+    def _photos_to_params(cls, value: Any) -> dict[str, Any]:
+        photo_ids = [photo_id for p in ensure_list(value) if (photo_id := cls._extract_id(p))]
+        return {'photo_ids': photo_ids} if photo_ids else {}
+
+    @classmethod
+    def _special_observation_params(cls, key: str, value: Any) -> dict[str, Any] | None:
+        handlers: dict[str, Callable[[Any], dict[str, Any]]] = {
+            'location': cls._location_to_params,
+            'taxon': cls._taxon_to_params,
+            'ofvs': cls._ofvs_to_params,
+            'photos': cls._photos_to_params,
+        }
+        handler = handlers.get(key)
+        return handler(value) if handler else None
+
+    @classmethod
     def _observation_to_params(cls, observation: Observation) -> tuple[dict[str, Any], list[str]]:
         params: dict[str, Any] = {}
         ignored_attrs: set[str] = set()
@@ -377,47 +435,12 @@ class ObservationController(BaseController):
             if not cls._has_value(value):
                 continue
 
-            if key == 'location':
-                coords = ensure_list(value)
-                if len(coords) == 2 and cls._has_value(coords[0]) and cls._has_value(coords[1]):
-                    lat, lng = coords
-                    params['latitude'] = lat
-                    params['longitude'] = lng
-                else:
-                    ignored_attrs.add(key)
+            if special_params := cls._special_observation_params(key, value):
+                params.update(special_params)
                 continue
 
-            if key == 'taxon':
-                if taxon_id := cls._extract_id(value):
-                    params['taxon_id'] = taxon_id
-                else:
-                    ignored_attrs.add(key)
-                continue
-
-            if key == 'ofvs':
-                ofv_params = {}
-                for ofv in ensure_list(value):
-                    field_id = (
-                        (ofv.get('observation_field_id') if isinstance(ofv, dict) else None)
-                        or cls._extract_id(ofv.get('observation_field') if isinstance(ofv, dict) else None)
-                        or getattr(ofv, 'observation_field_id', None)
-                    )
-                    field_value = ofv.get('value') if isinstance(ofv, dict) else getattr(ofv, 'value', None)
-                    if cls._has_value(field_id) and cls._has_value(field_value):
-                        ofv_params[field_id] = field_value
-
-                if ofv_params:
-                    params['observation_fields'] = ofv_params
-                else:
-                    ignored_attrs.add(key)
-                continue
-
-            if key == 'photos':
-                photo_ids = [photo_id for p in ensure_list(value) if (photo_id := cls._extract_id(p))]
-                if photo_ids:
-                    params['photo_ids'] = photo_ids
-                else:
-                    ignored_attrs.add(key)
+            if key in {'location', 'taxon', 'ofvs', 'photos'}:
+                ignored_attrs.add(key)
                 continue
 
             param_key = _OBSERVATION_ATTR_ALIASES.get(key, key)
@@ -457,9 +480,7 @@ class ObservationController(BaseController):
                 )
 
         if ignored_attrs:
-            logger.warning(
-                f'Read-only observation attributes ignored: {", ".join(ignored_attrs)}'
-            )
+            logger.warning(f'Read-only observation attributes ignored: {", ".join(ignored_attrs)}')
         return merged_params
 
     @copy_doc_signature(docs._observation_object, docs._create_observation)
