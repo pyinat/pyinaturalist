@@ -3,6 +3,7 @@ from datetime import datetime
 from io import BytesIO
 from unittest.mock import patch
 
+import pytest
 from dateutil.tz import tzutc
 
 from pyinaturalist.client import iNatClient
@@ -362,12 +363,51 @@ def test_upload(mock_update_observation, mock_get_access_token, requests_mock):
     assert mock_update_observation.call_args[1]['photo_ids'] == [5678]
 
 
-# TODO:
-# def test_create():
-#     client = iNatClient()
-#     results = client.observations.create()
+@patch('pyinaturalist.controllers.observation_controller.create_observation')
+def test_create__from_observation_object(mock_create_observation, caplog):
+    mock_create_observation.return_value = SAMPLE_DATA['create_observation']
+    observation = Observation.from_json(SAMPLE_DATA['get_observations_by_id']['results'][0])
+
+    with caplog.at_level('WARNING', logger='pyinaturalist.controllers.observation_controller'):
+        result = iNatClient().observations.create(observation=observation, access_token='token')
+
+    assert isinstance(result, Observation)
+    assert result.id == SAMPLE_DATA['create_observation']['id']
+
+    request_params = mock_create_observation.call_args[1]
+    assert request_params['taxon_id'] == observation.taxon.id
+    assert request_params['latitude'] == observation.location[0]
+    assert request_params['longitude'] == observation.location[1]
+    assert 'comments' not in request_params
+    assert 'identifications' not in request_params
+    assert 'Read-only observation attributes ignored:' in caplog.text
+    assert 'comments' in caplog.text
+    assert 'identifications' in caplog.text
 
 
-# def test_delete():
-#     client = iNatClient()
-#     results = client.observations.delete()
+@patch('pyinaturalist.controllers.observation_controller.update_observation')
+def test_update__from_observation_object(mock_update_observation):
+    mock_update_observation.return_value = SAMPLE_DATA['create_observation']
+    observation = Observation.from_json(SAMPLE_DATA['get_observations_by_id']['results'][0])
+
+    result = iNatClient().observations.update(
+        observation=observation, description='updated description', access_token='token'
+    )
+    assert isinstance(result, Observation)
+
+    request_params = mock_update_observation.call_args[1]
+    assert request_params['observation_id'] == observation.id
+    assert request_params['description'] == 'updated description'
+
+
+def test_create__invalid_observation_object():
+    with pytest.raises(TypeError, match='Expected Observation object'):
+        iNatClient().observations.create(observation={'species_guess': 'Mallard'})  # type: ignore[arg-type]
+
+
+def test_update__observation_without_id():
+    with pytest.raises(ValueError, match='Must provide observation_id'):
+        iNatClient().observations.update(
+            observation=Observation(species_guess='Mallard'),
+            access_token='token',
+        )

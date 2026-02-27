@@ -371,6 +371,13 @@ def _ofvs(observation_id: int, observation_field_id: int, value: Any):
     """
 
 
+def _observation_object(observation: Any | None = None):
+    """Args:
+    observation: Existing :py:class:`~pyinaturalist.models.Observation` object to create or update
+        from. Any additional keyword arguments will override attributes from this object.
+    """
+
+
 def _create_observation(
     species_guess: str | None = None,
     taxon_id: int | None = None,
