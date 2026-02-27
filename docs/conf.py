@@ -159,6 +159,7 @@ html_css_files = [
     'table.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css',
 ]
+html_js_files = ['collapse_params.js']
 html_show_sphinx = False
 pygments_style = 'friendly'
 pygments_dark_style = 'material'
