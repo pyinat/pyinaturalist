@@ -128,8 +128,7 @@ class AnnotationController(BaseController):
             return controlled_term.id, controlled_value.id
 
         raise ValueError(
-            'Must specify either controlled_attribute_id + controlled_value_id '
-            'or term + value'
+            'Must specify either controlled_attribute_id + controlled_value_id or term + value'
         )
 
     def create(
