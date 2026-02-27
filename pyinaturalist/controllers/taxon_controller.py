@@ -55,45 +55,75 @@ class TaxonController(BaseController):
         )
 
     @copy_doc_signature(docs._taxon_params)
-    def autocomplete(self, full_records: bool = False, **params) -> Paginator[Taxon]:
+    def autocomplete(
+        self,
+        q: str | None = None,
+        full_records: bool = False,
+        exact_match: bool = False,
+        **params,
+    ) -> Paginator[Taxon]:
         """Given a query string, return taxa with names starting with the search term
 
         .. rubric:: Notes
 
         * API reference: :v1:`GET /taxa/autocomplete <Taxa/get_taxa_autocomplete>`
         * There appears to currently be a bug in the API that causes ``per_page`` to not have any effect.
-        * When ``exact_match=True``, all results are fetched and filtered client-side, since the API
-          only supports prefix/substring matching for common names.
+        * ``exact_match`` is a best effort to get an exact match on common name. Due to lack of
+          standardization and uniqueness in common names, though, multiple results are still likely.
+          Results are sorted by observation count, so the first result is more likely to be what you're
+          looking for. Filtering by rank will further increase your chances.
 
-        Example:
-            >>> client.taxa.autocomplete(q='vespi')
+        Examples:
+
+            Get all matches:
+
+            >>> taxa = client.taxa.autocomplete(q='vespi').all()
+
+            Search for only exact matches that are species, and get the first result:
+
+            >>> best_guess = client.taxa.autocomplete(q='raven', exact_match=True, rank='species').one()
+            >>> print(best_guess)
+            "Taxon(id=8010, full_name=Corvus corax (Common Raven))"
+
+            Verify the term that was matched (if different from preferred_common_name):
+
+            >>> print(best_guess.matched_term)
+            "Raven"
 
         Args:
             full_records: Fetch full taxon records by ID for each autocomplete match
+            exact_match: Filter results to only taxa whose common name or matched term exactly
+                matches ``q`` (case-insensitive).
         """
-        if not full_records:
-            return self.client.paginate(get_taxa_autocomplete, Taxon, **params)
-        return self._autocomplete_full(**params)
+        query = self.client.paginate(get_taxa_autocomplete, Taxon, q=q, **params)
+        if not (exact_match or full_records):
+            return query
 
-    def _autocomplete_full(self, **params) -> Paginator[Taxon]:
-        """Fetch autocomplete matches, then replace each result with the full taxon record."""
-        autocomplete_taxa = self.autocomplete(**params).all()
-        if not autocomplete_taxa:
-            return WrapperPaginator([])
+        taxa = query.all()
+        if exact_match:
+            taxa = self._filter_matches(taxa, q)
+        if full_records:
+            taxa = self._populate_all(taxa, **params)
+        return WrapperPaginator(taxa)
 
-        matched_terms = {t.id: t.matched_term for t in autocomplete_taxa}
-        taxon_ids = [t.id for t in autocomplete_taxa]
-        full_taxa_by_id = {t.id: t for t in self.from_ids(taxon_ids).all()}
+    def _filter_matches(self, taxa: list[Taxon], q: str | None) -> list[Taxon]:
+        q = (q or '').lower()
+        filtered = [
+            t
+            for t in taxa
+            if (t.preferred_common_name or '').lower() == q or (t.matched_term or '').lower() == q
+        ]
+        return sorted(filtered, key=lambda t: t.observations_count or 0, reverse=True)
 
-        results = []
-        for taxon_id in taxon_ids:
-            taxon = full_taxa_by_id.get(taxon_id)
-            if taxon is None:
-                continue
-            if taxon.matched_term is None and (term := matched_terms.get(taxon_id)):
-                taxon.matched_term = term
-            results.append(taxon)
-        return WrapperPaginator(results)
+    def _populate_all(self, taxa: list[Taxon], **params) -> list[Taxon]:
+        """Populate all autocomplete matches with a full taxon record"""
+        taxa_by_id = {t.id: t for t in taxa}
+        full_taxa_by_id = {t.id: t for t in self.from_ids(list(taxa_by_id), **params).all()}
+        # These haven't been returned to the user yet, so we can replace them rather than modify in-place
+        results = [full_taxa_by_id[tid] for tid in taxa_by_id if tid in full_taxa_by_id]
+        for taxon in results:
+            taxon.matched_term = taxa_by_id[taxon.id].matched_term
+        return results
 
     @copy_doc_signature(docs._taxon_params, docs._taxon_id_params)
     def search(self, **params) -> Paginator[Taxon]:
