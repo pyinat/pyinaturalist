@@ -1,6 +1,7 @@
 import json
 from unittest.mock import patch
 
+import pytest
 from requests import Response
 
 from pyinaturalist.client import iNatClient
@@ -124,6 +125,11 @@ def test_create__missing_term_value_pair():
         assert 'Must specify either' in str(e)
     else:
         raise AssertionError('Expected ValueError')
+
+
+def test_create__missing_resource_id():
+    with pytest.raises(ValueError, match='Must specify resource_id'):
+        iNatClient().annotations.create(term='Alive or Dead', value='Alive')
 
 
 def test_create__invalid_term(requests_mock):
