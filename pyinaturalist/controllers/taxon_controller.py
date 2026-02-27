@@ -62,6 +62,8 @@ class TaxonController(BaseController):
 
         * API reference: :v1:`GET /taxa/autocomplete <Taxa/get_taxa_autocomplete>`
         * There appears to currently be a bug in the API that causes ``per_page`` to not have any effect.
+        * When ``exact_match=True``, all results are fetched and filtered client-side, since the API
+          only supports prefix/substring matching for common names.
 
         Example:
             >>> client.taxa.autocomplete(q='vespi')

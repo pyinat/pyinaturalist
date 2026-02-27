@@ -1,8 +1,11 @@
 from copy import deepcopy
 
+import pytest
+
 from pyinaturalist.client import iNatClient
 from pyinaturalist.constants import API_V1
 from pyinaturalist.models import Taxon
+from pyinaturalist.paginator import Paginator, WrapperPaginator
 from test.sample_data import SAMPLE_DATA
 
 
