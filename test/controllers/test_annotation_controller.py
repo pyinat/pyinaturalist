@@ -91,6 +91,71 @@ def test_create(mock_post):
     assert request_params['resource_type'] == 'Observation'
 
 
+@patch('pyinaturalist.controllers.annotation_controller.post')
+def test_create__by_label(mock_post, requests_mock):
+    response = Response()
+    response._content = json.dumps({'results': [j_annotation_1]}).encode()
+    mock_post.return_value = response
+    requests_mock.get(
+        f'{API_V1}/controlled_terms',
+        json=SAMPLE_DATA['get_controlled_terms'],
+        status_code=200,
+    )
+
+    client = iNatClient()
+    result = client.annotations.create(
+        term='Alive or Dead',
+        value='Alive',
+        resource_id=164609837,
+    )
+    assert isinstance(result, Annotation)
+
+    request_params = mock_post.call_args[1]
+    assert request_params['controlled_attribute_id'] == 17
+    assert request_params['controlled_value_id'] == 18
+    assert request_params['resource_id'] == 164609837
+
+
+def test_create__missing_term_value_pair():
+    client = iNatClient()
+    try:
+        client.annotations.create(term='Alive or Dead', resource_id=164609837)
+    except ValueError as e:
+        assert 'Must specify either' in str(e)
+    else:
+        raise AssertionError('Expected ValueError')
+
+
+def test_create__invalid_term(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/controlled_terms',
+        json=SAMPLE_DATA['get_controlled_terms'],
+        status_code=200,
+    )
+    client = iNatClient()
+    try:
+        client.annotations.create(term='Not a term', value='Alive', resource_id=164609837)
+    except ValueError as e:
+        assert 'Annotation term not found' in str(e)
+    else:
+        raise AssertionError('Expected ValueError')
+
+
+def test_create__invalid_value_for_term(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/controlled_terms',
+        json=SAMPLE_DATA['get_controlled_terms'],
+        status_code=200,
+    )
+    client = iNatClient()
+    try:
+        client.annotations.create(term='Alive or Dead', value='Not a value', resource_id=164609837)
+    except ValueError as e:
+        assert 'Annotation value not found for term' in str(e)
+    else:
+        raise AssertionError('Expected ValueError')
+
+
 @patch('pyinaturalist.controllers.annotation_controller.delete')
 def test_delete(mock_delete):
     uuid = 'aad8ce8d-ed0a-4099-b21b-b03b9f51cad9'
