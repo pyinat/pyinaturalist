@@ -1,13 +1,17 @@
 """Test signature copying functionality to validate behavior before simplifying implementation."""
 
 import inspect
-from typing import Optional
+from typing import Literal, Optional, get_args, get_origin
 
 from pyinaturalist.docs import (
     copy_doc_signature,
     document_controller_params,
     document_request_params,
 )
+from pyinaturalist.v1.messages import get_messages
+from pyinaturalist.v1.observations import get_observation_histogram, get_observations
+from pyinaturalist.v1.projects import get_projects
+from pyinaturalist.v1.search import search
 
 
 # Test template functions that mimic the real ones in templates.py
@@ -314,3 +318,54 @@ def test_identification_pattern():
     assert 'page' in sig.parameters
     assert 'per_page' in sig.parameters
     assert 'only_id' in sig.parameters
+
+
+def _literal_values(annotation) -> set[str]:
+    values = set()
+    origin = get_origin(annotation)
+
+    if origin is Literal:
+        return {str(v) for v in get_args(annotation)}
+
+    for arg in get_args(annotation):
+        if arg is type(None):
+            continue
+        values |= _literal_values(arg)
+
+    return values
+
+
+def test_request_signatures_include_literal_choices():
+    message_sig = inspect.signature(get_messages)
+    assert _literal_values(message_sig.parameters['box'].annotation) == {'any', 'inbox', 'sent'}
+
+    obs_histogram_sig = inspect.signature(get_observation_histogram)
+    assert _literal_values(obs_histogram_sig.parameters['date_field'].annotation) == {
+        'created',
+        'observed',
+    }
+    assert _literal_values(obs_histogram_sig.parameters['interval'].annotation) == {
+        'day',
+        'hour',
+        'month',
+        'month_of_year',
+        'week',
+        'week_of_year',
+        'year',
+    }
+
+    observation_sig = inspect.signature(get_observations)
+    assert {'casual', 'needs_id', 'research'} <= _literal_values(
+        observation_sig.parameters['quality_grade'].annotation
+    )
+    assert {'CC-BY', 'CC0'} <= _literal_values(observation_sig.parameters['license'].annotation)
+
+    search_sig = inspect.signature(search)
+    assert {'places', 'projects', 'taxa', 'users'} <= _literal_values(
+        search_sig.parameters['sources'].annotation
+    )
+
+    project_sig = inspect.signature(get_projects)
+    assert {'assessment', 'bioblitz', 'collection', 'umbrella'} <= _literal_values(
+        project_sig.parameters['type'].annotation
+    )

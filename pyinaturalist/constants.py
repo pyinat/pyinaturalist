@@ -2,7 +2,7 @@
 from collections.abc import Iterable
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import IO, TYPE_CHECKING, Any, BinaryIO, Optional, TypeAlias
+from typing import IO, TYPE_CHECKING, Any, BinaryIO, Literal, Optional, TypeAlias
 
 from dateutil.relativedelta import relativedelta
 from platformdirs import user_data_dir
@@ -269,6 +269,50 @@ DATETIME_PARAMS = [
 DATETIME_SHORT_FORMAT = '%b %d, %Y'
 
 # Type aliases
+# Multiple-choice parameter type aliases
+Inbox = Literal['inbox', 'sent', 'any']
+CommunityIDStatus = Literal['most_agree', 'most_disagree', 'some_agree']
+ConservationStatus = Literal['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX']
+GeoprivacyLevel = Literal['obscured', 'obscured_private', 'open', 'private']
+HistogramDateField = Literal['created', 'observed']
+HistogramInterval = Literal['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
+IDCategory = Literal['improving', 'supporting', 'leading', 'maverick']
+IconicTaxon = Literal[
+    'Unknown',
+    'Animalia',
+    'Aves',
+    'Amphibia',
+    'Reptilia',
+    'Mammalia',
+    'Actinopterygii',
+    'Mollusca',
+    'Arachnida',
+    'Insecta',
+    'Plantae',
+    'Fungi',
+    'Chromista',
+    'Protozoa',
+]
+OrderDirection = Literal['asc', 'desc']
+ProjectType = Literal['assessment', 'bioblitz', 'collection', 'umbrella']
+QualityGrade = Literal['casual', 'needs_id', 'research']
+SearchProperty = Literal['names', 'tags', 'description', 'place']
+Source = Literal['places', 'projects', 'taxa', 'users']
+CCLicense = Literal['CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0']
+
+# Multi-value multiple-choice aliases
+MultiCCLicense: TypeAlias = CCLicense | Iterable[CCLicense]
+MultiConservationStatus: TypeAlias = ConservationStatus | Iterable[ConservationStatus]
+MultiGeoprivacyLevel: TypeAlias = GeoprivacyLevel | Iterable[GeoprivacyLevel]
+MultiHistogramDateField: TypeAlias = HistogramDateField | Iterable[HistogramDateField]
+MultiHistogramInterval: TypeAlias = HistogramInterval | Iterable[HistogramInterval]
+MultiIDCategory: TypeAlias = IDCategory | Iterable[IDCategory]
+MultiIconicTaxon: TypeAlias = IconicTaxon | Iterable[IconicTaxon]
+MultiProjectType: TypeAlias = ProjectType | Iterable[ProjectType]
+MultiQualityGrade: TypeAlias = QualityGrade | Iterable[QualityGrade]
+MultiSearchProperty: TypeAlias = SearchProperty | Iterable[SearchProperty]
+MultiSource: TypeAlias = Source | Iterable[Source]
+
 Coordinates: TypeAlias = tuple[float, float]
 AnyDate: TypeAlias = date | datetime | str
 AnyDateTime: TypeAlias = datetime | str
