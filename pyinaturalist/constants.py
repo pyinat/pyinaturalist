@@ -298,7 +298,9 @@ ProjectType = Literal['assessment', 'bioblitz', 'collection', 'umbrella']
 QualityGrade = Literal['casual', 'needs_id', 'research']
 SearchProperty = Literal['names', 'tags', 'description', 'place']
 Source = Literal['places', 'projects', 'taxa', 'users']
-CCLicense = Literal['CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0']
+CCLicense = Literal[
+    'CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0'
+]
 
 # Multi-value multiple-choice aliases
 MultiCCLicense: TypeAlias = CCLicense | Iterable[CCLicense]
