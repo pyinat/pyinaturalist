@@ -15,10 +15,13 @@
 * On Readthedocs, CSS and JS is automatically added for a version dropdown
 """
 
-# ruff: noqa: E402
+import inspect as _inspect
 from importlib.metadata import version as pkg_version
 from pathlib import Path
 from shutil import copytree, rmtree
+
+import sphinx_autodoc_typehints as _sat
+from sphinx.util.inspect import stringify_signature as _orig_stringify_signature
 
 from pyinaturalist.docs.model_docs import document_models
 
@@ -240,3 +243,18 @@ def patch_automodapi(app):
         return find_mod_objs(*args, **kwargs)
 
     automodsumm.find_mod_objs = find_local_mod_objs
+
+
+def stringify_signature_no_defaults(sig, **kwargs):
+    """Patch sphinx_autodoc_typehints so function signatures show only parameter names, without
+    defaults (redundant with Parameters section, very noisy for long param lists)
+    """
+    params = [p.replace(default=_inspect.Parameter.empty) for p in sig.parameters.values()]
+    sig = sig.replace(parameters=params)
+    return _orig_stringify_signature(sig, **kwargs)
+
+
+# sphinx_autodoc_typehints rebuilds signatures via its own handler, which holds a reference to the
+# original stringify_signature function, so monkey-patching has no effect.
+# So, we need to modify its globals with our wrapper function.
+_sat.process_signature.__globals__['stringify_signature'] = stringify_signature_no_defaults
