@@ -32,6 +32,11 @@ class ProjectController(BaseController):
     def from_ids(self, project_ids: MultiIntOrStr, **params) -> Paginator[Project]:
         """Get projects by ID
 
+        .. rubric:: Notes
+
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
+        * API reference: :v1:`GET /projects/{id} <Projects/get_projects_id>`
+
         Example:
             >>> client.projects.from_id([1234, 5678])
 
@@ -46,6 +51,7 @@ class ProjectController(BaseController):
 
         .. rubric:: Notes
 
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
         * API reference: :v1:`GET /projects <Projects/get_projects>`
 
         Example:
