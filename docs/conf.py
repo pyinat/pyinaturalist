@@ -41,6 +41,9 @@ TEMPLATE_DIR = DOCS_DIR / '_templates'
 DATA_DIR_SYMLINK = DOCS_DIR / 'sample_data'
 NOTEBOOK_DIR_COPY = DOCS_DIR / 'examples'
 
+# Truncate long function signatures
+MAX_SIGNATURE_PARAMS = 6
+
 # General information about the project.
 exclude_patterns = ['_build', f'{MODULE_DOCS_DIR}/pyinaturalist.rst']
 master_doc = 'index'
@@ -245,16 +248,24 @@ def patch_automodapi(app):
     automodsumm.find_mod_objs = find_local_mod_objs
 
 
-def stringify_signature_no_defaults(sig, **kwargs):
+def truncate_signature(sig, **kwargs):
     """Patch sphinx_autodoc_typehints so function signatures show only parameter names, without
-    defaults (redundant with Parameters section, very noisy for long param lists)
+    defaults (redundant with Parameters section, and noisy for long param lists).
+    Also truncates long signatures.
     """
     params = [p.replace(default=_inspect.Parameter.empty) for p in sig.parameters.values()]
+    truncated = len(params) > MAX_SIGNATURE_PARAMS
+    if truncated:
+        params = params[:MAX_SIGNATURE_PARAMS]
     sig = sig.replace(parameters=params)
-    return _orig_stringify_signature(sig, **kwargs)
+    result = _orig_stringify_signature(sig, **kwargs)
+    if truncated:
+        # Insert ', ...' before the closing ')' or ' ->'
+        result = result.replace(')', ', ...)', 1)
+    return result
 
 
 # sphinx_autodoc_typehints rebuilds signatures via its own handler, which holds a reference to the
 # original stringify_signature function, so monkey-patching has no effect.
 # So, we need to modify its globals with our wrapper function.
-_sat.process_signature.__globals__['stringify_signature'] = stringify_signature_no_defaults
+_sat.process_signature.__globals__['stringify_signature'] = truncate_signature
