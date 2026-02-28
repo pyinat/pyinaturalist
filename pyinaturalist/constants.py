@@ -210,6 +210,7 @@ CCLicense = Literal[
     'CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0'
 ]
 
+
 def _literal_values(annotation: object) -> list[str]:
     """Extract choices from a Literal alias once, and reuse for runtime validation constants."""
     return [str(value) for value in get_args(annotation)]
