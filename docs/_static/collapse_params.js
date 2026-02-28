@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
       details.className = 'pyinat-param-details';
 
       const summary = document.createElement('summary');
-      summary.textContent = `${label} (${paramCount})`;
+      summary.textContent = `Show parameters (${paramCount})`;
       details.append(summary);
 
       while (description.firstChild) {
@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       description.append(details);
-      term.style.display = 'none';
     }
   }
 });
