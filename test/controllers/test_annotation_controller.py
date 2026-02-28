@@ -1,8 +1,6 @@
-import json
 from unittest.mock import patch
 
 import pytest
-from requests import Response
 
 from pyinaturalist.client import iNatClient
 from pyinaturalist.constants import API_V1, API_V2
@@ -71,11 +69,12 @@ def test_lookup__doesnt_exist(requests_mock):
     assert annotations[1].term == '999'  # Unable to look up; use ID as placeholder
 
 
-@patch('pyinaturalist.controllers.annotation_controller.post')
-def test_create(mock_post):
-    response = Response()
-    response._content = json.dumps({'results': [j_annotation_1]}).encode()
-    mock_post.return_value = response
+def test_create(requests_mock):
+    requests_mock.post(
+        f'{API_V2}/annotations',
+        json={'results': [j_annotation_1]},
+        status_code=200,
+    )
 
     client = iNatClient()
     result = client.annotations.create(
@@ -85,21 +84,22 @@ def test_create(mock_post):
     )
     assert isinstance(result, Annotation)
 
-    request_params = mock_post.call_args[1]
-    assert request_params['controlled_attribute_id'] == 12
-    assert request_params['controlled_value_id'] == 13
-    assert request_params['resource_id'] == 164609837
-    assert request_params['resource_type'] == 'Observation'
+    request = requests_mock.request_history[0]
+    assert request.qs['controlled_attribute_id'] == ['12']
+    assert request.qs['controlled_value_id'] == ['13']
+    assert request.qs['resource_id'] == ['164609837']
+    assert request.qs['resource_type'] == ['observation']
 
 
-@patch('pyinaturalist.controllers.annotation_controller.post')
-def test_create__by_label(mock_post, requests_mock):
-    response = Response()
-    response._content = json.dumps({'results': [j_annotation_1]}).encode()
-    mock_post.return_value = response
+def test_create__by_label(requests_mock):
     requests_mock.get(
         f'{API_V1}/controlled_terms',
         json=SAMPLE_DATA['get_controlled_terms'],
+        status_code=200,
+    )
+    requests_mock.post(
+        f'{API_V2}/annotations',
+        json={'results': [j_annotation_1]},
         status_code=200,
     )
 
@@ -111,20 +111,15 @@ def test_create__by_label(mock_post, requests_mock):
     )
     assert isinstance(result, Annotation)
 
-    request_params = mock_post.call_args[1]
-    assert request_params['controlled_attribute_id'] == 17
-    assert request_params['controlled_value_id'] == 18
-    assert request_params['resource_id'] == 164609837
+    request = requests_mock.request_history[-1]
+    assert request.qs['controlled_attribute_id'] == ['17']
+    assert request.qs['controlled_value_id'] == ['18']
+    assert request.qs['resource_id'] == ['164609837']
 
 
 def test_create__missing_term_value_pair():
-    client = iNatClient()
-    try:
-        client.annotations.create(term='Alive or Dead', resource_id=164609837)
-    except ValueError as e:
-        assert 'Must specify either' in str(e)
-    else:
-        raise AssertionError('Expected ValueError')
+    with pytest.raises(ValueError, match='Must specify either'):
+        iNatClient().annotations.create(term='Alive or Dead', resource_id=164609837)
 
 
 def test_create__missing_resource_id():
@@ -138,13 +133,8 @@ def test_create__invalid_term(requests_mock):
         json=SAMPLE_DATA['get_controlled_terms'],
         status_code=200,
     )
-    client = iNatClient()
-    try:
-        client.annotations.create(term='Not a term', value='Alive', resource_id=164609837)
-    except ValueError as e:
-        assert 'Annotation term not found' in str(e)
-    else:
-        raise AssertionError('Expected ValueError')
+    with pytest.raises(ValueError, match='Annotation term not found'):
+        iNatClient().annotations.create(term='Not a term', value='Alive', resource_id=164609837)
 
 
 def test_create__invalid_value_for_term(requests_mock):
@@ -153,13 +143,12 @@ def test_create__invalid_value_for_term(requests_mock):
         json=SAMPLE_DATA['get_controlled_terms'],
         status_code=200,
     )
-    client = iNatClient()
-    try:
-        client.annotations.create(term='Alive or Dead', value='Not a value', resource_id=164609837)
-    except ValueError as e:
-        assert 'Annotation value not found for term' in str(e)
-    else:
-        raise AssertionError('Expected ValueError')
+    with pytest.raises(ValueError, match='Annotation value not found for term'):
+        iNatClient().annotations.create(
+            term='Alive or Dead',
+            value='Not a value',
+            resource_id=164609837,
+        )
 
 
 @patch('pyinaturalist.controllers.annotation_controller.delete')

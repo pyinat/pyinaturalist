@@ -90,7 +90,7 @@ class AnnotationController(BaseController):
     def _find_term_by_label(self, term: str) -> ControlledTerm | None:
         term_label = self._normalize_label(term)
         return next(
-            (t for t in self.all() if self._normalize_label(t.label) == term_label),
+            (t for t in self.term_lookup.values() if self._normalize_label(t.label) == term_label),
             None,
         )
 
