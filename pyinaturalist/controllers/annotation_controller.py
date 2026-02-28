@@ -133,9 +133,9 @@ class AnnotationController(BaseController):
 
     def create(
         self,
+        resource_id: IntOrStr,
         controlled_attribute_id: int | None = None,
         controlled_value_id: int | None = None,
-        resource_id: IntOrStr | None = None,
         resource_type: str = 'Observation',
         term: str | None = None,
         value: str | None = None,
@@ -144,9 +144,9 @@ class AnnotationController(BaseController):
         """Create a new annotation on an observation.
 
         Args:
+            resource_id: Observation ID or UUID
             controlled_attribute_id: Annotation attribute ID
             controlled_value_id: Annotation value ID
-            resource_id: Observation ID or UUID
             resource_type: Resource type, if something other than an observation
             term: Annotation term label, used as an alternative to ``controlled_attribute_id``
             value: Annotation value label, used as an alternative to ``controlled_value_id``
@@ -154,22 +154,19 @@ class AnnotationController(BaseController):
         Example:
             Add a 'Plant phenology: Flowering' annotation to an observation (via IDs):
 
-            >>> client.annotations.create(12, 13, 164609837)
+            >>> client.annotations.create(
+            ...     164609837,
+            ...     controlled_attribute_id=12,
+            ...     controlled_value_id=13,
+            ... )
 
             Add the same annotation by label:
 
-            >>> client.annotations.create(
-            ...     term='Plant Phenology',
-            ...     value='Flowering',
-            ...     resource_id=164609837,
-            ... )
+            >>> client.annotations.create(164609837, term='Plant Phenology', value='Flowering')
 
         Returns:
             The newly created Annotation object
         """
-        if resource_id is None:
-            raise ValueError('Must specify resource_id')
-
         controlled_attribute_id, controlled_value_id = self._resolve_annotation_ids(
             controlled_attribute_id=controlled_attribute_id,
             controlled_value_id=controlled_value_id,

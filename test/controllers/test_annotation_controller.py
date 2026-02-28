@@ -78,9 +78,9 @@ def test_create(requests_mock):
 
     client = iNatClient()
     result = client.annotations.create(
+        164609837,
         controlled_attribute_id=12,
         controlled_value_id=13,
-        resource_id=164609837,
     )
     assert isinstance(result, Annotation)
 
@@ -105,9 +105,9 @@ def test_create__by_label(requests_mock):
 
     client = iNatClient()
     result = client.annotations.create(
+        164609837,
         term='Alive or Dead',
         value='Alive',
-        resource_id=164609837,
     )
     assert isinstance(result, Annotation)
 
@@ -119,11 +119,11 @@ def test_create__by_label(requests_mock):
 
 def test_create__missing_term_value_pair():
     with pytest.raises(ValueError, match='Must specify either'):
-        iNatClient().annotations.create(term='Alive or Dead', resource_id=164609837)
+        iNatClient().annotations.create(164609837, term='Alive or Dead')
 
 
 def test_create__missing_resource_id():
-    with pytest.raises(ValueError, match='Must specify resource_id'):
+    with pytest.raises(TypeError, match='resource_id'):
         iNatClient().annotations.create(term='Alive or Dead', value='Alive')
 
 
@@ -134,7 +134,7 @@ def test_create__invalid_term(requests_mock):
         status_code=200,
     )
     with pytest.raises(ValueError, match='Annotation term not found'):
-        iNatClient().annotations.create(term='Not a term', value='Alive', resource_id=164609837)
+        iNatClient().annotations.create(164609837, term='Not a term', value='Alive')
 
 
 def test_create__invalid_value_for_term(requests_mock):
@@ -145,9 +145,9 @@ def test_create__invalid_value_for_term(requests_mock):
     )
     with pytest.raises(ValueError, match='Annotation value not found for term'):
         iNatClient().annotations.create(
+            164609837,
             term='Alive or Dead',
             value='Not a value',
-            resource_id=164609837,
         )
 
 
