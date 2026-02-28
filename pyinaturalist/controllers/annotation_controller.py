@@ -83,30 +83,97 @@ class AnnotationController(BaseController):
                 )
         return annotations
 
+    @staticmethod
+    def _normalize_label(value: str | None) -> str:
+        return (value or '').strip().casefold()
+
+    def _find_term_by_label(self, term: str) -> ControlledTerm | None:
+        term_label = self._normalize_label(term)
+        return next(
+            (t for t in self.term_lookup.values() if self._normalize_label(t.label) == term_label),
+            None,
+        )
+
+    def _resolve_annotation_ids(
+        self,
+        controlled_attribute_id: int | None = None,
+        controlled_value_id: int | None = None,
+        term: str | None = None,
+        value: str | None = None,
+    ) -> tuple[int, int]:
+        # Existing behavior: direct ID input
+        if controlled_attribute_id is not None and controlled_value_id is not None:
+            return controlled_attribute_id, controlled_value_id
+
+        # New behavior: resolve term + value labels to IDs
+        if term is not None and value is not None:
+            controlled_term = self._find_term_by_label(term)
+            if not controlled_term:
+                raise ValueError(f'Annotation term not found: "{term}"')
+
+            value_label = self._normalize_label(value)
+            controlled_value = next(
+                (
+                    v
+                    for v in controlled_term.values
+                    if self._normalize_label(v.label) == value_label
+                ),
+                None,
+            )
+            if not controlled_value:
+                raise ValueError(
+                    f'Annotation value not found for term "{controlled_term.label}": "{value}"'
+                )
+
+            return controlled_term.id, controlled_value.id
+
+        raise ValueError(
+            'Must specify either controlled_attribute_id + controlled_value_id or term + value'
+        )
+
     def create(
         self,
-        controlled_attribute_id: int,
-        controlled_value_id: int,
         resource_id: IntOrStr,
+        controlled_attribute_id: int | None = None,
+        controlled_value_id: int | None = None,
         resource_type: str = 'Observation',
+        term: str | None = None,
+        value: str | None = None,
         **params,
     ) -> Annotation:
         """Create a new annotation on an observation.
 
         Args:
+            resource_id: Observation ID or UUID
             controlled_attribute_id: Annotation attribute ID
             controlled_value_id: Annotation value ID
-            resource_id: Observation ID or UUID
             resource_type: Resource type, if something other than an observation
+            term: Annotation term label, used as an alternative to ``controlled_attribute_id``
+            value: Annotation value label, used as an alternative to ``controlled_value_id``
 
         Example:
             Add a 'Plant phenology: Flowering' annotation to an observation (via IDs):
 
-            >>> client.annotations.create(12, 13, 164609837)
+            >>> client.annotations.create(
+            ...     164609837,
+            ...     controlled_attribute_id=12,
+            ...     controlled_value_id=13,
+            ... )
+
+            Add the same annotation by label:
+
+            >>> client.annotations.create(164609837, term='Plant Phenology', value='Flowering')
 
         Returns:
             The newly created Annotation object
         """
+        controlled_attribute_id, controlled_value_id = self._resolve_annotation_ids(
+            controlled_attribute_id=controlled_attribute_id,
+            controlled_value_id=controlled_value_id,
+            term=term,
+            value=value,
+        )
+
         response = post(
             f'{API_V2}/annotations',
             controlled_attribute_id=controlled_attribute_id,
