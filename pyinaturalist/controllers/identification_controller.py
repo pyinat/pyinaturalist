@@ -34,6 +34,7 @@ class IdentificationController(BaseController):
 
         .. rubric:: Notes
 
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
         * API reference: :v1:`GET /identifications/{id} <identifications/get_identifications_id>`
 
         Examples:
@@ -65,6 +66,7 @@ class IdentificationController(BaseController):
 
         .. rubric:: Notes
 
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
         * API reference: :v1:`GET /identifications <Identifications/get_identifications>`
 
         Example:

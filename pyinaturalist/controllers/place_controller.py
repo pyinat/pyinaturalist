@@ -25,6 +25,7 @@ class PlaceController(BaseController):
 
         .. rubric:: Notes
 
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
         * API reference: :v1:`GET /places/{id} <Places/get_places_id>`
 
         Example:
@@ -42,6 +43,7 @@ class PlaceController(BaseController):
 
         .. rubric:: Notes
 
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
         * API reference: :v1:`GET /places/autocomplete <Places/get_places_autocomplete>`
 
         Example:
@@ -72,6 +74,7 @@ class PlaceController(BaseController):
 
         .. rubric:: Notes
 
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
         * API reference: :v1:`GET /places/nearby <get_places_nearby>`
 
         Example:
