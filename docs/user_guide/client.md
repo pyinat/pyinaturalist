@@ -28,8 +28,9 @@ Here is an example of searching for observations by taxon name:
  >>> observations = client.observations.search(user_id='my_username', taxon_name='Danaus plexippus').all()
  ```
 
+(pagination)=
 ## Pagination
-Most client methods return a Paginator object. This is done so we can both:
+Most client methods return a {py:class}`.Paginator` object. This is done so we can both:
 * Make it easy to fetch multiple (or all) pages of a large request, and
 * Avoid fetching more data than needed.
 

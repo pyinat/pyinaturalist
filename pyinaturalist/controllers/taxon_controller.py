@@ -32,8 +32,8 @@ class TaxonController(BaseController):
 
         .. rubric:: Notes
 
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
         * API reference: :v1:`GET /taxa/{id} <Taxa/get_taxa_id>`
-
 
         Example:
             >>> client.get_taxa_by_id([3, 343248])
@@ -66,6 +66,7 @@ class TaxonController(BaseController):
 
         .. rubric:: Notes
 
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
         * API reference: :v1:`GET /taxa/autocomplete <Taxa/get_taxa_autocomplete>`
         * There appears to currently be a bug in the API that causes ``per_page`` to not have any effect.
         * ``exact_match`` is a best effort to get an exact match on common name. Due to lack of
@@ -131,6 +132,7 @@ class TaxonController(BaseController):
 
         .. rubric:: Notes
 
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
         * API reference: :v1:`GET /taxa <Taxa/get_taxa>`
 
         Example:

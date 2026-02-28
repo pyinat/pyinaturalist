@@ -11,6 +11,7 @@ questions, and other contributions that have helped to improve pyinaturalist:
 * [Felipe S Barros](https://github.com/FelipeSBarros)
 * [jumear](https://github.com/jumear)
 * [Ken-ichi Ueda](https://github.com/kueda)
+* [LarytheLord](https://github.com/LarytheLord)
 * [Matt Muir](https://forum.inaturalist.org/u/muir)
 * [Nicolas Noé](https://github.com/niconoe)
 * [Oleksii Brodnikov](https://github.com/alterionisto)

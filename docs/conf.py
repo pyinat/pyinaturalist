@@ -15,10 +15,13 @@
 * On Readthedocs, CSS and JS is automatically added for a version dropdown
 """
 
-# ruff: noqa: E402
+import inspect as _inspect
 from importlib.metadata import version as pkg_version
 from pathlib import Path
 from shutil import copytree, rmtree
+
+import sphinx_autodoc_typehints as _sat
+from sphinx.util.inspect import stringify_signature as _orig_stringify_signature
 
 from pyinaturalist.docs.model_docs import document_models
 
@@ -37,6 +40,9 @@ TEMPLATE_DIR = DOCS_DIR / '_templates'
 # Symlink paths for static content outside docs directory
 DATA_DIR_SYMLINK = DOCS_DIR / 'sample_data'
 NOTEBOOK_DIR_COPY = DOCS_DIR / 'examples'
+
+# Truncate long function signatures
+MAX_SIGNATURE_PARAMS = 6
 
 # General information about the project.
 exclude_patterns = ['_build', f'{MODULE_DOCS_DIR}/pyinaturalist.rst']
@@ -240,3 +246,26 @@ def patch_automodapi(app):
         return find_mod_objs(*args, **kwargs)
 
     automodsumm.find_mod_objs = find_local_mod_objs
+
+
+def truncate_signature(sig, **kwargs):
+    """Patch sphinx_autodoc_typehints so function signatures show only parameter names, without
+    defaults (redundant with Parameters section, and noisy for long param lists).
+    Also truncates long signatures.
+    """
+    params = [p.replace(default=_inspect.Parameter.empty) for p in sig.parameters.values()]
+    truncated = len(params) > MAX_SIGNATURE_PARAMS
+    if truncated:
+        params = params[:MAX_SIGNATURE_PARAMS]
+    sig = sig.replace(parameters=params)
+    result = _orig_stringify_signature(sig, **kwargs)
+    if truncated:
+        # Insert ', ...' before the closing ')' or ' ->'
+        result = result.replace(')', ', ...)', 1)
+    return result
+
+
+# sphinx_autodoc_typehints rebuilds signatures via its own handler, which holds a reference to the
+# original stringify_signature function, so monkey-patching has no effect.
+# So, we need to modify its globals with our wrapper function.
+_sat.process_signature.__globals__['stringify_signature'] = truncate_signature

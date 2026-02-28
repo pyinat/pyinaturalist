@@ -13,7 +13,6 @@ details.pyinat-param-details {
 
 details.pyinat-param-details > summary {
   cursor: pointer;
-  font-weight: 600;
   color: var(--color-brand-content);
   list-style: none;
 }
@@ -23,9 +22,9 @@ details.pyinat-param-details > summary::-webkit-details-marker {
 }
 
 details.pyinat-param-details > summary::before {
-  content: '+ ';
+  content: '▶ ';
 }
 
 details.pyinat-param-details[open] > summary::before {
-  content: '- ';
+  content: '▼ ';
 }
