@@ -62,6 +62,7 @@ class ObservationController(BaseController):
         .. rubric:: Notes
 
         * :fas:`lock-open` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
         * API reference: :v1:`GET /observations/{id} <Observations/get_observations_id>`
 
         Examples:
@@ -94,6 +95,7 @@ class ObservationController(BaseController):
         .. rubric:: Notes
 
         * :fas:`lock-open` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
         * API reference: :v1:`GET /observations <Observations/get_observations>`
 
         Examples:

@@ -23,6 +23,11 @@ class UserController(BaseController):
     def from_ids(self, user_ids: MultiIntOrStr, **params) -> Paginator[User]:
         """Get users by ID
 
+        .. rubric:: Notes
+
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
+        * API reference: :v1:`GET /users/{id} <Users/get_users_id>`
+
         Example:
             Get a user by ID:
 
@@ -46,6 +51,7 @@ class UserController(BaseController):
 
         .. rubric:: Notes
 
+        * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
         * API reference: :v1:`GET /users/autocomplete <Users/get_users_autocomplete>`
 
         Example:
