@@ -2,7 +2,7 @@
 from collections.abc import Iterable
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import IO, TYPE_CHECKING, Any, BinaryIO, Literal, Optional, TypeAlias
+from typing import IO, TYPE_CHECKING, Any, BinaryIO, Literal, Optional, TypeAlias, get_args
 
 from dateutil.relativedelta import relativedelta
 from platformdirs import user_data_dir
@@ -176,27 +176,68 @@ RANK_EQUIVALENTS = {
 }
 
 
+# Type aliases
+# Multiple-choice parameter type aliases
+Inbox = Literal['inbox', 'sent', 'any']
+CommunityIDStatus = Literal['most_agree', 'most_disagree', 'some_agree']
+ConservationStatus = Literal['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX']
+GeoprivacyLevel = Literal['obscured', 'obscured_private', 'open', 'private']
+HistogramDateField = Literal['created', 'observed']
+HistogramInterval = Literal['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
+IDCategory = Literal['improving', 'supporting', 'leading', 'maverick']
+IconicTaxon = Literal[
+    'Unknown',
+    'Animalia',
+    'Aves',
+    'Amphibia',
+    'Reptilia',
+    'Mammalia',
+    'Actinopterygii',
+    'Mollusca',
+    'Arachnida',
+    'Insecta',
+    'Plantae',
+    'Fungi',
+    'Chromista',
+    'Protozoa',
+]
+OrderDirection = Literal['asc', 'desc']
+ProjectType = Literal['assessment', 'bioblitz', 'collection', 'umbrella']
+QualityGrade = Literal['casual', 'needs_id', 'research']
+SearchProperty = Literal['names', 'tags', 'description', 'place']
+Source = Literal['places', 'projects', 'taxa', 'users']
+CCLicense = Literal[
+    'CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0'
+]
+
+
+def _literal_values(annotation: object) -> list[str]:
+    """Extract choices from a Literal alias once, and reuse for runtime validation constants."""
+    return [str(value) for value in get_args(annotation)]
+
+
 # Options for multiple choice parameters (non-endpoint-specific)
-CC_LICENSES = ['CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0']
+CC_LICENSES = _literal_values(CCLicense)
 ALL_LICENSES = CC_LICENSES + ['ALL RIGHTS RESERVED']
-COMMUNITY_ID_STATUSES = ['most_agree', 'most_disagree', 'some_agree']
-CONSERVATION_STATUSES = ['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX']
+COMMUNITY_ID_STATUSES = _literal_values(CommunityIDStatus)
+CONSERVATION_STATUSES = _literal_values(ConservationStatus)
 ESTABLISTMENT_MEANS = ['introduced', 'native', 'endemic']
 EXTRA_PROPERTIES = ['fields', 'identifications', 'projects']
-GEOPRIVACY_LEVELS = ['obscured', 'obscured_private', 'open', 'private']
+GEOPRIVACY_LEVELS = _literal_values(GeoprivacyLevel)
 HAS_PROPERTIES = ['photo', 'geo']
-HISTOGRAM_DATE_FIELDS = ['created', 'observed']
-HISTOGRAM_INTERVALS = ['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
+HISTOGRAM_DATE_FIELDS = _literal_values(HistogramDateField)
+HISTOGRAM_INTERVALS = _literal_values(HistogramInterval)
 ICON_SIZES = {'icon': 32, 'square': 75, 'small': 75, 'medium': 200, 'large': 200, 'original': 200}
-ID_CATEGORIES = ['improving', 'supporting', 'leading', 'maverick']
-INBOXES = ['inbox', 'sent', 'any']
-ORDER_DIRECTIONS = ['asc', 'desc']
+ICONIC_TAXON_CHOICES = _literal_values(IconicTaxon)
+ID_CATEGORIES = _literal_values(IDCategory)
+INBOXES = _literal_values(Inbox)
+ORDER_DIRECTIONS = _literal_values(OrderDirection)
 PHOTO_SIZES = ['square', 'small', 'medium', 'large', 'original']
 PLACE_CATEGORIES = ['standard', 'community']
-PROJECT_TYPES = ['assessment', 'bioblitz', 'collection', 'umbrella']
-QUALITY_GRADES = ['casual', 'needs_id', 'research']
-SEARCH_PROPERTIES = ['names', 'tags', 'description', 'place']
-SOURCES = ['places', 'projects', 'taxa', 'users']
+PROJECT_TYPES = _literal_values(ProjectType)
+QUALITY_GRADES = _literal_values(QualityGrade)
+SEARCH_PROPERTIES = _literal_values(SearchProperty)
+SOURCES = _literal_values(Source)
 
 # Endpoint-specific options for multiple choice parameters
 V0_OBS_ORDER_BY_PROPERTIES = ['date_added', 'observed_on']
@@ -213,7 +254,6 @@ V2_OBS_ORDER_BY_PROPERTIES = [
 PROJECT_ORDER_BY_PROPERTIES = ['created', 'distance', 'featured', 'recent_posts', 'updated']
 
 # Multiple-choice request parameters, with keys mapped to their possible choices (non-endpoint-specific)
-# TODO: python 3.11 supports Literal[*list] syntax, which would be useful here
 MULTIPLE_CHOICE_PARAMS = {
     'box': INBOXES,
     'category': ID_CATEGORIES,
@@ -223,7 +263,7 @@ MULTIPLE_CHOICE_PARAMS = {
     'geoprivacy': GEOPRIVACY_LEVELS,
     'has': HAS_PROPERTIES,
     'hrank': RANKS,
-    'iconic_taxa': list(ICONIC_TAXA.values()),
+    'iconic_taxa': ICONIC_TAXON_CHOICES,
     'identifications': COMMUNITY_ID_STATUSES,
     'interval': HISTOGRAM_INTERVALS,
     'license': CC_LICENSES,
@@ -267,40 +307,6 @@ DATETIME_PARAMS = [
     'updated_since',
 ]
 DATETIME_SHORT_FORMAT = '%b %d, %Y'
-
-# Type aliases
-# Multiple-choice parameter type aliases
-Inbox = Literal['inbox', 'sent', 'any']
-CommunityIDStatus = Literal['most_agree', 'most_disagree', 'some_agree']
-ConservationStatus = Literal['LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX']
-GeoprivacyLevel = Literal['obscured', 'obscured_private', 'open', 'private']
-HistogramDateField = Literal['created', 'observed']
-HistogramInterval = Literal['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
-IDCategory = Literal['improving', 'supporting', 'leading', 'maverick']
-IconicTaxon = Literal[
-    'Unknown',
-    'Animalia',
-    'Aves',
-    'Amphibia',
-    'Reptilia',
-    'Mammalia',
-    'Actinopterygii',
-    'Mollusca',
-    'Arachnida',
-    'Insecta',
-    'Plantae',
-    'Fungi',
-    'Chromista',
-    'Protozoa',
-]
-OrderDirection = Literal['asc', 'desc']
-ProjectType = Literal['assessment', 'bioblitz', 'collection', 'umbrella']
-QualityGrade = Literal['casual', 'needs_id', 'research']
-SearchProperty = Literal['names', 'tags', 'description', 'place']
-Source = Literal['places', 'projects', 'taxa', 'users']
-CCLicense = Literal[
-    'CC-BY', 'CC-BY-NC', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC-ND', 'CC-BY-NC-SA', 'CC0'
-]
 
 # Multi-value multiple-choice aliases
 MultiCCLicense: TypeAlias = CCLicense | Iterable[CCLicense]

@@ -3,6 +3,34 @@
 import inspect
 from typing import Literal, Optional, get_args, get_origin
 
+from pyinaturalist.constants import (
+    CC_LICENSES,
+    COMMUNITY_ID_STATUSES,
+    CONSERVATION_STATUSES,
+    GEOPRIVACY_LEVELS,
+    HISTOGRAM_DATE_FIELDS,
+    HISTOGRAM_INTERVALS,
+    ID_CATEGORIES,
+    INBOXES,
+    ORDER_DIRECTIONS,
+    PROJECT_TYPES,
+    QUALITY_GRADES,
+    SEARCH_PROPERTIES,
+    SOURCES,
+    CCLicense,
+    CommunityIDStatus,
+    ConservationStatus,
+    GeoprivacyLevel,
+    HistogramDateField,
+    HistogramInterval,
+    IDCategory,
+    Inbox,
+    OrderDirection,
+    ProjectType,
+    QualityGrade,
+    SearchProperty,
+    Source,
+)
 from pyinaturalist.docs import (
     copy_doc_signature,
     document_controller_params,
@@ -369,3 +397,19 @@ def test_request_signatures_include_literal_choices():
     assert {'assessment', 'bioblitz', 'collection', 'umbrella'} <= _literal_values(
         project_sig.parameters['type'].annotation
     )
+
+
+def test_runtime_choices_reuse_literal_aliases():
+    assert set(INBOXES) == set(get_args(Inbox))
+    assert set(COMMUNITY_ID_STATUSES) == set(get_args(CommunityIDStatus))
+    assert set(CONSERVATION_STATUSES) == set(get_args(ConservationStatus))
+    assert set(GEOPRIVACY_LEVELS) == set(get_args(GeoprivacyLevel))
+    assert set(HISTOGRAM_DATE_FIELDS) == set(get_args(HistogramDateField))
+    assert set(HISTOGRAM_INTERVALS) == set(get_args(HistogramInterval))
+    assert set(ID_CATEGORIES) == set(get_args(IDCategory))
+    assert set(ORDER_DIRECTIONS) == set(get_args(OrderDirection))
+    assert set(PROJECT_TYPES) == set(get_args(ProjectType))
+    assert set(QUALITY_GRADES) == set(get_args(QualityGrade))
+    assert set(SEARCH_PROPERTIES) == set(get_args(SearchProperty))
+    assert set(SOURCES) == set(get_args(Source))
+    assert set(CC_LICENSES) == set(get_args(CCLicense))
