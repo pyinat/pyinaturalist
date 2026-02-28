@@ -1,15 +1,33 @@
 # History
 
-## Unreleased
+## 1.0.0 (Unreleased)
 
-### ⚠️ Deprecations & Removals
-* Update to pyrate-limiter v4. See its [changelog](https://github.com/vutran1710/PyrateLimiter/blob/master/CHANGELOG.md) for breaking changes, if you are using its features directly. Changes in pyinaturalist:
-  * `ClientSession` argument `lock_path` has been removed; lockfile will be placed in the same directory as `ratelimit_path` (defaults to platform-specific user data dir).
-  * `ClientSession` argument `max_delay` has been removed (removed upstream)
-  * Added `ClientSession` argument `use_file_lock`; this replaces `FileLockSQLiteBucket`, but the class is still available for backwards-compatibility.
-* Drop support for python 3.8 and 3.9 (removed upstream)
+### API client class
+[`iNatClient`](https://pyinaturalist.readthedocs.io/en/stable/user_guide/client.html), an improved
+interface first introduced as a preview in v0.15, is complete.
+
+Highlights:
+* Provides a single object to run all queries from
+* Returns fully typed model objects
+* Paginated endpoints wrap results in a lazy-loaded `Paginator` object to significantly simplify pagination
+* Simplifies handling advanced session settings
+* Automatically refreshes access tokens and pass them to authenticated endpoints if/when needed
+
+Supported resources include:
+* Annotations and observation fields (including create/update/delete)
+* Identifications
+* Observations (including create/update/delete/media upload)
+* Places
+* Projects
+* Taxa
+* Users
+* Unified text search
+
+### Session settings
+* Added `ClientSession` argument `use_file_lock` (replaces `FileLockSQLiteBucket` use)
 
 ### Modified endpoints
+* Add `iNatClient.observations.life_list()` to get a user's dynamic life list data
 * Add `exact_match` option for `iNatClient.taxa.autocomplete()`
 * Add `full_records` option for `iNatClient.taxa.autocomplete()`
 
@@ -24,6 +42,9 @@
 * Add an `Observation.formatted_location` property
 
 Add the following new attributes, mostly from v2 API responses:
+<details>
+<summary>New model attributes:</summary>
+
 * `BaseMedia.attribution_name`
 * `BaseMedia.hidden`
 * `Comment.parent_id`
@@ -56,7 +77,12 @@ Add the following new attributes, mostly from v2 API responses:
 * `User.preferences`
 * `User.updated_at`
 
+</details>
+
 Combine ID-only and nested-object API response values on the following models:
+<details>
+<summary>consolidated model attributes:</summary>
+
 * `Flag.user_id` -> `Flag.user.id`
 * `Identification.taxon_id` -> `Identification.taxon.id`
 * `ObservationFieldValue.taxon_id` -> `ObservationFieldValue.taxon.id`
@@ -66,6 +92,8 @@ Combine ID-only and nested-object API response values on the following models:
 * `ProjectObservation.user_id` -> `ProjectObservation.user.id`
 * `QualityMetric.user_id` -> `QualityMetric.user.id`
 * `Vote.user_id` -> `Vote.user.id`
+
+</details>
 
 In addition, checking attributes on nested objects will not raise `AttributeError` if missing from the API response. This means that instead of checking, for example, `id = Project.user.id if Project.user else Project.user_id`, just check `Project.user.id`.
 
@@ -82,6 +110,14 @@ In addition, checking attributes on nested objects will not raise `AttributeErro
 
 ### Other Changes
 * Add support for python 3.15
+
+### ⚠️ Deprecations & Removals
+* Update to pyrate-limiter v4. See its [changelog](https://github.com/vutran1710/PyrateLimiter/blob/master/CHANGELOG.md) for breaking changes, if you are using its features directly. Changes in pyinaturalist:
+  * Remove `ClientSession` argument `lock_path`; lockfile will be placed in the same directory as `ratelimit_path` (defaults to platform-specific user data dir).
+  * Remove `ClientSession` argument `max_delay` (removed upstream)
+  * Deprecate `FileLockSQLiteBucket` in favor of `use_file_lock` (but still available for backwards-compatibility)
+* Drop support for python 3.8 and 3.9 (removed upstream)
+
 
 ## 0.21.1 (2026-02-13)
 * Update `v2.create_observation()` and `update_observation()` to accept multiple observation field values, consistent with v0 and v1 APIs.
