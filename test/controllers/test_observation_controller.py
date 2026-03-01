@@ -3,6 +3,7 @@ from datetime import datetime
 from io import BytesIO
 from unittest.mock import patch
 
+import pytest
 from dateutil.tz import tzutc
 
 from pyinaturalist.client import iNatClient
@@ -362,12 +363,123 @@ def test_upload(mock_update_observation, mock_get_access_token, requests_mock):
     assert mock_update_observation.call_args[1]['photo_ids'] == [5678]
 
 
-# TODO:
-# def test_create():
-#     client = iNatClient()
-#     results = client.observations.create()
+@patch('pyinaturalist.controllers.observation_controller.create_observation')
+def test_create__from_observation_object(mock_create_observation, caplog):
+    mock_create_observation.return_value = SAMPLE_DATA['create_observation']
+    observation = Observation.from_json(SAMPLE_DATA['get_observations_by_id']['results'][0])
+
+    with caplog.at_level('WARNING', logger='pyinaturalist.controllers.observation_controller'):
+        result = iNatClient().observations.create(observation=observation, access_token='token')
+
+    assert isinstance(result, Observation)
+    assert result.id == SAMPLE_DATA['create_observation']['id']
+
+    request_params = mock_create_observation.call_args[1]
+    assert request_params['taxon_id'] == observation.taxon.id
+    assert request_params['latitude'] == observation.location[0]
+    assert request_params['longitude'] == observation.location[1]
+    assert 'comments' not in request_params
+    assert 'identifications' not in request_params
+    assert 'Read-only observation attributes ignored:' in caplog.text
+    assert 'comments' in caplog.text
+    assert 'identifications' in caplog.text
 
 
-# def test_delete():
-#     client = iNatClient()
-#     results = client.observations.delete()
+@patch('pyinaturalist.controllers.observation_controller.create_observation')
+def test_create__from_observation_object_with_ofvs(mock_create_observation):
+    mock_create_observation.return_value = SAMPLE_DATA['create_observation']
+    observation = Observation.from_json(SAMPLE_DATA['get_observation_with_ofvs']['results'][0])
+
+    result = iNatClient().observations.create(observation=observation, access_token='token')
+    assert isinstance(result, Observation)
+
+    request_params = mock_create_observation.call_args[1]
+    assert request_params['observation_fields'][1685] == '119900'
+    assert request_params['observation_fields'][3856] == '100'
+    assert request_params['observation_fields'][6508] == '2022-11-9 11:20:42'
+    assert request_params['observation_fields'][3857] == '400'
+
+
+@patch('pyinaturalist.controllers.observation_controller.update_observation')
+def test_update__from_observation_object(mock_update_observation):
+    mock_update_observation.return_value = SAMPLE_DATA['create_observation']
+    observation = Observation.from_json(SAMPLE_DATA['get_observations_by_id']['results'][0])
+
+    result = iNatClient().observations.update(
+        observation=observation, description='updated description', access_token='token'
+    )
+    assert isinstance(result, Observation)
+
+    request_params = mock_update_observation.call_args[1]
+    assert request_params['observation_id'] == observation.id
+    assert request_params['description'] == 'updated description'
+
+
+def test_create__invalid_observation_object():
+    with pytest.raises(TypeError, match='Expected Observation object'):
+        iNatClient().observations.create(observation={'species_guess': 'Mallard'})
+
+
+def test_update__observation_without_id():
+    with pytest.raises(ValueError, match='Must provide observation_id'):
+        iNatClient().observations.update(
+            observation=Observation(species_guess='Mallard'),
+            access_token='token',
+        )
+
+
+def test_observation_helper__invalid_special_values():
+    controller = iNatClient().observations
+
+    assert controller._extract_id(Observation(id=123)) == 123
+    assert controller._extract_ofv_field_id(ObservationFieldValue(field_id=297, value='2')) == 297
+    assert controller._location_to_params([45.0]) == {}
+    assert controller._taxon_to_params({'name': 'Mallard'}) == {}
+    assert controller._ofvs_to_params([{'value': '2'}]) == {}
+
+
+def test_merge_observation_params__require_id_without_observation():
+    controller = iNatClient().observations
+
+    with pytest.raises(ValueError, match='Must provide observation_id'):
+        controller._merge_observation_params(None, {}, require_observation_id=True)
+
+    assert controller._merge_observation_params(None, {'species_guess': 'Mallard'}) == {
+        'species_guess': 'Mallard'
+    }
+
+
+def test_observation_to_params__invalid_special_key_is_ignored():
+    class DummyObservation:
+        def to_dict(self):
+            return {'location': [45.0], 'species_guess': 'Mallard'}
+
+    params, ignored = iNatClient().observations._observation_to_params(DummyObservation())
+    assert params['species_guess'] == 'Mallard'
+    assert ignored == ['location']
+
+
+def test_merge_observation_params__logs_ignored_read_only_attribute(caplog):
+    observation = Observation(
+        species_guess='Mallard',
+        created_at=None,
+        identifications_count=None,
+    )
+
+    with caplog.at_level('WARNING', logger='pyinaturalist.controllers.observation_controller'):
+        merged = iNatClient().observations._merge_observation_params(observation, {})
+
+    assert merged['species_guess'] == 'Mallard'
+    assert 'Read-only observation attributes ignored:' in caplog.text
+    assert 'uri' in caplog.text
+
+
+@patch('pyinaturalist.controllers.observation_controller.delete_observation')
+def test_delete__multiple_ids(mock_delete_observation):
+    iNatClient().observations.delete([123, 456], access_token='token')
+
+    assert mock_delete_observation.call_count == 2
+    first_call = mock_delete_observation.call_args_list[0][1]
+    second_call = mock_delete_observation.call_args_list[1][1]
+    assert first_call['observation_id'] == 123
+    assert second_call['observation_id'] == 456
