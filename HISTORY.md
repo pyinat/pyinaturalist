@@ -118,6 +118,7 @@ In addition, checking attributes on nested objects will not raise `AttributeErro
   * Remove `ClientSession` argument `max_delay` (removed upstream)
   * Deprecate `FileLockSQLiteBucket` in favor of `use_file_lock` (but still available for backwards-compatibility)
 * Drop support for python 3.8 and 3.9 (removed upstream)
+* Remove `pyinaturalist.rest_api` and `pyinaturalist.node_api` modules (deprecated in 0.14)
 
 
 ## 0.21.1 (2026-02-13)
