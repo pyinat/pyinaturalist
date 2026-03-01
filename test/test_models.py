@@ -283,6 +283,34 @@ def test_controlled_term__get_value_by_id():
     assert controlled_term.get_value_by_id(999) is None
 
 
+@pytest.mark.parametrize(
+    'label, expected_id',
+    [
+        ('Alive', 18),
+        (' alive ', 18),
+        ('nonexistent', None),
+    ],
+)
+def test_controlled_term__get_value_by_label(label, expected_id):
+    controlled_term = ControlledTerm.from_json(j_controlled_term_1)
+    result = controlled_term.get_value_by_label(label)
+    assert (result.id if result else None) == expected_id
+
+
+@pytest.mark.parametrize(
+    'label, expected_id',
+    [
+        ('Alive or Dead', 17),
+        (' alive or dead ', 17),
+        ('nonexistent', None),
+    ],
+)
+def test_controlled_term__get_term_by_label(label, expected_id):
+    terms = ControlledTerm.from_json_list([j_controlled_term_1])
+    result = ControlledTerm.get_term_by_label(terms, label)
+    assert (result.id if result else None) == expected_id
+
+
 def test_controlled_term__str():
     controlled_term = ControlledTerm.from_json(j_controlled_term_1)
     assert str(controlled_term) == (
