@@ -82,7 +82,7 @@ docs = [
     'myst-parser>=4.0; python_version>="3.11"',
     'myst-nb~=1.2; python_version>="3.11"',
     'pillow>=10.1; python_version>="3.11"',
-    'sphinx~=8.2; python_version>="3.11"',
+    'sphinx>=8.2,<9.0; python_version>="3.11"',
     'sphinx-automodapi~=0.20; python_version>="3.11"',
     'sphinx-autodoc-typehints~=3.2; python_version>="3.11"',
     'sphinx-copybutton>=0.5; python_version>="3.11"',
