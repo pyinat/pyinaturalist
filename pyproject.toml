@@ -61,7 +61,7 @@ all = [
 # Dev dependencies
 dev = [
     'dotenv>=0.9',
-    'nox~=2025.5',
+    'nox>=2025.5,<2027.0',
     'prek>=0.2',
     'pretty-errors>=1.2',
     'pytest>=8.0',
