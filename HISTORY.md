@@ -27,11 +27,12 @@ Supported resources include:
 * Added `ClientSession` argument `use_file_lock` (replaces `FileLockSQLiteBucket` use)
 
 ### Modified endpoints
-* Add `iNatClient.observations.life_list()` to get a user's dynamic life list data
+* Add `term` and `value` arguments for `iNatClient.annotations.create()`, to add annotations by label instead of by ID
 * Add `exact_match` option for `iNatClient.taxa.autocomplete()`
 * Add `full_records` option for `iNatClient.taxa.autocomplete()`
 
 ### New endpoints
+* Add `iNatClient.observations.life_list()` to get a user's dynamic life list data
 * Add taxon endpoints for v2 API:
   * `pyinaturalist.v2.get_taxa()`
   * `pyinaturalist.v2.get_taxa_by_id()`

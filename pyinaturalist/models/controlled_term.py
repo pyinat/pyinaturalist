@@ -1,4 +1,5 @@
 # ruff: noqa: E501
+from collections.abc import Iterable
 from copy import deepcopy
 
 from attr import define
@@ -65,6 +66,19 @@ class ControlledTerm(BaseModel):
     def get_value_by_id(self, controlled_value_id: int) -> ControlledTermValue | None:
         """Get the value with the specified controlled value ID"""
         return next((v for v in self.values if v.id == controlled_value_id), None)
+
+    def get_value_by_label(self, label: str) -> ControlledTermValue | None:
+        """Get the value matching the specified label (case-insensitive)"""
+        label = label.strip().casefold()
+        return next((v for v in self.values if v.label.strip().casefold() == label), None)
+
+    @classmethod
+    def get_term_by_label(
+        cls, terms: Iterable['ControlledTerm'], label: str
+    ) -> 'ControlledTerm | None':
+        """Get the term matching the specified label from a collection (case-insensitive)"""
+        label = label.strip().casefold()
+        return next((t for t in terms if t.label.strip().casefold() == label), None)
 
     @property
     def _row(self) -> TableRow:
