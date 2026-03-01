@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import pytest
 
 from pyinaturalist.client import iNatClient
@@ -151,9 +149,8 @@ def test_create__invalid_value_for_term(requests_mock):
         )
 
 
-@patch('pyinaturalist.controllers.annotation_controller.delete')
-def test_delete(mock_delete):
+def test_delete(requests_mock):
     uuid = 'aad8ce8d-ed0a-4099-b21b-b03b9f51cad9'
-    client = iNatClient()
-    client.annotations.delete(uuid)
-    mock_delete.assert_called_with(f'{API_V2}/annotations/{uuid}')
+    requests_mock.delete(f'{API_V2}/annotations/{uuid}', status_code=200)
+    iNatClient().annotations.delete(uuid)
+    assert requests_mock.called

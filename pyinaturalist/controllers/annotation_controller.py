@@ -83,43 +83,23 @@ class AnnotationController(BaseController):
                 )
         return annotations
 
-    @staticmethod
-    def _normalize_label(value: str | None) -> str:
-        return (value or '').strip().casefold()
-
-    def _find_term_by_label(self, term: str) -> ControlledTerm | None:
-        term_label = self._normalize_label(term)
-        return next(
-            (t for t in self.term_lookup.values() if self._normalize_label(t.label) == term_label),
-            None,
-        )
-
     def _resolve_annotation_ids(
         self,
-        controlled_attribute_id: int | None = None,
-        controlled_value_id: int | None = None,
-        term: str | None = None,
-        value: str | None = None,
+        controlled_attribute_id: int | None,
+        controlled_value_id: int | None,
+        term: str | None,
+        value: str | None,
     ) -> tuple[int, int]:
-        # Existing behavior: direct ID input
         if controlled_attribute_id is not None and controlled_value_id is not None:
             return controlled_attribute_id, controlled_value_id
 
-        # New behavior: resolve term + value labels to IDs
+        # Resolve term + value labels to IDs
         if term is not None and value is not None:
-            controlled_term = self._find_term_by_label(term)
+            controlled_term = ControlledTerm.get_term_by_label(self.term_lookup.values(), term)
             if not controlled_term:
                 raise ValueError(f'Annotation term not found: "{term}"')
 
-            value_label = self._normalize_label(value)
-            controlled_value = next(
-                (
-                    v
-                    for v in controlled_term.values
-                    if self._normalize_label(v.label) == value_label
-                ),
-                None,
-            )
+            controlled_value = controlled_term.get_value_by_label(value)
             if not controlled_value:
                 raise ValueError(
                     f'Annotation value not found for term "{controlled_term.label}": "{value}"'
@@ -168,10 +148,10 @@ class AnnotationController(BaseController):
             The newly created Annotation object
         """
         controlled_attribute_id, controlled_value_id = self._resolve_annotation_ids(
-            controlled_attribute_id=controlled_attribute_id,
-            controlled_value_id=controlled_value_id,
-            term=term,
-            value=value,
+            controlled_attribute_id,
+            controlled_value_id,
+            term,
+            value,
         )
 
         response = post(
