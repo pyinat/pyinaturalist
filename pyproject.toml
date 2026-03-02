@@ -61,7 +61,7 @@ all = [
 # Dev dependencies
 dev = [
     'dotenv>=0.9',
-    'nox~=2025.5',
+    'nox~=2026.2',
     'prek>=0.2',
     'pretty-errors>=1.2',
     'pytest>=8.0',
@@ -75,20 +75,20 @@ dev = [
 
 # Documentation dependencies for Readthedocs builds
 docs = [
-    'furo~=2025.7; python_version>="3.11"',
-    'ipython~=8.12; python_version>="3.11"',
-    'linkify-it-py~=2.0; python_version>="3.11"',
-    'matplotlib>=3.7; python_version>="3.11"',
-    'myst-parser>=4.0; python_version>="3.11"',
-    'myst-nb~=1.2; python_version>="3.11"',
-    'pillow>=10.1; python_version>="3.11"',
-    'sphinx~=8.2; python_version>="3.11"',
-    'sphinx-automodapi~=0.20; python_version>="3.11"',
-    'sphinx-autodoc-typehints~=3.2; python_version>="3.11"',
-    'sphinx-copybutton>=0.5; python_version>="3.11"',
-    'sphinx-design>=0.6; python_version>="3.11"',
-    'sphinxcontrib-apidoc~=0.6; python_version>="3.11"',
-    'sphinxext-opengraph>=0.9; python_version>="3.11"',
+    'furo~=2025.12; python_version>="3.12"',
+    'ipython~=8.12; python_version>="3.12"',
+    'linkify-it-py~=2.1; python_version>="3.12"',
+    'matplotlib>=3.7; python_version>="3.12"',
+    'myst-parser>=5.0; python_version>="3.12"',
+    'myst-nb>=1.2; python_version>="3.12"',
+    'pillow>=10.1; python_version>="3.12"',
+    'sphinx~=9.1; python_version>="3.12"',
+    'sphinx-automodapi~=0.22; python_version>="3.12"',
+    'sphinx-autodoc-typehints==3.8; python_version>="3.12"',
+    'sphinx-copybutton>=0.5; python_version>="3.12"',
+    'sphinx-design>=0.7; python_version>="3.12"',
+    'sphinxcontrib-apidoc~=0.6; python_version>="3.12"',
+    'sphinxext-opengraph>=0.9; python_version>="3.12"',
 ]
 
 [build-system]
