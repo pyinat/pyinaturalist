@@ -4,6 +4,7 @@ See: http://api.inaturalist.org/v2/docs/
 """
 
 # ruff: noqa: F401, F403
+from pyinaturalist.v2.fields import obs, taxon
 from pyinaturalist.v2.observations import (
     create_observation,
     delete_observation,

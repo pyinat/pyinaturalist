@@ -363,14 +363,27 @@ def _observation_v2(
     except_fields: list[str] | None = None,
 ):
     """Args:
-    fields: Data fields to return in the response
-    except_fields: Data fields to exclude from the response (and include all others)
+    fields: Data fields to return in the response. Accepts a plain string (e.g. ``'all'``),
+        a plain dict, or a list of :class:`~pyinaturalist.v2.fields.FieldPath` /
+        :class:`~pyinaturalist.v2.fields.FieldSelector` objects from
+        :mod:`pyinaturalist.v2.fields`. Example::
+
+            from pyinaturalist.v2.fields import obs
+            get_observations(fields=[obs.taxon.name, obs.user.login])
+
+    except_fields: Data fields to exclude from the response (and include all others).
+        Accepts plain strings or :class:`~pyinaturalist.v2.fields.FieldPath` /
+        :class:`~pyinaturalist.v2.fields.FieldSelector` objects, including nested paths.
+        Example::
+
+            from pyinaturalist.v2.fields import obs
+            get_observations(except_fields=[obs.identifications.taxon.ancestors])
     """
 
 
 def _observation_histogram(
-    date_field: HistogramDateField = 'observed',
-    interval: HistogramInterval = 'month_of_year',
+    date_field: str = 'observed',
+    interval: str = 'month_of_year',
 ):
     """Args:
     date_field: Histogram basis: either when the observation was created or observed

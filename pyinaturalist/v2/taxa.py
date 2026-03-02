@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 from pyinaturalist.constants import API_V2, JsonResponse, MultiInt, RequestParams
 from pyinaturalist.converters import convert_all_timestamps, ensure_list
 from pyinaturalist.docs import document_request_params
@@ -7,6 +5,8 @@ from pyinaturalist.docs import templates as docs
 from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import convert_rank_range
 from pyinaturalist.session import get, post
+from pyinaturalist.v2.fields import apply_except_fields
+from pyinaturalist.v2.fields import taxon as taxon_selector
 
 
 @document_request_params(
@@ -57,9 +57,7 @@ def get_taxa(**params) -> JsonResponse:
 
     # Request all fields except those specified
     if except_fields:
-        params['fields'] = deepcopy(ALL_TAXA_FIELDS)
-        for k in except_fields:
-            params['fields'].pop(k, None)
+        params['fields'] = apply_except_fields(taxon_selector.to_dict(), except_fields)
 
     if params.get('fields') not in ['all', None]:
         taxa = _get_post_taxa(params)
@@ -111,9 +109,7 @@ def get_taxa_by_id(
         raise ValueError('Cannot use both fields and except_fields')
 
     if except_fields:
-        params['fields'] = deepcopy(ALL_TAXA_FIELDS)
-        for k in except_fields:
-            params['fields'].pop(k, None)
+        params['fields'] = apply_except_fields(taxon_selector.to_dict(), except_fields)
 
     n_ids = len(ensure_list(taxon_id))
     if params.get('fields') not in ['all', None] or n_ids > 30:
@@ -152,9 +148,7 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
         raise ValueError('Cannot use both fields and except_fields')
 
     if except_fields:
-        params['fields'] = deepcopy(ALL_TAXA_FIELDS)
-        for k in except_fields:
-            params['fields'].pop(k, None)
+        params['fields'] = apply_except_fields(taxon_selector.to_dict(), except_fields)
 
     if params.get('fields') not in ['all', None]:
         headers = {'X-HTTP-Method-Override': 'GET'}
@@ -190,9 +184,7 @@ def get_taxa_iconic(**params) -> JsonResponse:
         raise ValueError('Cannot use both fields and except_fields')
 
     if except_fields:
-        params['fields'] = deepcopy(ALL_TAXA_FIELDS)
-        for k in except_fields:
-            params['fields'].pop(k, None)
+        params['fields'] = apply_except_fields(taxon_selector.to_dict(), except_fields)
 
     if params.get('fields') not in ['all', None]:
         headers = {'X-HTTP-Method-Override': 'GET'}
@@ -225,43 +217,3 @@ def _get_post_taxa(params: RequestParams) -> JsonResponse:
         )
     else:
         return post(f'{API_V2}/taxa', headers=headers, json=body, **query_params).json()
-
-
-# The full `fields` value to request all taxa details
-ALL_TAXA_FIELDS = {
-    'ancestor_ids': True,
-    'ancestry': True,
-    'atlas_id': True,
-    'complete_species_count': True,
-    'current_synonymous_taxon_ids': True,
-    'default_photo': {
-        'id': True,
-        'attribution': True,
-        'attribution_name': True,
-        'flags': True,
-        'license_code': True,
-        'medium_url': True,
-        'original_dimensions': True,
-        'square_url': True,
-        'url': True,
-    },
-    'extinct': True,
-    'flag_counts': {
-        'resolved': True,
-        'unresolved': True,
-    },
-    'iconic_taxon_id': True,
-    'iconic_taxon_name': True,
-    'is_active': True,
-    'matched_term': True,
-    'name': True,
-    'observations_count': True,
-    'parent_id': True,
-    'preferred_common_name': True,
-    'provisional': True,
-    'rank': True,
-    'rank_level': True,
-    'taxon_changes_count': True,
-    'taxon_schemes_count': True,
-    'wikipedia_url': True,
-}

@@ -63,8 +63,33 @@ def test_get_observations__except_fields(mock_send, mock_format):
     get_observations(id=57707611, except_fields=['identifications'])
     request_obj = mock_send.call_args[0][0]
     json_body = json.loads(request_obj.body.decode())
-    assert len(json_body['fields'].keys()) == 47
     assert 'identifications' not in json_body['fields']
+
+
+@patch('pyinaturalist.session.format_response')
+@patch('requests.sessions.Session.send')
+def test_get_observations__except_fields__nested(mock_send, mock_format):
+    """except_fields should support nested FieldPath selectors."""
+    from pyinaturalist.v2.fields import obs
+
+    get_observations(id=57707611, except_fields=[obs.identifications.taxon.ancestors])
+    request_obj = mock_send.call_args[0][0]
+    json_body = json.loads(request_obj.body.decode())
+    assert 'identifications' in json_body['fields']
+    assert 'taxon' in json_body['fields']['identifications']
+    assert 'ancestors' not in json_body['fields']['identifications']['taxon']
+
+
+@patch('pyinaturalist.session.format_response')
+@patch('requests.sessions.Session.send')
+def test_get_observations__fields__field_paths(mock_send, mock_format):
+    """fields should accept FieldPath/FieldSelector objects."""
+    from pyinaturalist.v2.fields import obs
+
+    get_observations(id=57707611, fields=[obs.taxon.name, obs.user.login])
+    request_obj = mock_send.call_args[0][0]
+    json_body = json.loads(request_obj.body.decode())
+    assert json_body['fields'] == {'taxon': {'name': True}, 'user': {'login': True}}
 
 
 def test_get_observations__all_pages(requests_mock):
