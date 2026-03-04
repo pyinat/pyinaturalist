@@ -108,6 +108,7 @@ In addition, checking attributes on nested objects will not raise `AttributeErro
 * Fix displaying images in Jupyter with `Photo.show()`
 * Fix corner case resulting in `observed_on` not being converted to `datetime`
 * Fix list slicing on custom collection types (`TaxonCounts`, etc.)
+* Fix pprint with empty results
 
 ### Other Changes
 * Add support for python 3.15
@@ -119,7 +120,6 @@ In addition, checking attributes on nested objects will not raise `AttributeErro
   * Deprecate `FileLockSQLiteBucket` in favor of `use_file_lock` (but still available for backwards-compatibility)
 * Drop support for python 3.8 and 3.9 (removed upstream)
 * Remove `pyinaturalist.rest_api` and `pyinaturalist.node_api` modules (deprecated in 0.14)
-
 
 ## 0.21.1 (2026-02-13)
 * Update `v2.create_observation()` and `update_observation()` to accept multiple observation field values, consistent with v0 and v1 APIs.
