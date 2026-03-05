@@ -166,7 +166,7 @@ def pprint(values: ResponseOrObjects):
     """
     try:
         print(format_table(values))
-    except ValueError:
+    except (IndexError, ValueError):
         print(values)
 
 
