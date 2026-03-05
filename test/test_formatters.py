@@ -2,6 +2,7 @@
 import re
 from copy import deepcopy
 from io import StringIO
+from unittest.mock import patch
 
 import pytest
 from requests import PreparedRequest, Request
@@ -67,22 +68,24 @@ def test_format_table(response):
     if isinstance(response, list):
         assert all(_get_id(value) in rendered for value in response)
 
-    # for obj in response:
-    #     assert all([value in rendered_table for value in obj.row.values()])
-
 
 def test_format_table__unknown_type():
     with pytest.raises(ValueError):
         format_table({'foo': 'bar'})
 
 
-# TODO: Test content written to stdout. For now, just make sure it doesn't explode.
+# override rich's detected terminal width to avoid line wrapping
+@patch.dict('os.environ', {'COLUMNS': '256'})
 @pytest.mark.parametrize('response', TABULAR_RESPONSES)
-def test_pprint(response):
-    console = Console(force_terminal=False, width=120)
-    with console.capture() as output:
-        pprint(response)
-    output.get()
+def test_pprint(response, capsys):
+    pprint(response)
+    lines = capsys.readouterr().out.splitlines()
+    assert len(lines) == len(ensure_model_list(response)) + 4
+
+
+def test_pprint_empty(capsys):
+    pprint([])
+    assert capsys.readouterr().out.strip() == '[]'
 
 
 PRINTED_OBSERVATION = """
