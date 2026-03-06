@@ -227,9 +227,10 @@ def _resolve_auth_code_creds(
     app_id = app_id or getenv('INAT_APP_ID')
     if not use_pkce:
         app_secret = app_secret or getenv('INAT_APP_SECRET')
-    if not app_id:
+    if not app_id or (not use_pkce and not app_secret):
         try:
-            app_id = get_password(KEYRING_KEY, 'app_id')
+            if not app_id:
+                app_id = get_password(KEYRING_KEY, 'app_id')
             if not use_pkce and not app_secret:
                 app_secret = get_password(KEYRING_KEY, 'app_secret')
         except KeyringError as e:
