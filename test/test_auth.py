@@ -18,7 +18,7 @@ from pyinaturalist.auth import (
     set_keyring_credentials,
     validate_token,
 )
-from pyinaturalist.constants import API_V0
+from pyinaturalist.constants import API_V0, KEYRING_KEY
 from pyinaturalist.exceptions import AuthenticationError
 from pyinaturalist.session import ClientSession
 from test.conftest import MOCK_CREDS_ENV, MOCK_CREDS_OAUTH, load_sample_data
@@ -26,6 +26,7 @@ from test.conftest import MOCK_CREDS_ENV, MOCK_CREDS_OAUTH, load_sample_data
 token_accepted_json = load_sample_data('get_access_token.json')
 token_rejected_json = load_sample_data('get_access_token_401.json')
 jwt_json = load_sample_data('get_jwt.json')
+
 
 @pytest.fixture(autouse=True)
 def reset_oauth_handler_state():
@@ -291,6 +292,27 @@ def test_get_access_token_via_auth_code__missing_app_id(mock_get_jwt):
 def test_get_access_token_via_auth_code__missing_app_secret(mock_get_jwt):
     with pytest.raises(AuthenticationError, match='app_secret is required'):
         get_access_token_via_auth_code(app_id='valid_app_id', use_pkce=False)
+
+
+@patch.dict(os.environ, {}, clear=True)
+@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch('pyinaturalist.auth.webbrowser.open')
+@patch('pyinaturalist.auth._get_auth_code_via_server', return_value='mock_auth_code')
+@patch('pyinaturalist.auth.get_password', return_value='valid_app_secret')
+def test_get_access_token_via_auth_code__app_secret_from_keyring(
+    mock_get_password, mock_server, mock_browser, mock_get_jwt, requests_mock
+):
+    requests_mock.post(
+        f'{API_V0}/oauth/token',
+        json=token_accepted_json,
+        status_code=200,
+    )
+
+    token = get_access_token_via_auth_code(app_id='valid_app_id', use_pkce=False)
+    assert token == JWT_API_TOKEN
+    submitted_json = requests_mock.last_request.json()
+    assert submitted_json['client_secret'] == 'valid_app_secret'
+    mock_get_password.assert_called_once_with(KEYRING_KEY, 'app_secret')
 
 
 @patch.dict(os.environ, {}, clear=True)
