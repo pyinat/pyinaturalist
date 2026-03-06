@@ -1,5 +1,7 @@
 from logging import getLogger
 
+from requests_cache import DO_NOT_CACHE
+
 from pyinaturalist.constants import API_V1, IntOrStr, JsonResponse
 from pyinaturalist.converters import convert_all_timestamps, convert_generic_timestamps
 from pyinaturalist.docs import document_request_params
@@ -77,6 +79,7 @@ def get_current_user(access_token: str | None = None, **params) -> JsonResponse:
 
     * :fa:`lock` :ref:`Requires authentication <auth>`
     * API reference: :v1:`GET /users/me <Users/get_users_me>`
+    * Disables request caching by default, since responses are user-specific
 
 
     Example:
@@ -87,5 +90,7 @@ def get_current_user(access_token: str | None = None, **params) -> JsonResponse:
     Returns:
         Response dict containing a single user record
     """
+    params.setdefault('force_refresh', True)
+    params.setdefault('expire_after', DO_NOT_CACHE)
     response = get(f'{API_V1}/users/me', access_token=access_token, **params)
     return convert_generic_timestamps(response.json()['results'][0])
