@@ -40,7 +40,8 @@ Supported resources include:
   * `pyinaturalist.v2.get_taxa_iconic()`
 
 ### Models
-* Add an `Observation.formatted_location` property
+* Add an `Observation.formatted_location` property (coordinates + geoprivacy)
+* Add an `Observation.place_str` property (fall back to coordinates if `place_guess` is missing)
 
 Add the following new attributes, mostly from v2 API responses:
 <details>

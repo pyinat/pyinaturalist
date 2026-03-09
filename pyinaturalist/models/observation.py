@@ -407,8 +407,17 @@ class Observation(BaseModel):
         return list(set(ident_ids))
 
     @property
+    def place_str(self) -> str:
+        """The place name, if available, otherwise coordinates"""
+        return self.place_guess or (str(self.location) if self.location else 'unknown location')
+
+    @property
+    def taxon_name(self) -> str:
+        return self.taxon.full_name if self.taxon else 'unknown taxon'
+
+    @property
     def username(self) -> str:
-        return self.user.login
+        return self.user.login if self.user else 'unknown user'
 
     @property
     def _row(self) -> TableRow:
@@ -417,8 +426,8 @@ class Observation(BaseModel):
             'Taxon ID': self.taxon.id if self.taxon else None,
             'Taxon': self.taxon.rich_full_name if self.taxon else None,
             'Observed on': self.observed_on,
-            'User': self.user.login,
-            'Location': self.place_guess or self.location,
+            'User': self.username,
+            'Location': self.place_str,
         }
 
     @property

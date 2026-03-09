@@ -577,4 +577,5 @@ def _title(value: str) -> str:
 
     Borrowed/modified from ``django.template.defaultfilters.title()``
     """
+    value = str(value) if value else ''
     return re.sub("([a-z])['’]([A-Z])", lambda m: m[0].lower(), value.title())
