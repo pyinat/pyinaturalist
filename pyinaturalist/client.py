@@ -3,13 +3,15 @@
 # TODO: Use a custom template or directive to generate summary of all controller methods
 from asyncio import AbstractEventLoop
 from collections.abc import Callable
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from inspect import ismethod
 from logging import getLogger
 from typing import Any
 
 from requests import HTTPError
 
-from pyinaturalist.auth import get_access_token, get_access_token_via_auth_code
+from pyinaturalist.auth import _decode_jwt_exp, get_access_token, get_access_token_via_auth_code
 from pyinaturalist.constants import RequestParams
 from pyinaturalist.controllers import (
     AnnotationController,
@@ -22,12 +24,24 @@ from pyinaturalist.controllers import (
     TaxonController,
     UserController,
 )
+from pyinaturalist.exceptions import AuthenticationError
 from pyinaturalist.models import T
 from pyinaturalist.paginator import Paginator
 from pyinaturalist.request_params import get_valid_kwargs, strip_empty_values
 from pyinaturalist.session import ClientSession
 
 logger = getLogger(__name__)
+
+
+@dataclass
+class _TokenInfo:
+    """Internal record of a fetched access token and its metadata."""
+
+    token: str
+    obtained_at: datetime  # UTC datetime when the token was fetched
+    flow: str  # 'password' | 'authorization_code'
+    expires_at: datetime | None  # decoded from JWT exp claim; None for non-JWT tokens
+
 
 AUTH_CODE_CRED_KEYS = frozenset(
     {
@@ -39,8 +53,12 @@ AUTH_CODE_CRED_KEYS = frozenset(
         'refresh',
         'port',
         'timeout',
+        'open_url',
+        'get_code',
     }
 )
+
+SUPPORTED_AUTH_FLOWS = frozenset({'password', 'authorization_code'})
 
 
 # 'iNatClient' is nonstandard casing, but 'InatClient' just looks wrong. Deal with it, pep8.
@@ -86,11 +104,17 @@ class iNatClient:
         **kwargs,
     ):
         self.creds = creds or {}
+        auth_flow = self.creds.get('auth_flow')
+        if auth_flow is not None and auth_flow not in SUPPORTED_AUTH_FLOWS:
+            raise AuthenticationError(
+                f'Unsupported auth_flow {auth_flow!r}. '
+                f'Accepted values: {sorted(SUPPORTED_AUTH_FLOWS)}'
+            )
         self.default_params = default_params or {}
         self.dry_run = dry_run
         self.loop = loop
         self.session = session or ClientSession(**kwargs)
-        self._access_token: str | None = None
+        self._token_info: _TokenInfo | None = None
 
         # Controllers
         self.annotations = AnnotationController(
@@ -152,22 +176,36 @@ class iNatClient:
         access_token = kwargs.pop('access_token', None)
         if access_token:
             return access_token
-        if self._access_token:
-            return self._access_token
-        self._access_token = self._fetch_access_token_from_creds()
-        return self._access_token
+        if self._token_info:
+            if self._token_info.expires_at is None or self._token_info.expires_at > datetime.now(
+                tz=timezone.utc
+            ) + timedelta(seconds=60):
+                return self._token_info.token
+            # Token is expired or about to expire — fall through to re-fetch
+            self._token_info = None
+        self._token_info = self._fetch_access_token_from_creds()
+        return self._token_info.token if self._token_info else None
 
-    def _fetch_access_token_from_creds(self, force_refresh: bool = False) -> str:
-        """Get a new access token from configured credentials."""
-        if self.creds.get('auth_flow') == 'authorization_code':
+    def _fetch_access_token_from_creds(self, force_refresh: bool = False) -> _TokenInfo:
+        """Get a new access token from configured credentials and wrap it in _TokenInfo."""
+        flow = self.creds.get('auth_flow', 'password')
+        if flow == 'authorization_code':
             auth_code_creds = self._filter_auth_code_creds(self.creds).copy()
             if force_refresh:
                 auth_code_creds['refresh'] = True
-            return get_access_token_via_auth_code(**auth_code_creds)
-        token_creds = self.creds.copy()
-        if force_refresh:
-            token_creds['refresh'] = True
-        return get_access_token(**token_creds)
+            token = get_access_token_via_auth_code(**auth_code_creds)
+        else:
+            token_creds = self.creds.copy()
+            if force_refresh:
+                token_creds['refresh'] = True
+            token = get_access_token(**token_creds)
+
+        return _TokenInfo(
+            token=token,
+            obtained_at=datetime.now(tz=timezone.utc),
+            flow=flow,
+            expires_at=_decode_jwt_exp(token),
+        )
 
     @staticmethod
     def _filter_auth_code_creds(creds: dict[str, Any]) -> dict[str, Any]:
@@ -212,9 +250,9 @@ class iNatClient:
         except HTTPError as e:
             if not auth or explicit_access_token or not self._is_unauthorized_error(e):
                 raise
-            self._access_token = self._fetch_access_token_from_creds(force_refresh=True)
+            self._token_info = self._fetch_access_token_from_creds(force_refresh=True)
             kwargs = kwargs.copy()
-            kwargs['access_token'] = self._access_token
+            kwargs['access_token'] = self._token_info.token
             return request_function(*args, **kwargs)
 
     @staticmethod

@@ -1,12 +1,16 @@
 import base64
 import hashlib
+import html
+import json
 import secrets
 import threading
 import webbrowser
+from collections.abc import Callable
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from logging import getLogger
 from os import getenv
-from typing import Optional
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from keyring import get_password, set_password
@@ -18,6 +22,25 @@ from pyinaturalist.exceptions import AuthenticationError
 from pyinaturalist.session import ClientSession, get_local_session
 
 logger = getLogger(__name__)
+
+
+def _decode_jwt_exp(token: str) -> datetime | None:
+    """Decode the exp claim from a JWT without verifying the signature.
+
+    Returns the expiry as a UTC datetime, or None if the token is not a
+    decodable JWT or has no exp claim.
+    """
+    try:
+        parts = token.split('.')
+        if len(parts) != 3:
+            return None
+        # Add padding required by base64
+        payload_b64 = parts[1] + '=' * (-len(parts[1]) % 4)
+        payload = json.loads(base64.urlsafe_b64decode(payload_b64))
+        exp = payload.get('exp')
+        return datetime.fromtimestamp(exp, tz=timezone.utc) if exp else None
+    except Exception:
+        return None
 
 
 def get_access_token(
@@ -96,9 +119,7 @@ def get_access_token(
         if all(payload.values()):
             logger.info('Retrieved credentials from keyring')
         else:
-            raise AuthenticationError(
-                'Not all authentication parameters were provided', response=response
-            )
+            raise AuthenticationError('Not all authentication parameters were provided')
 
     # Get OAuth access token
     response = session.post(f'{API_V0}/oauth/token', json=payload)
@@ -114,14 +135,16 @@ def get_access_token(
 
 
 def get_access_token_via_auth_code(
-    app_id: Optional[str] = None,
-    app_secret: Optional[str] = None,
+    app_id: str | None = None,
+    app_secret: str | None = None,
     use_pkce: bool = True,
     use_oob: bool = False,
     jwt: bool = True,
     refresh: bool = False,
     port: int = 8080,
     timeout: int = 120,
+    open_url: Callable[[str], None] | None = None,
+    get_code: Callable[[str], str] | None = None,
 ) -> str:
     """Get an access token using the OAuth2 Authorization Code flow, optionally with PKCE.
 
@@ -174,6 +197,10 @@ def get_access_token_via_auth_code(
         port: Port for the local callback server. Must match the redirect URI registered
             with your iNaturalist application.
         timeout: Seconds to wait for the user to complete authorization in the browser.
+        open_url: Optional callback to open the authorization URL. Defaults to
+            ``webbrowser.open``. Useful for testing or custom browser handling.
+        get_code: Optional callback for OOB mode that receives the authorization URL and
+            returns the authorization code entered by the user. Defaults to ``input()``.
 
     Raises:
         :py:exc:`.AuthenticationError`: if credentials are missing, the user does not
@@ -189,17 +216,23 @@ def get_access_token_via_auth_code(
     app_id, app_secret = _resolve_auth_code_creds(app_id, app_secret, use_pkce)
 
     # Generate PKCE pair if needed
-    code_verifier: Optional[str] = None
-    code_challenge: Optional[str] = None
+    code_verifier: str | None = None
+    code_challenge: str | None = None
     if use_pkce:
         code_verifier, code_challenge = _generate_pkce_pair()
 
     # Build authorization URL and get the authorization code
     redirect_uri = 'urn:ietf:wg:oauth:2.0:oob' if use_oob else f'http://127.0.0.1:{port}'
     state = secrets.token_urlsafe(16) if not use_oob else None
-    authorize_url = _build_authorize_url(app_id, redirect_uri, code_challenge, state)
+    authorize_url = build_authorize_url(app_id, redirect_uri, code_challenge, state)
     auth_code = _obtain_auth_code(
-        authorize_url, use_oob=use_oob, port=port, timeout=timeout, state=state
+        authorize_url,
+        use_oob=use_oob,
+        port=port,
+        timeout=timeout,
+        state=state,
+        open_url=open_url,
+        get_code=get_code,
     )
 
     # Exchange authorization code for access token
@@ -219,8 +252,8 @@ def get_access_token_via_auth_code(
 
 
 def _resolve_auth_code_creds(
-    app_id: Optional[str],
-    app_secret: Optional[str],
+    app_id: str | None,
+    app_secret: str | None,
     use_pkce: bool,
 ) -> tuple[str, str | None]:
     """Resolve app_id and app_secret from arguments, environment variables, or keyring."""
@@ -242,13 +275,23 @@ def _resolve_auth_code_creds(
     return app_id, app_secret
 
 
-def _build_authorize_url(
+def build_authorize_url(
     app_id: str,
     redirect_uri: str,
-    code_challenge: Optional[str] = None,
-    state: Optional[str] = None,
+    code_challenge: str | None = None,
+    state: str | None = None,
 ) -> str:
-    """Build the OAuth2 authorization URL."""
+    """Build the OAuth2 authorization URL.
+
+    Args:
+        app_id: OAuth2 application ID (client ID).
+        redirect_uri: The redirect URI registered with your iNaturalist application.
+        code_challenge: PKCE code challenge (base64url-encoded SHA256 of the verifier).
+        state: Optional random state value for CSRF protection.
+
+    Returns:
+        The full authorization URL to open in the user's browser.
+    """
     params: dict[str, str] = {
         'client_id': app_id,
         'redirect_uri': redirect_uri,
@@ -268,34 +311,39 @@ def _obtain_auth_code(
     use_oob: bool,
     port: int,
     timeout: int,
-    state: Optional[str] = None,
+    state: str | None = None,
+    open_url: Callable[[str], None] | None = None,
+    get_code: Callable[[str], str] | None = None,
 ) -> str:
     """Open the browser and obtain an authorization code via OOB or local server."""
     if use_oob:
+        _get_code = get_code or (
+            lambda url: input('Enter the authorization code from iNaturalist: ').strip()
+        )
         logger.info('Opening browser for authorization: %s', authorize_url)
-        webbrowser.open(authorize_url)
-        return input('Enter the authorization code from iNaturalist: ').strip()
+        (open_url or webbrowser.open)(authorize_url)
+        return _get_code(authorize_url)
 
-    _OAuthCallbackHandler.expected_state = state
-    auth_code = _get_auth_code_via_server(authorize_url, port=port, timeout=timeout)
-    if not auth_code:
-        error = _OAuthCallbackHandler.auth_error
-        if error == 'state_mismatch':
+    result = get_auth_code_via_server(
+        authorize_url, port=port, timeout=timeout, state=state, open_url=open_url
+    )
+    if not result.auth_code:
+        if result.auth_error == 'state_mismatch':
             raise AuthenticationError(
                 'Authorization failed: state parameter mismatch (possible CSRF attack)'
             )
-        elif error:
-            raise AuthenticationError(f'Authorization failed: {error}')
+        elif result.auth_error:
+            raise AuthenticationError(f'Authorization failed: {result.auth_error}')
         raise AuthenticationError('No authorization code received (timed out or cancelled)')
-    return auth_code
+    return result.auth_code
 
 
 def _build_token_payload(
     app_id: str,
     auth_code: str,
     redirect_uri: str,
-    code_verifier: Optional[str],
-    app_secret: Optional[str],
+    code_verifier: str | None,
+    app_secret: str | None,
     use_pkce: bool,
 ) -> dict[str, str]:
     """Build the POST payload for the token exchange."""
@@ -324,81 +372,103 @@ def _generate_pkce_pair() -> tuple[str, str]:
     return code_verifier, code_challenge
 
 
-class _OAuthCallbackHandler(BaseHTTPRequestHandler):
-    """HTTP request handler that captures an OAuth authorization code from a redirect callback.
+@dataclass
+class _CallbackResult:
+    """Holds the result of a single OAuth callback request."""
 
-    Note: ``auth_code``, ``auth_error``, and ``expected_state`` are class variables so they
-    can be read from the calling thread after ``handle_request()`` completes. This is safe for
-    sequential use but not thread-safe under concurrent calls.
+    auth_code: str | None = None
+    auth_error: str | None = None
+
+
+def _make_callback_handler(
+    expected_state: str | None,
+) -> tuple[type[BaseHTTPRequestHandler], _CallbackResult]:
+    """Create a fresh handler class bound to a per-request _CallbackResult.
+
+    Using a factory avoids class-level mutable state, making concurrent or
+    sequential calls safe without manual cleanup.
+
+    Returns:
+        A tuple of ``(handler_class, result)`` where ``result`` is populated
+        in-place when the HTTP callback arrives.
     """
+    result = _CallbackResult()
 
-    auth_code: Optional[str] = None
-    auth_error: Optional[str] = None
-    expected_state: Optional[str] = None
+    class _OAuthCallbackHandler(BaseHTTPRequestHandler):
+        """HTTP request handler that captures an OAuth authorization code from a redirect."""
 
-    def do_GET(self) -> None:
-        """Handle the OAuth callback GET request."""
-        query = parse_qs(urlparse(self.path).query)
+        def do_GET(self) -> None:
+            """Handle the OAuth callback GET request."""
+            query = parse_qs(urlparse(self.path).query)
 
-        received_state = query.get('state', [None])[0]
-        if received_state != _OAuthCallbackHandler.expected_state:
-            _OAuthCallbackHandler.auth_error = 'state_mismatch'
-            self.send_response(400)
-            self.send_header('Content-Type', 'text/html')
-            self.end_headers()
-            self.wfile.write(
-                b'<html><body><h1>Authorization failed</h1>'
-                b'<p>State parameter mismatch. This may indicate a CSRF attack.</p>'
-                b'</body></html>'
-            )
-            return
+            received_state = query.get('state', [None])[0]
+            if received_state != expected_state:
+                result.auth_error = 'state_mismatch'
+                self.send_response(400)
+                self.send_header('Content-Type', 'text/html')
+                self.end_headers()
+                self.wfile.write(
+                    b'<html><body><h1>Authorization failed</h1>'
+                    b'<p>State parameter mismatch. This may indicate a CSRF attack.</p>'
+                    b'</body></html>'
+                )
+                return
 
-        code_values = query.get('code')
-        if code_values:
-            _OAuthCallbackHandler.auth_code = code_values[0]
-            self.send_response(200)
-            self.send_header('Content-Type', 'text/html')
-            self.end_headers()
-            self.wfile.write(
-                b'<html><body><h1>Authorization successful!</h1>'
-                b'<p>You can close this tab and return to your application.</p>'
-                b'</body></html>'
-            )
-        else:
-            error = query.get('error', ['unknown'])[0]
-            _OAuthCallbackHandler.auth_error = error
-            self.send_response(400)
-            self.send_header('Content-Type', 'text/html')
-            self.end_headers()
-            self.wfile.write(
-                f'<html><body><h1>Authorization failed</h1>'
-                f'<p>Error: {error}</p></body></html>'.encode()
-            )
+            code_values = query.get('code')
+            if code_values:
+                result.auth_code = code_values[0]
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
+                self.end_headers()
+                self.wfile.write(
+                    b'<html><body><h1>Authorization successful!</h1>'
+                    b'<p>You can close this tab and return to your application.</p>'
+                    b'</body></html>'
+                )
+            else:
+                error = query.get('error', ['unknown'])[0]
+                result.auth_error = error
+                self.send_response(400)
+                self.send_header('Content-Type', 'text/html')
+                self.end_headers()
+                self.wfile.write(
+                    f'<html><body><h1>Authorization failed</h1>'
+                    f'<p>Error: {html.escape(error)}</p></body></html>'.encode()
+                )
 
-    def log_message(self, format: str, *args: object) -> None:
-        """Route HTTP server logs through the module logger."""
-        logger.debug(format, *args)
+        def log_message(self, format: str, *args: object) -> None:
+            """Route HTTP server logs through the module logger."""
+            logger.debug(format, *args)
+
+    return _OAuthCallbackHandler, result
 
 
-def _get_auth_code_via_server(authorize_url: str, port: int, timeout: int) -> Optional[str]:
+def get_auth_code_via_server(
+    authorize_url: str,
+    port: int,
+    timeout: int,
+    state: str | None = None,
+    open_url: Callable[[str], None] | None = None,
+) -> _CallbackResult:
     """Start a local HTTP server, open the browser for authorization, and wait for the callback.
 
     Args:
         authorize_url: The full authorization URL to open in the browser.
         port: Port for the local callback server.
         timeout: Seconds to wait for the callback.
+        state: Expected state value for CSRF protection; ``None`` disables the check.
+        open_url: Callback to open the authorization URL. Defaults to ``webbrowser.open``.
 
     Returns:
-        The authorization code, or ``None`` if it timed out or was denied.
+        A :py:class:`_CallbackResult` with ``auth_code`` or ``auth_error`` set.
 
     Raises:
         :py:exc:`.AuthenticationError`: if the port is already in use.
     """
-    _OAuthCallbackHandler.auth_code = None
-    _OAuthCallbackHandler.auth_error = None
+    handler_class, result = _make_callback_handler(state)
 
     try:
-        server = HTTPServer(('127.0.0.1', port), _OAuthCallbackHandler)
+        server = HTTPServer(('127.0.0.1', port), handler_class)
     except OSError as e:
         raise AuthenticationError(
             f'Could not start callback server on port {port}: {e}. '
@@ -411,14 +481,14 @@ def _get_auth_code_via_server(authorize_url: str, port: int, timeout: int) -> Op
     server_thread.start()
 
     logger.info('Opening browser for authorization: %s', authorize_url)
-    webbrowser.open(authorize_url)
+    (open_url or webbrowser.open)(authorize_url)
 
     try:
-        server_thread.join()
+        server_thread.join(timeout)
     finally:
         server.server_close()
 
-    return _OAuthCallbackHandler.auth_code
+    return result
 
 
 def validate_token(access_token: str) -> bool:
@@ -471,11 +541,12 @@ def set_keyring_credentials(
 
 
 def _get_jwt(
-    session: ClientSession, access_token: str = '', only_if_cached: bool = False
+    session: ClientSession, access_token: str | None = None, only_if_cached: bool = False
 ) -> Response:
+    headers = {'Authorization': f'Bearer {access_token}'} if access_token else {}
     return session.get(
         f'{API_V0}/users/api_token',
-        headers={'Authorization': f'Bearer {access_token}'},
+        headers=headers,
         only_if_cached=only_if_cached,  # If True, will return a 504 if not cached
         raise_for_status=False,  # type: ignore
     )

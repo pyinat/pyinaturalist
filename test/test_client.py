@@ -1,3 +1,6 @@
+import base64
+import json
+from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -5,6 +8,7 @@ from requests import HTTPError, Response
 
 from pyinaturalist.client import iNatClient
 from pyinaturalist.docs import document_common_args
+from pyinaturalist.exceptions import AuthenticationError
 
 mock_session_1 = MagicMock()
 mock_session_2 = MagicMock()
@@ -170,3 +174,96 @@ def test_client_auth__does_not_refresh_provided_access_token(get_access_token):
 
     get_access_token.assert_not_called()
     assert mock_request.call_count == 1
+
+
+# Item 2: auth_flow validation
+# ----------------------------
+
+
+@pytest.mark.parametrize('bad_flow', ['oauth2', 'client_credentials', '', 'Authorization_Code'])
+def test_client_auth__invalid_flow_raises(bad_flow):
+    """iNatClient raises AuthenticationError at init for an unrecognized auth_flow."""
+    with pytest.raises(AuthenticationError, match='Unsupported auth_flow'):
+        iNatClient(creds={'auth_flow': bad_flow})
+
+
+@pytest.mark.parametrize('good_flow', ['password', 'authorization_code'])
+def test_client_auth__valid_flows_accepted(good_flow):
+    """iNatClient accepts all supported auth_flow values without raising."""
+    client = iNatClient(creds={'auth_flow': good_flow})
+    assert client.creds['auth_flow'] == good_flow
+
+
+# Item 8: _TokenInfo lifecycle
+# ----------------------------
+
+
+def _make_jwt(payload: dict) -> str:
+    """Build a minimal unsigned JWT string with the given payload."""
+    header = base64.urlsafe_b64encode(b'{"alg":"none"}').rstrip(b'=').decode()
+    body = base64.urlsafe_b64encode(json.dumps(payload).encode()).rstrip(b'=').decode()
+    return f'{header}.{body}.fakesig'
+
+
+@patch('pyinaturalist.client.get_access_token', return_value='plain_token')
+def test_client_auth__token_info_populated(get_access_token):
+    """After an authenticated request, _token_info is populated with correct metadata."""
+    before = datetime.now(tz=timezone.utc)
+    client = iNatClient()
+    client.request(request_function, auth=True)
+
+    info = client._token_info
+    assert info is not None
+    assert info.token == 'plain_token'
+    assert info.flow == 'password'
+    assert info.obtained_at >= before
+    assert info.obtained_at.tzinfo == timezone.utc
+
+
+@patch('pyinaturalist.client.get_access_token_via_auth_code', return_value='ac_token')
+def test_client_auth__token_info_flow_auth_code(get_access_token_via_auth_code):
+    """flow is set to 'authorization_code' when using the auth code flow."""
+    client = iNatClient(creds={'auth_flow': 'authorization_code', 'app_id': 'my_app'})
+    client.request(request_function, auth=True)
+
+    assert client._token_info is not None
+    assert client._token_info.flow == 'authorization_code'
+
+
+@patch('pyinaturalist.client.get_access_token')
+def test_client_auth__token_info_exp_decoded(get_access_token):
+    """expires_at is decoded from a JWT exp claim."""
+    exp_ts = 1893456000
+    jwt_token = _make_jwt({'exp': exp_ts})
+    get_access_token.return_value = jwt_token
+
+    client = iNatClient()
+    client.request(request_function, auth=True)
+
+    info = client._token_info
+    assert info is not None
+    assert info.expires_at is not None
+    assert info.expires_at.tzinfo == timezone.utc
+    assert int(info.expires_at.timestamp()) == exp_ts
+
+
+@patch('pyinaturalist.client.get_access_token', return_value='plain_oauth_token')
+def test_client_auth__token_info_no_exp_for_plain_token(get_access_token):
+    """expires_at is None for a plain OAuth token that is not a JWT."""
+    client = iNatClient()
+    client.request(request_function, auth=True)
+
+    assert client._token_info is not None
+    assert client._token_info.expires_at is None
+
+
+@patch('pyinaturalist.client.get_access_token', side_effect=['expired_token', 'fresh_token'])
+def test_client_auth__token_info_updated_on_401(get_access_token):
+    """_token_info is replaced (not stale) after a 401 triggers a refresh."""
+    mock_request = MagicMock(side_effect=[make_http_error(401), {'ok': True}])
+    client = iNatClient()
+
+    client.request(mock_request, auth=True)
+
+    assert client._token_info is not None
+    assert client._token_info.token == 'fresh_token'

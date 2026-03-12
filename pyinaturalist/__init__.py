@@ -1,6 +1,11 @@
 # ruff: noqa: F401, F403
 # isort: skip_file
-from pyinaturalist.auth import get_access_token, get_access_token_via_auth_code
+from pyinaturalist.auth import (
+    build_authorize_url,
+    get_access_token,
+    get_access_token_via_auth_code,
+    get_auth_code_via_server,
+)
 from pyinaturalist.client import iNatClient
 from pyinaturalist.constants import *
 from pyinaturalist.formatters import enable_logging, format_table, pprint, pprint_tree
