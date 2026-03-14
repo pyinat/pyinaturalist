@@ -12,11 +12,12 @@ $ uv sync --all-extras --all-groups
 ## Contribution Guidelines
 
 ### AI Policy
-AI-assisted contributions are acceptable if:
+AI-assisted contributions may be accepted if:
 * Contents are fully **reviewed, tested, and understood by a human**
 * Any user-facing documentation is human-written (excluding minor edits/docstring boilerplate)
 * You are a user of this project, or of iNaturalist, or are otherwise involved in biodiversity data
   and citized science
+* You comment in a new or existing issue to discuss *before* submitting a PR
 
 The general principle is that low-effort, fully automated contributions add a maintenance burden for
 me (a limited and squishy mortal being) that is out of proportion with the utility these PRs provide,
@@ -24,11 +25,10 @@ especially if they are submitted solely for contribution stats.
 
 ### Pull Requests
 Here are some general guidelines for submitting a pull request:
-- Use the PR template
-- If the changes are trivial, just submit a PR and briefly explain the changes in the description.
-- Otherwise, please submit an issue describing the proposed change prior to submitting a PR.
-- Make sure the code is tested, documented, and type-annotated (as described in sections below).
-- Submit the PR to be merged into the `main` branch.
+* Use the PR template
+* In most cases, please submit an issue (or comment on an existing issue) describing the proposed change prior to submitting a PR.
+* Or, if the changes are trivial (minor bugfixes, etc.), just briefly explain the changes in the PR description
+* Make sure the code is tested, documented, and type-annotated (as described in sections below).
 
 ### Tests
 To run all tests and linting:
