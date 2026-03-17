@@ -113,6 +113,7 @@ In addition, checking attributes on nested objects will not raise `AttributeErro
 * Fix corner case resulting in `observed_on` not being converted to `datetime`
 * Fix list slicing on custom collection types (`TaxonCounts`, etc.)
 * Fix pprint with empty results
+* Close any open cache or ratelimit SQLite connections when closing or garbage-collecting `ClientSession`
 
 ### Other Changes
 * Add support for python 3.15
