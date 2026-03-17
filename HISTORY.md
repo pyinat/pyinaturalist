@@ -124,6 +124,7 @@ In addition, checking attributes on nested objects will not raise `AttributeErro
   * Deprecate `FileLockSQLiteBucket` in favor of `use_file_lock` (but still available for backwards-compatibility)
 * Drop support for python 3.8 and 3.9 (removed upstream)
 * Remove `pyinaturalist.rest_api` and `pyinaturalist.node_api` modules (deprecated in 0.14)
+* Remove `get_observation` (deprecated in 0.18 and replaced by `get_observations` and `get_observations_by_id`)
 
 ## 0.21.1 (2026-02-13)
 * Update `v2.create_observation()` and `update_observation()` to accept multiple observation field values, consistent with v0 and v1 APIs.

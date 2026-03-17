@@ -1,4 +1,3 @@
-# TODO: pprint examples are out of date
 from copy import deepcopy
 from logging import getLogger
 
@@ -12,14 +11,12 @@ from pyinaturalist.constants import (
     MultiFile,
     MultiInt,
     MultiIntOrStr,
-    ResponseResult,
 )
 from pyinaturalist.converters import (
     convert_all_coordinates,
     convert_all_timestamps,
     convert_generic_timestamps,
     convert_histogram,
-    convert_observation_timestamps,
     ensure_list,
     get_histogram_interval,
 )
@@ -460,7 +457,7 @@ def update_observation(observation_id: int, **params) -> ListResponse:
     # If adding photos by ID, they must be appended to the list of existing photo IDs
     if photo_ids:
         logger.info(f'Adding {len(photo_ids)} existing photos')
-        obs = get_observation(observation_id)
+        obs = get_observations_by_id(observation_id)['results'][0]
         combined_photo_ids = [p['id'] for p in obs['photos']]
         combined_photo_ids.extend(ensure_list(photo_ids))
         payload['local_photos'] = {str(observation_id): combined_photo_ids}
@@ -586,36 +583,3 @@ def delete_observation(observation_id: int, access_token: str | None = None, **p
     if response.status_code == 404:
         raise ObservationNotFound(response=response)
     response.raise_for_status()
-
-
-@document_common_args
-def get_observation(
-    observation_id: int, access_token: str | None = None, **params
-) -> ResponseResult:
-    """Get details about a single observation by ID
-
-    .. rubric:: Notes
-
-    * :fas:`triangle-exclamation` Deprecated; use :func:`get_observations`
-      or :func:`get_observations_by_id` instead
-    * :fas:`lock-opens` :ref:`Optional authentication <auth>` (For private/obscured coordinates)
-    * API reference: :v1:`GET /observations/{id} <Observations/get_observations_id>`
-
-    Example:
-        >>> response = get_observation(16227955)
-
-    Args:
-        observation_id: Get the observation with this ID. Only a single value is allowed.
-        access_token: An access token, as returned by :py:func:`.get_access_token()`
-
-    Returns:
-        A dict with details on the observation
-
-    Raises:
-        :py:exc:`.ObservationNotFound` If an invalid observation is specified
-    """
-
-    response = get_observations(id=observation_id, access_token=access_token, **params)
-    if response['results']:
-        return convert_observation_timestamps(response['results'][0])
-    raise ObservationNotFound(response=response)

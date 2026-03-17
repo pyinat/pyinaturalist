@@ -13,7 +13,6 @@ from pyinaturalist.v1.observation_fields import delete_observation_field, set_ob
 from pyinaturalist.v1.observations import (
     create_observation,
     delete_observation,
-    get_observation,
     get_observation_histogram,
     get_observation_identifiers,
     get_observation_observers,
