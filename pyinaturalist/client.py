@@ -30,6 +30,8 @@ from pyinaturalist.paginator import Paginator
 from pyinaturalist.request_params import get_valid_kwargs, strip_empty_values
 from pyinaturalist.session import ClientSession
 
+JWT_EXPIRY_BUFFER = timedelta(seconds=60)
+
 logger = getLogger(__name__)
 
 
@@ -49,7 +51,6 @@ AUTH_CODE_CRED_KEYS = frozenset(
         'app_secret',
         'use_pkce',
         'use_oob',
-        'jwt',
         'refresh',
         'port',
         'timeout',
@@ -60,9 +61,7 @@ AUTH_CODE_CRED_KEYS = frozenset(
     }
 )
 
-PASSWORD_FLOW_CRED_KEYS = frozenset(
-    {'username', 'password', 'app_id', 'app_secret', 'jwt', 'refresh'}
-)
+PASSWORD_FLOW_CRED_KEYS = frozenset({'username', 'password', 'app_id', 'app_secret', 'refresh'})
 
 SUPPORTED_AUTH_FLOWS = frozenset({'password', 'authorization_code'})
 
@@ -184,7 +183,7 @@ class iNatClient:
             return access_token
         if self._token_info:
             still_valid = self._token_info.expires_at is None or self._token_info.expires_at > (
-                datetime.now(tz=timezone.utc) + timedelta(seconds=60)
+                datetime.now(tz=timezone.utc) + JWT_EXPIRY_BUFFER
             )
             if still_valid:
                 return self._token_info.token
@@ -197,12 +196,12 @@ class iNatClient:
         """Get a new access token from configured credentials and wrap it in _TokenInfo."""
         flow = self.creds.get('auth_flow', 'password')
         if flow == 'authorization_code':
-            auth_code_creds = self._filter_auth_code_creds(self.creds)
+            auth_code_creds = self._filter_creds(AUTH_CODE_CRED_KEYS, self.creds)
             if force_refresh:
                 auth_code_creds['refresh'] = True
             token = get_access_token_via_auth_code(**auth_code_creds)
         else:
-            token_creds = {k: v for k, v in self.creds.items() if k in PASSWORD_FLOW_CRED_KEYS}
+            token_creds = self._filter_creds(PASSWORD_FLOW_CRED_KEYS, self.creds)
             if force_refresh:
                 token_creds['refresh'] = True
             token = get_access_token(**token_creds)
@@ -215,9 +214,9 @@ class iNatClient:
         )
 
     @staticmethod
-    def _filter_auth_code_creds(creds: dict[str, Any]) -> dict[str, Any]:
-        """Keep only credentials accepted by get_access_token_via_auth_code()."""
-        return {k: v for k, v in creds.items() if k in AUTH_CODE_CRED_KEYS}
+    def _filter_creds(valid_keys: frozenset, creds: dict[str, Any]) -> dict[str, Any]:
+        """Keep only credentials accepted by the selected auth flow."""
+        return {k: v for k, v in creds.items() if k in valid_keys}
 
     def paginate(
         self,

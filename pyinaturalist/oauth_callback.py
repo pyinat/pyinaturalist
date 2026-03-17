@@ -59,11 +59,15 @@ def get_auth_code_via_server(
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             server.timeout = max(0, deadline - time.monotonic())
-            server.handle_request()
+            try:
+                server.handle_request()
+            except Exception as e:
+                logger.exception(e)
+                break
             if result.auth_code or result.auth_error:
                 break
 
-    # Note: if _serve_until_result raises an unhandled exception, it is lost (daemon thread).
+    # Note: if the server thread raises an unhandled exception, it will be lost (daemon thread).
     # The caller will see 'No authorization code received' after the join timeout expires.
     server_thread = threading.Thread(target=_serve_until_result, daemon=True)
     server_thread.start()

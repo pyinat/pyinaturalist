@@ -55,8 +55,11 @@ following pieces of information:
   you can use your repo name.
 * **Description:** A brief description of what you'll be using this for. For example,
   *"Data access for my own observations"*.
-* **Confidential:** ✔️ This should be checked.
-* **URL and Redirect URI:** Just enter the URL to your GitHub repo, if you have one; otherwise any
+* **Confidential:** ✔️ This should be checked if you are using the password-based flow. It is
+  optional if you are using the authorization code flow with PKCE.
+* **Redirect URI:** This depends on the authentication flow you intend to use. See below for
+  details.
+* **URL:** Just enter the URL to your GitHub repo, if you have one; otherwise any
   placeholder like "<https://www.inaturalist.org>" will work.
 
 ```{image} ../images/inat-new-application.png
