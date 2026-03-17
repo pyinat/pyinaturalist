@@ -23,6 +23,9 @@ Supported resources include:
 * Users
 * Unified text search
 
+### Authentication
+* Add support for authorization code flow + PKCE
+
 ### Session settings
 * Added `ClientSession` argument `use_file_lock` (replaces `FileLockSQLiteBucket` use)
 

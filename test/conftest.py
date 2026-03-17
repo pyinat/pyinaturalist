@@ -3,6 +3,7 @@ Shared unit test-related utilities.
 Pytest will also automatically pick up any fixtures defined here.
 """
 
+import base64
 import json
 import os
 import re
@@ -12,6 +13,7 @@ from inspect import Parameter, getmembers, isfunction, signature
 from unittest.mock import MagicMock, patch
 
 import pytest
+from requests import HTTPError, Response
 from requests_cache import DO_NOT_CACHE, BaseCache
 
 from pyinaturalist import enable_logging
@@ -119,3 +121,19 @@ def ignore_deprecation():
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', category=DeprecationWarning)
         yield
+
+
+def make_jwt(payload: dict) -> str:
+    """Build a minimal unsigned JWT string with the given payload."""
+    header = base64.urlsafe_b64encode(b'{"alg":"none"}').rstrip(b'=').decode()
+    body = base64.urlsafe_b64encode(json.dumps(payload).encode()).rstrip(b'=').decode()
+    return f'{header}.{body}.fakesig'
+
+
+def make_http_error(status_code: int) -> HTTPError:
+    """Build an HTTPError with a response of the given status code."""
+    response = Response()
+    response.status_code = status_code
+    error = HTTPError(f'HTTP {status_code}')
+    error.response = response
+    return error
