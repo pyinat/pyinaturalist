@@ -7,7 +7,8 @@ import pytest
 from keyring.errors import KeyringError
 from requests import HTTPError, Response
 
-from pyinaturalist.auth import (
+from pyinaturalist.client import ClientSession
+from pyinaturalist.client.oauth import (
     _decode_jwt_exp,
     get_access_token,
     get_access_token_via_auth_code,
@@ -15,10 +16,9 @@ from pyinaturalist.auth import (
     set_keyring_credentials,
     validate_token,
 )
+from pyinaturalist.client.oauth_callback import CallbackResult
 from pyinaturalist.constants import API_V0, KEYRING_KEY
 from pyinaturalist.exceptions import AuthenticationError
-from pyinaturalist.oauth_callback import CallbackResult
-from pyinaturalist.session import ClientSession
 from test.conftest import MOCK_CREDS_ENV, MOCK_CREDS_OAUTH, load_sample_data, make_jwt
 
 token_accepted_json = load_sample_data('get_access_token.json')
@@ -40,7 +40,7 @@ NOT_CACHED_RESPONSE.status_code = 504
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
 @pytest.mark.parametrize(
     'jwt, expected_token', [(False, OAUTH_ACCESS_TOKEN), (True, JWT_API_TOKEN)]
 )
@@ -69,8 +69,8 @@ def test_get_access_token__cached_jwt(requests_mock):
 
 
 @patch.dict(os.environ, MOCK_CREDS_ENV)
-@patch('pyinaturalist.auth.get_keyring_credentials')
-@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch('pyinaturalist.client.oauth.get_keyring_credentials')
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
 def test_get_access_token__envars(mock_get_jwt, mock_keyring_credentials, requests_mock):
     requests_mock.post(f'{API_V0}/oauth/token', json=token_accepted_json, status_code=200)
 
@@ -80,7 +80,7 @@ def test_get_access_token__envars(mock_get_jwt, mock_keyring_credentials, reques
 
 
 @patch.dict(os.environ, {'INAT_USERNAME': 'valid_username', 'INAT_PASSWORD': 'valid_password'})
-@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
 def test_get_access_token__mixed_args_and_envars(mock_get_jwt, requests_mock):
     requests_mock.post(f'{API_V0}/oauth/token', json=token_accepted_json, status_code=200)
 
@@ -90,8 +90,8 @@ def test_get_access_token__mixed_args_and_envars(mock_get_jwt, requests_mock):
 
 @pytest.mark.enable_client_session
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth.get_keyring_credentials', return_value=MOCK_CREDS_OAUTH)
-@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch('pyinaturalist.client.oauth.get_keyring_credentials', return_value=MOCK_CREDS_OAUTH)
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
 @patch.object(ClientSession, 'post')
 def test_get_access_token__keyring(
     mock_post, mock_get_jwt, mock_keyring_credentials, requests_mock
@@ -107,14 +107,14 @@ def test_get_access_token__keyring(
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth.get_keyring_credentials')
-@patch('pyinaturalist.auth._get_jwt', return_value=NOT_CACHED_RESPONSE)
+@patch('pyinaturalist.client.oauth.get_keyring_credentials')
+@patch('pyinaturalist.client.oauth._get_jwt', return_value=NOT_CACHED_RESPONSE)
 def test_get_access_token__missing_creds(mock_get_jwt, mock_keyring_credentials):
     with pytest.raises(AuthenticationError, match='Not all authentication parameters'):
         get_access_token('username')
 
 
-@patch('pyinaturalist.auth._get_jwt', return_value=NOT_CACHED_RESPONSE)
+@patch('pyinaturalist.client.oauth._get_jwt', return_value=NOT_CACHED_RESPONSE)
 def test_get_access_token__invalid_creds(mock_get_jwt, requests_mock):
     requests_mock.post(f'{API_V0}/oauth/token', json=token_rejected_json, status_code=401)
 
@@ -132,9 +132,9 @@ def _make_server_result(auth_code=None, auth_error=None):
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
 @patch(
-    'pyinaturalist.oauth_callback.get_auth_code_via_server',
+    'pyinaturalist.client.oauth_callback.get_auth_code_via_server',
     return_value=_make_server_result('mock_auth_code'),
 )
 def test_get_access_token_via_auth_code__pkce(mock_server, mock_get_jwt, requests_mock):
@@ -153,9 +153,9 @@ def test_get_access_token_via_auth_code__pkce(mock_server, mock_get_jwt, request
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
 @patch(
-    'pyinaturalist.oauth_callback.get_auth_code_via_server',
+    'pyinaturalist.client.oauth_callback.get_auth_code_via_server',
     return_value=_make_server_result('mock_auth_code'),
 )
 def test_get_access_token_via_auth_code__no_pkce(mock_server, mock_get_jwt, requests_mock):
@@ -173,8 +173,8 @@ def test_get_access_token_via_auth_code__no_pkce(mock_server, mock_get_jwt, requ
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
-@patch('pyinaturalist.oauth_callback.webbrowser.open')
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch('pyinaturalist.client.oauth_callback.webbrowser.open')
 @patch('builtins.input', return_value='oob_auth_code')
 def test_get_access_token_via_auth_code__oob(mock_input, mock_browser, mock_get_jwt, requests_mock):
     requests_mock.post(f'{API_V0}/oauth/token', json=token_accepted_json, status_code=200)
@@ -191,9 +191,9 @@ def test_get_access_token_via_auth_code__oob(mock_input, mock_browser, mock_get_
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', return_value=NOT_CACHED_RESPONSE)
+@patch('pyinaturalist.client.oauth._get_jwt', return_value=NOT_CACHED_RESPONSE)
 @patch(
-    'pyinaturalist.oauth_callback.get_auth_code_via_server',
+    'pyinaturalist.client.oauth_callback.get_auth_code_via_server',
     return_value=_make_server_result('mock_auth_code'),
 )
 def test_get_access_token_via_auth_code__oauth(mock_server, mock_get_jwt, requests_mock):
@@ -207,7 +207,7 @@ def test_get_access_token_via_auth_code__oauth(mock_server, mock_get_jwt, reques
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', return_value=JWT_RESPONSE_200)
+@patch('pyinaturalist.client.oauth._get_jwt', return_value=JWT_RESPONSE_200)
 def test_get_access_token_via_auth_code__cached_jwt(mock_get_jwt):
     """If a JWT is already cached, return it without starting the browser flow."""
     token = get_access_token_via_auth_code(app_id='valid_app_id')
@@ -215,15 +215,18 @@ def test_get_access_token_via_auth_code__cached_jwt(mock_get_jwt):
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', return_value=NOT_CACHED_RESPONSE)
-@patch('pyinaturalist.oauth_callback.get_auth_code_via_server', return_value=_make_server_result())
+@patch('pyinaturalist.client.oauth._get_jwt', return_value=NOT_CACHED_RESPONSE)
+@patch(
+    'pyinaturalist.client.oauth_callback.get_auth_code_via_server',
+    return_value=_make_server_result(),
+)
 def test_get_access_token_via_auth_code__timeout(mock_server, mock_get_jwt):
     with pytest.raises(AuthenticationError, match='No authorization code received'):
         get_access_token_via_auth_code(app_id='valid_app_id')
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', return_value=NOT_CACHED_RESPONSE)
+@patch('pyinaturalist.client.oauth._get_jwt', return_value=NOT_CACHED_RESPONSE)
 @pytest.mark.parametrize(
     'kwargs, match',
     [
@@ -237,12 +240,12 @@ def test_get_access_token_via_auth_code__missing_creds(mock_get_jwt, kwargs, mat
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
 @patch(
-    'pyinaturalist.oauth_callback.get_auth_code_via_server',
+    'pyinaturalist.client.oauth_callback.get_auth_code_via_server',
     return_value=_make_server_result('mock_auth_code'),
 )
-@patch('pyinaturalist.oauth_callback.get_password', return_value='valid_app_secret')
+@patch('pyinaturalist.client.oauth_callback.get_password', return_value='valid_app_secret')
 def test_get_access_token_via_auth_code__app_secret_from_keyring(
     mock_get_password, mock_server, mock_get_jwt, requests_mock
 ):
@@ -256,12 +259,12 @@ def test_get_access_token_via_auth_code__app_secret_from_keyring(
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
 @patch(
-    'pyinaturalist.oauth_callback.get_auth_code_via_server',
+    'pyinaturalist.client.oauth_callback.get_auth_code_via_server',
     return_value=_make_server_result('mock_auth_code'),
 )
-@patch('pyinaturalist.oauth_callback.get_password', return_value='valid_app_id')
+@patch('pyinaturalist.client.oauth_callback.get_password', return_value='valid_app_id')
 def test_get_access_token_via_auth_code__app_id_from_keyring(
     mock_get_password, mock_server, mock_get_jwt, requests_mock
 ):
@@ -275,7 +278,7 @@ def test_get_access_token_via_auth_code__app_id_from_keyring(
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', return_value=NOT_CACHED_RESPONSE)
+@patch('pyinaturalist.client.oauth._get_jwt', return_value=NOT_CACHED_RESPONSE)
 @pytest.mark.parametrize(
     'auth_error, match',
     [
@@ -286,7 +289,7 @@ def test_get_access_token_via_auth_code__app_id_from_keyring(
 def test_get_access_token_via_auth_code__server_error(mock_get_jwt, auth_error, match):
     """Authorization errors from the callback server raise AuthenticationError."""
     with patch(
-        'pyinaturalist.oauth_callback.get_auth_code_via_server',
+        'pyinaturalist.client.oauth_callback.get_auth_code_via_server',
         return_value=_make_server_result(auth_error=auth_error),
     ):
         with pytest.raises(AuthenticationError, match=match):
@@ -294,8 +297,11 @@ def test_get_access_token_via_auth_code__server_error(mock_get_jwt, auth_error, 
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', return_value=NOT_CACHED_RESPONSE)
-@patch('pyinaturalist.oauth_callback.HTTPServer', side_effect=OSError(98, 'Address already in use'))
+@patch('pyinaturalist.client.oauth._get_jwt', return_value=NOT_CACHED_RESPONSE)
+@patch(
+    'pyinaturalist.client.oauth_callback.HTTPServer',
+    side_effect=OSError(98, 'Address already in use'),
+)
 def test_get_access_token_via_auth_code__port_in_use(mock_httpserver, mock_get_jwt):
     """An OSError when binding the callback server raises AuthenticationError."""
     with pytest.raises(AuthenticationError, match='port'):
@@ -303,9 +309,9 @@ def test_get_access_token_via_auth_code__port_in_use(mock_httpserver, mock_get_j
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
 @patch(
-    'pyinaturalist.oauth_callback.get_auth_code_via_server',
+    'pyinaturalist.client.oauth_callback.get_auth_code_via_server',
     return_value=_make_server_result('mock_auth_code'),
 )
 def test_get_access_token_via_auth_code__custom_open_url(mock_server, mock_get_jwt, requests_mock):
@@ -320,8 +326,8 @@ def test_get_access_token_via_auth_code__custom_open_url(mock_server, mock_get_j
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.auth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
-@patch('pyinaturalist.oauth_callback.webbrowser.open')
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch('pyinaturalist.client.oauth_callback.webbrowser.open')
 def test_get_access_token_via_auth_code__custom_get_code_oob(
     mock_browser, mock_get_jwt, requests_mock
 ):
@@ -358,12 +364,12 @@ def test_validate_token(response_code):
 # -------------------------
 
 
-@patch('pyinaturalist.auth.get_password', side_effect=list(MOCK_CREDS_OAUTH.values()))
+@patch('pyinaturalist.client.oauth.get_password', side_effect=list(MOCK_CREDS_OAUTH.values()))
 def test_get_keyring_credentials(get_password):
     assert get_keyring_credentials() == MOCK_CREDS_OAUTH
 
 
-@patch('pyinaturalist.auth.get_password', side_effect=KeyringError)
+@patch('pyinaturalist.client.oauth.get_password', side_effect=KeyringError)
 def test_get_keyring_credentials__no_backend(get_password):
     assert get_keyring_credentials() == {}
 
@@ -372,7 +378,7 @@ def test_get_keyring_credentials__no_backend(get_password):
 # -------------------------
 
 
-@patch('pyinaturalist.auth.set_password')
+@patch('pyinaturalist.client.oauth.set_password')
 def test_set_keyring_credentials(set_password):
     set_keyring_credentials('username', 'password', 'app_id', 'app_secret')
     assert set_password.call_count == 4

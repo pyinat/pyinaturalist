@@ -327,7 +327,7 @@ def test_taxon_summary__with_listed_taxon(requests_mock):
     assert 'western honey bee' in results.wikipedia_summary
 
 
-@patch('pyinaturalist.client.get_access_token', return_value='token')
+@patch('pyinaturalist.client.client.get_access_token', return_value='token')
 @patch('pyinaturalist.v1.observations.update_observation')
 def test_upload(mock_update_observation, mock_get_access_token, requests_mock):
     requests_mock.post(
@@ -345,8 +345,8 @@ def test_upload(mock_update_observation, mock_get_access_token, requests_mock):
     client._access_token = 'token'
     media_objs = client.observations.upload(
         1234,
-        photos=BytesIO(),
-        sounds=BytesIO(),
+        photos=BytesIO(b'test'),
+        sounds=BytesIO(b'test'),
         photo_ids=[5678],
     )
     photo, sound = media_objs

@@ -88,7 +88,7 @@ def test_search__with_obs_fields(requests_mock):
     assert obs_field.required is False
 
 
-@patch('pyinaturalist.client.get_access_token', return_value='token')
+@patch('pyinaturalist.client.client.get_access_token', return_value='token')
 def test_add_observation(get_access_token, requests_mock):
     requests_mock.post(
         f'{API_V1}/project_observations',

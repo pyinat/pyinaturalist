@@ -61,7 +61,7 @@ from pyinaturalist.request_params import (
     preprocess_request_params,
 )
 
-logger = getLogger('pyinaturalist')
+_logger = getLogger('pyinaturalist')
 thread_local = threading.local()
 
 
@@ -337,8 +337,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         if timeout is _UNSET:
             timeout = RequestTimeout(request.method, self.read_timeout, self.write_timeout)
 
-        if logger.level <= INFO:
-            logger.info(format_request(request, dry_run, timeout=timeout))
+        if _logger.level <= INFO:
+            _logger.info(format_request(request, dry_run, timeout=timeout))
 
         # Make a mock request, if specified
         if dry_run or is_dry_run_enabled(request.method):
@@ -358,8 +358,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         except ConnectionError as e:
             if 'write operation timed out' not in str(e):
                 raise
-            logger.debug('Write timed out:', exc_info=True)
-            logger.warning('Write timed out; retrying...')
+            _logger.debug('Write timed out:', exc_info=True)
+            _logger.warning('Write timed out; retrying...')
 
             # Reuse the same retry object to share retry state and limits
             retries = retries or self.retries
@@ -377,8 +377,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             **kwargs,
         )
 
-        if logger.level <= DEBUG:
-            logger.debug(format_response(response))
+        if _logger.level <= DEBUG:
+            _logger.debug(format_response(response))
         return response
 
     def get_refresh_params(self, endpoint) -> dict:
@@ -395,7 +395,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             name = f'{endpoint}?v={v}'
             if self.refresh_limiter.try_acquire(name, blocking=False):
                 break
-            logger.debug(f'{name} cannot be refreshed yet')
+            _logger.debug(f'{name} cannot be refreshed yet')
             v += 1
 
         return {'refresh': True, 'v': v} if v > 0 else {'refresh': True}
@@ -420,7 +420,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             response_json = response.json()
         # Update retry state and wait before sending the request again
         except JSONDecodeError as e:
-            logger.info('Invalid JSON response; retrying...')
+            _logger.info('Invalid JSON response; retrying...')
             retries = retries or self.retries
             retries = retries.increment(
                 response.request.method,
@@ -499,14 +499,6 @@ def clear_cache():
     get_local_session().cache.clear()
 
 
-def env_to_bool(environment_variable: str) -> bool:
-    """Translate an environment variable to a boolean value, accounting for minor
-    variations (case, None vs. False, etc.)
-    """
-    env_value = getenv(environment_variable)
-    return bool(env_value) and str(env_value).lower() not in ['false', 'none']
-
-
 def get_local_session(**kwargs) -> ClientSession:
     """Get a thread-local Session object with default settings. This will be reused across requests
     to take advantage of connection pooling and (optionally) caching. If used in a multi-threaded
@@ -555,6 +547,14 @@ def is_dry_run_enabled(method: str) -> bool:
     a constant or an environment variable. Dry-run mode may be enabled for either write
     requests, or all requests.
     """
-    dry_run_enabled = env_to_bool('DRY_RUN_ENABLED')
-    dry_run_write_only = env_to_bool('DRY_RUN_WRITE_ONLY') and method in WRITE_HTTP_METHODS
+    dry_run_enabled = _env_to_bool('DRY_RUN_ENABLED')
+    dry_run_write_only = _env_to_bool('DRY_RUN_WRITE_ONLY') and method in WRITE_HTTP_METHODS
     return dry_run_enabled or dry_run_write_only
+
+
+def _env_to_bool(environment_variable: str) -> bool:
+    """Translate an environment variable to a boolean value, accounting for minor
+    variations (case, None vs. False, etc.)
+    """
+    env_value = getenv(environment_variable)
+    return bool(env_value) and str(env_value).lower() not in ['false', 'none']

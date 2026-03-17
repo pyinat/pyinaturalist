@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from pyinaturalist.paginator import Paginator
+from pyinaturalist.client import Paginator
 
 if TYPE_CHECKING:
     from pyinaturalist.client import iNatClient

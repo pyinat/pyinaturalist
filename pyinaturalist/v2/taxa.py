@@ -1,12 +1,11 @@
 from copy import deepcopy
 
+from pyinaturalist.client import get, paginate_all, post
 from pyinaturalist.constants import API_V2, JsonResponse, MultiInt, RequestParams
 from pyinaturalist.converters import convert_all_timestamps, ensure_list
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import convert_rank_range
-from pyinaturalist.session import get, post
 
 
 @document_request_params(

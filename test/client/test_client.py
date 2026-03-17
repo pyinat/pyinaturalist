@@ -53,7 +53,7 @@ def test_client_settings(client_settings, request_params, expected_params):
         assert final_params[k] == v
 
 
-@patch('pyinaturalist.client.get_access_token', return_value='token')
+@patch('pyinaturalist.client.client.get_access_token', return_value='token')
 def test_client_auth(get_access_token):
     """An access token should be added to authenticated requests"""
     client = iNatClient()
@@ -65,7 +65,7 @@ def test_client_auth(get_access_token):
     get_access_token.assert_called_once()
 
 
-@patch('pyinaturalist.client.get_access_token', return_value='token')
+@patch('pyinaturalist.client.client.get_access_token', return_value='token')
 def test_client_auth__password_flow_strips_auth_flow_key(get_access_token):
     """auth_flow key in creds must not be forwarded to get_access_token (it doesn't accept it)."""
     client = iNatClient(creds={'auth_flow': 'password', 'username': 'u', 'password': 'p'})
@@ -74,7 +74,7 @@ def test_client_auth__password_flow_strips_auth_flow_key(get_access_token):
     assert 'auth_flow' not in call_kwargs
 
 
-@patch('pyinaturalist.client.get_access_token', return_value='token')
+@patch('pyinaturalist.client.client.get_access_token', return_value='token')
 def test_client_auth__reuses_cached_token(get_access_token):
     client = iNatClient()
     final_params_1 = client.request(request_function, auth=True)
@@ -85,7 +85,7 @@ def test_client_auth__reuses_cached_token(get_access_token):
     get_access_token.assert_called_once()
 
 
-@patch('pyinaturalist.client.get_access_token_via_auth_code', return_value='auth_code_token')
+@patch('pyinaturalist.client.client.get_access_token_via_auth_code', return_value='auth_code_token')
 def test_client_auth_code_flow(get_access_token_via_auth_code):
     client = iNatClient(creds={'auth_flow': 'authorization_code', 'app_id': 'my_app_id'})
     final_params = client.request(request_function, auth=True)
@@ -95,7 +95,7 @@ def test_client_auth_code_flow(get_access_token_via_auth_code):
 
 
 @patch(
-    'pyinaturalist.client.get_access_token_via_auth_code',
+    'pyinaturalist.client.client.get_access_token_via_auth_code',
     return_value='auth_code_token',
 )
 def test_client_auth_code_flow__reuses_cached_token(
@@ -110,7 +110,7 @@ def test_client_auth_code_flow__reuses_cached_token(
     get_access_token_via_auth_code.assert_called_once_with(app_id='my_app_id')
 
 
-@patch('pyinaturalist.client.get_access_token_via_auth_code')
+@patch('pyinaturalist.client.client.get_access_token_via_auth_code')
 def test_client_auth_code_flow__request_access_token_override(get_access_token_via_auth_code):
     client = iNatClient(creds={'auth_flow': 'authorization_code', 'app_id': 'my_app_id'})
     final_params = client.request(request_function, auth=True, access_token='provided_token')
@@ -119,7 +119,7 @@ def test_client_auth_code_flow__request_access_token_override(get_access_token_v
     get_access_token_via_auth_code.assert_not_called()
 
 
-@patch('pyinaturalist.client.get_access_token_via_auth_code', return_value='auth_code_token')
+@patch('pyinaturalist.client.client.get_access_token_via_auth_code', return_value='auth_code_token')
 def test_client_auth_code_flow__filters_unrelated_creds(get_access_token_via_auth_code):
     client = iNatClient(
         creds={
@@ -136,7 +136,7 @@ def test_client_auth_code_flow__filters_unrelated_creds(get_access_token_via_aut
     get_access_token_via_auth_code.assert_called_once_with(app_id='my_app_id')
 
 
-@patch('pyinaturalist.client.get_access_token', side_effect=['expired_token', 'fresh_token'])
+@patch('pyinaturalist.client.client.get_access_token', side_effect=['expired_token', 'fresh_token'])
 def test_client_auth__refreshes_cached_token_on_401(get_access_token):
     mock_request = MagicMock(side_effect=[make_http_error(401), {'ok': True}])
     client = iNatClient()
@@ -149,7 +149,9 @@ def test_client_auth__refreshes_cached_token_on_401(get_access_token):
     assert mock_request.call_args_list[1].kwargs['access_token'] == 'fresh_token'
 
 
-@patch('pyinaturalist.client.get_access_token_via_auth_code', side_effect=['expired', 'fresh'])
+@patch(
+    'pyinaturalist.client.client.get_access_token_via_auth_code', side_effect=['expired', 'fresh']
+)
 def test_client_auth_code_flow__refreshes_cached_token_on_401(get_access_token_via_auth_code):
     mock_request = MagicMock(side_effect=[make_http_error(401), {'ok': True}])
     client = iNatClient(creds={'auth_flow': 'authorization_code', 'app_id': 'my_app_id'})
@@ -164,7 +166,7 @@ def test_client_auth_code_flow__refreshes_cached_token_on_401(get_access_token_v
     assert second_call_kwargs == {'app_id': 'my_app_id', 'refresh': True}
 
 
-@patch('pyinaturalist.client.get_access_token')
+@patch('pyinaturalist.client.client.get_access_token')
 def test_client_auth__does_not_refresh_provided_access_token(get_access_token):
     mock_request = MagicMock(side_effect=make_http_error(401))
     client = iNatClient()
@@ -198,7 +200,7 @@ def test_client_auth__valid_flows_accepted(good_flow):
 # ----------------------------
 
 
-@patch('pyinaturalist.client.get_access_token', return_value='plain_token')
+@patch('pyinaturalist.client.client.get_access_token', return_value='plain_token')
 def test_client_auth__token_info_populated(get_access_token):
     """After an authenticated request, _token_info is populated with correct metadata."""
     before = datetime.now(tz=timezone.utc)
@@ -213,7 +215,7 @@ def test_client_auth__token_info_populated(get_access_token):
     assert info.obtained_at.tzinfo == timezone.utc
 
 
-@patch('pyinaturalist.client.get_access_token_via_auth_code', return_value='ac_token')
+@patch('pyinaturalist.client.client.get_access_token_via_auth_code', return_value='ac_token')
 def test_client_auth__token_info_flow_auth_code(get_access_token_via_auth_code):
     """flow is set to 'authorization_code' when using the auth code flow."""
     client = iNatClient(creds={'auth_flow': 'authorization_code', 'app_id': 'my_app'})
@@ -223,7 +225,7 @@ def test_client_auth__token_info_flow_auth_code(get_access_token_via_auth_code):
     assert client._token_info.flow == 'authorization_code'
 
 
-@patch('pyinaturalist.client.get_access_token')
+@patch('pyinaturalist.client.client.get_access_token')
 def test_client_auth__token_info_exp_decoded(get_access_token):
     """expires_at is decoded from a JWT exp claim."""
     exp_ts = 1893456000
@@ -240,7 +242,7 @@ def test_client_auth__token_info_exp_decoded(get_access_token):
     assert int(info.expires_at.timestamp()) == exp_ts
 
 
-@patch('pyinaturalist.client.get_access_token', return_value='plain_oauth_token')
+@patch('pyinaturalist.client.client.get_access_token', return_value='plain_oauth_token')
 def test_client_auth__token_info_no_exp_for_plain_token(get_access_token):
     """expires_at is None for a plain OAuth token that is not a JWT."""
     client = iNatClient()
@@ -250,7 +252,7 @@ def test_client_auth__token_info_no_exp_for_plain_token(get_access_token):
     assert client._token_info.expires_at is None
 
 
-@patch('pyinaturalist.client.get_access_token', side_effect=['expired_token', 'fresh_token'])
+@patch('pyinaturalist.client.client.get_access_token', side_effect=['expired_token', 'fresh_token'])
 def test_client_auth__token_info_updated_on_401(get_access_token):
     """_token_info is replaced (not stale) after a 401 triggers a refresh."""
     mock_request = MagicMock(side_effect=[make_http_error(401), {'ok': True}])

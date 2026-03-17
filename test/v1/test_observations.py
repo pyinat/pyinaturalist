@@ -6,9 +6,9 @@ from unittest.mock import patch
 import pytest
 from dateutil.tz import tzoffset, tzutc
 
+from pyinaturalist.client.session import ClientSession, MockResponse
 from pyinaturalist.constants import API_V1
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.session import ClientSession, MockResponse
 from pyinaturalist.v1 import (
     create_observation,
     delete_observation,

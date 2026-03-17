@@ -1,12 +1,12 @@
 from attr import fields_dict
 
+from pyinaturalist.client import IDPaginator, Paginator, WrapperPaginator
 from pyinaturalist.constants import MAX_IDS_PER_REQUEST, MultiInt
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import copy_doc_signature
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.models import Taxon
-from pyinaturalist.paginator import IDPaginator, Paginator, WrapperPaginator
 from pyinaturalist.v1 import get_taxa, get_taxa_autocomplete, get_taxa_by_id
 
 

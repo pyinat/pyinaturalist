@@ -1,5 +1,14 @@
 from logging import getLogger
 
+from pyinaturalist.client import (
+    ClientSession,
+    delete,
+    get,
+    get_local_session,
+    paginate_all,
+    post,
+    put,
+)
 from pyinaturalist.constants import (
     API_V1,
     PROJECT_ORDER_BY_PROPERTIES,
@@ -11,9 +20,7 @@ from pyinaturalist.constants import (
 from pyinaturalist.converters import convert_all_coordinates, convert_all_timestamps, ensure_list
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import split_common_params, validate_multiple_choice_param
-from pyinaturalist.session import ClientSession, delete, get, get_local_session, post, put
 
 logger = getLogger(__name__)
 

@@ -1,9 +1,9 @@
 from logging import getLogger
 
+from pyinaturalist.client import delete, post
 from pyinaturalist.constants import API_V2, IntOrStr
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.models import Annotation, ControlledTerm
-from pyinaturalist.session import delete, post
 from pyinaturalist.v1 import get_controlled_terms, get_controlled_terms_for_taxon
 
 logger = getLogger(__name__)

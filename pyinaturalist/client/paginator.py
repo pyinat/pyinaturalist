@@ -25,7 +25,7 @@ from pyinaturalist.constants import (
 )
 from pyinaturalist.models import T
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 # TODO: Add per-endpoint 'max_per_page' parameter to use with Paginator.all()
@@ -69,7 +69,7 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
             log_kwargs = {
                 k: v for k, v in self.request_kwargs.items() if k not in ['session', 'access_token']
             }
-            logger.debug(
+            _logger.debug(
                 f'Prepared paginated request: {self.request_function.__name__}'
                 f'(args={self.request_args}, kwargs={log_kwargs})'
             )
@@ -194,13 +194,13 @@ class Paginator(Iterable, AsyncIterable, Generic[T]):
         """
         total_requests = ceil(self.total_results / self.per_page)
         est_delay = ceil((total_requests / REQUESTS_PER_MINUTE) * 60) - 1
-        logger.info(
+        _logger.info(
             f'This query will fetch {self.total_results} results in {total_requests} requests. '
             f'Estimated total request time: {est_delay} seconds'
         )
 
         if self.total_results > LARGE_REQUEST_WARNING:
-            logger.warning(
+            _logger.warning(
                 'This request is larger than recommended for API usage. For bulk requests, consider '
                 f'using the iNat export tool instead: {EXPORT_URL}'
             )

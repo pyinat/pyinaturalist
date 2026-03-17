@@ -11,7 +11,13 @@ from typing import Any, Literal
 
 from requests import HTTPError
 
-from pyinaturalist.auth import _decode_jwt_exp, get_access_token, get_access_token_via_auth_code
+from pyinaturalist.client.oauth import (
+    _decode_jwt_exp,
+    get_access_token,
+    get_access_token_via_auth_code,
+)
+from pyinaturalist.client.paginator import Paginator
+from pyinaturalist.client.session import ClientSession
 from pyinaturalist.constants import RequestParams
 from pyinaturalist.controllers import (
     AnnotationController,
@@ -26,9 +32,7 @@ from pyinaturalist.controllers import (
 )
 from pyinaturalist.exceptions import AuthenticationError
 from pyinaturalist.models import T
-from pyinaturalist.paginator import Paginator
 from pyinaturalist.request_params import get_valid_kwargs, strip_empty_values
-from pyinaturalist.session import ClientSession
 
 JWT_EXPIRY_BUFFER = timedelta(seconds=60)
 

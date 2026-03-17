@@ -1,5 +1,6 @@
 from logging import getLogger
 
+from pyinaturalist.client import delete, get, post, put
 from pyinaturalist.constants import (
     API_V0,
     OBSERVATION_FORMATS,
@@ -12,7 +13,6 @@ from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.request_params import convert_observation_params, validate_multiple_choice_param
-from pyinaturalist.session import delete, get, post, put
 
 logger = getLogger(__name__)
 

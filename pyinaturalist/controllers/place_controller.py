@@ -1,8 +1,8 @@
+from pyinaturalist.client import AutocompletePaginator, Paginator
 from pyinaturalist.constants import IntOrStr, MultiIntOrStr
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.converters import ensure_list
 from pyinaturalist.models import Place
-from pyinaturalist.paginator import AutocompletePaginator, Paginator
 from pyinaturalist.v1 import get_places_autocomplete, get_places_by_id, get_places_nearby
 
 

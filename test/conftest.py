@@ -17,8 +17,8 @@ from requests import HTTPError, Response
 from requests_cache import DO_NOT_CACHE, BaseCache
 
 from pyinaturalist import enable_logging
+from pyinaturalist.client import ClientSession
 from pyinaturalist.constants import SAMPLE_DATA_DIR
-from pyinaturalist.session import ClientSession
 
 # If ipdb is installed, register it as the default debugger
 try:
@@ -64,9 +64,9 @@ def patch_session(request):
         yield
     else:
         with (
-            patch('pyinaturalist.session.get_local_session', return_value=TestSession()),
-            patch('pyinaturalist.auth.get_local_session', return_value=TestSession()),
-            patch('pyinaturalist.client.ClientSession', TestSession),
+            patch('pyinaturalist.client.session.get_local_session', return_value=TestSession()),
+            patch('pyinaturalist.client.oauth.get_local_session', return_value=TestSession()),
+            patch('pyinaturalist.client.client.ClientSession', TestSession),
         ):
             yield
 

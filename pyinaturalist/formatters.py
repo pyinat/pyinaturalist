@@ -22,6 +22,7 @@ from rich.logging import RichHandler
 from rich.table import Column, Table
 from rich.tree import Tree
 
+from pyinaturalist.client import Paginator
 from pyinaturalist.constants import DATETIME_SHORT_FORMAT, ResponseResult
 from pyinaturalist.converters import ensure_list, format_file_size
 from pyinaturalist.models import (
@@ -54,7 +55,6 @@ from pyinaturalist.models import (
     Vote,
 )
 from pyinaturalist.models.taxon import make_tree
-from pyinaturalist.paginator import Paginator
 
 pretty.install()
 

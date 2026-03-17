@@ -21,8 +21,8 @@ import urllib3.util.connection
 from requests_ratelimiter import InMemoryBucket
 
 from pyinaturalist import enable_logging
+from pyinaturalist.client.session import ClientSession
 from pyinaturalist.constants import REQUEST_TIMEOUT
-from pyinaturalist.session import ClientSession
 
 logger = logging.getLogger(__name__)
 

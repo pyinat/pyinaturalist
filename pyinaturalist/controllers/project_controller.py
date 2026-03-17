@@ -1,10 +1,10 @@
+from pyinaturalist.client import Paginator
 from pyinaturalist.constants import IntOrStr, ListResponse, MultiInt, MultiIntOrStr
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import copy_doc_signature
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.models import Project
-from pyinaturalist.paginator import Paginator
 from pyinaturalist.v1 import (
     add_project_observation,
     add_project_users,

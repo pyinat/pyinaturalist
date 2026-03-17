@@ -1,5 +1,6 @@
 from collections.abc import Callable
 
+from pyinaturalist.client import IDPaginator, IDRangePaginator, Paginator
 from pyinaturalist.constants import (
     API_V1,
     MAX_IDS_PER_REQUEST,
@@ -25,7 +26,6 @@ from pyinaturalist.models import (
     TaxonSummary,
     UserCounts,
 )
-from pyinaturalist.paginator import IDPaginator, IDRangePaginator, Paginator
 from pyinaturalist.request_params import validate_multiple_choice_param
 from pyinaturalist.v1 import (
     create_observation,

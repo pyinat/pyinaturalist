@@ -2,6 +2,7 @@
 from copy import deepcopy
 from logging import getLogger
 
+from pyinaturalist.client import delete, get, paginate_all, post, put
 from pyinaturalist.constants import (
     API_V1,
     V1_OBS_ORDER_BY_PROPERTIES,
@@ -25,9 +26,7 @@ from pyinaturalist.converters import (
 from pyinaturalist.docs import document_common_args, document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import convert_observation_params, validate_multiple_choice_param
-from pyinaturalist.session import delete, get, post, put
 
 logger = getLogger(__name__)
 

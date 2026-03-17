@@ -9,13 +9,7 @@ from requests_cache import CacheMixin
 from requests_ratelimiter import Duration, HostBucketFactory, Limiter, Rate, SQLiteBucket
 from urllib3.exceptions import MaxRetryError
 
-from pyinaturalist.constants import (
-    CACHE_EXPIRATION,
-    CONNECT_TIMEOUT,
-    REQUEST_TIMEOUT,
-    WRITE_TIMEOUT,
-)
-from pyinaturalist.session import (
+from pyinaturalist.client.session import (
     CACHE_FILE,
     ClientSession,
     FileLockSQLiteBucket,
@@ -28,6 +22,12 @@ from pyinaturalist.session import (
     post,
     put,
 )
+from pyinaturalist.constants import (
+    CACHE_EXPIRATION,
+    CONNECT_TIMEOUT,
+    REQUEST_TIMEOUT,
+    WRITE_TIMEOUT,
+)
 
 
 # Just test that the wrapper methods call requests.request with the appropriate HTTP method
@@ -35,8 +35,8 @@ from pyinaturalist.session import (
     'http_func, http_method',
     [(delete, 'DELETE'), (get, 'GET'), (post, 'POST'), (put, 'PUT')],
 )
-@patch('pyinaturalist.session.format_response')
-@patch('pyinaturalist.session.Session.send')
+@patch('pyinaturalist.client.session.format_response')
+@patch('pyinaturalist.client.session.Session.send')
 def test_http_methods(mock_send, mock_format, http_func, http_method):
     http_func('https://url', key='value', session=None)
     request_obj = mock_send.call_args[0][0]
@@ -46,8 +46,8 @@ def test_http_methods(mock_send, mock_format, http_func, http_method):
     assert request_obj.body is None
 
 
-@patch('pyinaturalist.session.format_response')
-@patch('pyinaturalist.session.Session.send')
+@patch('pyinaturalist.client.session.format_response')
+@patch('pyinaturalist.client.session.Session.send')
 def test_request_headers(mock_send, mock_format):
     """Test that the request() wrapper passes along expected headers"""
     ClientSession().request('GET', 'https://url', access_token='token')
@@ -82,8 +82,8 @@ def test_request_headers(mock_send, mock_format):
         (False, 'None', 'DELETE', True),
     ],
 )
-@patch('pyinaturalist.session.format_response')
-@patch('pyinaturalist.session.getenv')
+@patch('pyinaturalist.client.session.format_response')
+@patch('pyinaturalist.client.session.getenv')
 @patch.object(Session, 'send')
 def test_request_dry_run(
     mock_send,
@@ -211,7 +211,7 @@ def _assert_timeout(mock_send, connect, read):
     assert timeout.read_timeout == read
 
 
-@patch('pyinaturalist.session.format_response')
+@patch('pyinaturalist.client.session.format_response')
 @patch('requests.sessions.Session.send')
 def test_send__defaults(mock_requests_send, mock_format):
     session = ClientSession()
@@ -230,7 +230,7 @@ def test_send__defaults(mock_requests_send, mock_format):
         ('PUT', WRITE_TIMEOUT),
     ],
 )
-@patch('pyinaturalist.session.format_response')
+@patch('pyinaturalist.client.session.format_response')
 @patch('requests.sessions.Session.send')
 def test_send__write_timeout(mock_requests_send, mock_format, method, expected_timeout):
     session = ClientSession()
@@ -242,7 +242,7 @@ def test_send__write_timeout(mock_requests_send, mock_format, method, expected_t
         _assert_timeout(mock_requests_send, connect=5, read=expected_timeout)
 
 
-@patch('pyinaturalist.session.format_response')
+@patch('pyinaturalist.client.session.format_response')
 @patch('requests.sessions.Session.send')
 def test_send__override_session_timeout(mock_requests_send, mock_format):
     session = ClientSession(timeout=33, write_timeout=66)
@@ -258,7 +258,7 @@ def test_send__override_session_timeout(mock_requests_send, mock_format):
     _assert_timeout(mock_requests_send, connect=66, read=66)
 
 
-@patch('pyinaturalist.session.format_response')
+@patch('pyinaturalist.client.session.format_response')
 @patch('requests.sessions.Session.send')
 def test_send__override_request_timeout(mock_requests_send, mock_format):
     session = ClientSession()
@@ -268,7 +268,7 @@ def test_send__override_request_timeout(mock_requests_send, mock_format):
 
 
 @pytest.mark.parametrize('method', ['GET', 'POST'])
-@patch('pyinaturalist.session.format_response')
+@patch('pyinaturalist.client.session.format_response')
 @patch('requests.sessions.Session.send')
 def test_send__disable_timeout(mock_requests_send, mock_format, method):
     # timeout=None on the session disables all timeouts
@@ -360,7 +360,7 @@ def test_clear_cache():
 
 
 @pytest.mark.enable_client_session
-@patch('pyinaturalist.session.format_response')
+@patch('pyinaturalist.client.session.format_response')
 @patch.object(Session, 'send')
 def test_filelock(mock_send, mock_format, tmp_path):
     str(tmp_path / 'test.lock')
