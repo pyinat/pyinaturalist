@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from inspect import ismethod
 from logging import getLogger
-from typing import Any
+from typing import Any, Literal
 
 from requests import HTTPError
 
@@ -39,7 +39,7 @@ class _TokenInfo:
 
     token: str
     obtained_at: datetime  # UTC datetime when the token was fetched
-    flow: str  # 'password' | 'authorization_code'
+    flow: Literal['password', 'authorization_code']
     expires_at: datetime | None  # decoded from JWT exp claim; None for non-JWT tokens
 
 
@@ -55,7 +55,13 @@ AUTH_CODE_CRED_KEYS = frozenset(
         'timeout',
         'open_url',
         'get_code',
+        # Note: 'auth_flow' is intentionally excluded — it's a client-level key, not a
+        # parameter accepted by get_access_token_via_auth_code().
     }
+)
+
+PASSWORD_FLOW_CRED_KEYS = frozenset(
+    {'username', 'password', 'app_id', 'app_secret', 'jwt', 'refresh'}
 )
 
 SUPPORTED_AUTH_FLOWS = frozenset({'password', 'authorization_code'})
@@ -177,25 +183,26 @@ class iNatClient:
         if access_token:
             return access_token
         if self._token_info:
-            if self._token_info.expires_at is None or self._token_info.expires_at > datetime.now(
-                tz=timezone.utc
-            ) + timedelta(seconds=60):
+            still_valid = self._token_info.expires_at is None or self._token_info.expires_at > (
+                datetime.now(tz=timezone.utc) + timedelta(seconds=60)
+            )
+            if still_valid:
                 return self._token_info.token
             # Token is expired or about to expire — fall through to re-fetch
             self._token_info = None
         self._token_info = self._fetch_access_token_from_creds()
-        return self._token_info.token if self._token_info else None
+        return self._token_info.token
 
     def _fetch_access_token_from_creds(self, force_refresh: bool = False) -> _TokenInfo:
         """Get a new access token from configured credentials and wrap it in _TokenInfo."""
         flow = self.creds.get('auth_flow', 'password')
         if flow == 'authorization_code':
-            auth_code_creds = self._filter_auth_code_creds(self.creds).copy()
+            auth_code_creds = self._filter_auth_code_creds(self.creds)
             if force_refresh:
                 auth_code_creds['refresh'] = True
             token = get_access_token_via_auth_code(**auth_code_creds)
         else:
-            token_creds = self.creds.copy()
+            token_creds = {k: v for k, v in self.creds.items() if k in PASSWORD_FLOW_CRED_KEYS}
             if force_refresh:
                 token_creds['refresh'] = True
             token = get_access_token(**token_creds)

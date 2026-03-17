@@ -1,14 +1,13 @@
-import base64
-import json
 from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
-from requests import HTTPError, Response
+from requests import HTTPError
 
 from pyinaturalist.client import iNatClient
 from pyinaturalist.docs import document_common_args
 from pyinaturalist.exceptions import AuthenticationError
+from test.conftest import make_http_error, make_jwt
 
 mock_session_1 = MagicMock()
 mock_session_2 = MagicMock()
@@ -64,6 +63,15 @@ def test_client_auth(get_access_token):
     assert final_params_1['access_token'] == 'token'
     assert 'access_token' not in final_params_2
     get_access_token.assert_called_once()
+
+
+@patch('pyinaturalist.client.get_access_token', return_value='token')
+def test_client_auth__password_flow_strips_auth_flow_key(get_access_token):
+    """auth_flow key in creds must not be forwarded to get_access_token (it doesn't accept it)."""
+    client = iNatClient(creds={'auth_flow': 'password', 'username': 'u', 'password': 'p'})
+    client.request(request_function, auth=True)
+    call_kwargs = get_access_token.call_args.kwargs
+    assert 'auth_flow' not in call_kwargs
 
 
 @patch('pyinaturalist.client.get_access_token', return_value='token')
@@ -128,14 +136,6 @@ def test_client_auth_code_flow__filters_unrelated_creds(get_access_token_via_aut
     get_access_token_via_auth_code.assert_called_once_with(app_id='my_app_id')
 
 
-def make_http_error(status_code):
-    response = Response()
-    response.status_code = status_code
-    error = HTTPError(f'HTTP {status_code}')
-    error.response = response
-    return error
-
-
 @patch('pyinaturalist.client.get_access_token', side_effect=['expired_token', 'fresh_token'])
 def test_client_auth__refreshes_cached_token_on_401(get_access_token):
     mock_request = MagicMock(side_effect=[make_http_error(401), {'ok': True}])
@@ -198,13 +198,6 @@ def test_client_auth__valid_flows_accepted(good_flow):
 # ----------------------------
 
 
-def _make_jwt(payload: dict) -> str:
-    """Build a minimal unsigned JWT string with the given payload."""
-    header = base64.urlsafe_b64encode(b'{"alg":"none"}').rstrip(b'=').decode()
-    body = base64.urlsafe_b64encode(json.dumps(payload).encode()).rstrip(b'=').decode()
-    return f'{header}.{body}.fakesig'
-
-
 @patch('pyinaturalist.client.get_access_token', return_value='plain_token')
 def test_client_auth__token_info_populated(get_access_token):
     """After an authenticated request, _token_info is populated with correct metadata."""
@@ -234,7 +227,7 @@ def test_client_auth__token_info_flow_auth_code(get_access_token_via_auth_code):
 def test_client_auth__token_info_exp_decoded(get_access_token):
     """expires_at is decoded from a JWT exp claim."""
     exp_ts = 1893456000
-    jwt_token = _make_jwt({'exp': exp_ts})
+    jwt_token = make_jwt({'exp': exp_ts})
     get_access_token.return_value = jwt_token
 
     client = iNatClient()

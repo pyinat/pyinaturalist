@@ -1,9 +1,12 @@
 import base64
+import binascii
 import hashlib
+import hmac
 import html
 import json
 import secrets
 import threading
+import time
 import webbrowser
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -39,7 +42,7 @@ def _decode_jwt_exp(token: str) -> datetime | None:
         payload = json.loads(base64.urlsafe_b64decode(payload_b64))
         exp = payload.get('exp')
         return datetime.fromtimestamp(exp, tz=timezone.utc) if exp else None
-    except Exception:
+    except (ValueError, KeyError, AttributeError, OverflowError, binascii.Error):
         return None
 
 
@@ -97,12 +100,9 @@ def get_access_token(
     Raises:
         :py:exc:`requests.HTTPError`: (401) if credentials are invalid
     """
-    # First check if we have a previously cached JWT
-    session = get_local_session()
-    response = _get_jwt(session, only_if_cached=True)
-    if response.ok and not refresh:
-        logger.info('Using cached access token')
-        return response.json()['api_token']
+    session, cached = _get_cached_jwt(refresh)
+    if cached:
+        return cached
 
     # Otherwise check for credentials in either args or environment variables
     payload = {
@@ -206,12 +206,9 @@ def get_access_token_via_auth_code(
         :py:exc:`.AuthenticationError`: if credentials are missing, the user does not
             authorize in time, or the token exchange fails.
     """
-    # First check if we have a previously cached JWT
-    session = get_local_session()
-    response = _get_jwt(session, only_if_cached=True)
-    if response.ok and not refresh:
-        logger.info('Using cached access token')
-        return response.json()['api_token']
+    session, cached = _get_cached_jwt(refresh)
+    if cached:
+        return cached
 
     app_id, app_secret = _resolve_auth_code_creds(app_id, app_secret, use_pkce)
 
@@ -223,7 +220,7 @@ def get_access_token_via_auth_code(
 
     # Build authorization URL and get the authorization code
     redirect_uri = 'urn:ietf:wg:oauth:2.0:oob' if use_oob else f'http://127.0.0.1:{port}'
-    state = secrets.token_urlsafe(16) if not use_oob else None
+    state = secrets.token_urlsafe(32) if not use_oob else None
     authorize_url = build_authorize_url(app_id, redirect_uri, code_challenge, state)
     auth_code = _obtain_auth_code(
         authorize_url,
@@ -249,6 +246,16 @@ def get_access_token_via_auth_code(
         response.raise_for_status()
         access_token = response.json()['api_token']
     return access_token
+
+
+def _get_cached_jwt(refresh: bool) -> tuple[ClientSession, str | None]:
+    """Return (session, token) if a valid cached JWT exists"""
+    session = get_local_session()
+    response = _get_jwt(session, only_if_cached=True)
+    if response.ok and not refresh:
+        logger.info('Using cached access token')
+        return session, response.json()['api_token']
+    return session, None
 
 
 def _resolve_auth_code_creds(
@@ -317,17 +324,16 @@ def _obtain_auth_code(
 ) -> str:
     """Open the browser and obtain an authorization code via OOB or local server."""
     if use_oob:
-        _get_code = get_code or (
-            lambda url: input('Enter the authorization code from iNaturalist: ').strip()
-        )
         logger.info('Opening browser for authorization: %s', authorize_url)
         (open_url or webbrowser.open)(authorize_url)
-        return _get_code(authorize_url)
+        if get_code:
+            return get_code(authorize_url)
+        return input('Enter the authorization code from iNaturalist: ').strip()
 
     result = get_auth_code_via_server(
         authorize_url, port=port, timeout=timeout, state=state, open_url=open_url
     )
-    if not result.auth_code:
+    if result.auth_code is None:
         if result.auth_error == 'state_mismatch':
             raise AuthenticationError(
                 'Authorization failed: state parameter mismatch (possible CSRF attack)'
@@ -397,12 +403,16 @@ def _make_callback_handler(
     class _OAuthCallbackHandler(BaseHTTPRequestHandler):
         """HTTP request handler that captures an OAuth authorization code from a redirect."""
 
-        def do_GET(self) -> None:
+        def do_GET(self):
             """Handle the OAuth callback GET request."""
             query = parse_qs(urlparse(self.path).query)
 
             received_state = query.get('state', [None])[0]
-            if received_state != expected_state:
+            # Use hmac.compare_digest to avoid timing issues; skip when state is not expected
+            state_mismatch = expected_state is not None and not hmac.compare_digest(
+                received_state or '', expected_state
+            )
+            if state_mismatch:
                 result.auth_error = 'state_mismatch'
                 self.send_response(400)
                 self.send_header('Content-Type', 'text/html')
@@ -436,7 +446,7 @@ def _make_callback_handler(
                     f'<p>Error: {html.escape(error)}</p></body></html>'.encode()
                 )
 
-        def log_message(self, format: str, *args: object) -> None:
+        def log_message(self, format: str, *args: object):
             """Route HTTP server logs through the module logger."""
             logger.debug(format, *args)
 
@@ -475,9 +485,18 @@ def get_auth_code_via_server(
             f"Try a different port with the 'port' parameter."
         ) from e
 
-    server.timeout = timeout
+    def _serve_until_result():
+        """Handle requests in a loop until a code or error is received, or timeout expires."""
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            server.timeout = max(0, deadline - time.monotonic())
+            server.handle_request()
+            if result.auth_code or result.auth_error:
+                break
 
-    server_thread = threading.Thread(target=server.handle_request, daemon=True)
+    # Note: if _serve_until_result raises an unhandled exception, it is lost (daemon thread).
+    # The caller will see 'No authorization code received' after the join timeout expires.
+    server_thread = threading.Thread(target=_serve_until_result, daemon=True)
     server_thread.start()
 
     logger.info('Opening browser for authorization: %s', authorize_url)

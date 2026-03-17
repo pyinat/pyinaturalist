@@ -22,7 +22,7 @@ from pyinaturalist.auth import (
 from pyinaturalist.constants import API_V0, KEYRING_KEY
 from pyinaturalist.exceptions import AuthenticationError
 from pyinaturalist.session import ClientSession
-from test.conftest import MOCK_CREDS_ENV, MOCK_CREDS_OAUTH, load_sample_data
+from test.conftest import MOCK_CREDS_ENV, MOCK_CREDS_OAUTH, load_sample_data, make_jwt
 
 token_accepted_json = load_sample_data('get_access_token.json')
 token_rejected_json = load_sample_data('get_access_token_401.json')
@@ -469,13 +469,6 @@ def test_set_keyring_credentials(set_password):
 # ---------------
 
 
-def _make_jwt(payload: dict) -> str:
-    """Build a minimal unsigned JWT string with the given payload."""
-    header = base64.urlsafe_b64encode(b'{"alg":"none"}').rstrip(b'=').decode()
-    body = base64.urlsafe_b64encode(json.dumps(payload).encode()).rstrip(b'=').decode()
-    return f'{header}.{body}.fakesig'
-
-
 @pytest.mark.parametrize(
     'payload, expected_exp',
     [
@@ -486,7 +479,7 @@ def _make_jwt(payload: dict) -> str:
 def test_decode_jwt_exp(payload, expected_exp):
     from datetime import timezone
 
-    token = _make_jwt(payload)
+    token = make_jwt(payload)
     result = _decode_jwt_exp(token)
     if expected_exp is None:
         assert result is None
