@@ -10,6 +10,7 @@ In addition to the lower-level API wrapper functions, pyinaturalist provides {py
 All API calls are available as methods on {py:class}`.iNatClient`, grouped by resource type. For example:
 * Annotation requests: {py:class}`iNatClient.annotations <.AnnotationController>`
 * Identification requests: {py:class}`iNatClient.identifications <.IdentificationController>`
+* Observation field requests: {py:class}`iNatClient.observation_fields <.ObservationFieldController>`
 * Observation requests: {py:class}`iNatClient.observations <.ObservationController>`
 * Place requests: {py:class}`iNatClient.places <.PlaceController>`
 * Project requests: {py:class}`iNatClient.projects <.ProjectController>`
@@ -108,7 +109,7 @@ See :py:class:`.ClientSession` and :ref:`advanced` for details on these settings
 
 `iNatClient` will accept any arguments for `ClientSession`, for example:
 ```py
->>> client = iNatClient(per_minute=50, expire_after=3600, timeout=30, retries=3)
+>>> client = iNatClient(per_minute=50, expire_after=3600, timeout=30, max_retries=3)
 ```
 
 Or you can provide your own session object:

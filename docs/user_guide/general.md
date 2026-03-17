@@ -179,7 +179,7 @@ And they can be converted back to a JSON dict if needed:
 json_observations = [obs.to_dict() for obs in observations]
 ```
 
-In a future release, these models will be fully integrated with API query functions. To preview these features, see {ref}`api-client`.
+These models are fully integrated with the {py:class}`.iNatClient` interface, which returns typed model objects and is the recommended way to use pyinaturalist. See {ref}`api-client` for more details.
 
 ## API Recommended Practices
 See [API Recommended Practices](https://www.inaturalist.org/pages/api+recommended+practices)

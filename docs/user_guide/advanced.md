@@ -30,8 +30,7 @@ By default most API requests are cached according to `Cache-Control` headers sen
 similar to browser behavior. This significantly reduces rate-limit and bandwidth usage for repeat requests.
 
 Typically responses are cached for a few minutes, but some
-infrequently-changing data (like taxa and places) are cached for longer periods, and some more
-frequently-changing data (like observations) are not cached at all.
+infrequently-changing data (like taxa and places) are cached for longer periods.
 
 You can change any of this behavior using {py:class}`.ClientSession`.
 For example, to cache all requests for 1 day:
@@ -94,7 +93,7 @@ Similarly, if you are seeing intermittent non-timeout errors due to server issue
 the number of times to retry failed requests (default: 5):
 ```python
 >>> from pyinaturalist import ClientSession
->>> session = ClientSession(retries=7)
+>>> session = ClientSession(max_retries=7)
 ```
 
 ## Rate Limiting
