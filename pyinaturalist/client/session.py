@@ -3,10 +3,13 @@
 import json
 import threading
 from collections import defaultdict
+from collections.abc import Mapping
+from datetime import timedelta
 from importlib.metadata import version as pkg_version
 from json import JSONDecodeError
 from logging import DEBUG, INFO, getLogger
 from os import getenv
+from typing import TYPE_CHECKING, Any
 
 from requests import ConnectionError, PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
@@ -53,8 +56,7 @@ from pyinaturalist.constants import (
     PathOrStr,
     RequestParams,
 )
-from pyinaturalist.converters import ensure_file_obj
-from pyinaturalist.formatters import format_request, format_response
+from pyinaturalist.converters import ensure_file_obj, format_file_size
 from pyinaturalist.request_params import (
     convert_url_ids,
     preprocess_request_body,
@@ -558,3 +560,83 @@ def _env_to_bool(environment_variable: str) -> bool:
     """
     env_value = getenv(environment_variable)
     return bool(env_value) and str(env_value).lower() not in ['false', 'none']
+
+
+def format_request(request: PreparedRequest, dry_run: bool = False, timeout: Any = None) -> str:
+    """Format HTTP request info"""
+    headers = _format_headers(request.headers)
+    body = _format_body(request.body)
+    dry_run_str = ' (DRY RUN) ' if dry_run else ''
+    timeout_str = f'timeout={timeout}\n' if timeout else ''
+    return (
+        f'Request:{dry_run_str}\n{request.method} {request.url}\n{headers}\n{timeout_str}\n{body}'
+    )
+
+
+def format_response(response: Response) -> str:
+    """Format HTTP response info, including whether it came from the cache"""
+    error_msg = f' {response.text}' if not response.ok else ''
+
+    return (
+        f'Response ({_format_expiration(response)}):\n'
+        f'{response.status_code} {response.reason}{error_msg}\n'
+        f'{_format_transfer(response)}\n'
+        f'{_format_headers(response.headers)}'
+    )
+
+
+def _format_expiration(response: Response) -> str:
+    if not getattr(response, 'from_cache', False):
+        return 'not cached'
+    if TYPE_CHECKING:
+        assert isinstance(response, CachedResponse)
+    if response.expires:
+        expires_delta = timedelta(seconds=response.expires_delta)
+        expires_str = f'expires in {expires_delta}'
+    else:
+        expires_str = 'never expires'
+    return f'cached; {expires_str}'
+
+
+def _format_transfer(response: Response) -> str:
+    elapsed = response.elapsed.total_seconds()
+    transfer_str = f'Elapsed: {elapsed:.3f}s'
+
+    try:
+        sent_size = int(response.request.headers.get('Content-Length', 0))
+    except (AttributeError, TypeError, ValueError):
+        sent_size = 0
+
+    if sent_size and elapsed > 0:
+        rate = format_file_size(int(sent_size / elapsed))
+        transfer_str += f'; sent {format_file_size(sent_size)} @ {rate}/s'
+
+    return transfer_str
+
+
+def _format_headers(headers: Mapping) -> str:
+    ignore_headers = [
+        'Access-Control-Allow-Headers',
+        'Access-Control-Allow-Methods',
+        'Access-Control-Allow-Origin',
+        'X-Content-Type-Options',
+    ]
+    headers_dict = {k: v for k, v in headers.items() if k not in ignore_headers}
+    if 'Authorization' in headers_dict:
+        headers_dict['Authorization'] = '[REDACTED]'
+
+    return '\n'.join([f'{k}: {v}' for k, v in headers_dict.items()])
+
+
+def _format_body(body) -> str:
+    if not body:
+        return ''
+    try:
+        body = json.loads(body)
+        for key in ['password', 'client_secret']:
+            if key in body:
+                body[key] = '[REDACTED]'
+        return body
+    except Exception:
+        size_str = f' ({format_file_size(len(body))})' if isinstance(body, (str, bytes)) else ''
+        return f'(non-JSON request body{size_str})'
