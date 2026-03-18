@@ -438,6 +438,21 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             response.json = lambda **kwargs: response_json  # type: ignore
             return response
 
+    def close(self):
+        """Close cache and rate limit backends to avoid unclosed SQLite connections."""
+        self.cache.close()
+        for bucket in self.limiter.bucket_factory.get_buckets() or []:
+            bucket.close()
+        self.limiter.close()
+
+        super().close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
 
 class RequestTimeout(Timeout):
     """Timeout class that adjusts timeouts for write operations"""

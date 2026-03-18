@@ -15,6 +15,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from requests import HTTPError, Response
 from requests_cache import DO_NOT_CACHE, BaseCache
+from requests_ratelimiter import InMemoryBucket
 
 from pyinaturalist import enable_logging
 from pyinaturalist.client import ClientSession
@@ -52,6 +53,7 @@ class TestSession(ClientSession):
     """Session class to use for tests, which disables rate-limiting and caching"""
 
     def __init__(self, *args, **kwargs):
+        kwargs.setdefault('bucket_class', InMemoryBucket)
         super().__init__(*args, **kwargs)
         self.limiter = MagicMock()
         self.cache = BaseCache(expire_after=DO_NOT_CACHE)

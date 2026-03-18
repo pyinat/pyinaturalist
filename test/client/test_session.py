@@ -385,3 +385,63 @@ def test_get_refresh_params():
     assert session.get_refresh_params('test') == {'refresh': True, 'v': 2}
     sleep(2)
     assert session.get_refresh_params('test') == {'refresh': True}
+
+
+def test_session_close():
+    from unittest.mock import MagicMock, patch
+
+    from requests_cache import CacheMixin
+
+    session = ClientSession()
+    mock_bucket_1 = MagicMock()
+    mock_bucket_2 = MagicMock()
+
+    # Patch CacheMixin.close to stop the super() chain and isolate ClientSession.close() logic
+    with (
+        patch.object(CacheMixin, 'close'),
+        patch.object(session.cache, 'close') as mock_cache_close,
+        patch.object(session.limiter, 'close') as mock_limiter_close,
+        patch.object(
+            session.limiter.bucket_factory,
+            'get_buckets',
+            return_value=[mock_bucket_1, mock_bucket_2],
+        ),
+    ):
+        session.close()
+
+        mock_cache_close.assert_called_once()
+        mock_limiter_close.assert_called_once()
+        mock_bucket_1.close.assert_called_once()
+        mock_bucket_2.close.assert_called_once()
+
+
+def test_session_close__no_buckets():
+    from unittest.mock import patch
+
+    from requests_cache import CacheMixin
+
+    session = ClientSession()
+    # Patch CacheMixin.close to stop the super() chain; patch get_buckets() to return None
+    with (
+        patch.object(CacheMixin, 'close'),
+        patch.object(session.limiter.bucket_factory, 'get_buckets', return_value=None),
+        patch.object(session.limiter, 'close'),
+    ):
+        session.close()  # should not raise
+
+
+def test_session_del__suppresses_exceptions():
+    from unittest.mock import patch
+
+    session = ClientSession()
+    with patch.object(session, 'close', side_effect=Exception('boom')):
+        session.__del__()  # should not raise
+
+
+def test_session_del__calls_close():
+    from unittest.mock import MagicMock, patch
+
+    session = ClientSession()
+    with patch.object(session, 'close', MagicMock()) as mock_close:
+        session.__del__()
+    mock_close.assert_called_once()
