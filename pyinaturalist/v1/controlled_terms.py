@@ -1,6 +1,6 @@
+from pyinaturalist.client import get
 from pyinaturalist.constants import API_V1, JsonResponse
 from pyinaturalist.exceptions import TaxonNotFound
-from pyinaturalist.session import get
 
 
 def get_controlled_terms(taxon_id: int | None = None, **params) -> JsonResponse:

@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from pyinaturalist.oauth_callback import (
+from pyinaturalist.client.oauth_callback import (
     _generate_pkce_pair,
     _make_callback_handler,
     build_authorize_url,

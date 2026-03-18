@@ -217,7 +217,7 @@ Direct keyring integration is provided via [python keyring](https://github.com/j
 
 To store your credentials in the keyring, run {py:func}`.set_keyring_credentials`:
 ```python
->>> from pyinaturalist.auth import set_keyring_credentials
+>>> from pyinaturalist import set_keyring_credentials
 >>> set_keyring_credentials(
 >>>     username='my_inaturalist_username',
 >>>     password='my_inaturalist_password',

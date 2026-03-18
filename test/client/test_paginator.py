@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
+from pyinaturalist.client import Paginator, WrapperPaginator
 from pyinaturalist.constants import API_V1
 from pyinaturalist.models import Observation
-from pyinaturalist.paginator import Paginator, WrapperPaginator
 from pyinaturalist.v1 import get_observations
 from test.sample_data import SAMPLE_DATA
 
@@ -68,7 +68,7 @@ async def test_async_iter(requests_mock):
 
 
 @pytest.mark.asyncio
-@patch('pyinaturalist.paginator.get_running_loop')
+@patch('pyinaturalist.client.paginator.get_running_loop')
 async def test_async_iter__custom_loop(mock_get_running_loop, requests_mock):
     """If an async event loop is specified, make sure that is used instead of the default loop"""
     requests_mock.get(

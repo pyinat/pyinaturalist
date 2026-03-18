@@ -3,10 +3,13 @@
 import json
 import threading
 from collections import defaultdict
+from collections.abc import Mapping
+from datetime import timedelta
 from importlib.metadata import version as pkg_version
 from json import JSONDecodeError
 from logging import DEBUG, INFO, getLogger
 from os import getenv
+from typing import TYPE_CHECKING, Any
 
 from requests import ConnectionError, PreparedRequest, Request, Response, Session
 from requests.adapters import HTTPAdapter
@@ -53,15 +56,14 @@ from pyinaturalist.constants import (
     PathOrStr,
     RequestParams,
 )
-from pyinaturalist.converters import ensure_file_obj
-from pyinaturalist.formatters import format_request, format_response
+from pyinaturalist.converters import ensure_file_obj, format_file_size
 from pyinaturalist.request_params import (
     convert_url_ids,
     preprocess_request_body,
     preprocess_request_params,
 )
 
-logger = getLogger('pyinaturalist')
+_logger = getLogger('pyinaturalist')
 thread_local = threading.local()
 
 
@@ -337,8 +339,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         if timeout is _UNSET:
             timeout = RequestTimeout(request.method, self.read_timeout, self.write_timeout)
 
-        if logger.level <= INFO:
-            logger.info(format_request(request, dry_run, timeout=timeout))
+        if _logger.level <= INFO:
+            _logger.info(format_request(request, dry_run, timeout=timeout))
 
         # Make a mock request, if specified
         if dry_run or is_dry_run_enabled(request.method):
@@ -358,8 +360,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
         except ConnectionError as e:
             if 'write operation timed out' not in str(e):
                 raise
-            logger.debug('Write timed out:', exc_info=True)
-            logger.warning('Write timed out; retrying...')
+            _logger.debug('Write timed out:', exc_info=True)
+            _logger.warning('Write timed out; retrying...')
 
             # Reuse the same retry object to share retry state and limits
             retries = retries or self.retries
@@ -377,8 +379,8 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             **kwargs,
         )
 
-        if logger.level <= DEBUG:
-            logger.debug(format_response(response))
+        if _logger.level <= DEBUG:
+            _logger.debug(format_response(response))
         return response
 
     def get_refresh_params(self, endpoint) -> dict:
@@ -395,7 +397,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             name = f'{endpoint}?v={v}'
             if self.refresh_limiter.try_acquire(name, blocking=False):
                 break
-            logger.debug(f'{name} cannot be refreshed yet')
+            _logger.debug(f'{name} cannot be refreshed yet')
             v += 1
 
         return {'refresh': True, 'v': v} if v > 0 else {'refresh': True}
@@ -420,7 +422,7 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             response_json = response.json()
         # Update retry state and wait before sending the request again
         except JSONDecodeError as e:
-            logger.info('Invalid JSON response; retrying...')
+            _logger.info('Invalid JSON response; retrying...')
             retries = retries or self.retries
             retries = retries.increment(
                 response.request.method,
@@ -499,14 +501,6 @@ def clear_cache():
     get_local_session().cache.clear()
 
 
-def env_to_bool(environment_variable: str) -> bool:
-    """Translate an environment variable to a boolean value, accounting for minor
-    variations (case, None vs. False, etc.)
-    """
-    env_value = getenv(environment_variable)
-    return bool(env_value) and str(env_value).lower() not in ['false', 'none']
-
-
 def get_local_session(**kwargs) -> ClientSession:
     """Get a thread-local Session object with default settings. This will be reused across requests
     to take advantage of connection pooling and (optionally) caching. If used in a multi-threaded
@@ -555,6 +549,94 @@ def is_dry_run_enabled(method: str) -> bool:
     a constant or an environment variable. Dry-run mode may be enabled for either write
     requests, or all requests.
     """
-    dry_run_enabled = env_to_bool('DRY_RUN_ENABLED')
-    dry_run_write_only = env_to_bool('DRY_RUN_WRITE_ONLY') and method in WRITE_HTTP_METHODS
+    dry_run_enabled = _env_to_bool('DRY_RUN_ENABLED')
+    dry_run_write_only = _env_to_bool('DRY_RUN_WRITE_ONLY') and method in WRITE_HTTP_METHODS
     return dry_run_enabled or dry_run_write_only
+
+
+def _env_to_bool(environment_variable: str) -> bool:
+    """Translate an environment variable to a boolean value, accounting for minor
+    variations (case, None vs. False, etc.)
+    """
+    env_value = getenv(environment_variable)
+    return bool(env_value) and str(env_value).lower() not in ['false', 'none']
+
+
+def format_request(request: PreparedRequest, dry_run: bool = False, timeout: Any = None) -> str:
+    """Format HTTP request info"""
+    headers = _format_headers(request.headers)
+    body = _format_body(request.body)
+    dry_run_str = ' (DRY RUN) ' if dry_run else ''
+    timeout_str = f'timeout={timeout}\n' if timeout else ''
+    return (
+        f'Request:{dry_run_str}\n{request.method} {request.url}\n{headers}\n{timeout_str}\n{body}'
+    )
+
+
+def format_response(response: Response) -> str:
+    """Format HTTP response info, including whether it came from the cache"""
+    error_msg = f' {response.text}' if not response.ok else ''
+
+    return (
+        f'Response ({_format_expiration(response)}):\n'
+        f'{response.status_code} {response.reason}{error_msg}\n'
+        f'{_format_transfer(response)}\n'
+        f'{_format_headers(response.headers)}'
+    )
+
+
+def _format_expiration(response: Response) -> str:
+    if not getattr(response, 'from_cache', False):
+        return 'not cached'
+    if TYPE_CHECKING:
+        assert isinstance(response, CachedResponse)
+    if response.expires:
+        expires_delta = timedelta(seconds=response.expires_delta)
+        expires_str = f'expires in {expires_delta}'
+    else:
+        expires_str = 'never expires'
+    return f'cached; {expires_str}'
+
+
+def _format_transfer(response: Response) -> str:
+    elapsed = response.elapsed.total_seconds()
+    transfer_str = f'Elapsed: {elapsed:.3f}s'
+
+    try:
+        sent_size = int(response.request.headers.get('Content-Length', 0))
+    except (AttributeError, TypeError, ValueError):
+        sent_size = 0
+
+    if sent_size and elapsed > 0:
+        rate = format_file_size(int(sent_size / elapsed))
+        transfer_str += f'; sent {format_file_size(sent_size)} @ {rate}/s'
+
+    return transfer_str
+
+
+def _format_headers(headers: Mapping) -> str:
+    ignore_headers = [
+        'Access-Control-Allow-Headers',
+        'Access-Control-Allow-Methods',
+        'Access-Control-Allow-Origin',
+        'X-Content-Type-Options',
+    ]
+    headers_dict = {k: v for k, v in headers.items() if k not in ignore_headers}
+    if 'Authorization' in headers_dict:
+        headers_dict['Authorization'] = '[REDACTED]'
+
+    return '\n'.join([f'{k}: {v}' for k, v in headers_dict.items()])
+
+
+def _format_body(body) -> str:
+    if not body:
+        return ''
+    try:
+        body = json.loads(body)
+        for key in ['password', 'client_secret']:
+            if key in body:
+                body[key] = '[REDACTED]'
+        return body
+    except Exception:
+        size_str = f' ({format_file_size(len(body))})' if isinstance(body, (str, bytes)) else ''
+        return f'(non-JSON request body{size_str})'

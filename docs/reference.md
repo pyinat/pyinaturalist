@@ -32,11 +32,8 @@ pyinaturalist.models
 :glob: true
 :maxdepth: 1
 
-modules/pyinaturalist.auth
 modules/pyinaturalist.converters
 modules/pyinaturalist.exceptions
 modules/pyinaturalist.formatters
-modules/pyinaturalist.paginator
 modules/pyinaturalist.request_params
-modules/pyinaturalist.session
 ```

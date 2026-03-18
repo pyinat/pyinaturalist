@@ -1,11 +1,10 @@
 from functools import wraps
 
+from pyinaturalist.client import AutocompletePaginator, JsonPaginator, get
 from pyinaturalist.constants import API_V1, JsonResponse, MultiInt
 from pyinaturalist.converters import convert_all_coordinates, convert_all_place_coordinates
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.paginator import AutocompletePaginator, JsonPaginator
-from pyinaturalist.session import get
 
 
 def get_places_by_id(place_id: MultiInt, **params) -> JsonResponse:

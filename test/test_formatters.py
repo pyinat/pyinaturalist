@@ -1,6 +1,7 @@
 # ruff: noqa: E501, F403, F405
 import re
 from copy import deepcopy
+from datetime import timedelta
 from io import StringIO
 from unittest.mock import patch
 
@@ -11,6 +12,8 @@ from rich import get_console, reconfigure
 from rich.console import Console
 from rich.table import Table
 
+from pyinaturalist.client.session import format_request as format_request
+from pyinaturalist.client.session import format_response as format_response
 from pyinaturalist.constants import API_V0
 from pyinaturalist.formatters import *
 from test.sample_data import *

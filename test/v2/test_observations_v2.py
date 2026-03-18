@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
+from pyinaturalist.client.session import ClientSession, MockResponse
 from pyinaturalist.constants import API_V2
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.session import ClientSession, MockResponse
 from pyinaturalist.v2 import (
     create_observation,
     delete_observation,
@@ -57,7 +57,7 @@ def test_get_observations__some_fields(requests_mock):
     assert observations['results'][0]['species_guess'] == 'Common Loon'
 
 
-@patch('pyinaturalist.session.format_response')
+@patch('pyinaturalist.client.session.format_response')
 @patch('requests.sessions.Session.send')
 def test_get_observations__except_fields(mock_send, mock_format):
     get_observations(id=57707611, except_fields=['identifications'])

@@ -1,3 +1,4 @@
+from pyinaturalist.client import IDPaginator, Paginator
 from pyinaturalist.constants import (
     API_V1,
     MultiInt,
@@ -9,7 +10,6 @@ from pyinaturalist.docs.signatures import copy_doc_signature
 from pyinaturalist.models import (
     Identification,
 )
-from pyinaturalist.paginator import IDPaginator, Paginator
 from pyinaturalist.request_params import convert_rank_range
 
 IDS_PER_REQUEST = 30

@@ -1,10 +1,9 @@
+from pyinaturalist.client import get, paginate_all
 from pyinaturalist.constants import API_V1, IntOrStr, JsonResponse, MultiInt
 from pyinaturalist.converters import convert_all_timestamps
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.paginator import paginate_all
 from pyinaturalist.request_params import convert_rank_range
-from pyinaturalist.session import get
 
 
 @document_request_params(docs._taxon_params, docs._taxon_id_params, docs._pagination)

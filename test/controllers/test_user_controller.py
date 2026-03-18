@@ -50,7 +50,7 @@ def test_autocomplete(requests_mock):
     assert results[0].id == 886482
 
 
-@patch('pyinaturalist.client.get_access_token', return_value='token')
+@patch('pyinaturalist.client.client.get_access_token', return_value='token')
 def test_me(get_access_token, requests_mock):
     requests_mock.get(
         f'{API_V1}/users/me',

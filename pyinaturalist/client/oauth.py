@@ -11,18 +11,18 @@ from keyring import get_password, set_password
 from keyring.errors import KeyringError
 from requests import HTTPError, Response
 
-from pyinaturalist.constants import API_V0, API_V1, KEYRING_KEY
-from pyinaturalist.exceptions import AuthenticationError
-from pyinaturalist.oauth_callback import (
+from pyinaturalist.client.oauth_callback import (
     _build_token_payload,
     _generate_pkce_pair,
     _obtain_auth_code,
     _resolve_auth_code_creds,
     build_authorize_url,
 )
-from pyinaturalist.session import ClientSession, get_local_session
+from pyinaturalist.client.session import ClientSession, get_local_session
+from pyinaturalist.constants import API_V0, API_V1, KEYRING_KEY
+from pyinaturalist.exceptions import AuthenticationError
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 def _decode_jwt_exp(token: str) -> datetime | None:
@@ -115,7 +115,7 @@ def get_access_token(
     if not all(payload.values()):
         payload.update(get_keyring_credentials())
         if all(payload.values()):
-            logger.info('Retrieved credentials from keyring')
+            _logger.info('Retrieved credentials from keyring')
         else:
             raise AuthenticationError('Not all authentication parameters were provided')
 
@@ -251,7 +251,7 @@ def _get_cached_jwt(refresh: bool) -> tuple[ClientSession, str | None]:
     session = get_local_session()
     response = _get_jwt(session, only_if_cached=True)
     if response.ok and not refresh:
-        logger.info('Using cached access token')
+        _logger.info('Using cached access token')
         return session, response.json()['api_token']
     return session, None
 
@@ -280,7 +280,7 @@ def get_keyring_credentials() -> dict[str, str | None]:
             'client_secret': get_password(KEYRING_KEY, 'app_secret'),
         }
     except KeyringError as e:
-        logger.warning(e)
+        _logger.warning(e)
         return {}
 
 

@@ -49,7 +49,7 @@ def test_get_taxa__some_fields(requests_mock):
     assert taxa['results'][0]['name'] == 'Vespidae'
 
 
-@patch('pyinaturalist.session.format_response')
+@patch('pyinaturalist.client.session.format_response')
 @patch('requests.sessions.Session.send')
 def test_get_taxa__except_fields(mock_send, mock_format):
     get_taxa(q='vespi', except_fields=['default_photo'])

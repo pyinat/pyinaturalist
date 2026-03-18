@@ -19,7 +19,7 @@ from keyring.errors import KeyringError
 from pyinaturalist.constants import KEYRING_KEY, OAUTH_AUTHORIZE_URL
 from pyinaturalist.exceptions import AuthenticationError
 
-logger = getLogger(__name__)
+_logger = getLogger(__name__)
 
 
 def get_auth_code_via_server(
@@ -62,7 +62,7 @@ def get_auth_code_via_server(
             try:
                 server.handle_request()
             except Exception as e:
-                logger.exception(e)
+                _logger.exception(e)
                 break
             if result.auth_code or result.auth_error:
                 break
@@ -72,7 +72,7 @@ def get_auth_code_via_server(
     server_thread = threading.Thread(target=_serve_until_result, daemon=True)
     server_thread.start()
 
-    logger.info('Opening browser for authorization: %s', authorize_url)
+    _logger.info('Opening browser for authorization: %s', authorize_url)
     (open_url or webbrowser.open)(authorize_url)
 
     try:
@@ -141,7 +141,7 @@ def _resolve_auth_code_creds(
             if not use_pkce and not app_secret:
                 app_secret = get_password(KEYRING_KEY, 'app_secret')
         except KeyringError as e:
-            logger.warning(e)
+            _logger.warning(e)
     if not app_id:
         raise AuthenticationError('app_id is required for authorization code flow')
     if not use_pkce and not app_secret:
@@ -183,7 +183,7 @@ def _obtain_auth_code(
 ) -> str:
     """Open the browser and obtain an authorization code via OOB or local server."""
     if use_oob:
-        logger.info('Opening browser for authorization: %s', authorize_url)
+        _logger.info('Opening browser for authorization: %s', authorize_url)
         (open_url or webbrowser.open)(authorize_url)
         if get_code:
             return get_code(authorize_url)
@@ -272,7 +272,7 @@ def _make_callback_handler(
                 )
 
         def log_message(self, format: str, *args: object):
-            """Route HTTP server logs through the module logger."""
-            logger.debug(format, *args)
+            """Route HTTP server logs through the module _logger."""
+            _logger.debug(format, *args)
 
     return _OAuthCallbackHandler, result

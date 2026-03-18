@@ -1,9 +1,9 @@
 from typing import Any
 
+from pyinaturalist.client import delete, post
 from pyinaturalist.constants import API_V1, JsonResponse
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
-from pyinaturalist.session import delete, post
 
 
 @document_request_params(docs._ofvs, docs._access_token)

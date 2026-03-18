@@ -1,8 +1,8 @@
+from pyinaturalist.client import IDPaginator, Paginator
 from pyinaturalist.constants import IntOrStr, MultiIntOrStr
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.converters import ensure_list
 from pyinaturalist.models import User
-from pyinaturalist.paginator import IDPaginator, Paginator
 from pyinaturalist.v1 import get_current_user, get_user_by_id, get_users_autocomplete
 
 

@@ -6,13 +6,11 @@ from unittest.mock import patch
 import pytest
 from dateutil.tz import tzoffset, tzutc
 
+from pyinaturalist.client.session import ClientSession, MockResponse
 from pyinaturalist.constants import API_V1
-from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.session import ClientSession, MockResponse
 from pyinaturalist.v1 import (
     create_observation,
     delete_observation,
-    get_observation,
     get_observation_histogram,
     get_observation_identifiers,
     get_observation_observers,
@@ -31,20 +29,6 @@ from test.sample_data import (
     j_taxon_summary_1_conserved,
     j_taxon_summary_2_listed,
 )
-
-
-def test_get_observation(requests_mock):
-    requests_mock.get(
-        f'{API_V1}/observations',
-        json=SAMPLE_DATA['get_observation'],
-        status_code=200,
-    )
-
-    observation = get_observation(16227955)
-    assert observation['quality_grade'] == 'research'
-    assert observation['id'] == 16227955
-    assert observation['user']['login'] == 'niconoe'
-    assert len(observation['photos']) == 2
 
 
 def test_get_observation_histogram(requests_mock):
@@ -146,16 +130,6 @@ def test_get_observations_by_id__multiple(requests_mock):
 
     observations = get_observations_by_id([493595, 12345])
     assert observations['total_results'] == len(observations['results']) == 2
-
-
-def test_get_observation__non_existent(requests_mock):
-    requests_mock.get(
-        f'{API_V1}/observations',
-        json=SAMPLE_DATA['get_nonexistent_observation'],
-        status_code=200,
-    )
-    with pytest.raises(ObservationNotFound):
-        get_observation(99999999)
 
 
 def test_get_observation_identifiers(requests_mock):
@@ -357,13 +331,22 @@ def test_update_observation__with_photos(mock_put, mock_upload):
     mock_upload.assert_called_once()
 
 
-@patch('pyinaturalist.v1.observations.get_observation')
-@patch('pyinaturalist.v1.observations.put')
-def test_update_observation__with_photo_ids(mock_put, mock_get_observation):
-    mock_get_observation.return_value = {'photos': [{'id': 1234}]}
+def test_update_observation__with_photo_ids(requests_mock):
+    requests_mock.get(
+        f'{API_V1}/observations/1234',
+        json={'results': [{'photos': [{'id': 1234}]}], 'total_results': 1},
+        status_code=200,
+    )
+    requests_mock.put(
+        f'{API_V1}/observations/1234',
+        json=SAMPLE_DATA['update_observation_result'],
+        status_code=200,
+    )
+
     update_observation(1234, access_token='token', photo_ids=5678)
 
-    payload = mock_put.call_args[1]['json']
+    put_request = requests_mock.request_history[-1]
+    payload = put_request.json()
     assert 'photo_ids' not in payload
     assert payload['local_photos'] == {'1234': [1234, 5678]}
 
