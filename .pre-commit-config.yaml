@@ -8,13 +8,13 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.4
+    rev: v0.15.8
     hooks:
       - id: ruff
         args: [ --fix ]
       - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.19.1
+    rev: v1.20.0
     hooks:
       - id: mypy
         additional_dependencies: [attrs, types-python-dateutil, types-requests, types-ujson]
@@ -26,6 +26,6 @@ repos:
         args: [--max-average=A, --max-modules=C, --max-absolute=C]
         exclude: ^scripts/
   - repo: https://github.com/crate-ci/typos
-    rev: v1.44.0
+    rev: v1.45.0
     hooks:
       - id: typos
