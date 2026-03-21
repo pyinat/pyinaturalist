@@ -43,6 +43,7 @@ Supported resources include:
   * `pyinaturalist.v2.get_taxa_iconic()`
 
 ### Models
+* Significantly improve performance of model `to_dict()` methods
 * Add an `Observation.formatted_location` property (coordinates + geoprivacy)
 * Add an `Observation.place_str` property (fall back to coordinates if `place_guess` is missing)
 

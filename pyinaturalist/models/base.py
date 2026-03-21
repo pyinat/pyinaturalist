@@ -8,7 +8,8 @@ from os.path import expanduser
 from pathlib import Path
 from typing import Generic, TypeVar
 
-from attr import Factory, asdict, define, field, fields_dict
+import cattrs
+from attr import Factory, define, field, fields_dict
 
 from pyinaturalist.constants import (
     DATETIME_SHORT_FORMAT,
@@ -29,6 +30,26 @@ except ImportError:
 T = TypeVar('T', bound='BaseModel')
 TC = TypeVar('TC', bound='BaseModelCollection')
 logger = getLogger(__name__)
+
+
+def _make_converter() -> cattrs.Converter:
+    converter = cattrs.Converter()
+
+    def unstructure_base_model(obj: 'BaseModel') -> dict:
+        return {
+            a.name: converter.unstructure(getattr(obj, a.name))
+            for a in obj.__attrs_attrs__
+            if a.init is True
+        }
+
+    converter.register_unstructure_hook_func(
+        lambda t: isinstance(t, type) and issubclass(t, BaseModel),
+        unstructure_base_model,
+    )
+    return converter
+
+
+_converter = _make_converter()
 
 
 @define(auto_attribs=False)
@@ -124,19 +145,12 @@ class BaseModel:
             keys: Only keep the specified keys (attribute names)
             recurse: Recurse into nested model objects
         """
-
-        def recursive_serializer(_inst, _attribute, value):
-            if keys and _attribute and _attribute.name.lstrip('_') not in keys:
-                return None
-            return value.to_dict() if isinstance(value, BaseModel) else value
-
-        obj_dict = asdict(
-            self,
-            filter=lambda a, _: a.init is True,
-            retain_collection_types=True,
-            recurse=recurse,
-            value_serializer=recursive_serializer if recurse else None,
-        )
+        if recurse:
+            obj_dict = _converter.unstructure(self)
+        else:
+            obj_dict = {
+                a.name: getattr(self, a.name) for a in self.__attrs_attrs__ if a.init is True
+            }
 
         obj_dict = {k.lstrip('_'): v for k, v in obj_dict.items()}
         if keys:
