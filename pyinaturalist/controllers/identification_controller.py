@@ -45,15 +45,15 @@ class IdentificationController(BaseController):
             identification_ids: One or more identification IDs
         """
 
-        def get_identifications_by_id(_identification_ids: MultiInt, **params):
+        def _request_identifications_by_id(_identification_ids: MultiInt, **params):
             return self.client.session.request(
                 'GET', f'{API_V1}/identifications', ids=_identification_ids, **params
             ).json()
 
-        params = self.client.add_defaults(get_identifications_by_id, params)
+        params = self.client.add_defaults(_request_identifications_by_id, params)
 
         return IDPaginator(
-            get_identifications_by_id,
+            _request_identifications_by_id,
             Identification,
             ids=ensure_list(identification_ids),
             ids_per_request=IDS_PER_REQUEST,
@@ -74,9 +74,8 @@ class IdentificationController(BaseController):
 
             >>> ids = client.identifications.search(user_login='my_username', rank='species').all()
         """
-
-        def get_identifications(**params):
+        def _request_identifications(**params):
             return self.client.session.get(f'{API_V1}/identifications', **params).json()
 
         params = convert_rank_range(params)
-        return self.client.paginate(get_identifications, Identification, **params)
+        return self.client.paginate(_request_identifications, Identification, **params)
