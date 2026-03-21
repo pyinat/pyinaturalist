@@ -73,15 +73,15 @@ class ObservationController(BaseController):
             observation_ids: One or more observation IDs
         """
 
-        def get_observations_by_id(_observation_ids: MultiInt, **params):
+        def _request_observations_by_id(_observation_ids: MultiInt, **params):
             return self.client.session.request(
                 'GET', f'{API_V1}/observations', ids=_observation_ids, **params
             ).json()
 
-        params = self.client.add_defaults(get_observations_by_id, params)
+        params = self.client.add_defaults(_request_observations_by_id, params)
 
         return IDPaginator(
-            get_observations_by_id,
+            _request_observations_by_id,
             Observation,
             ids=ensure_list(observation_ids),
             ids_per_request=MAX_IDS_PER_REQUEST,
@@ -131,14 +131,17 @@ class ObservationController(BaseController):
 
         """
 
-        def get_observations(**params):
+        # Inline request function needed to pass to ObservationPaginator (IDRangePaginator),
+        # which requires a callable that accepts pagination kwargs directly. The v1 function
+        # handles its own pagination and cannot be used here.
+        def _request_observations(**params):
             return self.client.session.get(f'{API_V1}/observations', **params).json()
 
         params = validate_multiple_choice_param(params, 'order_by', V1_OBS_ORDER_BY_PROPERTIES)
-        params = self.client.add_defaults(get_observations, params)
+        params = self.client.add_defaults(_request_observations, params)
 
         return ObservationPaginator(
-            get_observations,
+            _request_observations,
             Observation,
             loop=self.client.loop,
             annotation_callback=self.client.annotations.lookup,
@@ -210,6 +213,7 @@ class ObservationController(BaseController):
                     :lines: 3-
 
         """
+        params = self.client.add_defaults(self.client.session.get, params)
         response = self.client.session.get(f'{API_V1}/observations/histogram', **params).json()
         return Histogram.from_json(response['results'])
 
@@ -401,8 +405,7 @@ class ObservationController(BaseController):
             >>>     description='updated description!',
             >>> )
         """
-        params = self.client.add_defaults(update_observation, params, auth=True)
-        response = update_observation(**params)
+        response = self.client.request(update_observation, auth=True, **params)
         return Observation.from_json(response)
 
     def upload(
