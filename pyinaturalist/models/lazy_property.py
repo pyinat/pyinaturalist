@@ -147,11 +147,12 @@ def make_attribute(name, **kwargs):
 
 
 # TODO: Make this more generic by looking for converter function return type instead of BaseModel?
-def _is_model_object_or_list(value):
-    try:
-        return isinstance(value, BaseModel) or isinstance(value[0], BaseModel)
-    except (AttributeError, KeyError, TypeError):
-        return False
+def _is_model_object_or_list(value) -> bool:
+    if isinstance(value, BaseModel):
+        return True
+    if isinstance(value, list) and value and isinstance(value[0], BaseModel):
+        return True
+    return False
 
 
 def _returns_list(func: Callable) -> bool:

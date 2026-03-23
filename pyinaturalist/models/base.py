@@ -31,6 +31,15 @@ T = TypeVar('T', bound='BaseModel')
 TC = TypeVar('TC', bound='BaseModelCollection')
 logger = getLogger(__name__)
 
+# Cache of lstripped field name dicts per class, to avoid rebuilding on every from_json() call
+_field_name_cache: dict[type, dict] = {}
+
+
+def _get_cls_attrs(cls: type) -> dict:
+    if cls not in _field_name_cache:
+        _field_name_cache[cls] = {k.lstrip('_'): v for k, v in fields_dict(cls).items()}
+    return _field_name_cache[cls]
+
 
 def _make_converter() -> cattrs.Converter:
     converter = cattrs.Converter()
@@ -94,7 +103,7 @@ class BaseModel:
                 ):
                     value = {**value, nested_attr: {'id': id_val}}
 
-        cls_attrs = {k.lstrip('_'): v for k, v in fields_dict(cls).items()}
+        cls_attrs = _get_cls_attrs(cls)
 
         def is_valid_attr(k):
             return (k in cls_attrs and cls_attrs[k].init is True) or k in cls.temp_attrs

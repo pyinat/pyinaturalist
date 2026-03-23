@@ -37,6 +37,7 @@ requires-python = '>=3.10'
 dependencies = [
     'attrs>=21.2',
     'cattrs>=23.1',
+    "ciso8601>=2.3",
     'keyring>=22.3',
     'platformdirs>=2.6',
     'python-dateutil>=2.0',
