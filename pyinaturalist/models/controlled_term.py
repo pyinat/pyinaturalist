@@ -1,6 +1,5 @@
 # ruff: noqa: E501
 from collections.abc import Iterable
-from copy import deepcopy
 
 from attr import define
 
@@ -211,7 +210,7 @@ class ControlledTermCount(BaseModel):
         cls, value: JsonResponse, user_id: int | None = None, **kwargs
     ) -> 'ControlledTermCount':
         """Rename some response fields before initializing"""
-        value = deepcopy(value)
+        value = value.copy()
         value['histogram'] = value.pop('month_of_year', None)
         return super().from_json(value)
 

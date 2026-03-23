@@ -13,6 +13,8 @@ from warnings import catch_warnings, simplefilter
 from dateutil.parser import UnknownTimezoneWarning
 from dateutil.parser import parse as parse_date
 from dateutil.tz import tzlocal
+
+import ciso8601
 from requests import Session
 
 from pyinaturalist.constants import (
@@ -297,8 +299,15 @@ def try_datetime(timestamp: Any, **kwargs) -> datetime | None:
     if not timestamp or not str(timestamp).strip():
         return None
 
+    # Try ciso8601 first (10-60x faster than dateutil for ISO 8601 strings)
+    if not kwargs:
+        try:
+            return ciso8601.parse_datetime(timestamp)
+        except (ValueError, TypeError):
+            pass
+
     try:
-        # Suppress UnknownTimezoneWarning
+        # Suppress UnknownTimezoneWarning; also handles non-ISO 8601 formats
         with catch_warnings():
             simplefilter('ignore', category=UnknownTimezoneWarning)
             return parse_date(timestamp, **kwargs)
