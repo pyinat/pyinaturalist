@@ -74,6 +74,7 @@ class IdentificationController(BaseController):
 
             >>> ids = client.identifications.search(user_login='my_username', rank='species').all()
         """
+
         def _request_identifications(**params):
             return self.client.session.get(f'{API_V1}/identifications', **params).json()
 

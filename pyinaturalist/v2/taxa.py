@@ -5,6 +5,7 @@ from pyinaturalist.constants import API_V2, JsonResponse, MultiInt, RequestParam
 from pyinaturalist.converters import convert_all_timestamps, ensure_list
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
+from pyinaturalist.models.field_path import build_fields_dict, contains_field_paths
 from pyinaturalist.request_params import convert_rank_range
 
 
@@ -50,6 +51,9 @@ def get_taxa(**params) -> JsonResponse:
     """
     params = convert_rank_range(params)
     except_fields = params.pop('except_fields', None)
+
+    if contains_field_paths(params.get('fields')):
+        params['fields'] = build_fields_dict(params['fields'])
 
     if params.get('fields') and except_fields:
         raise ValueError('Cannot use both fields and except_fields')
@@ -106,6 +110,9 @@ def get_taxa_by_id(
     """
     except_fields = params.pop('except_fields', None)
 
+    if contains_field_paths(params.get('fields')):
+        params['fields'] = build_fields_dict(params['fields'])
+
     if params.get('fields') and except_fields:
         raise ValueError('Cannot use both fields and except_fields')
 
@@ -147,6 +154,9 @@ def get_taxa_autocomplete(**params) -> JsonResponse:
     params = convert_rank_range(params)
     except_fields = params.pop('except_fields', None)
 
+    if contains_field_paths(params.get('fields')):
+        params['fields'] = build_fields_dict(params['fields'])
+
     if params.get('fields') and except_fields:
         raise ValueError('Cannot use both fields and except_fields')
 
@@ -184,6 +194,9 @@ def get_taxa_iconic(**params) -> JsonResponse:
         Response dict containing iconic taxon records
     """
     except_fields = params.pop('except_fields', None)
+
+    if contains_field_paths(params.get('fields')):
+        params['fields'] = build_fields_dict(params['fields'])
 
     if params.get('fields') and except_fields:
         raise ValueError('Cannot use both fields and except_fields')

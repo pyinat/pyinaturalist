@@ -4,6 +4,7 @@ from pyinaturalist.client import *
 from pyinaturalist.constants import *
 from pyinaturalist.formatters import enable_logging, format_table, pprint, pprint_tree
 from pyinaturalist.models import *
+from pyinaturalist.models.field_path import FieldPath, FieldProxy, build_fields_dict
 from pyinaturalist.request_params import get_interval_ranges
 from pyinaturalist.v0 import *
 from pyinaturalist.v2 import *

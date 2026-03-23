@@ -16,6 +16,7 @@ from pyinaturalist.converters import convert_all_coordinates, convert_all_timest
 from pyinaturalist.docs import document_common_args, document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
+from pyinaturalist.models.field_path import build_fields_dict, contains_field_paths
 from pyinaturalist.request_params import (
     convert_observation_params_v2,
     validate_multiple_choice_param,
@@ -102,6 +103,10 @@ def get_observations(**params) -> JsonResponse:
     """
     params = validate_multiple_choice_param(params, 'order_by', V2_OBS_ORDER_BY_PROPERTIES)
     except_fields = params.pop('except_fields', None)
+
+    # Normalize typed FieldPath/FieldProxy lists to the nested dict format the API expects
+    if contains_field_paths(params.get('fields')):
+        params['fields'] = build_fields_dict(params['fields'])
 
     if params.get('fields') and except_fields:
         raise ValueError('Cannot use both fields and except_fields')

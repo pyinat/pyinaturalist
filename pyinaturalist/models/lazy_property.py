@@ -103,7 +103,9 @@ class LazyProperty(property):
         value for subsequent calls.
         """
         if obj is None:
-            return self
+            from pyinaturalist.models.field_path import FieldProxy
+
+            return FieldProxy(self.type, prefix=(self.__name__,))
 
         value = getattr(obj, self.temp_attr)
         if value is None and not isinstance(self.default, Factory):
