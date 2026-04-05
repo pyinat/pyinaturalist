@@ -49,6 +49,7 @@ from pyinaturalist.constants import (
     REQUESTS_PER_SECOND,
     RETRY_BACKOFF,
     RETRY_STATUSES,
+    RETRYABLE_CONNECTION_ERRORS,
     WRITE_HTTP_METHODS,
     WRITE_TIMEOUT,
     FileOrPath,
@@ -358,10 +359,10 @@ class ClientSession(CacheMixin, LimiterMixin, Session):
             )
         # Handle write timeouts, which are not captured by urllib3 retry handling;
         except ConnectionError as e:
-            if 'write operation timed out' not in str(e):
+            if not any(msg in str(e) for msg in RETRYABLE_CONNECTION_ERRORS):
                 raise
-            _logger.debug('Write timed out:', exc_info=True)
-            _logger.warning('Write timed out; retrying...')
+            _logger.debug('Connection error:', exc_info=True)
+            _logger.warning('Connection error; retrying...')
 
             # Reuse the same retry object to share retry state and limits
             retries = retries or self.retries
