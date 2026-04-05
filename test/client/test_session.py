@@ -283,17 +283,22 @@ def test_send__disable_timeout(mock_requests_send, mock_format, method):
     assert mock_requests_send.call_args.kwargs['timeout'] is None
 
 
+@pytest.mark.parametrize(
+    'error',
+    [
+        ConnectionError('Connection aborted.', TimeoutError('The write operation timed out')),
+        ConnectionError(
+            'Connection aborted.',
+            ConnectionResetError('Remote end closed connection without response'),
+        ),
+    ],
+    ids=['write_timeout', 'remote_disconnect'],
+)
 @patch.object(urllib3.util.retry.time, 'sleep')
-def test_send__write_timeout_retry_success(mock_sleep, requests_mock):
-    write_timeout_error = ConnectionError(
-        'Connection aborted.', TimeoutError('The write operation timed out')
-    )
+def test_send__retryable_connection_error_success(mock_sleep, requests_mock, error):
     requests_mock.post(
         'http://test.com',
-        [
-            {'exc': write_timeout_error},  # first attempt: write timeout
-            {'json': {'results': []}, 'status_code': 200},  # second attempt: success
-        ],
+        [{'exc': error}, {'json': {'results': []}, 'status_code': 200}],
     )
 
     session = ClientSession(max_retries=3)
@@ -302,14 +307,22 @@ def test_send__write_timeout_retry_success(mock_sleep, requests_mock):
     assert response.json() == {'results': []}
 
 
+@pytest.mark.parametrize(
+    'error',
+    [
+        ConnectionError('Connection aborted.', TimeoutError('The write operation timed out')),
+        ConnectionError(
+            'Connection aborted.',
+            ConnectionResetError('Remote end closed connection without response'),
+        ),
+    ],
+    ids=['write_timeout', 'remote_disconnect'],
+)
 @patch.object(urllib3.util.retry.time, 'sleep')
-def test_send__write_timeout_retry_exhausted(mock_sleep, requests_mock):
-    write_timeout_error = ConnectionError(
-        'Connection aborted.', TimeoutError('The write operation timed out')
-    )
-    requests_mock.post('http://test.com', exc=write_timeout_error)
-
+def test_send__retryable_connection_error_exhausted(mock_sleep, requests_mock, error):
     retries = 3
+    requests_mock.post('http://test.com', exc=error)
+
     session = ClientSession(max_retries=retries)
     with pytest.raises(MaxRetryError):
         session.request('POST', 'http://test.com', raise_for_status=False)
