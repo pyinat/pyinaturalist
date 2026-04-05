@@ -25,6 +25,7 @@ Supported resources include:
 
 ### Authentication
 * Add support for authorization code flow + PKCE
+* Retry failed OAuth requests (transient errors only)
 
 ### Session settings
 * Added `ClientSession` argument `use_file_lock` (replaces `FileLockSQLiteBucket` use)
