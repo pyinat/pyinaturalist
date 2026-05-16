@@ -152,6 +152,13 @@ RANK_LEVELS = {
 }
 RANKS = list(RANK_LEVELS.keys())[:-2]
 
+# When there are multiple ranks for a given level, this maps to the most representative/common one
+RANK_LEVEL_REPRESENTATIVE_RANKS = {
+    5: 'subspecies',
+    10: 'species',
+    20: 'genus',
+}
+
 # The main 7 taxonomic ranks, used for condensed display
 COMMON_RANKS = [
     'species',
@@ -175,7 +182,6 @@ RANK_EQUIVALENTS = {
     'trinomial': 'subspecies',
     'var': 'variety',
 }
-
 
 # Type aliases
 # Multiple-choice parameter type aliases
