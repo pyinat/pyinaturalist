@@ -4,8 +4,9 @@ from datetime import timezone
 from unittest.mock import patch
 
 import pytest
+import urllib3.util.retry
 from keyring.errors import KeyringError
-from requests import HTTPError, Response
+from requests import ConnectionError, HTTPError, Response
 
 from pyinaturalist.client import ClientSession
 from pyinaturalist.client.oauth import (
@@ -104,6 +105,24 @@ def test_get_access_token__keyring(
     submitted_json = mock_post.call_args[1]['json']
     assert submitted_json == {'grant_type': 'password', **MOCK_CREDS_OAUTH}
     mock_keyring_credentials.assert_called_once()
+
+
+@patch.dict(os.environ, {}, clear=True)
+@patch.object(urllib3.util.retry.time, 'sleep')
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+def test_get_access_token__remote_disconnect_retry(mock_get_jwt, _mock_sleep, requests_mock):
+    """A RemoteDisconnected error on /oauth/token is retried transparently."""
+    disconnect_error = ConnectionError(
+        'Connection aborted.',
+        ConnectionResetError('Remote end closed connection without response'),
+    )
+    requests_mock.post(
+        f'{API_V0}/oauth/token',
+        [{'exc': disconnect_error}, {'json': token_accepted_json, 'status_code': 200}],
+    )
+
+    token = get_access_token('username', 'password', 'app_id', 'app_secret')
+    assert token == JWT_API_TOKEN
 
 
 @patch.dict(os.environ, {}, clear=True)
