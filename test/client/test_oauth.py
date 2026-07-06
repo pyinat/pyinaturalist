@@ -7,6 +7,7 @@ import pytest
 import urllib3.util.retry
 from keyring.errors import KeyringError
 from requests import ConnectionError, HTTPError, Response
+from requests.exceptions import RetryError
 
 from pyinaturalist.client import ClientSession
 from pyinaturalist.client.oauth import (
@@ -32,6 +33,8 @@ JWT_API_TOKEN = 'eyJ1c2VyX2lkIjoyMTE1MDUxLCJvYXV0aF9hcHBsaWNhdGlvbl9pZCI6NjQzLCJ
 JWT_RESPONSE_200 = Response()
 JWT_RESPONSE_200.status_code = 200
 JWT_RESPONSE_200._content = json.dumps(jwt_json).encode()
+JWT_RESPONSE_401 = Response()
+JWT_RESPONSE_401.status_code = 401
 NOT_CACHED_RESPONSE = Response()
 NOT_CACHED_RESPONSE.status_code = 504
 
@@ -56,7 +59,7 @@ def test_get_access_token__token_type(mock_get_jwt, requests_mock, jwt, expected
 
 @patch.dict(os.environ, {}, clear=True)
 def test_get_access_token__cached_jwt(requests_mock):
-    """An initial request will return a 200 if a JWT is already cached, or a 504 otherwise."""
+    """The second call returns the cached JWT without re-authenticating."""
     requests_mock.post(f'{API_V0}/oauth/token', json=token_accepted_json, status_code=200)
     requests_mock.get(f'{API_V0}/users/api_token', json=jwt_json, status_code=200)
 
@@ -126,11 +129,12 @@ def test_get_access_token__remote_disconnect_retry(mock_get_jwt, _mock_sleep, re
 
 
 @patch.dict(os.environ, {}, clear=True)
-@patch('pyinaturalist.client.oauth.get_keyring_credentials')
+@patch('pyinaturalist.client.oauth.get_keyring_credentials', return_value={})
 @patch('pyinaturalist.client.oauth._get_jwt', return_value=NOT_CACHED_RESPONSE)
-def test_get_access_token__missing_creds(mock_get_jwt, mock_keyring_credentials):
+def test_get_access_token__missing_creds(mock_get_jwt, mock_keyring):
     with pytest.raises(AuthenticationError, match='Not all authentication parameters'):
         get_access_token('username')
+    mock_keyring.assert_called_once()
 
 
 @patch('pyinaturalist.client.oauth._get_jwt', return_value=NOT_CACHED_RESPONSE)
@@ -141,6 +145,27 @@ def test_get_access_token__invalid_creds(mock_get_jwt, requests_mock):
         get_access_token('username', 'password', 'app_id', 'app_secret')
 
 
+@patch.dict(os.environ, {}, clear=True)
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+def test_get_access_token__refresh(mock_get_jwt, requests_mock):
+    """refresh=True bypasses the cache and passes refresh=True to the JWT fetch."""
+    requests_mock.post(f'{API_V0}/oauth/token', json=token_accepted_json, status_code=200)
+
+    token = get_access_token(
+        'valid_username', 'valid_password', 'valid_app_id', 'valid_app_secret', refresh=True
+    )
+    assert token == JWT_API_TOKEN
+    assert mock_get_jwt.call_args_list[1].kwargs.get('refresh') is True
+
+
+@patch.dict(os.environ, {}, clear=True)
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_401])
+def test_get_access_token__jwt_fetch_failure(mock_get_jwt, requests_mock):
+    """A failed JWT fetch after a successful OAuth exchange raises HTTPError."""
+    requests_mock.post(f'{API_V0}/oauth/token', json=token_accepted_json, status_code=200)
+
+    with pytest.raises(HTTPError):
+        get_access_token('valid_username', 'valid_password', 'valid_app_id', 'valid_app_secret')
 
 
 @pytest.mark.enable_client_session
@@ -193,7 +218,6 @@ def test_get_access_token_via_auth_code__pkce(mock_server, mock_get_jwt, request
     token = get_access_token_via_auth_code(app_id='valid_app_id')
     assert token == JWT_API_TOKEN
 
-    # Verify the token exchange payload includes PKCE fields
     submitted_json = requests_mock.last_request.json()
     assert submitted_json['grant_type'] == 'authorization_code'
     assert submitted_json['client_id'] == 'valid_app_id'
@@ -216,7 +240,6 @@ def test_get_access_token_via_auth_code__no_pkce(mock_server, mock_get_jwt, requ
     )
     assert token == JWT_API_TOKEN
 
-    # Verify the token exchange payload includes client_secret, not PKCE
     submitted_json = requests_mock.last_request.json()
     assert submitted_json['client_secret'] == 'valid_app_secret'
     assert 'code_verifier' not in submitted_json
@@ -234,7 +257,6 @@ def test_get_access_token_via_auth_code__oob(mock_input, mock_browser, mock_get_
     mock_input.assert_called_once()
     mock_browser.assert_called_once()
 
-    # Verify the redirect_uri is OOB
     submitted_json = requests_mock.last_request.json()
     assert submitted_json['redirect_uri'] == 'urn:ietf:wg:oauth:2.0:oob'
     assert submitted_json['code'] == 'oob_auth_code'
@@ -262,6 +284,21 @@ def test_get_access_token_via_auth_code__cached_jwt(mock_get_jwt):
     """If a JWT is already cached, return it without starting the browser flow."""
     token = get_access_token_via_auth_code(app_id='valid_app_id')
     assert token == JWT_API_TOKEN
+
+
+@patch.dict(os.environ, {}, clear=True)
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch(
+    'pyinaturalist.client.oauth_callback.get_auth_code_via_server',
+    return_value=_make_server_result('mock_auth_code'),
+)
+def test_get_access_token_via_auth_code__refresh(mock_server, mock_get_jwt, requests_mock):
+    """refresh=True bypasses the cache and passes refresh=True to the JWT fetch."""
+    requests_mock.post(f'{API_V0}/oauth/token', json=token_accepted_json, status_code=200)
+
+    token = get_access_token_via_auth_code(app_id='valid_app_id', refresh=True)
+    assert token == JWT_API_TOKEN
+    assert mock_get_jwt.call_args_list[1].kwargs.get('refresh') is True
 
 
 @patch.dict(os.environ, {}, clear=True)
@@ -408,6 +445,12 @@ def test_validate_token(response_code):
     with patch.object(ClientSession, 'send', return_value=Response()) as mock_get:
         mock_get.return_value.status_code = response_code
         assert validate_token('token') == (response_code == 200)
+
+
+def test_validate_token__retry_error():
+    """RetryError (retries exhausted on a 5xx response) returns False, not an exception."""
+    with patch.object(ClientSession, 'send', side_effect=RetryError):
+        assert validate_token('token') is False
 
 
 # get_keyring_credentials
