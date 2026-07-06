@@ -141,6 +141,37 @@ def test_get_access_token__invalid_creds(mock_get_jwt, requests_mock):
         get_access_token('username', 'password', 'app_id', 'app_secret')
 
 
+
+
+@pytest.mark.enable_client_session
+@patch.dict(os.environ, {}, clear=True)
+@patch(
+    'pyinaturalist.client.oauth.get_keyring_credentials',
+    return_value={
+        'username': 'keyring_username',
+        'password': 'keyring_password',
+        'client_id': 'keyring_app_id',
+        'client_secret': 'keyring_app_secret',
+    },
+)
+@patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
+@patch.object(ClientSession, 'post')
+def test_get_access_token__keyring_does_not_overwrite_explicit_args(
+    mock_post, mock_get_jwt, mock_keyring
+):
+    """Explicitly provided args are not overwritten when the keyring fills missing fields."""
+    mock_post.return_value = Response()
+    mock_post.return_value.status_code = 200
+    mock_post.return_value._content = json.dumps(token_accepted_json).encode()
+
+    get_access_token(username='explicit_username', app_id='explicit_app_id')
+    submitted_json = mock_post.call_args[1]['json']
+    assert submitted_json['username'] == 'explicit_username'
+    assert submitted_json['client_id'] == 'explicit_app_id'
+    assert submitted_json['password'] == 'keyring_password'
+    assert submitted_json['client_secret'] == 'keyring_app_secret'
+
+
 # get_access_token_via_auth_code
 # -----------------------------------
 

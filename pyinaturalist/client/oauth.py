@@ -113,7 +113,7 @@ def get_access_token(
 
     # If any fields were missing, then check the keyring
     if not all(payload.values()):
-        payload.update(get_keyring_credentials())
+        payload |= {k: v for k, v in get_keyring_credentials().items() if not payload.get(k)}
         if all(payload.values()):
             _logger.info('Retrieved credentials from keyring')
         else:
