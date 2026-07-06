@@ -10,6 +10,7 @@ from os import getenv
 from keyring import get_password, set_password
 from keyring.errors import KeyringError
 from requests import HTTPError, Response
+from requests.exceptions import RetryError
 
 from pyinaturalist.client.oauth_callback import (
     _build_token_payload,
@@ -126,7 +127,7 @@ def get_access_token(
 
     # If specified, use OAuth token to get (and cache) a JWT
     if jwt:
-        response = _get_jwt(session, access_token)
+        response = _get_jwt(session, access_token, refresh=refresh)
         response.raise_for_status()
         access_token = response.json()['api_token']
     return access_token
@@ -240,7 +241,7 @@ def get_access_token_via_auth_code(
 
     # If specified, use OAuth token to get (and cache) a JWT
     if jwt:
-        response = _get_jwt(session, access_token)
+        response = _get_jwt(session, access_token, refresh=refresh)
         response.raise_for_status()
         access_token = response.json()['api_token']
     return access_token
@@ -262,7 +263,7 @@ def validate_token(access_token: str) -> bool:
     try:
         session.request('GET', f'{API_V1}/users/me', access_token=access_token)
         return True
-    except HTTPError:
+    except (HTTPError, RetryError):
         return False
 
 
@@ -306,12 +307,16 @@ def set_keyring_credentials(
 
 
 def _get_jwt(
-    session: ClientSession, access_token: str | None = None, only_if_cached: bool = False
+    session: ClientSession,
+    access_token: str | None = None,
+    only_if_cached: bool = False,
+    refresh: bool = False,
 ) -> Response:
     headers = {'Authorization': f'Bearer {access_token}'} if access_token else {}
     return session.get(
         f'{API_V0}/users/api_token',
         headers=headers,
         only_if_cached=only_if_cached,  # If True, will return a 504 if not cached
+        force_refresh=refresh,
         raise_for_status=False,  # type: ignore
     )
