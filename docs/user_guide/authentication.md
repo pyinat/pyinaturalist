@@ -11,8 +11,8 @@ You can then pass the access token to any API request function that uses it via 
 from pyinaturalist import create_observation
 
 create_observation(
-  ...,
-  access_token='my_access_token',
+    ...,
+    access_token='my_access_token',
 )
 ```
 
