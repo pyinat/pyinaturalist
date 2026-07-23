@@ -1,7 +1,7 @@
 from pyinaturalist.constants import MultiInt, MultiStr
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.models import SearchResult
-from pyinaturalist.v1 import search
+from pyinaturalist.v1.search import search
 
 
 class SearchController(BaseController):
