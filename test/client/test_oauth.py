@@ -72,6 +72,20 @@ def test_get_access_token__cached_jwt(requests_mock):
     assert token_1 == token_2 == JWT_API_TOKEN
 
 
+@patch.dict(os.environ, {}, clear=True)
+@patch('pyinaturalist.client.oauth._get_jwt', return_value=JWT_RESPONSE_200)
+def test_get_access_token__jwt_false_ignores_cached_jwt(mock_get_jwt, requests_mock):
+    """jwt=False must not return a cached JWT, even if one is available."""
+    requests_mock.post(f'{API_V0}/oauth/token', json=token_accepted_json, status_code=200)
+
+    token = get_access_token(
+        'valid_username', 'valid_password', 'valid_app_id', 'valid_app_secret', jwt=False
+    )
+    assert token == OAUTH_ACCESS_TOKEN
+    # Only one _get_jwt call (the cache probe); no second call to fetch a JWT
+    mock_get_jwt.assert_called_once()
+
+
 @patch.dict(os.environ, MOCK_CREDS_ENV)
 @patch('pyinaturalist.client.oauth.get_keyring_credentials')
 @patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
@@ -287,6 +301,24 @@ def test_get_access_token_via_auth_code__cached_jwt(mock_get_jwt):
 
 
 @patch.dict(os.environ, {}, clear=True)
+@patch('pyinaturalist.client.oauth._get_jwt', return_value=JWT_RESPONSE_200)
+@patch(
+    'pyinaturalist.client.oauth_callback.get_auth_code_via_server',
+    return_value=_make_server_result('mock_auth_code'),
+)
+def test_get_access_token_via_auth_code__jwt_false_ignores_cached_jwt(
+    mock_server, mock_get_jwt, requests_mock
+):
+    """jwt=False must not return a cached JWT, even if one is available."""
+    requests_mock.post(f'{API_V0}/oauth/token', json=token_accepted_json, status_code=200)
+
+    token = get_access_token_via_auth_code(app_id='valid_app_id', jwt=False)
+    assert token == OAUTH_ACCESS_TOKEN
+    # Only one _get_jwt call (the cache probe); no second call to fetch a JWT
+    mock_get_jwt.assert_called_once()
+
+
+@patch.dict(os.environ, {}, clear=True)
 @patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
 @patch(
     'pyinaturalist.client.oauth_callback.get_auth_code_via_server',
@@ -440,17 +472,28 @@ def test_get_access_token_via_auth_code__custom_get_code_oob(
 # --------------
 
 
-@pytest.mark.parametrize('response_code', [200, 401, 403, 502])
-def test_validate_token(response_code):
+@pytest.mark.parametrize('response_code, expected', [(200, True), (401, False)])
+def test_validate_token(response_code, expected):
     with patch.object(ClientSession, 'send', return_value=Response()) as mock_get:
         mock_get.return_value.status_code = response_code
-        assert validate_token('token') == (response_code == 200)
+        assert validate_token('token') is expected
 
 
-def test_validate_token__retry_error():
-    """RetryError (retries exhausted on a 5xx response) returns False, not an exception."""
+@pytest.mark.parametrize('response_code', [403, 502])
+def test_validate_token__other_http_error_propagates(response_code):
+    """Only a 401 is treated as 'invalid'; other HTTP errors are not swallowed."""
+    with patch.object(ClientSession, 'send', return_value=Response()) as mock_get:
+        mock_get.return_value.status_code = response_code
+        with pytest.raises(HTTPError):
+            validate_token('token')
+
+
+def test_validate_token__retry_error_propagates():
+    """RetryError (retries exhausted on a 5xx response) is not swallowed, since token
+    validity could not actually be determined."""
     with patch.object(ClientSession, 'send', side_effect=RetryError):
-        assert validate_token('token') is False
+        with pytest.raises(RetryError):
+            validate_token('token')
 
 
 # get_keyring_credentials
@@ -486,6 +529,8 @@ def test_set_keyring_credentials(set_password):
     [
         ({'exp': 1893456000}, 1893456000),  # valid exp claim
         ({}, None),  # no exp claim
+        ({'exp': 'not-a-number'}, None),  # non-numeric exp claim (TypeError)
+        ({'exp': 99999999999999999}, None),  # out-of-range exp claim (OSError)
     ],
 )
 def test_decode_jwt_exp(payload, expected_exp):

@@ -10,7 +10,6 @@ from os import getenv
 from keyring import get_password, set_password
 from keyring.errors import KeyringError
 from requests import HTTPError, Response
-from requests.exceptions import RetryError
 
 from pyinaturalist.client.oauth_callback import (
     _build_token_payload,
@@ -41,7 +40,15 @@ def _decode_jwt_exp(token: str) -> datetime | None:
         payload = json.loads(base64.urlsafe_b64decode(payload_b64))
         exp = payload.get('exp')
         return datetime.fromtimestamp(exp, tz=timezone.utc) if exp else None
-    except (ValueError, KeyError, AttributeError, OverflowError, binascii.Error):
+    except (
+        ValueError,
+        KeyError,
+        AttributeError,
+        OverflowError,
+        OSError,
+        TypeError,
+        binascii.Error,
+    ):
         return None
 
 
@@ -98,9 +105,10 @@ def get_access_token(
 
     Raises:
         :py:exc:`requests.HTTPError`: (401) if credentials are invalid
+        :py:exc:`.AuthenticationError`: if required credentials are missing
     """
     session, cached = _get_cached_jwt(refresh)
-    if cached:
+    if cached and jwt:
         return cached
 
     # Otherwise check for credentials in either args or environment variables
@@ -122,7 +130,6 @@ def get_access_token(
 
     # Get OAuth access token
     response = session.post(f'{API_V0}/oauth/token', json=payload)
-    response.raise_for_status()
     access_token = response.json()['access_token']
 
     # If specified, use OAuth token to get (and cache) a JWT
@@ -206,7 +213,7 @@ def get_access_token_via_auth_code(
             authorize in time, or the token exchange fails.
     """
     session, cached = _get_cached_jwt(refresh)
-    if cached:
+    if cached and jwt:
         return cached
 
     app_id, app_secret = _resolve_auth_code_creds(app_id, app_secret, use_pkce)
@@ -236,7 +243,6 @@ def get_access_token_via_auth_code(
         app_id, auth_code, redirect_uri, code_verifier, app_secret, use_pkce
     )
     response = session.post(f'{API_V0}/oauth/token', json=payload)
-    response.raise_for_status()
     access_token = response.json()['access_token']
 
     # If specified, use OAuth token to get (and cache) a JWT
@@ -258,13 +264,22 @@ def _get_cached_jwt(refresh: bool) -> tuple[ClientSession, str | None]:
 
 
 def validate_token(access_token: str) -> bool:
-    """Determine if an access token is valid"""
+    """Determine if an access token is valid.
+
+    Returns ``False`` when the server confirms the token is invalid (401);
+    other failures are not re-raised.
+
+    Raises:
+        :py:exc:`requests.HTTPError`: for any non-401 error response
+    """
     session = get_local_session()
     try:
         session.request('GET', f'{API_V1}/users/me', access_token=access_token)
         return True
-    except (HTTPError, RetryError):
-        return False
+    except HTTPError as e:
+        if e.response is not None and e.response.status_code == 401:
+            return False
+        raise
 
 
 def get_keyring_credentials() -> dict[str, str | None]:
