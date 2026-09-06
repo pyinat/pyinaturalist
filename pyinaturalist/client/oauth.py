@@ -10,7 +10,6 @@ from os import getenv
 from keyring import get_password, set_password
 from keyring.errors import KeyringError
 from requests import HTTPError, Response
-from requests.exceptions import RetryError
 
 from pyinaturalist.client.oauth_callback import (
     _build_token_payload,
@@ -41,7 +40,15 @@ def _decode_jwt_exp(token: str) -> datetime | None:
         payload = json.loads(base64.urlsafe_b64decode(payload_b64))
         exp = payload.get('exp')
         return datetime.fromtimestamp(exp, tz=timezone.utc) if exp else None
-    except (ValueError, KeyError, AttributeError, OverflowError, binascii.Error):
+    except (
+        ValueError,
+        KeyError,
+        AttributeError,
+        OverflowError,
+        OSError,
+        TypeError,
+        binascii.Error,
+    ):
         return None
 
 
@@ -98,6 +105,7 @@ def get_access_token(
 
     Raises:
         :py:exc:`requests.HTTPError`: (401) if credentials are invalid
+        :py:exc:`.AuthenticationError`: if required credentials are missing
     """
     session, cached = _get_cached_jwt(refresh)
     if cached:
@@ -122,7 +130,6 @@ def get_access_token(
 
     # Get OAuth access token
     response = session.post(f'{API_V0}/oauth/token', json=payload)
-    response.raise_for_status()
     access_token = response.json()['access_token']
 
     # If specified, use OAuth token to get (and cache) a JWT
@@ -236,7 +243,6 @@ def get_access_token_via_auth_code(
         app_id, auth_code, redirect_uri, code_verifier, app_secret, use_pkce
     )
     response = session.post(f'{API_V0}/oauth/token', json=payload)
-    response.raise_for_status()
     access_token = response.json()['access_token']
 
     # If specified, use OAuth token to get (and cache) a JWT
