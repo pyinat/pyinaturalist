@@ -72,6 +72,20 @@ def test_get_access_token__cached_jwt(requests_mock):
     assert token_1 == token_2 == JWT_API_TOKEN
 
 
+@patch.dict(os.environ, {}, clear=True)
+@patch('pyinaturalist.client.oauth._get_jwt', return_value=JWT_RESPONSE_200)
+def test_get_access_token__jwt_false_ignores_cached_jwt(mock_get_jwt, requests_mock):
+    """jwt=False must not return a cached JWT, even if one is available."""
+    requests_mock.post(f'{API_V0}/oauth/token', json=token_accepted_json, status_code=200)
+
+    token = get_access_token(
+        'valid_username', 'valid_password', 'valid_app_id', 'valid_app_secret', jwt=False
+    )
+    assert token == OAUTH_ACCESS_TOKEN
+    # Only one _get_jwt call (the cache probe); no second call to fetch a JWT
+    mock_get_jwt.assert_called_once()
+
+
 @patch.dict(os.environ, MOCK_CREDS_ENV)
 @patch('pyinaturalist.client.oauth.get_keyring_credentials')
 @patch('pyinaturalist.client.oauth._get_jwt', side_effect=[NOT_CACHED_RESPONSE, JWT_RESPONSE_200])
@@ -284,6 +298,24 @@ def test_get_access_token_via_auth_code__cached_jwt(mock_get_jwt):
     """If a JWT is already cached, return it without starting the browser flow."""
     token = get_access_token_via_auth_code(app_id='valid_app_id')
     assert token == JWT_API_TOKEN
+
+
+@patch.dict(os.environ, {}, clear=True)
+@patch('pyinaturalist.client.oauth._get_jwt', return_value=JWT_RESPONSE_200)
+@patch(
+    'pyinaturalist.client.oauth_callback.get_auth_code_via_server',
+    return_value=_make_server_result('mock_auth_code'),
+)
+def test_get_access_token_via_auth_code__jwt_false_ignores_cached_jwt(
+    mock_server, mock_get_jwt, requests_mock
+):
+    """jwt=False must not return a cached JWT, even if one is available."""
+    requests_mock.post(f'{API_V0}/oauth/token', json=token_accepted_json, status_code=200)
+
+    token = get_access_token_via_auth_code(app_id='valid_app_id', jwt=False)
+    assert token == OAUTH_ACCESS_TOKEN
+    # Only one _get_jwt call (the cache probe); no second call to fetch a JWT
+    mock_get_jwt.assert_called_once()
 
 
 @patch.dict(os.environ, {}, clear=True)

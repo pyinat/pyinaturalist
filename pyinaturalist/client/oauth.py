@@ -108,7 +108,7 @@ def get_access_token(
         :py:exc:`.AuthenticationError`: if required credentials are missing
     """
     session, cached = _get_cached_jwt(refresh)
-    if cached:
+    if cached and jwt:
         return cached
 
     # Otherwise check for credentials in either args or environment variables
@@ -213,7 +213,7 @@ def get_access_token_via_auth_code(
             authorize in time, or the token exchange fails.
     """
     session, cached = _get_cached_jwt(refresh)
-    if cached:
+    if cached and jwt:
         return cached
 
     app_id, app_secret = _resolve_auth_code_creds(app_id, app_secret, use_pkce)
