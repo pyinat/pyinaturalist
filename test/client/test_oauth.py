@@ -472,17 +472,28 @@ def test_get_access_token_via_auth_code__custom_get_code_oob(
 # --------------
 
 
-@pytest.mark.parametrize('response_code', [200, 401, 403, 502])
-def test_validate_token(response_code):
+@pytest.mark.parametrize('response_code, expected', [(200, True), (401, False)])
+def test_validate_token(response_code, expected):
     with patch.object(ClientSession, 'send', return_value=Response()) as mock_get:
         mock_get.return_value.status_code = response_code
-        assert validate_token('token') == (response_code == 200)
+        assert validate_token('token') is expected
 
 
-def test_validate_token__retry_error():
-    """RetryError (retries exhausted on a 5xx response) returns False, not an exception."""
+@pytest.mark.parametrize('response_code', [403, 502])
+def test_validate_token__other_http_error_propagates(response_code):
+    """Only a 401 is treated as 'invalid'; other HTTP errors are not swallowed."""
+    with patch.object(ClientSession, 'send', return_value=Response()) as mock_get:
+        mock_get.return_value.status_code = response_code
+        with pytest.raises(HTTPError):
+            validate_token('token')
+
+
+def test_validate_token__retry_error_propagates():
+    """RetryError (retries exhausted on a 5xx response) is not swallowed, since token
+    validity could not actually be determined."""
     with patch.object(ClientSession, 'send', side_effect=RetryError):
-        assert validate_token('token') is False
+        with pytest.raises(RetryError):
+            validate_token('token')
 
 
 # get_keyring_credentials
@@ -518,6 +529,8 @@ def test_set_keyring_credentials(set_password):
     [
         ({'exp': 1893456000}, 1893456000),  # valid exp claim
         ({}, None),  # no exp claim
+        ({'exp': 'not-a-number'}, None),  # non-numeric exp claim (TypeError)
+        ({'exp': 99999999999999999}, None),  # out-of-range exp claim (OSError)
     ],
 )
 def test_decode_jwt_exp(payload, expected_exp):

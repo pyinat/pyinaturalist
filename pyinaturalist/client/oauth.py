@@ -264,13 +264,22 @@ def _get_cached_jwt(refresh: bool) -> tuple[ClientSession, str | None]:
 
 
 def validate_token(access_token: str) -> bool:
-    """Determine if an access token is valid"""
+    """Determine if an access token is valid.
+
+    Returns ``False`` when the server confirms the token is invalid (401);
+    other failures are not re-raised.
+
+    Raises:
+        :py:exc:`requests.HTTPError`: for any non-401 error response
+    """
     session = get_local_session()
     try:
         session.request('GET', f'{API_V1}/users/me', access_token=access_token)
         return True
-    except (HTTPError, RetryError):
-        return False
+    except HTTPError as e:
+        if e.response is not None and e.response.status_code == 401:
+            return False
+        raise
 
 
 def get_keyring_credentials() -> dict[str, str | None]:
