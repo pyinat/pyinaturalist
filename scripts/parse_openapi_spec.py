@@ -23,7 +23,7 @@ REQUEST_MODELS_V1_PATH = SPECS_DIR / 'openapi_request_models_v1.py'
 RESPONSE_MODELS_V1_PATH = SPECS_DIR / 'openapi_response_models_v1.py'
 ENUMS_V1_PATH = SPECS_DIR / 'openapi_enums_v1.py'
 
-SPEC_V2_URL = 'https://api.inaturalist.org/v2/docs/swagger-ui-init.js'
+SPEC_V2_URL = 'https://api.inaturalist.org/v2/api-docs'
 SPEC_V2_PATH = SPECS_DIR / 'openapi_spec_v2.json'
 REQUEST_MODELS_V2_PATH = SPECS_DIR / 'openapi_request_models_v2.py'
 RESPONSE_MODELS_V2_PATH = SPECS_DIR / 'openapi_response_models_v2.py'
@@ -75,21 +75,16 @@ def download_v1_spec(force=False):
 
 
 def download_v2_spec(force: bool = False) -> None:
-    """Download and extract the v2 OpenAPI spec from the embedded swagger-ui-init.js page"""
+    """Download the v2 OpenAPI spec"""
     if SPEC_V2_PATH.is_file() and not force:
         print(f'Using previously downloaded OpenAPI v2 spec: {SPEC_V2_PATH}')
         return
 
-    print(f'Downloading v2 swagger-ui-init.js: {SPEC_V2_URL}')
-    js = requests.get(SPEC_V2_URL).text
+    print(f'Downloading v2 OpenAPI spec: {SPEC_V2_URL}')
+    spec = requests.get(SPEC_V2_URL).json()
 
-    match = re.search(r'"swaggerDoc":\s*(\{)', js)
-    if not match:
-        raise ValueError('Could not find swaggerDoc in swagger-ui-init.js')
-
-    spec, _ = json.JSONDecoder().raw_decode(js, match.start(1))
     SPEC_V2_PATH.write_text(json.dumps(spec, indent=2))
-    print(f'Extracted and written to: {SPEC_V2_PATH}')
+    print(f'Written to: {SPEC_V2_PATH}')
 
 
 def parse_spec(spec_file: PathOrStr) -> dict:

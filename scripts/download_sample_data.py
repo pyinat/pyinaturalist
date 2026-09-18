@@ -55,6 +55,10 @@ def download_sample_data():
         SAMPLE_DATA_DIR / 'v2/get_projects_by_id.json',
     )
     write_response(
+        f'{API_V2}/projects?q=invasive&per_page=2',
+        SAMPLE_DATA_DIR / 'v2/get_projects_minimal.json',
+    )
+    write_response(
         f'{API_V2}/taxa/70118?fields=all',
         SAMPLE_DATA_DIR / 'v2/get_taxa_by_id_full.json',
     )

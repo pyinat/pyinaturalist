@@ -89,23 +89,10 @@ class Announcement:
     end: datetime
 
 
-class AppBuildInfo:
-    rails: dict
-    api: dict
-    vision: dict
-
-
 class AuthorizedApplication:
     application: dict
     created_at: datetime
     scopes: list[Literal['login', 'write', 'account_delete']]
-
-
-class BuildInfo:
-    git_branch: str
-    git_commit: str
-    image_tag: str
-    build_date: str
 
 
 class DateDetails:
@@ -304,32 +291,6 @@ class Error:
     errors: list[dict]
 
 
-class IdSummaryReference:
-    id: int
-    id_summary_id: int
-    reference_uuid: str
-    reference_source: str
-    reference_observation_id: int
-    reference_date: datetime
-    reference_content: str
-    user_id: int
-    user_login: str
-    created_at: datetime
-    updated_at: datetime
-
-
-class IdSummary:
-    id: int
-    taxon_id_summary_id: int
-    summary: str
-    photo_tip: str
-    visual_key_group: str
-    score: float
-    created_at: datetime
-    updated_at: datetime
-    references: list['IdSummaryReference']
-
-
 class Identification:
     id: int
     body: str
@@ -338,6 +299,7 @@ class Identification:
     created_at_details: 'DateDetails'
     current: bool
     disagreement: bool
+    exemplar_identification: dict
     flags: list['Flag']
     hidden: bool
     moderator_actions: list['ModeratorAction']
@@ -412,6 +374,7 @@ class Project:
     header_image_contain: bool
     header_image_file_name: str
     header_image_url: str
+    hide_leaderboard: bool
     hide_title: bool
     hide_umbrella_map_flags: bool
     icon: str
@@ -421,6 +384,7 @@ class Project:
     latitude: str
     location: str
     longitude: str
+    membership_model: str
     observation_requirements_updated_at: datetime
     place_id: int
     prefers_user_trust: bool
@@ -437,6 +401,7 @@ class Project:
     user: 'User'
     user_id: int
     user_ids: list[int]
+    umbrella_project_list_sort: str
 
 
 class ObservationPhoto:
@@ -735,15 +700,6 @@ class ResultsComments:
     results: list['Comment']
 
 
-class ResultsComputervision:
-    total_results: int
-    page: int
-    per_page: int
-    common_ancestor: 'CommonAncestor'
-    experimental: str
-    results: list[dict]
-
-
 class ResultsControlledTerms:
     total_results: int
     page: int
@@ -784,13 +740,6 @@ class ResultsIdentifiers:
     results: list[dict]
 
 
-class ResultsLanguageSearch:
-    total_results: int
-    page: int
-    per_page: int
-    results: list[dict]
-
-
 class ResultsMessages:
     total_results: int
     page: int
@@ -806,6 +755,13 @@ class ResultsMessagesThread:
     thread_id: int
     flaggable_message_id: int
     reply_to_user: 'User'
+
+
+class ResultsModelPosts:
+    total_results: int
+    page: int
+    per_page: int
+    results: list[dict]
 
 
 class ResultsObservationFieldValues:
@@ -858,6 +814,13 @@ class ResultsObservationsHistogram:
     results: Any
 
 
+class ResultsObservationsIconicTaxaCounts:
+    total_results: int
+    page: int
+    per_page: int
+    results: list[dict]
+
+
 class ResultsObservationsIdentificationCategories:
     total_results: int
     page: int
@@ -901,6 +864,13 @@ class ResultsObservationsSpeciesCounts:
     results: list[dict]
 
 
+class ResultsObservationsTaxa:
+    total_results: int
+    page: int
+    per_page: int
+    results: list[dict]
+
+
 class ResultsObservationsUmbrellaProjectStats:
     total_results: int
     page: int
@@ -929,6 +899,13 @@ class ResultsPlacesNearby:
     results: dict
 
 
+class ResultsPosts:
+    total_results: int
+    page: int
+    per_page: int
+    results: list[dict]
+
+
 class ResultsProjectMembership:
     total_results: int
     page: int
@@ -951,13 +928,6 @@ class ResultsProjects:
 
 
 class ResultsProjectsMembers:
-    total_results: int
-    page: int
-    per_page: int
-    results: list[dict]
-
-
-class ResultsProjectsPosts:
     total_results: int
     page: int
     per_page: int
@@ -1061,6 +1031,20 @@ class ResultsTaxaCounts:
     results: list['TaxonCount']
 
 
+class ResultsTaxaLifelistMetadata:
+    total_results: int
+    page: int
+    per_page: int
+    results: list[dict]
+
+
+class ResultsTaxaMapLayers:
+    total_results: int
+    page: int
+    per_page: int
+    results: list[dict]
+
+
 class ResultsTaxaSuggest:
     comprehensiveness: dict
     common_ancestor: 'CommonAncestor'
@@ -1068,33 +1052,6 @@ class ResultsTaxaSuggest:
     query: dict
     queryTaxon: 'Taxon'
     queryPlace: 'Place'
-
-
-class TaxonIdSummary:
-    id: int
-    uuid: str
-    active: bool
-    taxon_id: int
-    taxon_name: str
-    taxon_common_name: str
-    taxon_photo_id: int
-    taxon_photo_attribution: str
-    taxon_photo_observation_id: int
-    taxon_group: str
-    language: str
-    run_name: str
-    run_generated_at: datetime
-    run_description: str
-    created_at: datetime
-    updated_at: datetime
-    id_summaries: list['IdSummary']
-
-
-class ResultsTaxonIdSummaries:
-    total_results: int
-    page: int
-    per_page: int
-    results: list['TaxonIdSummary']
 
 
 class ResultsTaxonNamePriorities:

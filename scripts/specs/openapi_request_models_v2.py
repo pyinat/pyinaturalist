@@ -20,11 +20,6 @@ class CommentsUpdate:
     comment: dict
 
 
-class ComputervisionScoreImage:
-    fields: Any
-    image: bytes
-
-
 class FlagsCreate:
     flag: dict
     flag_explanation: str
@@ -119,15 +114,6 @@ class ProjectObservationsUpdate:
 
 class ProjectUsersUpdate:
     project_user: dict
-
-
-class ProjectsFeature:
-    inat_site_id: int
-    noteworthy: bool
-
-
-class ProjectsUnfeature:
-    inat_site_id: int
 
 
 class RelationshipsCreate:
