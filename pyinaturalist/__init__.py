@@ -22,3 +22,7 @@ from pyinaturalist.v2 import upload as upload_v2
 from pyinaturalist.v2 import get_taxa as get_taxa_v2
 from pyinaturalist.v2 import get_taxa_by_id as get_taxa_by_id_v2
 from pyinaturalist.v2 import get_taxa_autocomplete as get_taxa_autocomplete_v2
+from pyinaturalist.v2 import get_projects as get_projects_v2
+from pyinaturalist.v2 import get_projects_by_id as get_projects_by_id_v2
+from pyinaturalist.v2 import add_project_observation as add_project_observation_v2
+from pyinaturalist.v2 import delete_project_observation as delete_project_observation_v2

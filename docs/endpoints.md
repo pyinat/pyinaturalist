@@ -17,6 +17,10 @@ For all available endpoints, see: <http://api.inaturalist.org/v2/docs/>
 | POST   | /observation_photos                | {py:func}`~pyinaturalist.v2.observations.upload`                |
 | POST   | /observation_sounds                | {py:func}`~pyinaturalist.v2.observations.upload`                |
 | POST   | /observation_field_values/{uuid}   | {py:func}`~pyinaturalist.v2.observations.set_observation_field` |
+| GET    | /projects                          | {py:func}`~pyinaturalist.v2.projects.get_projects`              |
+| GET    | /projects/{id}                     | {py:func}`~pyinaturalist.v2.projects.get_projects_by_id`        |
+| POST   | /project_observations              | {py:func}`~pyinaturalist.v2.projects.add_project_observation`   |
+| DELETE | /project_observations/{uuid}       | {py:func}`~pyinaturalist.v2.projects.delete_project_observation`|
 | GET    | /taxa                              | {py:func}`~pyinaturalist.v2.taxa.get_taxa`                      |
 | GET    | /taxa/{id}                         | {py:func}`~pyinaturalist.v2.taxa.get_taxa_by_id`                |
 | GET    | /taxa/autocomplete                 | {py:func}`~pyinaturalist.v2.taxa.get_taxa_autocomplete`         |
@@ -64,13 +68,13 @@ For all available endpoints, see: <http://api.inaturalist.org/v1/docs/>
 | GET    | /places/autocomplete               | {py:func}`.get_places_autocomplete`                          |
 | GET    | /places/nearby                     | {py:func}`.get_places_nearby`                                |
 | GET    | /posts                             | {py:func}`.get_posts`                                        |
-| GET    | /projects                          | {py:func}`.get_projects`                                     |
-| GET    | /projects/{id}                     | {py:func}`.get_projects_by_id`                               |
+| GET    | /projects                          | {py:func}`~pyinaturalist.v1.projects.get_projects`           |
+| GET    | /projects/{id}                     | {py:func}`~pyinaturalist.v1.projects.get_projects_by_id`     |
 | PUT    | /projects/{id}                     | {py:func}`.update_project`                                   |
 | GET    | /projects/{id}/members             |
 | GET    | /projects/{id}/subscriptions       |
-| POST   | /projects/{id}/add                 | {py:func}`.add_project_observation`                          |
-| DELETE | /projects/{id}/remove              | {py:func}`.delete_project_observation`                       |
+| POST   | /projects/{id}/add                 | {py:func}`~pyinaturalist.v1.projects.add_project_observation`|
+| DELETE | /projects/{id}/remove              | {py:func}`~pyinaturalist.v1.projects.delete_project_observation` |
 | PUT    | /projects/{id}                     | {py:func}`.add_project_users`                                |
 | PUT    | /projects/{id}                     | {py:func}`.delete_project_users`                             |
 | GET    | /projects/autocomplete             |

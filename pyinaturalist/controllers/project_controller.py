@@ -5,13 +5,12 @@ from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import copy_doc_signature
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.models import Project
-from pyinaturalist.v1 import (
+from pyinaturalist.v1 import add_project_users, delete_project_users, update_project
+from pyinaturalist.v2 import (
     add_project_observation,
-    add_project_users,
-    delete_project_users,
+    delete_project_observation,
     get_projects,
     get_projects_by_id,
-    update_project,
 )
 
 
@@ -29,20 +28,22 @@ class ProjectController(BaseController):
         """
         return self.from_ids(project_id, **kwargs).one()
 
-    def from_ids(self, project_ids: MultiIntOrStr, **params) -> Paginator[Project]:
+    def from_ids(self, project_ids: MultiInt, **params) -> Paginator[Project]:
         """Get projects by ID
 
         .. rubric:: Notes
 
         * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
-        * API reference: :v1:`GET /projects/{id} <Projects/get_projects_id>`
+        * API reference: :v2:`GET /projects/{id} <Projects/get_projects_id>`
+        * All fields are returned by default; use ``fields`` to request a subset
 
         Example:
             >>> client.projects.from_id([1234, 5678])
 
         Args:
-            project_ids: One or more project IDs
+            project_ids: One or more numeric project IDs
         """
+        params.setdefault('fields', 'all')
         return self.client.paginate(get_projects_by_id, Project, project_id=project_ids, **params)
 
     @copy_doc_signature(docs._projects_params)
@@ -52,7 +53,8 @@ class ProjectController(BaseController):
         .. rubric:: Notes
 
         * :fas:`file-circle-plus` :ref:`Paginated endpoint <pagination>`
-        * API reference: :v1:`GET /projects <Projects/get_projects>`
+        * API reference: :v2:`GET /projects <Projects/get_projects>`
+        * All fields are returned by default; use ``fields`` to request a subset
 
         Example:
             Search for projects about invasive species within 400km of Vancouver, BC:
@@ -65,25 +67,29 @@ class ProjectController(BaseController):
             >>>     order_by='distance',
             >>> )
         """
+        params.setdefault('fields', 'all')
         return self.client.paginate(get_projects, Project, **params)
 
     def add_observations(
-        self, project_id: int, observation_ids: MultiInt, **params
+        self, project_id: int, observation_ids: MultiIntOrStr, **params
     ) -> ListResponse:
-        """Add an observation to a project
+        """Add one or more observations to a project
 
         .. rubric:: Notes
 
         * :fa:`lock` :ref:`Requires authentication <auth>`
-        * API reference: :v1:`POST projects/{id}/add <Projects/post_projects_id_add>`
-        * API reference: :v1:`POST /project_observations <Project_Observations/post_project_observations>`
+        * API reference: :v2:`POST /project_observations <ProjectObservations/post_project_observations>`
+        * This only applies to traditional projects. Collection and umbrella projects include
+          observations based on their rules, and cannot have observations added manually.
+        * If numeric observation IDs are provided instead of UUIDs, an extra request will be made
+          for each one to look up its UUID.
 
         Example:
-            >>> client.projects.add_observations(24237, 1234)
+            >>> client.projects.add_observations(24237, '53411fc2-bdf0-434e-afce-4dac33970173')
 
         Args:
             project_id: ID of project to add onto
-            observation_ids: One or more observation IDs to add
+            observation_ids: One or more observation IDs or UUIDs to add
         """
         responses = []
         for observation_id in ensure_list(observation_ids):
@@ -96,6 +102,35 @@ class ProjectController(BaseController):
             )
             responses.append(response)
         return responses
+
+    def delete_observations(self, project_id: int, observation_ids: MultiIntOrStr, **params):
+        """Remove one or more observations from a project
+
+        .. rubric:: Notes
+
+        * :fa:`lock` :ref:`Requires authentication <auth>`
+        * API reference: :v2:`DELETE /project_observations/{uuid}
+          <ProjectObservations/delete_project_observations_uuid>`
+        * This only applies to traditional projects. Collection and umbrella projects include
+          observations based on their rules, and cannot have observations removed manually.
+        * An extra request will be made for each observation to look up its project observation
+          record.
+
+        Example:
+            >>> client.projects.delete_observations(24237, '53411fc2-bdf0-434e-afce-4dac33970173')
+
+        Args:
+            project_id: ID of project to remove from
+            observation_ids: One or more observation IDs or UUIDs to remove
+        """
+        for observation_id in ensure_list(observation_ids):
+            self.client.request(
+                delete_project_observation,
+                project_id=project_id,
+                observation_id=observation_id,
+                auth=True,
+                **params,
+            )
 
     @copy_doc_signature(docs._project_update_params)
     def update(self, project_id: IntOrStr, **params) -> Project:

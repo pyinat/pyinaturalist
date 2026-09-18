@@ -42,6 +42,11 @@ Supported resources include:
   * `pyinaturalist.v2.get_taxa_by_id()`
   * `pyinaturalist.v2.get_taxa_autocomplete()`
   * `pyinaturalist.v2.get_taxa_iconic()`
+* Add project endpoints for v2 API:
+  * `pyinaturalist.v2.get_projects()`
+  * `pyinaturalist.v2.get_projects_by_id()`
+  * `pyinaturalist.v2.add_project_observation()`
+  * `pyinaturalist.v2.delete_project_observation()`
 
 ### Models
 * Add an `Observation.formatted_location` property (coordinates + geoprivacy)
