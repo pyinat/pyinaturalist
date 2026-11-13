@@ -1,9 +1,12 @@
+from logging import getLogger
+
 from pyinaturalist.client import Paginator
 from pyinaturalist.constants import IntOrStr, ListResponse, MultiInt, MultiIntOrStr
 from pyinaturalist.controllers import BaseController
 from pyinaturalist.converters import ensure_list
 from pyinaturalist.docs import copy_doc_signature
 from pyinaturalist.docs import templates as docs
+from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.models import Project
 from pyinaturalist.v1 import add_project_users, delete_project_users, update_project
 from pyinaturalist.v2 import (
@@ -12,6 +15,8 @@ from pyinaturalist.v2 import (
     get_projects,
     get_projects_by_id,
 )
+
+logger = getLogger(__name__)
 
 
 class ProjectController(BaseController):
@@ -103,7 +108,9 @@ class ProjectController(BaseController):
             responses.append(response)
         return responses
 
-    def delete_observations(self, project_id: int, observation_ids: MultiIntOrStr, **params):
+    def delete_observations(
+        self, project_id: int, observation_ids: MultiIntOrStr, **params
+    ) -> None:
         """Remove one or more observations from a project
 
         .. rubric:: Notes
@@ -115,6 +122,8 @@ class ProjectController(BaseController):
           observations based on their rules, and cannot have observations removed manually.
         * An extra request will be made for each observation to look up its project observation
           record.
+        * If an observation can't be removed (for example, it isn't in the project), a warning is
+          logged and the remaining observations are still processed.
 
         Example:
             >>> client.projects.delete_observations(24237, '53411fc2-bdf0-434e-afce-4dac33970173')
@@ -124,13 +133,18 @@ class ProjectController(BaseController):
             observation_ids: One or more observation IDs or UUIDs to remove
         """
         for observation_id in ensure_list(observation_ids):
-            self.client.request(
-                delete_project_observation,
-                project_id=project_id,
-                observation_id=observation_id,
-                auth=True,
-                **params,
-            )
+            try:
+                self.client.request(
+                    delete_project_observation,
+                    project_id=project_id,
+                    observation_id=observation_id,
+                    auth=True,
+                    **params,
+                )
+            except (ObservationNotFound, ValueError) as e:
+                logger.warning(
+                    f'Failed to remove observation {observation_id} from project {project_id}: {e}'
+                )
 
     @copy_doc_signature(docs._project_update_params)
     def update(self, project_id: IntOrStr, **params) -> Project:

@@ -19,6 +19,7 @@ from test.sample_data import SAMPLE_DATA
 OBS_UUID = '2cd5e678-7383-4793-b325-bd9e29f4cf9c'
 PROJECT_OBS_UUID_1 = 'fdb6f20e-9476-4bcd-a12b-79dbe4e4ece3'
 PROJECT_OBS_UUID_2 = 'e6e91e54-e61d-4e95-8c90-032789f3481d'
+OBS_LOOKUP_RESPONSE = {'total_results': 1, 'results': [{'uuid': OBS_UUID}]}
 OBS_WITH_PROJECTS = {
     'total_results': 1,
     'results': [
@@ -161,36 +162,84 @@ def test_add_project_observation(requests_mock):
     }
 
 
-def test_add_project_observation__by_id(requests_mock):
-    """A numeric observation ID should be resolved to a UUID before adding it to the project"""
-    requests_mock.post(
-        f'{API_V2}/observations',
-        json={'total_results': 1, 'results': [{'uuid': OBS_UUID}]},
-        status_code=200,
-    )
+@pytest.mark.parametrize(
+    'observation_id', [149358362, '149358362'], ids=['int_id', 'numeric_string_id']
+)
+def test_add_project_observation__needs_lookup(requests_mock, observation_id):
+    """A numeric observation ID, as an int or a string, should be resolved to a UUID via lookup"""
+    requests_mock.post(f'{API_V2}/observations', json=OBS_LOOKUP_RESPONSE, status_code=200)
     requests_mock.post(
         f'{API_V2}/project_observations',
         json={'total_results': 1, 'results': [{'id': 54986584}]},
         status_code=200,
     )
 
-    add_project_observation(2420, 149358362, access_token='token')
+    add_project_observation(2420, observation_id, access_token='token')
     lookup_request, add_request = requests_mock.request_history
-    assert lookup_request.url == f'{API_V2}/observations'
-    assert lookup_request.json()['id'] == 149358362
+    assert lookup_request.json()['id'] == observation_id
+    assert 'uuid' not in lookup_request.json()
     assert add_request.json()['project_observation']['observation_id'] == OBS_UUID
 
 
-def test_delete_project_observation(requests_mock):
+def test_add_project_observation__lookup_is_authenticated(requests_mock):
+    """The internal observation lookup should carry the caller's access token"""
+    requests_mock.post(f'{API_V2}/observations', json=OBS_LOOKUP_RESPONSE, status_code=200)
+    requests_mock.post(f'{API_V2}/project_observations', json={'results': [{}]}, status_code=200)
+
+    add_project_observation(2420, 149358362, access_token='token')
+    lookup_request = requests_mock.request_history[0]
+    assert lookup_request.headers['Authorization'] == 'Bearer token'
+    assert 'access_token' not in lookup_request.json()
+
+
+def test_add_project_observation__ignores_stray_fields_kwarg(requests_mock):
+    """A stray `fields` kwarg shouldn't crash the lookup, or override its fixed field selection"""
+    requests_mock.post(f'{API_V2}/observations', json=OBS_LOOKUP_RESPONSE, status_code=200)
+    requests_mock.post(f'{API_V2}/project_observations', json={'results': [{}]}, status_code=200)
+
+    add_project_observation(2420, 149358362, access_token='token', fields={'id': True})
+    lookup_request = requests_mock.request_history[0]
+    assert lookup_request.json()['fields'] == {'uuid': True}
+
+
+@pytest.mark.parametrize(
+    'observation_id, lookup_key',
+    [(OBS_UUID, 'uuid'), (149358362, 'id'), ('149358362', 'id')],
+    ids=['uuid', 'int_id', 'numeric_string_id'],
+)
+def test_delete_project_observation(requests_mock, observation_id, lookup_key):
     requests_mock.post(f'{API_V2}/observations', json=OBS_WITH_PROJECTS, status_code=200)
     requests_mock.delete(f'{API_V2}/project_observations/{PROJECT_OBS_UUID_2}', status_code=200)
 
-    response = delete_project_observation(407, OBS_UUID, access_token='token')
+    response = delete_project_observation(407, observation_id, access_token='token')
     assert response is None
     lookup_request, delete_request = requests_mock.request_history
-    assert lookup_request.json()['uuid'] == OBS_UUID
+    assert lookup_request.json()[lookup_key] == observation_id
     assert delete_request.method == 'DELETE'
     assert delete_request.url == f'{API_V2}/project_observations/{PROJECT_OBS_UUID_2}'
+
+
+def test_delete_project_observation__lookup_is_authenticated(requests_mock):
+    """The internal observation lookup should carry the caller's access token"""
+    requests_mock.post(f'{API_V2}/observations', json=OBS_WITH_PROJECTS, status_code=200)
+    requests_mock.delete(f'{API_V2}/project_observations/{PROJECT_OBS_UUID_2}', status_code=200)
+
+    delete_project_observation(407, OBS_UUID, access_token='token')
+    lookup_request = requests_mock.request_history[0]
+    assert lookup_request.headers['Authorization'] == 'Bearer token'
+    assert 'access_token' not in lookup_request.json()
+
+
+def test_delete_project_observation__ignores_stray_fields_kwarg(requests_mock):
+    """A stray `fields` kwarg shouldn't crash the lookup, or override its fixed field selection"""
+    requests_mock.post(f'{API_V2}/observations', json=OBS_WITH_PROJECTS, status_code=200)
+    requests_mock.delete(f'{API_V2}/project_observations/{PROJECT_OBS_UUID_2}', status_code=200)
+
+    delete_project_observation(407, OBS_UUID, access_token='token', fields={'id': True})
+    lookup_request = requests_mock.request_history[0]
+    assert lookup_request.json()['fields'] == {
+        'project_observations': {'uuid': True, 'project': {'id': True}}
+    }
 
 
 @pytest.mark.parametrize(

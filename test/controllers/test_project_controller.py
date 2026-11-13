@@ -11,6 +11,15 @@ from test.sample_data import SAMPLE_DATA, j_project_3_obs_fields, j_project_4
 
 OBS_UUID = '2cd5e678-7383-4793-b325-bd9e29f4cf9c'
 PROJECT_OBS_UUID = 'e6e91e54-e61d-4e95-8c90-032789f3481d'
+PROJECT_OBS_ENTRY = {'id': 2, 'uuid': PROJECT_OBS_UUID, 'project': {'id': 1234}}
+
+
+def _observation_response(uuid: str, project_observations: list[dict] | None = None) -> dict:
+    """Build a minimal v2 /observations lookup response for a single observation"""
+    return {
+        'total_results': 1,
+        'results': [{'uuid': uuid, 'project_observations': project_observations or []}],
+    }
 
 
 def test_from_id(requests_mock):
@@ -118,17 +127,7 @@ def test_add_observations(get_access_token, requests_mock):
 def test_delete_observations(get_access_token, requests_mock):
     requests_mock.post(
         f'{API_V2}/observations',
-        json={
-            'total_results': 1,
-            'results': [
-                {
-                    'uuid': OBS_UUID,
-                    'project_observations': [
-                        {'id': 2, 'uuid': PROJECT_OBS_UUID, 'project': {'id': 1234}},
-                    ],
-                }
-            ],
-        },
+        json=_observation_response(OBS_UUID, [PROJECT_OBS_ENTRY]),
         status_code=200,
     )
     requests_mock.delete(f'{API_V2}/project_observations/{PROJECT_OBS_UUID}', status_code=200)
@@ -139,6 +138,30 @@ def test_delete_observations(get_access_token, requests_mock):
     delete_request = requests_mock.request_history[-1]
     assert delete_request.method == 'DELETE'
     assert delete_request.url == f'{API_V2}/project_observations/{PROJECT_OBS_UUID}'
+
+
+@patch('pyinaturalist.client.client.get_access_token', return_value='token')
+def test_delete_observations__continues_after_failure(get_access_token, requests_mock, caplog):
+    """If one observation can't be removed, the rest should still be processed"""
+    other_obs_uuid = 'ec2e6a5c-3d43-4f5d-9d64-7b2b1b1cdb7f'
+    requests_mock.post(
+        f'{API_V2}/observations',
+        [
+            {'json': _observation_response(other_obs_uuid), 'status_code': 200},  # not in project
+            {'json': _observation_response(OBS_UUID, [PROJECT_OBS_ENTRY]), 'status_code': 200},
+        ],
+    )
+    requests_mock.delete(f'{API_V2}/project_observations/{PROJECT_OBS_UUID}', status_code=200)
+
+    iNatClient().projects.delete_observations(1234, [other_obs_uuid, OBS_UUID])
+
+    # Both should be looked up, and the second one deleted, despite the first one failing
+    lookup_requests = [r for r in requests_mock.request_history if r.method == 'POST']
+    delete_requests = [r for r in requests_mock.request_history if r.method == 'DELETE']
+    assert len(lookup_requests) == 2
+    assert len(delete_requests) == 1
+    assert delete_requests[0].url == f'{API_V2}/project_observations/{PROJECT_OBS_UUID}'
+    assert 'Failed to remove observation' in caplog.text
 
 
 # TODO:

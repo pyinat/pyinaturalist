@@ -17,6 +17,7 @@ from pyinaturalist.docs import document_common_args, document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
 from pyinaturalist.request_params import (
+    COMMON_PARAMS,
     convert_observation_params_v2,
     validate_multiple_choice_param,
 )
@@ -139,18 +140,20 @@ def _get_post_observations(params: RequestParams) -> JsonResponse:
     """
     headers = {'X-HTTP-Method-Override': 'GET'}
     body = params
-    params = {k: body.pop(k) for k in ['page', 'per_page'] if k in body}
-    if params.get('page') == 'all':
+    # Common kwargs (access_token, session, dry_run, etc.) must be passed as real kwargs, not
+    # left in the body, or they'll be silently stripped out and never sent at all
+    kwargs = {k: body.pop(k) for k in ['page', 'per_page', *COMMON_PARAMS] if k in body}
+    if kwargs.get('page') == 'all':
         return paginate_all(
             post,
             f'{API_V2}/observations',
             method='id',
             headers=headers,
             json=body,
-            **params,
+            **kwargs,
         )
     else:
-        return post(f'{API_V2}/observations', headers=headers, json=body, **params).json()
+        return post(f'{API_V2}/observations', headers=headers, json=body, **kwargs).json()
 
 
 @document_common_args

@@ -57,6 +57,20 @@ def test_get_observations__some_fields(requests_mock):
     assert observations['results'][0]['species_guess'] == 'Common Loon'
 
 
+def test_get_observations__some_fields_with_access_token(requests_mock):
+    """access_token shouldn't be silently dropped by the POST-with-fields code path"""
+    requests_mock.post(
+        f'{API_V2}/observations',
+        json=SAMPLE_DATA['get_observations_full'],
+        status_code=200,
+    )
+
+    get_observations(id=57707611, fields=['id'], access_token='token')
+    request = requests_mock.request_history[0]
+    assert request.headers['Authorization'] == 'Bearer token'
+    assert 'access_token' not in request.json()
+
+
 @patch('pyinaturalist.client.session.format_response')
 @patch('requests.sessions.Session.send')
 def test_get_observations__except_fields(mock_send, mock_format):

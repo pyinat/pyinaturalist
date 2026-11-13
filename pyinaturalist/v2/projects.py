@@ -3,6 +3,7 @@ from copy import deepcopy
 from pyinaturalist.client import delete, get, paginate_all, post
 from pyinaturalist.constants import (
     API_V2,
+    MAX_IDS_PER_REQUEST,
     PROJECT_ORDER_BY_PROPERTIES,
     IntOrStr,
     JsonResponse,
@@ -14,7 +15,7 @@ from pyinaturalist.converters import convert_all_coordinates, convert_all_timest
 from pyinaturalist.docs import document_request_params
 from pyinaturalist.docs import templates as docs
 from pyinaturalist.exceptions import ObservationNotFound
-from pyinaturalist.request_params import validate_multiple_choice_param
+from pyinaturalist.request_params import COMMON_PARAMS, validate_multiple_choice_param
 from pyinaturalist.v2.observations import get_observations
 
 
@@ -116,7 +117,7 @@ def get_projects_by_id(
     params = _convert_fields(params)
 
     n_ids = len(ensure_list(project_id))
-    if params.get('fields') not in ['all', None] or n_ids > 30:
+    if params.get('fields') not in ['all', None] or n_ids > MAX_IDS_PER_REQUEST:
         body = dict(params)
         body['id'] = project_id
         query_params = {k: body.pop(k) for k in ['page', 'per_page'] if k in body}
@@ -153,7 +154,10 @@ def add_project_observation(project_id: int, observation_id: IntOrStr, **params)
     Returns:
         Response dict containing the newly created project observation record
     """
-    if not isinstance(observation_id, str):
+    # 'fields' isn't meaningful here; drop it so it can't collide with the fixed field
+    # selection used for the observation lookup below
+    params.pop('fields', None)
+    if _needs_id_lookup(observation_id):
         observation = _get_observation(observation_id, fields={'uuid': True}, **params)
         observation_id = observation['uuid']
 
@@ -163,7 +167,7 @@ def add_project_observation(project_id: int, observation_id: IntOrStr, **params)
 
 
 @document_request_params(docs._access_token)
-def delete_project_observation(project_id: int, observation_id: IntOrStr, **params):
+def delete_project_observation(project_id: int, observation_id: IntOrStr, **params) -> None:
     """Remove an observation from a project
 
     .. rubric:: Notes
@@ -189,6 +193,9 @@ def delete_project_observation(project_id: int, observation_id: IntOrStr, **para
         :py:exc:`.ObservationNotFound` if the requested observation doesn't exist
         :py:exc:`ValueError` if the observation is not in the specified project
     """
+    # 'fields' isn't meaningful here; drop it so it can't collide with the fixed field
+    # selection used for the observation lookup below
+    params.pop('fields', None)
     fields = {'project_observations': {'uuid': True, 'project': {'id': True}}}
     observation = _get_observation(observation_id, fields=fields, **params)
     project_observations = [
@@ -202,10 +209,17 @@ def delete_project_observation(project_id: int, observation_id: IntOrStr, **para
     delete(f'{API_V2}/project_observations/{project_observations[0]["uuid"]}', **params)
 
 
+def _needs_id_lookup(observation_id: IntOrStr) -> bool:
+    """Check whether ``observation_id`` needs a lookup request to resolve it to a UUID, i.e. it's
+    numeric rather than an already-resolved UUID string
+    """
+    return isinstance(observation_id, int) or observation_id.isdigit()
+
+
 def _get_observation(observation_id: IntOrStr, fields: dict, **params) -> ResponseResult:
     """Get a single observation by either numeric ID or UUID, with the specified return fields"""
     id_param = (
-        {'uuid': observation_id} if isinstance(observation_id, str) else {'id': observation_id}
+        {'id': observation_id} if _needs_id_lookup(observation_id) else {'uuid': observation_id}
     )
     response = get_observations(**id_param, fields=fields, **params)
     if not response['results']:
@@ -240,7 +254,12 @@ def _get_post_projects(params: RequestParams) -> JsonResponse:
     """Use POST method to get projects with selection of return fields."""
     headers = {'X-HTTP-Method-Override': 'GET'}
     body = params
-    query_params = {k: body.pop(k) for k in ['page', 'per_page'] if k in body}
+    # Common kwargs (access_token, session, dry_run, etc.) must be passed as real kwargs, not
+    # left in the body, or they'll be silently stripped out and never sent at all
+    #
+    # Note: page-based pagination is intentional here (not method='id'). Unlike /observations
+    # and /taxa, the /projects endpoint doesn't support id_above/id_below or order_by=id.
+    query_params = {k: body.pop(k) for k in ['page', 'per_page', *COMMON_PARAMS] if k in body}
     if query_params.get('page') == 'all':
         return paginate_all(
             post,
