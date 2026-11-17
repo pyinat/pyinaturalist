@@ -115,6 +115,7 @@ In addition, checking attributes on nested objects will not raise `AttributeErro
 * Fix list slicing on custom collection types (`TaxonCounts`, etc.)
 * Fix pprint with empty results
 * Close any open cache or ratelimit SQLite connections when closing or garbage-collecting `ClientSession`
+* Fix 'unknown' iconic taxon filter
 
 ### Other Changes
 * Add support for python 3.15

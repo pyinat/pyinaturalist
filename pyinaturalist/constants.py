@@ -80,7 +80,7 @@ OBSERVATION_FORMATS = ['atom', 'csv', 'dwc', 'json', 'kml', 'widget']
 
 # Taxon ID and name of main taxa 'categories' that can be filtered on
 ICONIC_TAXA = {
-    0: 'Unknown',
+    0: 'unknown',
     1: 'Animalia',
     3: 'Aves',
     20978: 'Amphibia',
@@ -197,7 +197,7 @@ HistogramDateField = Literal['created', 'observed']
 HistogramInterval = Literal['year', 'month', 'week', 'day', 'hour', 'month_of_year', 'week_of_year']
 IDCategory = Literal['improving', 'supporting', 'leading', 'maverick']
 IconicTaxon = Literal[
-    'Unknown',
+    'unknown',
     'Animalia',
     'Aves',
     'Amphibia',
